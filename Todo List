@@ -5,3 +5,6 @@ Update code in all of my reports to use more modern and fluent code in order to 
 Update fonts/sizes/colors/window text to match Computer+ text
 
 **As of right now this should be a 100% working version**
+
+Add API to allow for callouts to display important information on a form of computer
+Add API to allow for callouts to access report data -- specifically names, plates, genders, and other strings/ints that may be useful for them to assess officer report skills
