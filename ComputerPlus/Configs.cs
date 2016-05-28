@@ -12,6 +12,7 @@ namespace ComputerPlus
         static InitializationFile ini_file = new InitializationFile(@"Plugins\LSPDFR\ComputerPlus.ini");
         public static Dictionary<uint,string> bgs = new Dictionary<uint,string>();
         static string user, pass;
+        static bool skip;
 
         public static void RunConfigCheck()
         {
@@ -22,6 +23,7 @@ namespace ComputerPlus
 
             user = ini_file.ReadString("SETTINGS", "LoginName");
             pass = ini_file.ReadString("SETTINGS", "LoginPass");
+            skip = ini_file.ReadBoolean("SETTINGS", "SkipLogin");
             if (String.IsNullOrWhiteSpace(user))
                 user = "OfficerHotStuff";
             if (String.IsNullOrWhiteSpace(pass))
@@ -38,6 +40,7 @@ namespace ComputerPlus
             ini_file.Create();
             ini_file.Write("SETTINGS", "LoginName", "OfficerHotStuff");
             ini_file.Write("SETTINGS", "LoginPass", "DoNuTz");
+            ini_file.Write("SETTINGS", "SkipLogin", "false");
         }
 
         public static string Username
@@ -48,6 +51,11 @@ namespace ComputerPlus
         public static string Password
         {
             get { return pass; }
+        }
+
+        public static bool SkipLogin
+        {
+            get { return skip; }
         }
     }
 }

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Drawing;
 using System.ComponentModel;
@@ -21,7 +18,6 @@ namespace ComputerPlus
         public static GameFiber form_main = new GameFiber(OpenMainMenuForm);
         public static GameFiber search_fiber = new GameFiber(OpenMainMenuForm);
         private BackgroundWorker ped_search;
-        private SynchronizationContext sc;
         private bool _initial_clear = false;
 
         public ComputerPedDB() : base(typeof(ComputerPedDBTemplate))
@@ -42,7 +38,6 @@ namespace ComputerPlus
             this.Position = new Point(Game.Resolution.Width / 2 - this.Window.Width / 2, Game.Resolution.Height / 2 - this.Window.Height / 2);
             this.Window.DisableResizing();
             output_info.KeyboardInputEnabled = false;
-            this.sc = SynchronizationContext.Current;
             if (Functions.GetCurrentPullover() != null)
             {
                 input_name.SetText(Functions.GetPersonaForPed(Functions.GetPulloverSuspect(Functions.GetCurrentPullover())).FullName);
@@ -71,7 +66,7 @@ namespace ComputerPlus
         {
             if (!_initial_clear)
             {
-                input_name.SetText("");
+                input_name.Text = "";
                 _initial_clear = true;
             }
         }
@@ -98,12 +93,12 @@ namespace ComputerPlus
             Ped ped = (Ped)e.Result;
             if (ped != null)
             {
-                SetResult(GetFormattedInfoForPersona(Functions.GetPersonaForPed(ped)));
+                output_info.Text = GetFormattedInfoForPersona(Functions.GetPersonaForPed(ped));
                 Function.AddPedToRecents(ped);
             }
             else
             {
-                SetResult("No record for the specified name was found.");
+                output_info.Text = "No record for the specified name was found.";
             }
         }
 
@@ -136,14 +131,6 @@ namespace ComputerPlus
             return String.Format("Information found about \"{0}\":\nDOB: {1}\nCitations: {2}\nGender: {3}\nLicense: {4}\n"
                 + "Times Stopped: {5}\nWanted: {6}\n{7}", p.FullName, String.Format("{0:dddd, MMMM dd, yyyy}", p.BirthDay), p.Citations, p.Gender, p.LicenseState,
                 p.TimesStopped, wanted_text, leo_text);
-        }
-
-        private void SetResult(string text)
-        {
-            sc.Send(new SendOrPostCallback(delegate(object state)
-            {
-                output_info.Text = text;
-            }), null);
         }
     }
 }
