@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 using System.Drawing;
 using Rage;
 using Rage.Forms;
-using LSPD_First_Response.Mod.API;
-using LSPD_First_Response.Engine.Scripting.Entities;
 using Gwen.Control;
 
 namespace ComputerPlus
@@ -20,7 +14,7 @@ namespace ComputerPlus
         public static GameFiber form_veh_db = new GameFiber(OpenVehDBForm);
         public static GameFiber form_backup = new GameFiber(OpenRequestBackupForm);
         public static GameFiber form_report = new GameFiber(OpenReportMenuForm);
-        private Button btn_ReportMain; // Fiskey111 Edit
+        //private Button btn_ReportMain; // Fiskey111 Edit
 
         public ComputerMain() : base(typeof(ComputerMainTemplate))
         {
@@ -34,7 +28,7 @@ namespace ComputerPlus
             this.btn_ped_db.Clicked += this.PedDBButtonClickedHandler;
             this.btn_veh_db.Clicked += this.VehDBButtonClickedHandler;
             this.btn_request.Clicked += this.RequestBackupButtonClickedHandler;
-            this.btn_ReportMain.Clicked += this.ReportMainClickedHandler;  // Fiskey111 Edit
+            //this.btn_ReportMain.Clicked += this.ReportMainClickedHandler;  // Fiskey111 Edit
             this.Window.DisableResizing();
             foreach (string r in EntryPoint.recent_text)
             {
