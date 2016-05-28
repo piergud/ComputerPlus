@@ -17,4 +17,3 @@ Current authors: PieRGud, fiskey111
 - Integration with Albo1125's British Policing Script and soon to be released LSPDFR+.
 - Combining Computer+ and fiskey111's LSPDFR PolicingMDT into one mod.
 - Adding a CAD-like system and an accompanying API so callout developers can show information about currently running callouts.
-
