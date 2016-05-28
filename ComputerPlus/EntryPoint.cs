@@ -61,7 +61,7 @@ namespace ComputerPlus
             if (on_duty) 
             {
                 Game.FrameRender += Process;
-                Game.LogTrivial("Successfully loaded LSPDFR Computer+ by PieRGud.");
+                Game.LogTrivial("Successfully loaded LSPDFR Computer+.");
             }
         }
 

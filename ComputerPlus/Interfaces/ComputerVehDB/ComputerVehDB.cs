@@ -19,6 +19,7 @@ namespace ComputerPlus
         public static GameFiber search_fiber = new GameFiber(OpenMainMenuForm);
         private BackgroundWorker veh_search;
         private bool _initial_clear = false;
+        private SynchronizationContext sc;
 
         public ComputerVehDB() : base(typeof(ComputerVehDBTemplate))
         {
@@ -47,6 +48,8 @@ namespace ComputerPlus
                     _initial_clear = true;
                 }
             }
+
+            sc = SynchronizationContext.Current;
         }
 
         private void InputNameSubmitHandler(Base sender, EventArgs e)
@@ -81,7 +84,7 @@ namespace ComputerPlus
             Vehicle[] vehs = World.GetAllVehicles();
             for (int i = 0; i < vehs.Length; i++)
             {
-                if (vehs[i].LicensePlate.ToLower() == input_name.Text.ToLower())
+                if (vehs[i].LicensePlate.ToLower() == ((string)e.Argument).ToLower())
                 {
                     e.Result = vehs[i];
                     break;
@@ -96,12 +99,12 @@ namespace ComputerPlus
             Vehicle veh = (Vehicle)e.Result;
             if (veh != null)
             {
-                output_info.Text = GetFormattedInfoForVehicle(veh);
+                sc.Post(UpdateResult, GetFormattedInfoForVehicle(veh));
                 Function.AddVehicleToRecents(veh);
             }
             else
-            {
-                output_info.Text = "No record for the specified license plate was found.";
+            {             
+                sc.Post(UpdateResult, "No record for the specified license plate was found.");
             }
         }
 
@@ -118,7 +121,7 @@ namespace ComputerPlus
             if (!veh_search.IsBusy)
             {
                 output_info.Text = "Searching. Please wait...";
-                veh_search.RunWorkerAsync();
+                veh_search.RunWorkerAsync(input_name.Text);
             }
         }
 
@@ -183,6 +186,12 @@ namespace ComputerPlus
                     p.TimesStopped, wanted_text, leo_text);
             }
             return info;
+        }
+
+        public void UpdateResult(object state)
+        {
+            string result = state as string;
+            output_info.Text = result;
         }
     }
 }
