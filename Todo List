@@ -1,0 +1,7 @@
+Combine .ini's
+  Specifically OfficerName/OfficerNumber in CommonStuff.CommonThings
+Find where (if) you have a random number generator.  If not it's no big deal and I can just keep mine in CommonThings or we can find another place for one
+Update code in all of my reports to use more modern and fluent code in order to improve performance
+Update fonts/sizes/colors/window text to match Computer+ text
+
+**As of right now this should be a 100% working version**
