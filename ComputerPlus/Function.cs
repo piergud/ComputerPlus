@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Rage;
-using Rage.Forms;
 using Rage.Native;
 using LSPD_First_Response.Mod.API;
 
@@ -66,7 +62,7 @@ namespace ComputerPlus
             if (_bg == null) 
             {
                 Game.LogTrivial(@"Failed to load LSPDFR Computer+ background. Please ensure all backgrounds are present in Plugins\LSPDFR\ComputerPlus\backgrounds\.");
-                Game.DisplayNotification("3dtextures", "mpgroundlogo_cops", "LSPDFR Computer+ by PieRGud", "~r~Error", @"Failed to load background in Plugins\LSPDFR\ComputerPlus\backgrounds\.");
+                Game.DisplayNotification("3dtextures", "mpgroundlogo_cops", "LSPDFR Computer+", "~r~Error", @"Failed to load background in Plugins\LSPDFR\ComputerPlus\backgrounds\.");
             }
             else 
             {

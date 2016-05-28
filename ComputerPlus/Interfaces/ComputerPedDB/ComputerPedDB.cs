@@ -19,6 +19,7 @@ namespace ComputerPlus
         public static GameFiber search_fiber = new GameFiber(OpenMainMenuForm);
         private BackgroundWorker ped_search;
         private bool _initial_clear = false;
+        private SynchronizationContext sc;
 
         public ComputerPedDB() : base(typeof(ComputerPedDBTemplate))
         {
@@ -43,6 +44,8 @@ namespace ComputerPlus
                 input_name.SetText(Functions.GetPersonaForPed(Functions.GetPulloverSuspect(Functions.GetCurrentPullover())).FullName);
                 _initial_clear = true;
             }
+
+            sc = SynchronizationContext.Current;
         }
 
         private void InputNameSubmitHandler(Base sender, EventArgs e)
@@ -78,7 +81,7 @@ namespace ComputerPlus
             for (int i = 0; i < peds.Length; i++)
             {
                 Persona persona = Functions.GetPersonaForPed(peds[i]);
-                if (persona.FullName.ToLower() == input_name.Text.ToLower())
+                if (persona.FullName.ToLower() == ((string)e.Argument).ToLower())
                 {
                     e.Result = peds[i];
                     break;
@@ -93,12 +96,12 @@ namespace ComputerPlus
             Ped ped = (Ped)e.Result;
             if (ped != null)
             {
-                output_info.Text = GetFormattedInfoForPersona(Functions.GetPersonaForPed(ped));
+                sc.Post(UpdateResult, GetFormattedInfoForPersona(Functions.GetPersonaForPed(ped)));
                 Function.AddPedToRecents(ped);
             }
             else
             {
-                output_info.Text = "No record for the specified name was found.";
+                sc.Post(UpdateResult, "No record for the specified name was found.");
             }
         }
 
@@ -115,7 +118,7 @@ namespace ComputerPlus
             if (!ped_search.IsBusy)
             {
                 output_info.SetText("Searching. Please wait...");
-                ped_search.RunWorkerAsync();
+                ped_search.RunWorkerAsync(input_name.Text);
             }
         }
 
@@ -131,6 +134,12 @@ namespace ComputerPlus
             return String.Format("Information found about \"{0}\":\nDOB: {1}\nCitations: {2}\nGender: {3}\nLicense: {4}\n"
                 + "Times Stopped: {5}\nWanted: {6}\n{7}", p.FullName, String.Format("{0:dddd, MMMM dd, yyyy}", p.BirthDay), p.Citations, p.Gender, p.LicenseState,
                 p.TimesStopped, wanted_text, leo_text);
+        }
+
+        public void UpdateResult(object state)
+        {
+            string result = state as string;
+            output_info.Text = result;
         }
     }
 }
