@@ -19,6 +19,8 @@ namespace ComputerPlus
         public static GameFiber form_ped_db = new GameFiber(OpenPedDBForm);
         public static GameFiber form_veh_db = new GameFiber(OpenVehDBForm);
         public static GameFiber form_backup = new GameFiber(OpenRequestBackupForm);
+        public static GameFiber form_report = new GameFiber(OpenReportMenuForm);
+        private Button btn_ReportMain; // Fiskey111 Edit
 
         public ComputerMain() : base(typeof(ComputerMainTemplate))
         {
@@ -32,14 +34,13 @@ namespace ComputerPlus
             this.btn_ped_db.Clicked += this.PedDBButtonClickedHandler;
             this.btn_veh_db.Clicked += this.VehDBButtonClickedHandler;
             this.btn_request.Clicked += this.RequestBackupButtonClickedHandler;
+            this.btn_ReportMain.Clicked += this.ReportMainClickedHandler;  // Fiskey111 Edit
             this.Window.DisableResizing();
             foreach (string r in EntryPoint.recent_text)
             {
                 list_recent.AddRow(r);
             }
             this.Position = new Point(Game.Resolution.Width / 2 - this.Window.Width / 2, Game.Resolution.Height / 2 - this.Window.Height / 2);
-            if (Configs.SkipLogin)
-                Function.EnableBackground();
         }
 
         private void LogoutButtonClickedHandler(Base sender, ClickedEventArgs e) 
@@ -68,6 +69,13 @@ namespace ComputerPlus
             form_backup.Start();
         }
 
+        private void ReportMainClickedHandler(Base sender, ClickedEventArgs e)   // Fiskey111 Edit
+        {
+            this.Window.Close();
+            form_report = new GameFiber(OpenReportMenuForm);
+            form_report.Start();
+        }
+
         public static void OpenPedDBForm()
         {
             GwenForm ped_db = new ComputerPedDB();
@@ -89,6 +97,14 @@ namespace ComputerPlus
             GwenForm backup = new ComputerRequestBackup();
             backup.Show();
             while (backup.Window.IsVisible)
+                GameFiber.Yield();
+        }
+
+        public static void OpenReportMenuForm()
+        {
+            GwenForm reportmenu = new ReportMain();
+            reportmenu.Show();
+            while (reportmenu.Window.IsVisible)
                 GameFiber.Yield();
         }
     }
