@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{95D73AC3-854F-4C32-94E8-E9778EA0404C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ComputerPlus</RootNamespace>
+    <AssemblyName>ComputerPlus</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Gwen, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Dependencies\Gwen.dll</HintPath>
+    </Reference>
+    <Reference Include="LSPD First Response">
+      <HintPath>Dependencies\LSPD First Response.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationFramework" />
+    <Reference Include="RagePluginHookSDK">
+      <HintPath>Dependencies\RagePluginHookSDK.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Traffic Policer">
+      <HintPath>Dependencies\Traffic Policer.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Interfaces\ComputerRequestBackup\ComputerRequestBackup.cs" />
+    <Compile Include="Interfaces\ComputerRequestBackup\ComputerRequestBackupTemplate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interfaces\ComputerRequestBackup\ComputerRequestBackupTemplate.Designer.cs">
+      <DependentUpon>ComputerRequestBackupTemplate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interfaces\ComputerVehDB\ComputerVehDB.cs" />
+    <Compile Include="Interfaces\ComputerPedDB\ComputerPedDB.cs" />
+    <Compile Include="Interfaces\ComputerMain\ComputerMain.cs" />
+    <Compile Include="Interfaces\ComputerLogin\ComputerLoginTemplate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interfaces\ComputerLogin\ComputerLoginTemplate.Designer.cs">
+      <DependentUpon>ComputerLoginTemplate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interfaces\ComputerMain\ComputerMainTemplate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interfaces\ComputerMain\ComputerMainTemplate.Designer.cs">
+      <DependentUpon>ComputerMainTemplate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interfaces\ComputerLogin\ComputerLogin.cs" />
+    <Compile Include="Interfaces\ComputerPedDB\ComputerPedDBTemplate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interfaces\ComputerPedDB\ComputerPedDBTemplate.Designer.cs">
+      <DependentUpon>ComputerPedDBTemplate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interfaces\ComputerVehDB\ComputerVehDBTemplate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interfaces\ComputerVehDB\ComputerVehDBTemplate.Designer.cs">
+      <DependentUpon>ComputerVehDBTemplate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configs.cs" />
+    <Compile Include="EntryPoint.cs" />
+    <Compile Include="Function.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="TrafficPolicerFunction.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Interfaces\ComputerLogin\ComputerLoginTemplate.resx">
+      <DependentUpon>ComputerLoginTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interfaces\ComputerMain\ComputerMainTemplate.resx">
+      <DependentUpon>ComputerMainTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interfaces\ComputerPedDB\ComputerPedDBTemplate.resx">
+      <DependentUpon>ComputerPedDBTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interfaces\ComputerRequestBackup\ComputerRequestBackupTemplate.resx">
+      <DependentUpon>ComputerRequestBackupTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interfaces\ComputerVehDB\ComputerVehDBTemplate.resx">
+      <DependentUpon>ComputerVehDBTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /Y "$(TargetPath)" "C:\Program Files\Rockstar Games\Grand Theft Auto V\Plugins\LSPDFR\$(TargetFileName)"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

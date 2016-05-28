@@ -1,0 +1,191 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Traffic Policer</name>
+    </assembly>
+    <members>
+        <member name="T:Traffic_Policer.Ambientevents.DrugDriver">
+            <summary>
+            Makes a driver swerve and under influence of drugs
+            </summary>
+        </member>
+        <member name="T:Traffic_Policer.Ambientevents.DrunkDriver">
+            <summary>
+            Makes a driver swerve and drunk (with breathalyzer)
+            </summary>
+        </member>
+        <member name="T:Traffic_Policer.Ambientevents.MobilePhone">
+            <summary>
+            Creates an event to give the specified driver a mobile phone and make them swerve.
+            </summary>
+        </member>
+        <member name="M:Traffic_Policer.Ambientevents.StreetRace.#ctor(System.Boolean,System.Boolean)">
+            <summary>
+            Having a method with the same name as the class calls this method when the class is created
+            </summary>
+        </member>
+        <member name="M:Traffic_Policer.API.Functions.IsVehicleInsured(Rage.Vehicle)">
+            <summary>
+            Check whether the vehicle is insured as per the insurance system.
+            </summary>
+            <param name="veh"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Traffic_Policer.API.Functions.SetVehicleInsuranceStatus(Rage.Vehicle,System.Boolean)">
+            <summary>
+            Sets the insurance status for a vehicle. Used when vehicle is checked.
+            </summary>
+            <param name="vehicle"></param>
+            <param name="Insured"></param>
+        </member>
+        <member name="M:Traffic_Policer.API.Functions.SetPedDrugsLevels(Rage.Ped,System.Boolean,System.Boolean)">
+            <summary>
+            Sets the drug levels for the ped. Used by Traffic Policer's Drugalyzer.
+            </summary>
+            <param name="ped"></param>
+            <param name="Cannabis"></param>
+            <param name="Cocaine"></param>
+        </member>
+        <member name="M:Traffic_Policer.API.Functions.MakePedImmuneToAmbientEvents(Rage.Ped)">
+            <summary>
+            Prevents this ped from being taken over by a Traffic Policer ambient event.
+            </summary>
+            <param name="ped"></param>
+        </member>
+        <member name="M:Traffic_Policer.API.Functions.SetAutomaticInsuranceChecksEnabled(System.Boolean)">
+            <summary>
+            Use this only if you don't want the insurance to appear after typing in a licence plate in a custom window. Remember to reactivate this after you're done fetching the input.
+            </summary>
+            <param name="enabled"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Traffic_Policer.API.Functions.SetTicketReasonsEnabled(System.Boolean)" -->
+        <member name="M:Traffic_Policer.API.Functions.SetPedAlcoholLevel(Rage.Ped,Traffic_Policer.Impairment_Tests.AlcoholLevels)">
+            <summary>
+            Sets the alcohol level for the ped. Used by Traffic Policer's Breathalyzer. Automatically converts the AlcoholLevel to an appropriate reading depending on the player's personal alcohol limit.
+            </summary>
+            <param name="ped"></param>
+            <param name="AlcoholLevel"></param>
+        </member>
+        <member name="M:Traffic_Policer.API.Functions.GetRandomOverTheLimitAlcoholLevel">
+            <summary>
+            Returns a random alcohol level that's over the limit. Higher alcohol limits have a lower chance of being returned.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Traffic_Policer.API.Functions.GetRandomUnderTheLimitAlcoholLevel">
+            <summary>
+            Returns a random alcohol level that's under the limit. Higher alcohol limits have a lower chance of being returned.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Traffic_Policer.API.Functions.DoesPedHaveDrugsInSystem(Rage.Ped)">
+            <summary>
+            Returns true if ped has cocaine or cannabis in their system.
+            </summary>
+            <param name="ped"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Traffic_Policer.API.Functions.IsPedOverTheAlcoholLimit(Rage.Ped)">
+            <summary>
+            Returns true if ped is over the alcohol limit.
+            </summary>
+            <param name="ped"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Traffic_Policer.Callouts.DrugsRunners.searchForDrugs">
+            <summary>
+            Final search for drugs by player
+            </summary>
+        </member>
+        <member name="M:Traffic_Policer.Callouts.DrugsRunners.drugsPursuit">
+            <summary>
+            Common method for the final pursuit in which drugs are dropped
+            </summary>
+        </member>
+        <member name="M:Traffic_Policer.Callouts.OwnerWanted.situationOneWithPassenger">
+            <summary>
+            Instantly become aggressive
+            </summary>
+        </member>
+        <member name="M:Traffic_Policer.Callouts.OwnerWanted.situationOneWithoutPassenger">
+            <summary>
+            Instantly become aggressive
+            </summary>
+        </member>
+        <member name="M:Traffic_Policer.Callouts.OwnerWanted.situationTwoWithPassenger">
+            <summary>
+            Fake hands up and become aggressive
+            </summary>
+        </member>
+        <member name="M:Traffic_Policer.Callouts.OwnerWanted.situationTwoWithoutPassenger">
+            <summary>
+            Fake hands up and become aggressive
+            </summary>
+        </member>
+        <member name="M:Traffic_Policer.Callouts.OwnerWanted.situationThreeWithPassenger">
+            <summary>
+            Hands up and surrender
+            </summary>
+        </member>
+        <member name="M:Traffic_Policer.Callouts.OwnerWanted.situationThreeWithoutPassenger">
+            <summary>
+            Hands up and sureEntryPoint.rnder
+            </summary>
+        </member>
+        <member name="M:Traffic_Policer.Callouts.OwnerWanted.situationFourWithPassenger">
+            <summary>
+            Situation where passenger sends in reinforcements when given the chance to call for them
+            </summary>
+        </member>
+        <member name="M:Traffic_Policer.Callouts.OwnerWanted.situationLSPDFR(System.Boolean)">
+            <summary>
+            Leave it to LSPDFR.
+            </summary>
+        </member>
+        <member name="M:Traffic_Policer.EntryPoint.registerCallouts">
+            <summary>
+            Registers the callouts with LSPDFR
+            </summary>
+        </member>
+        <member name="M:Traffic_Policer.EntryPoint.loadValuesFromIniFile">
+            <summary>
+            Reads all the values from the ini file and loads them into the plugin
+            </summary>
+        </member>
+        <member name="M:Traffic_Policer.EntryPoint.mainLoop">
+            <summary>
+            The main loop of the plugin
+            </summary>
+        </member>
+        <member name="T:Traffic_Policer.Main">
+            <summary>
+            Do not rename! Attributes or inheritance based plugins will follow when the API is more in depth.
+            </summary>
+        </member>
+        <member name="M:Traffic_Policer.Main.#ctor">
+            <summary>
+            Constructor for the main class, same as the class, do not rename.
+            </summary>
+        </member>
+        <member name="M:Traffic_Policer.Main.Finally">
+            <summary>
+            Called when the plugin ends or is terminated to cleanup
+            </summary>
+        </member>
+        <member name="M:Traffic_Policer.Main.Initialize">
+            <summary>
+            Called when the plugin is first loaded by LSPDFR
+            </summary>
+        </member>
+        <member name="M:Traffic_Policer.Main.Functions_OnOnDutyStateChanged(System.Boolean)">
+            <summary>
+            The event handler mentioned above,
+            </summary>
+        </member>
+        <member name="T:Traffic_Policer.ParkingTicket">
+            <summary>
+            Allows the player to report a vehicle for illegal parking
+            </summary>
+        </member>
+    </members>
+</doc>
