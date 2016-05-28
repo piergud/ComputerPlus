@@ -102,10 +102,10 @@ namespace ComputerPlus
 
         public static void OpenReportMenuForm()
         {
-            GwenForm reportmenu = new ReportMain();
+            /*GwenForm reportmenu = new ReportMain();
             reportmenu.Show();
             while (reportmenu.Window.IsVisible)
-                GameFiber.Yield();
+                GameFiber.Yield();*/
         }
     }
 }
