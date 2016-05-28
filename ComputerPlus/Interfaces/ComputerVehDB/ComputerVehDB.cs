@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Drawing;
 using System.ComponentModel;
@@ -21,7 +18,6 @@ namespace ComputerPlus
         public static GameFiber form_main = new GameFiber(OpenMainMenuForm);
         public static GameFiber search_fiber = new GameFiber(OpenMainMenuForm);
         private BackgroundWorker veh_search;
-        private SynchronizationContext sc;
         private bool _initial_clear = false;
 
         public ComputerVehDB() : base(typeof(ComputerVehDBTemplate))
@@ -42,7 +38,6 @@ namespace ComputerPlus
             this.Position = new Point(Game.Resolution.Width / 2 - this.Window.Width / 2, Game.Resolution.Height / 2 - this.Window.Height / 2);
             this.Window.DisableResizing();
             output_info.KeyboardInputEnabled = false;
-            this.sc = SynchronizationContext.Current;
             if (Functions.GetCurrentPullover() != null)
             {
                 Ped ped = Functions.GetPulloverSuspect(Functions.GetCurrentPullover());
@@ -75,7 +70,7 @@ namespace ComputerPlus
         {
             if (!_initial_clear)
             {
-                input_name.SetText("");
+                input_name.Text = "";
                 _initial_clear = true;
             }
         }
@@ -101,12 +96,12 @@ namespace ComputerPlus
             Vehicle veh = (Vehicle)e.Result;
             if (veh != null)
             {
-                SetResult(GetFormattedInfoForVehicle(veh));
+                output_info.Text = GetFormattedInfoForVehicle(veh);
                 Function.AddVehicleToRecents(veh);
             }
             else
             {
-                SetResult("No record for the specified license plate was found.");
+                output_info.Text = "No record for the specified license plate was found.";
             }
         }
 
@@ -188,14 +183,6 @@ namespace ComputerPlus
                     p.TimesStopped, wanted_text, leo_text);
             }
             return info;
-        }
-
-        private void SetResult(string text)
-        {
-            sc.Send(new SendOrPostCallback(delegate(object state)
-            {
-                output_info.Text = text;
-            }), null);
         }
     }
 }

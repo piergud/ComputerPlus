@@ -21,7 +21,7 @@ namespace ComputerPlus
 {
     public sealed class EntryPoint : Plugin
     {
-        public static GwenForm login = null;
+        public static GwenForm login = null, main = null;
         public static EventHandler OnVehicleStopped;
         static Stopwatch sw = new Stopwatch();
         private static float _stored_speed;
@@ -135,14 +135,29 @@ namespace ComputerPlus
         private static void ShowPoliceComputer()
         {
             Game.IsPaused = true;
-            login = new ComputerLogin();
-            login.Show();
-
-            while (login.Window.IsVisible || ComputerLogin.next_form.IsAlive || ComputerMain.form_ped_db.IsAlive
-                || ComputerMain.form_veh_db.IsAlive  || ComputerMain.form_backup.IsAlive || ComputerPedDB.form_main.IsAlive
-                || ComputerVehDB.form_main.IsAlive || ComputerRequestBackup.form_main.IsAlive)
+            if (!Configs.SkipLogin)
             {
-                GameFiber.Yield();
+                login = new ComputerLogin();
+                login.Show();
+
+                while (login.Window.IsVisible || ComputerLogin.next_form.IsAlive || ComputerMain.form_ped_db.IsAlive
+                    || ComputerMain.form_veh_db.IsAlive || ComputerMain.form_backup.IsAlive || ComputerPedDB.form_main.IsAlive
+                    || ComputerVehDB.form_main.IsAlive || ComputerRequestBackup.form_main.IsAlive)
+                {
+                    GameFiber.Yield();
+                }
+            }
+            else
+            {
+                main = new ComputerMain();
+                main.Show();
+
+                while (main.Window.IsVisible || ComputerMain.form_ped_db.IsAlive || ComputerMain.form_veh_db.IsAlive 
+                    || ComputerMain.form_backup.IsAlive || ComputerPedDB.form_main.IsAlive || ComputerVehDB.form_main.IsAlive 
+                    || ComputerRequestBackup.form_main.IsAlive)
+                {
+                    GameFiber.Yield();
+                }
             }
 
             Function.DisableBackground();
