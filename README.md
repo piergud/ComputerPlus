@@ -1,9 +1,9 @@
 # ComputerPlus
-Welcome to the LSPDFR Computer+ Git!
+LSPDFR Computer+ aims to recreate the old LCPDFR computer with a bit of extra features.
 
 ![banner](http://i.imgur.com/Ihf8uiE.png)
 
-LSPDFR Computer+ aims to recreate the old LCPDFR computer with a bit of extra features.
+Current authors: PieRGud, fiskey111
 
 **Current Features**
 - Ability to search for persons and vehicles without keys conflicting with other mods.
