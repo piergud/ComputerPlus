@@ -1,5 +1,5 @@
 # ComputerPlus
-LSPDFR Computer+ aims to recreate the old LCPDFR computer with a bit of extra features.
+LSPDFR Computer+ aims to recreate the old LCPDFR computer with some extra features.
 
 ![banner](http://i.imgur.com/Ihf8uiE.png)
 
