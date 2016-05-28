@@ -1,21 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Drawing;
 using System.Diagnostics;
-using System.IO;
 using System.Reflection;
-using System.Threading;
-using System.Media;
 using Rage;
 using Rage.Forms;
-using Rage.Native;
-using LSPD_First_Response;
 using LSPD_First_Response.Mod.API;
-using LSPD_First_Response.Engine.Scripting.Entities;
 
 namespace ComputerPlus
 {
