@@ -14,7 +14,7 @@ Current authors: PieRGud, fiskey111
 - Looks practically identical to the LCPDFR computer (in terms of the layout).
 
 **Planned Improvements**
-- Integration with @Albo1125's British Policing Script and soon to be released LSPDFR+.
-- Combining Computer+ and @fiskey111's LSPDFR PolicingMDT into one mod.
+- Integration with Albo1125's British Policing Script and soon to be released LSPDFR+.
+- Combining Computer+ and fiskey111's LSPDFR PolicingMDT into one mod.
 - Adding a CAD-like system and an accompanying API so callout developers can show information about currently running callouts.
 
