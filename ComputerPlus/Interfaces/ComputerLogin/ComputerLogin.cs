@@ -1,0 +1,75 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Drawing;
+using Rage;
+using Rage.Forms;
+using Gwen.Control;
+
+namespace ComputerPlus
+{
+    public class ComputerLogin : GwenForm
+    {
+        private Button btn_login;
+        private TextBox input_user, input_pass;
+        private TextBoxPassword pass;
+        private Label label_invalid;
+        private ImagePanel panel_invalid_user, panel_invalid_pass;
+        public static GameFiber next_form = new GameFiber(OpenMainForm);
+
+        public ComputerLogin() : base(typeof(ComputerLoginTemplate))
+        {
+        }
+
+        public override void InitializeLayout()
+        {
+            base.InitializeLayout();
+            pass = new TextBoxPassword(input_pass);
+            pass.SetSize(260, 20);
+            this.btn_login.Clicked += this.LoginButtonClickedHandler;
+            this.input_user.SubmitPressed += this.OnFieldSubmit;
+            this.pass.SubmitPressed += this.OnFieldSubmit;
+            this.Position = new Point(Game.Resolution.Width / 2 - this.Window.Width / 2, Game.Resolution.Height / 2 - this.Window.Height / 2);
+            this.Window.DisableResizing();
+            this.label_invalid.Hide();
+            this.input_user.Text = Configs.Username;
+            this.pass.Text = Configs.Password;
+            Function.EnableBackground();
+        }
+
+        private void LoginButtonClickedHandler(Base sender, ClickedEventArgs e) 
+        {
+            Login();
+        }
+
+        private void OnFieldSubmit(Base sender, EventArgs e)
+        {
+            Login();
+        }
+
+        private void Login()
+        {
+            if (this.input_user.Text == Configs.Username 
+                && this.pass.Text == Configs.Password)
+            {
+                this.Window.Close();
+                next_form = new GameFiber(OpenMainForm);
+                next_form.Start();
+            }
+            else
+            {
+                this.label_invalid.Show();
+            }
+        }
+
+        public static void OpenMainForm()
+        {
+            GwenForm main = new ComputerMain();
+            main.Show();
+            while (main.Window.IsVisible)
+                GameFiber.Yield();
+        }
+    }
+}
