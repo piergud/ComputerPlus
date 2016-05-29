@@ -10,6 +10,7 @@ namespace ComputerPlus.API
     public class CalloutData : ICalloutData
     {
         #region Properties
+        public Guid ID { get; set; }
         public string FullName { get; set; }
         public string Abbreviation { get; set; }
         public string Description { get; set; }

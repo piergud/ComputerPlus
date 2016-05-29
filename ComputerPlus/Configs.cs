@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Rage;
-using ComputerPlus.API;
 
 namespace ComputerPlus
 {
@@ -12,7 +11,6 @@ namespace ComputerPlus
     {
         static InitializationFile ini_file = new InitializationFile(@"Plugins\LSPDFR\ComputerPlus.ini");
         internal static Dictionary<uint,string> bgs = new Dictionary<uint,string>();
-        internal static List<CalloutData> gCallQueue = new List<CalloutData>();
         static string user, pass;
         static bool skip;
 

@@ -14,6 +14,7 @@ namespace ComputerPlus
         internal static GameFiber form_veh_db = new GameFiber(OpenVehDBForm);
         internal static GameFiber form_backup = new GameFiber(OpenRequestBackupForm);
         internal static GameFiber form_report = new GameFiber(OpenReportMenuForm);
+        internal static GameFiber form_active_calls = new GameFiber(OpenActiveCallsForm);
         //private Button btn_ReportMain; // Fiskey111 Edit
 
         internal ComputerMain() : base(typeof(ComputerMainTemplate))
@@ -70,6 +71,13 @@ namespace ComputerPlus
             form_report.Start();
         }
 
+        private void ActiveCallsClickedHandler(Base sender, ClickedEventArgs e)
+        {
+            this.Window.Close();
+            form_active_calls = new GameFiber(OpenActiveCallsForm);
+            form_active_calls.Start();
+        }
+
         internal static void OpenPedDBForm()
         {
             GwenForm ped_db = new ComputerPedDB();
@@ -100,6 +108,16 @@ namespace ComputerPlus
             reportmenu.Show();
             while (reportmenu.Window.IsVisible)
                 GameFiber.Yield();*/
+        }
+
+        internal static void OpenActiveCallsForm()
+        {
+            /*
+            GwenForm active_calls = new ComputerActiveCalls();
+            active_calls.Show();
+            while (active_calls.Window.IsVisible)
+                GameFiber.Yield();
+            */
         }
     }
 }
