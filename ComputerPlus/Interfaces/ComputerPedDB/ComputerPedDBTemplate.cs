@@ -13,7 +13,7 @@ namespace ComputerPlus
 {
     internal partial class ComputerPedDBTemplate : Form
     {
-        internal ComputerPedDBTemplate()
+        public ComputerPedDBTemplate()
         {
             InitializeComponent();
         }

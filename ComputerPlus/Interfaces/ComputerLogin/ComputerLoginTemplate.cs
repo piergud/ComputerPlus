@@ -12,7 +12,7 @@ namespace ComputerPlus
 {
     internal partial class ComputerLoginTemplate : Form
     {
-        internal ComputerLoginTemplate()
+        public ComputerLoginTemplate()
         {
             InitializeComponent();
         }

@@ -13,7 +13,7 @@ namespace ComputerPlus
 {
     internal partial class ComputerCurrentCallDetailsTemplate : Form
     {
-        internal ComputerCurrentCallDetailsTemplate()
+        public ComputerCurrentCallDetailsTemplate()
         {
             InitializeComponent();
         }

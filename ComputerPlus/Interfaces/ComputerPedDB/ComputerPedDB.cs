@@ -21,7 +21,7 @@ namespace ComputerPlus
         private bool _initial_clear = false;
         private SynchronizationContext sc;
 
-        internal ComputerPedDB() : base(typeof(ComputerPedDBTemplate))
+        public ComputerPedDB() : base(typeof(ComputerPedDBTemplate))
         {
 
         }
