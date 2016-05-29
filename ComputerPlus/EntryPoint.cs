@@ -9,7 +9,7 @@ using ComputerPlus.API;
 
 namespace ComputerPlus
 {
-    internal sealed class EntryPoint : Plugin
+    public sealed class EntryPoint : Plugin
     {
         internal static GwenForm login = null, main = null;
         internal static EventHandler OnVehicleStopped;

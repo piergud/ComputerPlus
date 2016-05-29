@@ -17,7 +17,7 @@ namespace ComputerPlus
         internal static GameFiber form_active_calls = new GameFiber(OpenActiveCallsForm);
         //private Button btn_ReportMain; // Fiskey111 Edit
 
-        internal ComputerMain() : base(typeof(ComputerMainTemplate))
+        public ComputerMain() : base(typeof(ComputerMainTemplate))
         {
 
         }

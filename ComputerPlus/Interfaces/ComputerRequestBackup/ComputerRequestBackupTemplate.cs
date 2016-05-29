@@ -12,7 +12,7 @@ namespace ComputerPlus
 {
     internal partial class ComputerRequestBackupTemplate : Form
     {
-        internal ComputerRequestBackupTemplate()
+        public ComputerRequestBackupTemplate()
         {
             InitializeComponent();
         }

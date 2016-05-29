@@ -16,7 +16,7 @@ namespace ComputerPlus
         private Label text_resp;
         internal static GameFiber form_main = new GameFiber(OpenMainMenuForm);
 
-        internal ComputerRequestBackup() : base(typeof(ComputerRequestBackupTemplate))
+        public ComputerRequestBackup() : base(typeof(ComputerRequestBackupTemplate))
         {
 
         }

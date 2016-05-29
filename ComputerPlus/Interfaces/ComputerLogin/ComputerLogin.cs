@@ -15,7 +15,7 @@ namespace ComputerPlus
         private ImagePanel panel_invalid_user, panel_invalid_pass;
         internal static GameFiber next_form = new GameFiber(OpenMainForm);
 
-        internal ComputerLogin() : base(typeof(ComputerLoginTemplate))
+        public ComputerLogin() : base(typeof(ComputerLoginTemplate))
         {
         }
 

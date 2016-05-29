@@ -16,7 +16,7 @@ namespace ComputerPlus
         private MultilineTextBox output_info;
         internal static GameFiber form_main = new GameFiber(OpenMainMenuForm);
 
-        internal ComputerCurrentCallDetails() : base(typeof(ComputerCurrentCallDetailsTemplate))
+        public ComputerCurrentCallDetails() : base(typeof(ComputerCurrentCallDetailsTemplate))
         {
 
         }

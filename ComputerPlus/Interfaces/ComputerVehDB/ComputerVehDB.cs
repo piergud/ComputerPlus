@@ -21,7 +21,7 @@ namespace ComputerPlus
         private bool _initial_clear = false;
         private SynchronizationContext sc;
 
-        internal ComputerVehDB() : base(typeof(ComputerVehDBTemplate))
+        public ComputerVehDB() : base(typeof(ComputerVehDBTemplate))
         {
 
         }
