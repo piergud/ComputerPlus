@@ -9,6 +9,7 @@ namespace ComputerPlus.API
 {
     public interface ICalloutData
     {
+        Guid ID { get; set; }
         string FullName { get; set; }
         string Abbreviation { get; set; }
         string Description { get; set; }

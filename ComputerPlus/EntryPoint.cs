@@ -5,6 +5,7 @@ using System.Reflection;
 using Rage;
 using Rage.Forms;
 using LSPD_First_Response.Mod.API;
+using ComputerPlus.API;
 
 namespace ComputerPlus
 {
@@ -16,6 +17,10 @@ namespace ComputerPlus
         private static float _stored_speed;
         private static bool _opened = false;
         internal static List<string> recent_text = new List<string>();
+        internal static bool gIsPlayerOnDuty = false;
+        internal static GameFiber fCheckIfCalloutActive = new GameFiber(CheckIfCalloutActive);
+        internal static List<CalloutData> gCallQueue = new List<CalloutData>();
+        internal static CalloutData gActiveCallout = null;
 
         internal static float StoredSpeed
         {
@@ -36,7 +41,7 @@ namespace ComputerPlus
 
         public override void Initialize()
         {
-            Functions.OnOnDutyStateChanged += DutyStateChangedHandler;
+            LSPD_First_Response.Mod.API.Functions.OnOnDutyStateChanged += DutyStateChangedHandler;
             OnVehicleStopped += VehicleStoppedHandler;
             AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(AssemblyResolve);
             Configs.RunConfigCheck();
@@ -58,10 +63,15 @@ namespace ComputerPlus
 
         private static void DutyStateChangedHandler(bool on_duty)
         {
+            gIsPlayerOnDuty = on_duty;
+
             if (on_duty) 
             {
                 Game.FrameRender += Process;
                 Game.LogTrivial("Successfully loaded LSPDFR Computer+.");
+
+                fCheckIfCalloutActive = new GameFiber(CheckIfCalloutActive);
+                fCheckIfCalloutActive.Start();
             }
         }
 
@@ -71,7 +81,7 @@ namespace ComputerPlus
             if (curr_veh) 
             {
                 if (Function.IsPoliceVehicle(curr_veh)
-                    && Functions.GetCurrentPullover() != null)
+                    && LSPD_First_Response.Mod.API.Functions.GetCurrentPullover() != null)
                 {
                     Game.DisplayHelp("Hold ~INPUT_CONTEXT~ to open LSPDFR Computer+.");
                 }
@@ -80,7 +90,7 @@ namespace ComputerPlus
 
         internal static Assembly AssemblyResolve(object sender, ResolveEventArgs args)
         {
-            foreach (Assembly assembly in Functions.GetAllUserPlugins())
+            foreach (Assembly assembly in LSPD_First_Response.Mod.API.Functions.GetAllUserPlugins())
             {
                 if (args.Name.ToLower().Contains(assembly.GetName().Name.ToLower()))
                 {
@@ -153,6 +163,21 @@ namespace ComputerPlus
 
             _opened = false;
             Game.IsPaused = false;
+        }
+
+        private static void CheckIfCalloutActive()
+        {
+            //set active callout to null whenever a callout ends
+
+            while(gIsPlayerOnDuty)
+            {
+                GameFiber.Yield();
+
+                if (LSPD_First_Response.Mod.API.Functions.IsCalloutRunning() == false && gActiveCallout != null)
+                {
+                    gActiveCallout = null;
+                }
+            }
         }
     }
 }
