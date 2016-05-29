@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace ComputerPlus
 {
-    public partial class ComputerMainTemplate : Form
+    internal partial class ComputerMainTemplate : Form
     {
-        public ComputerMainTemplate()
+        internal ComputerMainTemplate()
         {
             InitializeComponent();
         }

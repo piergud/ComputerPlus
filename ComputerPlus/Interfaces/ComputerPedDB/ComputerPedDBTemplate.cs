@@ -11,9 +11,9 @@ using Rage;
 
 namespace ComputerPlus
 {
-    public partial class ComputerPedDBTemplate : Form
+    internal partial class ComputerPedDBTemplate : Form
     {
-        public ComputerPedDBTemplate()
+        internal ComputerPedDBTemplate()
         {
             InitializeComponent();
         }

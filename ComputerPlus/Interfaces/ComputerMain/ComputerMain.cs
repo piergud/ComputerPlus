@@ -6,17 +6,17 @@ using Gwen.Control;
 
 namespace ComputerPlus
 {
-    public class ComputerMain : GwenForm
+    internal class ComputerMain : GwenForm
     {
         private Button btn_logout, btn_ped_db, btn_veh_db, btn_request;
-        public ListBox list_recent;
-        public static GameFiber form_ped_db = new GameFiber(OpenPedDBForm);
-        public static GameFiber form_veh_db = new GameFiber(OpenVehDBForm);
-        public static GameFiber form_backup = new GameFiber(OpenRequestBackupForm);
-        public static GameFiber form_report = new GameFiber(OpenReportMenuForm);
+        internal ListBox list_recent;
+        internal static GameFiber form_ped_db = new GameFiber(OpenPedDBForm);
+        internal static GameFiber form_veh_db = new GameFiber(OpenVehDBForm);
+        internal static GameFiber form_backup = new GameFiber(OpenRequestBackupForm);
+        internal static GameFiber form_report = new GameFiber(OpenReportMenuForm);
         //private Button btn_ReportMain; // Fiskey111 Edit
 
-        public ComputerMain() : base(typeof(ComputerMainTemplate))
+        internal ComputerMain() : base(typeof(ComputerMainTemplate))
         {
 
         }
@@ -70,7 +70,7 @@ namespace ComputerPlus
             form_report.Start();
         }
 
-        public static void OpenPedDBForm()
+        internal static void OpenPedDBForm()
         {
             GwenForm ped_db = new ComputerPedDB();
             ped_db.Show();
@@ -78,7 +78,7 @@ namespace ComputerPlus
                 GameFiber.Yield();
         }
 
-        public static void OpenVehDBForm()
+        internal static void OpenVehDBForm()
         {
             GwenForm veh_db = new ComputerVehDB();
             veh_db.Show();
@@ -86,7 +86,7 @@ namespace ComputerPlus
                 GameFiber.Yield();
         }
 
-        public static void OpenRequestBackupForm()
+        internal static void OpenRequestBackupForm()
         {
             GwenForm backup = new ComputerRequestBackup();
             backup.Show();
@@ -94,7 +94,7 @@ namespace ComputerPlus
                 GameFiber.Yield();
         }
 
-        public static void OpenReportMenuForm()
+        internal static void OpenReportMenuForm()
         {
             /*GwenForm reportmenu = new ReportMain();
             reportmenu.Show();

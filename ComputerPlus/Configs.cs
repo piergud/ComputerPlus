@@ -4,17 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Rage;
+using ComputerPlus.API;
 
 namespace ComputerPlus
 {
-    public static class Configs
+    internal static class Configs
     {
         static InitializationFile ini_file = new InitializationFile(@"Plugins\LSPDFR\ComputerPlus.ini");
-        public static Dictionary<uint,string> bgs = new Dictionary<uint,string>();
+        internal static Dictionary<uint,string> bgs = new Dictionary<uint,string>();
+        internal static List<CalloutData> gCallQueue = new List<CalloutData>();
         static string user, pass;
         static bool skip;
 
-        public static void RunConfigCheck()
+        internal static void RunConfigCheck()
         {
             if (!ini_file.Exists())
             {
@@ -35,7 +37,7 @@ namespace ComputerPlus
             }
         }
 
-        public static void CreateINIFile()
+        internal static void CreateINIFile()
         {
             ini_file.Create();
             ini_file.Write("SETTINGS", "LoginName", "OfficerHotStuff");
@@ -43,17 +45,17 @@ namespace ComputerPlus
             ini_file.Write("SETTINGS", "SkipLogin", "false");
         }
 
-        public static string Username
+        internal static string Username
         {
             get { return user; }
         }
 
-        public static string Password
+        internal static string Password
         {
             get { return pass; }
         }
 
-        public static bool SkipLogin
+        internal static bool SkipLogin
         {
             get { return skip; }
         }

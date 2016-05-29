@@ -8,7 +8,7 @@ using LSPD_First_Response.Mod.API;
 
 namespace ComputerPlus
 {
-    public static class Function
+    internal static class Function
     {
         private static Texture _bg;
         private static bool _bg_enabled = false;
@@ -32,7 +32,7 @@ namespace ComputerPlus
         /// <summary>
         /// Gets whether the computer background is enabled or not.
         /// </summary>
-        public static bool IsBackgroundEnabled
+        internal static bool IsBackgroundEnabled
         {
             get { return _bg_enabled; }
         }
@@ -42,7 +42,7 @@ namespace ComputerPlus
         /// </summary>
         /// <param name="veh">The vehicle</param>
         /// <returns>True if it is a police vehicle, false if not.</returns>
-        public static bool IsPoliceVehicle(Vehicle veh)
+        internal static bool IsPoliceVehicle(Vehicle veh)
         {
             if (veh.HasSiren
                 && veh.Model.Hash != 0x73920F8E // Ambulance
@@ -56,7 +56,7 @@ namespace ComputerPlus
         /// <summary>
         /// Enables the police computer's background.
         /// </summary>
-        public static void EnableBackground() 
+        internal static void EnableBackground() 
         {
             _bg = LoadBackground(GetBackgroundFileNameForVehicle(Game.LocalPlayer.Character.CurrentVehicle));
             if (_bg == null) 
@@ -74,7 +74,7 @@ namespace ComputerPlus
         /// <summary>
         /// Disables the police computer's background.
         /// </summary>
-        public static void DisableBackground()
+        internal static void DisableBackground()
         {
             Game.RawFrameRender -= _OnRawFrameRender;
             _bg_enabled = false;
@@ -124,7 +124,7 @@ namespace ComputerPlus
         /// Adds a specific ped to the recent actions screen.
         /// </summary>
         /// <param name="ped">The ped</param>
-        public static void AddPedToRecents(Ped ped)
+        internal static void AddPedToRecents(Ped ped)
         {
             _MakeSpaceForNewRecent();
             string name = Functions.GetPersonaForPed(ped).FullName;
@@ -135,7 +135,7 @@ namespace ComputerPlus
         /// Adds a specified vehicle to the recent actions screen.
         /// </summary>
         /// <param name="veh">The vehicle</param>
-        public static void AddVehicleToRecents(Vehicle veh)
+        internal static void AddVehicleToRecents(Vehicle veh)
         {
             _MakeSpaceForNewRecent();
             string lp = veh.LicensePlate;
@@ -147,7 +147,7 @@ namespace ComputerPlus
         /// </summary>
         /// <param name="response">The response type</param>
         /// <param name="unit">The unit type</param>
-        public static void AddBackupRequestToRecents(string response, string unit)
+        internal static void AddBackupRequestToRecents(string response, string unit)
         {
             _MakeSpaceForNewRecent();
             EntryPoint.recent_text.Add(String.Format("Requested backup: {0} ({1})", unit, response));
@@ -169,7 +169,7 @@ namespace ComputerPlus
         /// </summary>
         /// <param name="plugin">The name of the plugin</param>
         /// <returns></returns>
-        public static bool IsLSPDFRPluginRunning(string Plugin, Version minversion = null)
+        internal static bool IsLSPDFRPluginRunning(string Plugin, Version minversion = null)
         {
             foreach (Assembly assembly in Functions.GetAllUserPlugins())
             {
@@ -190,7 +190,7 @@ namespace ComputerPlus
         /// </summary>
         /// <param name="veh">The vehicle</param>
         /// <returns>The in-game display name of the vehicle</returns>
-        public static string GetVehicleDisplayName(Vehicle veh)
+        internal static string GetVehicleDisplayName(Vehicle veh)
         {
             string model = GetStringFromNative("GET_DISPLAY_NAME_FROM_VEHICLE_MODEL", veh.Model.Hash);
             string name = GetStringFromNative(0x7B5280EBA9840C72, model);
@@ -203,7 +203,7 @@ namespace ComputerPlus
         /// <param name="native_hash">Hash of the native</param>
         /// <param name="args">Arguments</param>
         /// <returns>A string of the native's return</returns>
-        public static string GetStringFromNative(ulong native_hash, params NativeArgument[] args)
+        internal static string GetStringFromNative(ulong native_hash, params NativeArgument[] args)
         {
             IntPtr ptr = NativeFunction.CallByHash<IntPtr>(native_hash, args);
             String str = Marshal.PtrToStringAnsi(ptr);
@@ -216,7 +216,7 @@ namespace ComputerPlus
         /// <param name="native_name">Name of the native</param>
         /// <param name="args">Arguments</param>
         /// <returns>A string of the native's return</returns>
-        public static string GetStringFromNative(String native_name, params NativeArgument[] args)
+        internal static string GetStringFromNative(String native_name, params NativeArgument[] args)
         {
             IntPtr ptr = NativeFunction.CallByName<IntPtr>(native_name, args);
             String str = Marshal.PtrToStringAnsi(ptr);

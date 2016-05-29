@@ -10,18 +10,18 @@ using LSPD_First_Response.Mod.API;
 
 namespace ComputerPlus
 {
-    public class ComputerVehDB : GwenForm
+    internal class ComputerVehDB : GwenForm
     {
         private Button btn_search, btn_main;
         private MultilineTextBox output_info;
         private TextBox input_name;
-        public static GameFiber form_main = new GameFiber(OpenMainMenuForm);
-        public static GameFiber search_fiber = new GameFiber(OpenMainMenuForm);
+        internal static GameFiber form_main = new GameFiber(OpenMainMenuForm);
+        internal static GameFiber search_fiber = new GameFiber(OpenMainMenuForm);
         private BackgroundWorker veh_search;
         private bool _initial_clear = false;
         private SynchronizationContext sc;
 
-        public ComputerVehDB() : base(typeof(ComputerVehDBTemplate))
+        internal ComputerVehDB() : base(typeof(ComputerVehDBTemplate))
         {
 
         }
@@ -188,7 +188,7 @@ namespace ComputerPlus
             return info;
         }
 
-        public void UpdateResult(object state)
+        internal void UpdateResult(object state)
         {
             string result = state as string;
             output_info.Text = result;

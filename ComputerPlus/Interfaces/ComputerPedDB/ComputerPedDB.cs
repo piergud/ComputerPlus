@@ -10,18 +10,18 @@ using LSPD_First_Response.Mod.API;
 
 namespace ComputerPlus
 {
-    public class ComputerPedDB : GwenForm
+    internal class ComputerPedDB : GwenForm
     {
         private Button btn_search, btn_main;
         private MultilineTextBox output_info;
         private TextBox input_name;
-        public static GameFiber form_main = new GameFiber(OpenMainMenuForm);
-        public static GameFiber search_fiber = new GameFiber(OpenMainMenuForm);
+        internal static GameFiber form_main = new GameFiber(OpenMainMenuForm);
+        internal static GameFiber search_fiber = new GameFiber(OpenMainMenuForm);
         private BackgroundWorker ped_search;
         private bool _initial_clear = false;
         private SynchronizationContext sc;
 
-        public ComputerPedDB() : base(typeof(ComputerPedDBTemplate))
+        internal ComputerPedDB() : base(typeof(ComputerPedDBTemplate))
         {
 
         }
@@ -136,7 +136,7 @@ namespace ComputerPlus
                 p.TimesStopped, wanted_text, leo_text);
         }
 
-        public void UpdateResult(object state)
+        internal void UpdateResult(object state)
         {
             string result = state as string;
             output_info.Text = result;
