@@ -75,9 +75,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\CalloutData.cs" />
+    <Compile Include="API\CalloutUpdate.cs" />
     <Compile Include="API\Functions.cs" />
     <Compile Include="API\ICalloutData.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="Interfaces\ComputerCurrentCallDetails\ComputerCurrentCallDetails.cs" />
+    <Compile Include="Interfaces\ComputerCurrentCallDetails\ComputerCurrentCallDetailsTemplate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interfaces\ComputerCurrentCallDetails\ComputerCurrentCallDetailsTemplate.Designer.cs">
+      <DependentUpon>ComputerCurrentCallDetailsTemplate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Interfaces\ComputerRequestBackup\ComputerRequestBackup.cs" />
     <Compile Include="Interfaces\ComputerRequestBackup\ComputerRequestBackupTemplate.cs">
       <SubType>Form</SubType>
@@ -130,6 +138,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Interfaces\ComputerMain\ComputerMainTemplate.resx">
       <DependentUpon>ComputerMainTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interfaces\ComputerCurrentCallDetails\ComputerCurrentCallDetailsTemplate.resx">
+      <DependentUpon>ComputerCurrentCallDetailsTemplate.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Interfaces\ComputerPedDB\ComputerPedDBTemplate.resx">
       <DependentUpon>ComputerPedDBTemplate.cs</DependentUpon>

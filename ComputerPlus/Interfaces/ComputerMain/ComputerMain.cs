@@ -112,12 +112,10 @@ namespace ComputerPlus
 
         internal static void OpenActiveCallsForm()
         {
-            /*
-            GwenForm active_calls = new ComputerActiveCalls();
+            GwenForm active_calls = new ComputerCurrentCallDetails();
             active_calls.Show();
             while (active_calls.Window.IsVisible)
                 GameFiber.Yield();
-            */
         }
     }
 }
