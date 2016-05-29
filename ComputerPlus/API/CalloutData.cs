@@ -10,6 +10,7 @@ namespace ComputerPlus.API
     public class CalloutData : ICalloutData
     {
         #region Properties
+
         public Guid ID { get; set; }
         public string FullName { get; set; }
         public string Abbreviation { get; set; }
@@ -21,6 +22,10 @@ namespace ComputerPlus.API
         public DateTime CallConcluded { get; set; }
         public EResponseType ResponseType { get; set; }
         public ECallStatus State { get; set; }
+        public List<Ped> Peds { get; set; }
+        public List<Vehicle> Vehicles { get; set; }
+        public List<CalloutUpdate> Updates { get; set; }
+
         #endregion
     }
 }

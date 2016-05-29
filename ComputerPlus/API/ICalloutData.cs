@@ -20,5 +20,8 @@ namespace ComputerPlus.API
         DateTime CallConcluded { get; set; }
         EResponseType ResponseType { get; set; }
         ECallStatus State { get; set; }
+        List<Ped> Peds { get; set; }
+        List<Vehicle> Vehicles { get; set; }
+        List<CalloutUpdate> Updates { get; set; }
     }
 }
