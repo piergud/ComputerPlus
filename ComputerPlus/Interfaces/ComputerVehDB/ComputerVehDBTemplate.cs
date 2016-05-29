@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace ComputerPlus
 {
-    public partial class ComputerVehDBTemplate : Form
+    internal partial class ComputerVehDBTemplate : Form
     {
-        public ComputerVehDBTemplate()
+        internal ComputerVehDBTemplate()
         {
             InitializeComponent();
         }

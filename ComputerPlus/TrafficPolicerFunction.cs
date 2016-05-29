@@ -8,9 +8,9 @@ using Traffic_Policer.API;
 
 namespace ComputerPlus
 {
-    public static class TrafficPolicerFunction
+    internal static class TrafficPolicerFunction
     {
-        public static bool GetVehicleInsured(Vehicle veh)
+        internal static bool GetVehicleInsured(Vehicle veh)
         {
             return Functions.IsVehicleInsured(veh);
         }

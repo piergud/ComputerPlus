@@ -74,6 +74,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\CalloutData.cs" />
+    <Compile Include="API\ICalloutData.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="Interfaces\ComputerRequestBackup\ComputerRequestBackup.cs" />
     <Compile Include="Interfaces\ComputerRequestBackup\ComputerRequestBackupTemplate.cs">
       <SubType>Form</SubType>

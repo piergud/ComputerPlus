@@ -8,16 +8,16 @@ using LSPD_First_Response.Mod.API;
 
 namespace ComputerPlus
 {
-    public sealed class EntryPoint : Plugin
+    internal sealed class EntryPoint : Plugin
     {
-        public static GwenForm login = null, main = null;
-        public static EventHandler OnVehicleStopped;
+        internal static GwenForm login = null, main = null;
+        internal static EventHandler OnVehicleStopped;
         static Stopwatch sw = new Stopwatch();
         private static float _stored_speed;
         private static bool _opened = false;
-        public static List<string> recent_text = new List<string>();
+        internal static List<string> recent_text = new List<string>();
 
-        public static float StoredSpeed
+        internal static float StoredSpeed
         {
             set
             {
@@ -78,7 +78,7 @@ namespace ComputerPlus
             }
         }
 
-        public static Assembly AssemblyResolve(object sender, ResolveEventArgs args)
+        internal static Assembly AssemblyResolve(object sender, ResolveEventArgs args)
         {
             foreach (Assembly assembly in Functions.GetAllUserPlugins())
             {

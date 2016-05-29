@@ -8,15 +8,15 @@ using LSPD_First_Response;
 
 namespace ComputerPlus
 {
-    public class ComputerRequestBackup : GwenForm
+    internal class ComputerRequestBackup : GwenForm
     {
         private Button btn_main, btn_request;
         private ListBox list_unit;
         private ComboBox dropdown_resp;
         private Label text_resp;
-        public static GameFiber form_main = new GameFiber(OpenMainMenuForm);
+        internal static GameFiber form_main = new GameFiber(OpenMainMenuForm);
 
-        public ComputerRequestBackup() : base(typeof(ComputerRequestBackupTemplate))
+        internal ComputerRequestBackup() : base(typeof(ComputerRequestBackupTemplate))
         {
 
         }
@@ -133,7 +133,7 @@ namespace ComputerPlus
             form_main.Start();
         }
 
-        public static void OpenMainMenuForm()
+        internal static void OpenMainMenuForm()
         {
             GwenForm main = new ComputerMain();
             main.Show();

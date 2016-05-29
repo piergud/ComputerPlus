@@ -6,16 +6,16 @@ using Gwen.Control;
 
 namespace ComputerPlus
 {
-    public class ComputerLogin : GwenForm
+    internal class ComputerLogin : GwenForm
     {
         private Button btn_login;
         private TextBox input_user, input_pass;
         private TextBoxPassword pass;
         private Label label_invalid;
         private ImagePanel panel_invalid_user, panel_invalid_pass;
-        public static GameFiber next_form = new GameFiber(OpenMainForm);
+        internal static GameFiber next_form = new GameFiber(OpenMainForm);
 
-        public ComputerLogin() : base(typeof(ComputerLoginTemplate))
+        internal ComputerLogin() : base(typeof(ComputerLoginTemplate))
         {
         }
 
@@ -60,7 +60,7 @@ namespace ComputerPlus
             }
         }
 
-        public static void OpenMainForm()
+        internal static void OpenMainForm()
         {
             GwenForm main = new ComputerMain();
             main.Show();

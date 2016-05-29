@@ -95,7 +95,7 @@
 
         #endregion
 
-        public System.Windows.Forms.TextBox output_info;
+        internal System.Windows.Forms.TextBox output_info;
         private System.Windows.Forms.TextBox input_name;
         private System.Windows.Forms.Button btn_main;
         private System.Windows.Forms.Button btn_search;

@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace ComputerPlus
 {
-    public partial class ComputerRequestBackupTemplate : Form
+    internal partial class ComputerRequestBackupTemplate : Form
     {
-        public ComputerRequestBackupTemplate()
+        internal ComputerRequestBackupTemplate()
         {
             InitializeComponent();
         }
