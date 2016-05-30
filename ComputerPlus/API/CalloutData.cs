@@ -9,6 +9,11 @@ namespace ComputerPlus.API
 {
     public class CalloutData : ICalloutData
     {
+        public CalloutData()
+        {
+
+        }
+        
         #region Properties
 
         public Guid ID { get; set; }

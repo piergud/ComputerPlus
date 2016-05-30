@@ -8,7 +8,7 @@ namespace ComputerPlus
 {
     internal class ComputerMain : GwenForm
     {
-        private Button btn_logout, btn_ped_db, btn_veh_db, btn_request;
+        private Button btn_logout, btn_ped_db, btn_veh_db, btn_request, btn_activecalls;
         internal ListBox list_recent;
         internal static GameFiber form_ped_db = new GameFiber(OpenPedDBForm);
         internal static GameFiber form_veh_db = new GameFiber(OpenVehDBForm);
@@ -30,6 +30,7 @@ namespace ComputerPlus
             this.btn_veh_db.Clicked += this.VehDBButtonClickedHandler;
             this.btn_request.Clicked += this.RequestBackupButtonClickedHandler;
             //this.btn_ReportMain.Clicked += this.ReportMainClickedHandler;  // Fiskey111 Edit
+            this.btn_activecalls.Clicked += this.ActiveCallsClickedHandler;
             this.Window.DisableResizing();
             foreach (string r in EntryPoint.recent_text)
             {

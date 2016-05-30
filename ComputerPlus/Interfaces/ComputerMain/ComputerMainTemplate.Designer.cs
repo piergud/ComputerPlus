@@ -37,7 +37,7 @@
             this.list_recent = new System.Windows.Forms.ListBox();
             this.btn_request = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btn_activecalls = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btn_ped_db
@@ -113,17 +113,17 @@
             this.label1.TabIndex = 5;
             this.label1.Text = "Most recent actions:";
             // 
-            // button1
+            // btn_activecalls
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(459, 155);
-            this.button1.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(125, 30);
-            this.button1.TabIndex = 6;
-            this.button1.Text = "Active Calls";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btn_activecalls.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btn_activecalls.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.btn_activecalls.Location = new System.Drawing.Point(459, 155);
+            this.btn_activecalls.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.btn_activecalls.Name = "btn_activecalls";
+            this.btn_activecalls.Size = new System.Drawing.Size(125, 30);
+            this.btn_activecalls.TabIndex = 6;
+            this.btn_activecalls.Text = "Active Calls";
+            this.btn_activecalls.UseVisualStyleBackColor = true;
             // 
             // ComputerMainTemplate
             // 
@@ -131,7 +131,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(799, 197);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btn_activecalls);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btn_request);
             this.Controls.Add(this.list_recent);
@@ -160,6 +160,6 @@
         private Button btn_request;
         private Label label1;
         private ListBox list_recent;
-        private Button button1;
+        private Button btn_activecalls;
     }
 }
