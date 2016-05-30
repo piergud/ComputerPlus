@@ -12,5 +12,10 @@ namespace ComputerPlus.API
         {
             return Guid.NewGuid();
         }
+
+        public static void SetActiveCallout(CalloutData data)
+        {
+            EntryPoint.gActiveCallout = data;
+        }
     }
 }
