@@ -47,7 +47,7 @@ namespace ComputerPlus
                 GameFiber.Yield();
         }
 
-        private static void FillCallDetails()
+        private void FillCallDetails()
         {
             String callText = "";
 
@@ -58,6 +58,8 @@ namespace ComputerPlus
                 callText += Environment.NewLine;
                 callText += EntryPoint.gActiveCallout.Description;
             }
+
+            output_info.Text = callText;
         }
     }
 }
