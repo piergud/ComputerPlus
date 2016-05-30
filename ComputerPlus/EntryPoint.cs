@@ -140,8 +140,9 @@ namespace ComputerPlus
                 login.Show();
 
                 while (login.Window.IsVisible || ComputerLogin.next_form.IsAlive || ComputerMain.form_ped_db.IsAlive
-                    || ComputerMain.form_veh_db.IsAlive || ComputerMain.form_backup.IsAlive || ComputerPedDB.form_main.IsAlive
-                    || ComputerVehDB.form_main.IsAlive || ComputerRequestBackup.form_main.IsAlive)
+                    || ComputerMain.form_veh_db.IsAlive || ComputerMain.form_backup.IsAlive || ComputerMain.form_active_calls.IsAlive
+                    || ComputerPedDB.form_main.IsAlive || ComputerVehDB.form_main.IsAlive || ComputerRequestBackup.form_main.IsAlive 
+                    || ComputerCurrentCallDetails.form_main.IsAlive)
                 {
                     GameFiber.Yield();
                 }
@@ -152,8 +153,9 @@ namespace ComputerPlus
                 main.Show();
 
                 while (main.Window.IsVisible || ComputerMain.form_ped_db.IsAlive || ComputerMain.form_veh_db.IsAlive 
-                    || ComputerMain.form_backup.IsAlive || ComputerPedDB.form_main.IsAlive || ComputerVehDB.form_main.IsAlive 
-                    || ComputerRequestBackup.form_main.IsAlive)
+                    || ComputerMain.form_backup.IsAlive || ComputerMain.form_active_calls.IsAlive || ComputerPedDB.form_main.IsAlive
+                    || ComputerPedDB.form_main.IsAlive || ComputerVehDB.form_main.IsAlive || ComputerRequestBackup.form_main.IsAlive
+                    || ComputerCurrentCallDetails.form_main.IsAlive)
                 {
                     GameFiber.Yield();
                 }
