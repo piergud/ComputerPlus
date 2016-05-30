@@ -25,7 +25,7 @@ namespace ComputerPlus
             pass = ini_file.ReadString("SETTINGS", "LoginPass");
             skip = ini_file.ReadBoolean("SETTINGS", "SkipLogin");
             if (String.IsNullOrWhiteSpace(user))
-                user = "OfficerHotStuff";
+                user = "Officer";
             if (String.IsNullOrWhiteSpace(pass))
                 pass = "DoNuTz";
 
