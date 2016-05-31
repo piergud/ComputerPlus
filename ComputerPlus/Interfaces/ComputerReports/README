@@ -1,4 +1,1 @@
-Please note that these need to be tied into the code from Computer+
-I have only uploaded my classes from my MDT which all still reference my MDT.
-I'm thinking ReportMain can be called from the main screen of Computer+ using a common "reports" button.
-ReportMain can then contain the buttons to access all of the different reports (citation, FI, and soon-to-be arrest).
+
