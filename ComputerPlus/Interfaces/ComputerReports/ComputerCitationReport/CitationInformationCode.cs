@@ -45,7 +45,7 @@ namespace ComputerPlus
         private Label MenuLabel4;
         private Label MenuLabel5;
         private ProgressBar ProgressBar;
-        public static GameFiber form_citationviolation = new GameFiber(OpenCitationViolationForm);
+        internal static GameFiber form_citationviolation = new GameFiber(OpenCitationViolationForm);
 
         /// <summary>
         /// Citation Section
