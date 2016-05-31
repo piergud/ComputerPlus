@@ -1,4 +1,4 @@
-﻿using Rage;
+using Rage;
 using Rage.Forms;
 using System;
 using System.Collections.Generic;
@@ -12,22 +12,29 @@ using LSPD_First_Response.Mod.API;
 using System.IO;
 using LSPD_First_Response.Engine.Scripting.Entities;
 using Gwen.ControlInternal;
+using System.Drawing;
 
 namespace ComputerPlus
 {
-    public class CitationInformationCode2 : GwenForm
+    internal class CitationInformationCode : GwenForm
     {
-        DateTime BDay;
-        Persona PedPersona;
-        Persona PedPersona1;
-        Persona PedPersona2;
-        Persona PedPersona3;
-        Persona PedPersona4;
-        string PedName1;
-        string PedName2;
-        string PedName3;
-        string PedName4;
-        string PedName5;
+        internal static string FirstName;
+        internal static string LastName;
+        internal static DateTime BDay;
+        internal static Persona PedPersona;
+        internal static Persona PedPersona1;
+        internal static Persona PedPersona2;
+        internal static Persona PedPersona3;
+        internal static Persona PedPersona4;
+        internal static string PedName1;
+        internal static string PedName2;
+        internal static string PedName3;
+        internal static string PedName4;
+        internal static string PedName5;
+        internal string first;
+        internal string last;
+        internal static string firstname;
+        internal static string lastname;
 
         // Housekeeping
         private Label FiskeyLabel;
@@ -38,6 +45,7 @@ namespace ComputerPlus
         private Label MenuLabel4;
         private Label MenuLabel5;
         private ProgressBar ProgressBar;
+        public static GameFiber form_citationviolation = new GameFiber(OpenCitationViolationForm);
 
         /// <summary>
         /// Citation Section
@@ -63,19 +71,20 @@ namespace ComputerPlus
         private TextBox CitationIssuedOfficerNameBox;
         private TextBox CitationStreetInfoBox;
         private TextBox CitationSpeedBox;
-        private TextBox SuspectLastBox;
-        private TextBox SuspectFirstBox;
+        internal TextBox SuspectLastBox;
+        internal TextBox SuspectFirstBox;
         private TextBox CitationPerpDOBBox;
         private TextBox CitationPerpStreetBox;
-        private TextBox CurrentStoppedBox1;
-        private TextBox CurrentStoppedBox2;
-        private TextBox CurrentStoppedBox3;
-        private TextBox CurrentStoppedBox4;
+        internal TextBox CurrentStoppedBox1;
+        internal TextBox CurrentStoppedBox2;
+        internal TextBox CurrentStoppedBox3;
+        internal TextBox CurrentStoppedBox4;
         // Button
         private Button CitationContinueButton;
         private Button CitationAutoLookupButton;
+        private Button BackButton;
 
-        public CitationInformationCode2()
+        public CitationInformationCode()
             : base(typeof(CitationForm2))
         {
 
@@ -87,70 +96,84 @@ namespace ComputerPlus
             {
                 base.InitializeLayout();
                 Game.LogTrivial("Initializing Citation Information");
+                this.Position = new Point(Game.Resolution.Width / 2 - this.Window.Width / 2, Game.Resolution.Height / 2 - this.Window.Height / 2);
                 this.CitationAutoLookupButton.Clicked += this.OnCitationAutoLookupClick;
                 this.CitationContinueButton.Clicked += this.OnCitationContinueClick;
+                BackButton.Clicked += OnBackButtonClick;
                 CitationDateBox.Text = DateTime.Now.ToShortDateString();
                 CitationTimeBox.Text = DateTime.Now.ToShortTimeString();
-                int l = CommonStuff.RandomNumber.r.Next(1, 14000);
+                int l = Configs.RandomNumber.r.Next(1, 14000);
                 CitationNumberBox.Text = l.ToString("D5");
-                CitationIssuedOfficerNameBox.Text = CommonStuff.Settings.OfficerName;
-                CitationIssuedOfficerBox.Text = CommonStuff.Settings.OfficerNumber;
-
-                foreach (Ped ped in World.GetAllPeds())
-                {
-                    if (ped.Exists())
-                    {
-                        Persona pers = Functions.GetPersonaForPed(ped);
-                        if (Functions.IsPedStoppedByPlayer(ped) == true)
-                        {
-                            PedPersona1 = pers;
-                            PedName1 = pers.FullName;
-                            CurrentStoppedBox1.Text = PedName1;
-                        }
-                    }
-                }
-                foreach (Ped ped in World.GetAllPeds())
-                {
-                    if (ped.Exists())
-                    {
-                        Persona pers = Functions.GetPersonaForPed(ped);
-                        if (Functions.IsPedStoppedByPlayer(ped) == true && pers.FullName != PedPersona1.FullName)
-                        {
-                            PedPersona2 = pers;
-                            PedName2 = pers.FullName;
-                            CurrentStoppedBox2.Text = PedName2;
-                        }
-                    }
-                }
-                foreach (Ped ped in World.GetAllPeds())
-                {
-                    if (ped.Exists())
-                    {
-                        Persona pers = Functions.GetPersonaForPed(ped);
-                        if (Functions.IsPedStoppedByPlayer(ped) == true && pers.FullName != PedPersona1.FullName && pers.FullName != PedPersona2.FullName)
-                        {
-                            PedPersona3 = pers;
-                            PedName3 = pers.FullName;
-                            CurrentStoppedBox3.Text = PedName3;
-                        }
-                    }
-                }
-                foreach (Ped ped in World.GetAllPeds())
-                {
-                    if (ped.Exists())
-                    {
-                        Persona pers = Functions.GetPersonaForPed(ped);
-                        if (Functions.IsPedStoppedByPlayer(ped) == true && pers.FullName != PedPersona1.FullName && pers.FullName != PedPersona2.FullName && pers.FullName != PedPersona3.FullName)
-                        {
-                            PedPersona4 = pers;
-                            PedName4 = pers.FullName;
-                            CurrentStoppedBox4.Text = PedName4;
-                        }
-                    }
-                }
+                CitationIssuedOfficerNameBox.Text = Configs.OfficerName;
+                CitationIssuedOfficerBox.Text = Configs.OfficerNumber;
+                PedCheck();
                 GameFiber.Yield();
             });
         }
+
+        internal void PedCheck()
+        {
+            if (Functions.IsPlayerPerformingPullover() == true)
+            {
+                LHandle pullover = Functions.GetCurrentPullover();
+                Ped pulloverped = Functions.GetPulloverSuspect(pullover);
+                if (pulloverped.Exists())
+                {
+                    Persona pers = Functions.GetPersonaForPed(pulloverped);
+                    SuspectFirstBox.Text = pers.Forename.ToString();
+                    SuspectLastBox.Text = pers.Surname.ToString();
+                }
+            }
+
+            foreach (Ped ped in World.GetAllPeds())
+            {
+                if (ped.Exists())
+                {
+                    Persona pers = Functions.GetPersonaForPed(ped);
+                    if (Functions.IsPedStoppedByPlayer(ped) == true)
+                    {
+                        PedPersona1 = pers;
+                        CurrentStoppedBox1.Text = pers.FullName;
+                    }
+                }
+            }
+            foreach (Ped ped in World.GetAllPeds())
+            {
+                if (ped.Exists())
+                {
+                    Persona pers = Functions.GetPersonaForPed(ped);
+                    if (Functions.IsPedStoppedByPlayer(ped) == true && pers.FullName != PedPersona1.FullName)
+                    {
+                        PedPersona2 = pers;
+                        CurrentStoppedBox2.Text = pers.FullName;
+                    }
+                }
+            }
+            foreach (Ped ped in World.GetAllPeds())
+            {
+                if (ped.Exists())
+                {
+                    Persona pers = Functions.GetPersonaForPed(ped);
+                    if (Functions.IsPedStoppedByPlayer(ped) == true && pers.FullName != PedPersona1.FullName && pers.FullName != PedPersona2.FullName)
+                    {
+                        PedPersona3 = pers;
+                        CurrentStoppedBox3.Text = pers.FullName;
+                    }
+                }
+            }
+            foreach (Ped ped in World.GetAllPeds())
+            {
+                if (ped.Exists())
+                {
+                    Persona pers = Functions.GetPersonaForPed(ped);
+                    if (Functions.IsPedGettingArrested(ped) == true || Functions.IsPedArrested(ped))
+                    {
+                        CurrentStoppedBox4.Text = pers.FullName;
+                    }
+                }
+            }
+        }
+
         private void OnCitationAutoLookupClick(Base sender, ClickedEventArgs arguments)
         {
             foreach (Ped ped in World.GetAllPeds())
@@ -168,7 +191,7 @@ namespace ComputerPlus
             }
             CitationPerpDOBBox.Text = BDay.ToShortDateString();
 
-            int PerpNumber = CommonStuff.RandomNumber.r.Next(1, 1200);
+            int PerpNumber = Configs.RandomNumber.r.Next(1, 1200);
 
             List<string> PerpAddress = new List<string>();
             PerpAddress.Add("Alta Street, LSC");
@@ -206,15 +229,16 @@ namespace ComputerPlus
             PerpAddress.Add("Senora Way, BC");
             PerpAddress.Add("Union Road, BC");
 
-            int PerpStreet = CommonStuff.RandomNumber.r.Next(PerpAddress.Count);
+            int PerpStreet = Configs.RandomNumber.r.Next(PerpAddress.Count);
 
             CitationPerpStreetBox.Text = PerpNumber.ToString("D4") + " " + (string)PerpAddress[PerpStreet];
         }
 
         private void OnCitationContinueClick(Gwen.Control.Base sender, Gwen.Control.ClickedEventArgs e)
         {
+            Check();
             Game.LogTrivial("Citation page 1 submission begin...");
-            using (StreamWriter Information = new StreamWriter("LSPDFR/MDT/MDT Citations.txt", true))
+            using (StreamWriter Information = new StreamWriter("Plugins/LSPDFR/ComputerPlus/citations/completedcitations.txt", true))
             {
                 Information.WriteLine(" ");
                 Information.WriteLine(" ");
@@ -231,21 +255,31 @@ namespace ComputerPlus
             }
             Game.LogTrivial("Citation page 1 submission success!");
             Game.DisplayNotification("Citation page 1 of 2 complete...");
-            Window.Close();
-            GameFiber.StartNew(delegate
-            {
-                GameFiber.Sleep(0500);
-                GwenForm form8 = new CitationViolationCode2();
-                Game.IsPaused = true;
-                form8.Show();
-                form8.Position = new System.Drawing.Point(500, 250);
-                while (form8.Window.IsVisible)
-                {
-                    GameFiber.Yield();
-                }
 
-                Game.IsPaused = true;
-            });
+            this.Window.Close();
+            form_citationviolation = new GameFiber(OpenCitationViolationForm);
+            form_citationviolation.Start();
+        }
+
+        internal void Check()
+        {
+            firstname = SuspectFirstBox.Text.ToLower();
+            lastname = SuspectLastBox.Text.ToLower();
+        }
+
+        internal static void OpenCitationViolationForm()
+        {
+            GwenForm CitationViolation = new CitationViolationCode();
+            CitationViolation.Show();
+            while (CitationViolation.Window.IsVisible)
+                GameFiber.Yield();
+        }
+
+        private void OnBackButtonClick(Gwen.Control.Base sender, Gwen.Control.ClickedEventArgs e)
+        {
+            this.Window.Close();
+            ComputerMain.form_report = new GameFiber(ComputerMain.OpenReportMenuForm);
+            ComputerMain.form_report.Start();
         }
     }
 }
