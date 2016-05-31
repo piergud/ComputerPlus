@@ -1,4 +1,4 @@
-﻿using Rage;
+using Rage;
 using Rage.Forms;
 using System;
 using System.Collections.Generic;
@@ -12,11 +12,30 @@ using LSPD_First_Response.Mod.API;
 using System.IO;
 using LSPD_First_Response.Engine.Scripting.Entities;
 using Gwen.ControlInternal;
+using System.Drawing;
 
 namespace ComputerPlus
 {
-    public class CitationViolationCode2 : GwenForm
+    internal class CitationInformationCode : GwenForm
     {
+        internal static string FirstName;
+        internal static string LastName;
+        internal static DateTime BDay;
+        internal static Persona PedPersona;
+        internal static Persona PedPersona1;
+        internal static Persona PedPersona2;
+        internal static Persona PedPersona3;
+        internal static Persona PedPersona4;
+        internal static string PedName1;
+        internal static string PedName2;
+        internal static string PedName3;
+        internal static string PedName4;
+        internal static string PedName5;
+        internal string first;
+        internal string last;
+        internal static string firstname;
+        internal static string lastname;
+
         // Housekeeping
         private Label FiskeyLabel;
         private Label MDTLabel2;
@@ -26,64 +45,47 @@ namespace ComputerPlus
         private Label MenuLabel4;
         private Label MenuLabel5;
         private ProgressBar ProgressBar;
-        private int gen;
-        private Vector3 CurrentLocation;
+        public static GameFiber form_citationviolation = new GameFiber(OpenCitationViolationForm);
 
         /// <summary>
         /// Citation Section
         /// </summary>
         // Labels
         private Label InfoLabel;
-        private Label Defendent;
-        private Label Operated;
-        private Label VehInfo;
-        private Label VehPlate;
-        private Label CitationStreet;
-        private Label CitationCity;
-        private Label Conditions;
-        private Label CommittedOffenses;
-        private Label Ina;
-        private Label Ina2;
-        private Label Area;
-        private Label Violations;
-        private Label ExtraInfo;
-        private Label CourtInfo;
-        private Label Fail;
-        private Label CurrentStreet;
+        private Label CitationNumber;
+        private Label RelatedReport;
+        private Label Date;
+        private Label Time;
+        private Label SuspectLast;
+        private Label SuspectFirst;
+        private Label SuspectDOB;
+        private Label SuspectAddress;
+        private Label OfficerNumber;
+        private Label OfficerName;
         // Boxes
-        private TextBox VehInfoBox;
-        private TextBox VehPlateBox;
-        private TextBox StreetBox;
-        private TextBox CityBox;
-        private TextBox SpeedBox;
-        private TextBox DateBox;
-        private TextBox TimeBox;
-        private TextBox InABox;
-        private TextBox CurrentStreetBox;
-        private MultilineTextBox CitationViolationBox;
-        private MultilineTextBox CitationExtraInfoBox;
-        // Checkboxes
-        private CheckBox VehCheck1;
-        private CheckBox VehCheck2;
-        private CheckBox VehCheck3;
-        private CheckBox VehCheck4;
-        private CheckBox VehCheck5;
-        private CheckBox InCommCheck;
-        private CheckBox InConstCheck;
-        private CheckBox AccidentCheck;
-        private CheckBox SpeedCheck;
-        // Drop-Down Lists
-        private ComboBox CitationAreaBox;
-        private ComboBox CitationWeatherBox;
-        private ComboBox CitationStreetConditionBox;
-        private ComboBox CitationLightConditionBox;
-        private ComboBox CitationTrafficConditionBox;
-        private ComboBox CitationSpeedDeviceBox;
+        private TextBox CitationNumberBox;
+        private TextBox CitationDateBox;
+        private TextBox CitationTimeBox;
+        private TextBox CitationRelatedBox;
+        private TextBox CitationIssuedOfficerBox;
+        private TextBox CitationIssuedOfficerNameBox;
+        private TextBox CitationStreetInfoBox;
+        private TextBox CitationSpeedBox;
+        internal TextBox SuspectLastBox;
+        internal TextBox SuspectFirstBox;
+        private TextBox CitationPerpDOBBox;
+        private TextBox CitationPerpStreetBox;
+        internal TextBox CurrentStoppedBox1;
+        internal TextBox CurrentStoppedBox2;
+        internal TextBox CurrentStoppedBox3;
+        internal TextBox CurrentStoppedBox4;
         // Button
-        private Button CitationSubmitButton;
+        private Button CitationContinueButton;
+        private Button CitationAutoLookupButton;
+        private Button BackButton;
 
-        public CitationViolationCode2()
-            : base(typeof(CitationViolationForm))
+        public CitationInformationCode()
+            : base(typeof(CitationForm2))
         {
 
         }
@@ -93,73 +95,191 @@ namespace ComputerPlus
             GameFiber.StartNew(delegate
             {
                 base.InitializeLayout();
-                Game.LogTrivial("Initializing Citation Violations");
-                this.CitationSubmitButton.Clicked += this.OnCitationSubmitClick;
-                this.SpeedCheck.Checked += this.SpeedCheckChecked;
-                Ina2.Hide();
-                InABox.Hide();
-                CitationSpeedDeviceBox.Hide();
-                SpeedBox.Hide();
-                gen = ComputerPlus.CommonStuff.RandomNumber.r.Next(1, 61);
-                string date = DateTime.Now.AddDays(gen).ToShortDateString();
-                DateBox.Text = date;
-                DateTime start = DateTime.Today.AddHours(8);
-                DateTime value = start.AddMinutes(ComputerPlus.CommonStuff.RandomNumber.r.Next(481));
-                string time = value.ToShortTimeString();
-                TimeBox.Text = time;
-
-                CurrentLocation = Game.LocalPlayer.Character.Position;
-                string currentstreet = Rage.World.GetStreetName(CurrentLocation);
-                CurrentStreetBox.Text = currentstreet;
+                Game.LogTrivial("Initializing Citation Information");
+                this.Position = new Point(Game.Resolution.Width / 2 - this.Window.Width / 2, Game.Resolution.Height / 2 - this.Window.Height / 2);
+                this.CitationAutoLookupButton.Clicked += this.OnCitationAutoLookupClick;
+                this.CitationContinueButton.Clicked += this.OnCitationContinueClick;
+                BackButton.Clicked += OnBackButtonClick;
+                CitationDateBox.Text = DateTime.Now.ToShortDateString();
+                CitationTimeBox.Text = DateTime.Now.ToShortTimeString();
+                int l = Configs.RandomNumber.r.Next(1, 14000);
+                CitationNumberBox.Text = l.ToString("D5");
+                CitationIssuedOfficerNameBox.Text = Configs.OfficerName;
+                CitationIssuedOfficerBox.Text = Configs.OfficerNumber;
+                PedCheck();
                 GameFiber.Yield();
             });
         }
 
-        private void SpeedCheckChecked(Base sender, EventArgs arguments)
+        internal void PedCheck()
         {
-            Ina2.Show();
-            InABox.Show();
-            CitationSpeedDeviceBox.Show();
-            SpeedBox.Show();
+            if (Functions.IsPlayerPerformingPullover() == true)
+            {
+                LHandle pullover = Functions.GetCurrentPullover();
+                Ped pulloverped = Functions.GetPulloverSuspect(pullover);
+                if (pulloverped.Exists())
+                {
+                    Persona pers = Functions.GetPersonaForPed(pulloverped);
+                    SuspectFirstBox.Text = pers.Forename.ToString();
+                    SuspectLastBox.Text = pers.Surname.ToString();
+                }
+            }
+
+            foreach (Ped ped in World.GetAllPeds())
+            {
+                if (ped.Exists())
+                {
+                    Persona pers = Functions.GetPersonaForPed(ped);
+                    if (Functions.IsPedStoppedByPlayer(ped) == true)
+                    {
+                        PedPersona1 = pers;
+                        CurrentStoppedBox1.Text = pers.FullName;
+                    }
+                }
+            }
+            foreach (Ped ped in World.GetAllPeds())
+            {
+                if (ped.Exists())
+                {
+                    Persona pers = Functions.GetPersonaForPed(ped);
+                    if (Functions.IsPedStoppedByPlayer(ped) == true && pers.FullName != PedPersona1.FullName)
+                    {
+                        PedPersona2 = pers;
+                        CurrentStoppedBox2.Text = pers.FullName;
+                    }
+                }
+            }
+            foreach (Ped ped in World.GetAllPeds())
+            {
+                if (ped.Exists())
+                {
+                    Persona pers = Functions.GetPersonaForPed(ped);
+                    if (Functions.IsPedStoppedByPlayer(ped) == true && pers.FullName != PedPersona1.FullName && pers.FullName != PedPersona2.FullName)
+                    {
+                        PedPersona3 = pers;
+                        CurrentStoppedBox3.Text = pers.FullName;
+                    }
+                }
+            }
+            foreach (Ped ped in World.GetAllPeds())
+            {
+                if (ped.Exists())
+                {
+                    Persona pers = Functions.GetPersonaForPed(ped);
+                    if (Functions.IsPedGettingArrested(ped) == true || Functions.IsPedArrested(ped))
+                    {
+                        CurrentStoppedBox4.Text = pers.FullName;
+                    }
+                }
+            }
         }
 
-        private void OnCitationSubmitClick(Gwen.Control.Base sender, Gwen.Control.ClickedEventArgs e)
+        private void OnCitationAutoLookupClick(Base sender, ClickedEventArgs arguments)
         {
-            Game.LogTrivial("Citation page 2 submission begin...");
-            using (StreamWriter Information = new StreamWriter("LSPDFR/MDT/MDT Citations.txt", true))
+            foreach (Ped ped in World.GetAllPeds())
             {
-                Information.WriteLine("---VIOLATIONS---");
-                Information.WriteLine("The above defendent operated a:");
-                Information.WriteLine("Passenger: " + VehCheck1.IsChecked);
-                Information.WriteLine("Commercial: " + VehCheck2.IsChecked);
-                Information.WriteLine("Cycle: " + VehCheck3.IsChecked);
-                Information.WriteLine("Bus: " + VehCheck4.IsChecked);
-                Information.WriteLine("Other: " + VehCheck5.IsChecked);
-                Information.WriteLine("Vehicle Make, Model, Color, Style: " + VehInfoBox.Text);
-                Information.WriteLine("License Plate: " + VehPlateBox.Text);
-                Information.WriteLine("Upon the public highway: " + StreetBox.Text + " in the city: " + CityBox.Text);
-                Information.WriteLine("In the following conditions:");
-                Information.WriteLine("Street Condition: " + CitationStreetConditionBox.Text);
-                Information.WriteLine("Light Condition: " + CitationLightConditionBox.Text);
-                Information.WriteLine("Traffic Condition: " + CitationTrafficConditionBox.Text);
-                Information.WriteLine("And committed the following offenses:");
-                Information.WriteLine("Accident: " + AccidentCheck.IsChecked);
-                Information.WriteLine("Speed: " + SpeedCheck.IsChecked + " and was traveling " + SpeedBox.Text + " in a speed limit of " + InABox.Text);
-                Information.WriteLine("Speed Device Used: " + CitationSpeedDeviceBox.Text);
-                Information.WriteLine("In a:");
-                Information.WriteLine("Commercial Vehicle: " + InCommCheck.IsChecked);
-                Information.WriteLine("Construction Zone: " + InConstCheck.IsChecked);
-                Information.WriteLine("Area: " + Area.Text);
-                Information.WriteLine("Violations: " + Violations.Text);
-                Information.WriteLine("Additional Information: " + ExtraInfo.Text);
-                Information.WriteLine("And is summoned to appear in court on: " + DateBox.Text + " at " + TimeBox.Text);
-                Information.WriteLine(" ");
-                Information.WriteLine("Citation Submitted " + System.DateTime.Now.ToString());
-                Information.WriteLine("---END CITATION---");
+                if (ped.Exists())
+                {
+                    Persona pers = Functions.GetPersonaForPed(ped);
+                    if (pers.FullName.ToLower() == SuspectFirstBox.Text.ToLower() + " " + SuspectLastBox.Text.ToLower())
+                    {
+                        PedPersona = pers;
+                        BDay = PedPersona.BirthDay;
+                        break;
+                    }
+                }
             }
-            Game.LogTrivial("Citation page 2 submission success!");
-            Game.DisplayNotification("Citation ~b~successfully~w~ submitted!");
-            Window.Close();
+            CitationPerpDOBBox.Text = BDay.ToShortDateString();
+
+            int PerpNumber = Configs.RandomNumber.r.Next(1, 1200);
+
+            List<string> PerpAddress = new List<string>();
+            PerpAddress.Add("Alta Street, LSC");
+            PerpAddress.Add("Amarillo Way, LSC");
+            PerpAddress.Add("Banham Canyon Drive, LSC");
+            PerpAddress.Add("Bay City Avenue, LSC");
+            PerpAddress.Add("Bridge Street, LSC");
+            PerpAddress.Add("Capital Boulevard, LSC");
+            PerpAddress.Add("Clinton Avenue, LSC");
+            PerpAddress.Add("Dutch London Street, LSC");
+            PerpAddress.Add("El Rancho Boulevard, LSC");
+            PerpAddress.Add("Glory Way, LSC");
+            PerpAddress.Add("Lake Vinewood Drive, LSC");
+            PerpAddress.Add("Magellan Avenue, LSC");
+            PerpAddress.Add("Melanoma Street, LSC");
+            PerpAddress.Add("Normandy Drive, LSC");
+            PerpAddress.Add("Rub Street, LSC");
+            PerpAddress.Add("Sinner Street, LSC");
+            PerpAddress.Add("Spanish Avenue, LSC");
+            PerpAddress.Add("Swiss Street, LSC");
+            PerpAddress.Add("Tower Way, LSC");
+            PerpAddress.Add("Vespucci Boulevard, LSC");
+            PerpAddress.Add("West Eclipse Boulevard, LSC");
+            PerpAddress.Add("West Mirror Drive, LSC");
+            PerpAddress.Add("Algonquin Boulevard, BC");
+            PerpAddress.Add("Calafia Road, BC");
+            PerpAddress.Add("Cholla Road, BC");
+            PerpAddress.Add("Joshua Road, BC");
+            PerpAddress.Add("Marina Drive, BC");
+            PerpAddress.Add("North Calafia Way, BC");
+            PerpAddress.Add("ONeil Way, BC");
+            PerpAddress.Add("Panorama Drive, BC");
+            PerpAddress.Add("Procopio Drive, BC");
+            PerpAddress.Add("Raton Pass, BC");
+            PerpAddress.Add("Senora Way, BC");
+            PerpAddress.Add("Union Road, BC");
+
+            int PerpStreet = Configs.RandomNumber.r.Next(PerpAddress.Count);
+
+            CitationPerpStreetBox.Text = PerpNumber.ToString("D4") + " " + (string)PerpAddress[PerpStreet];
+        }
+
+        private void OnCitationContinueClick(Gwen.Control.Base sender, Gwen.Control.ClickedEventArgs e)
+        {
+            Check();
+            Game.LogTrivial("Citation page 1 submission begin...");
+            using (StreamWriter Information = new StreamWriter("Plugins/LSPDFR/ComputerPlus/citations/completedcitations.txt", true))
+            {
+                Information.WriteLine(" ");
+                Information.WriteLine(" ");
+                Information.WriteLine("---INFORMATION---");
+                Information.WriteLine("Citation Number: " + CitationNumberBox.Text);
+                Information.WriteLine("Related Report Number: " + CitationRelatedBox.Text);
+                Information.WriteLine("Date of incident: " + CitationDateBox.Text);
+                Information.WriteLine("Time of incident: " + CitationTimeBox.Text);
+                Information.WriteLine("Offender Full Name: " + SuspectFirstBox.Text + " " + SuspectLastBox.Text);
+                Information.WriteLine("Offender DOB: " + CitationPerpDOBBox.Text);
+                Information.WriteLine("Offender Residence: " + CitationPerpStreetBox.Text);
+                Information.WriteLine("Issuing Officer #: " + CitationIssuedOfficerBox.Text);
+                Information.WriteLine("Issuing Officer Name: " + CitationIssuedOfficerNameBox.Text);
+            }
+            Game.LogTrivial("Citation page 1 submission success!");
+            Game.DisplayNotification("Citation page 1 of 2 complete...");
+
+            this.Window.Close();
+            form_citationviolation = new GameFiber(OpenCitationViolationForm);
+            form_citationviolation.Start();
+        }
+
+        internal void Check()
+        {
+            firstname = SuspectFirstBox.Text.ToLower();
+            lastname = SuspectLastBox.Text.ToLower();
+        }
+
+        internal static void OpenCitationViolationForm()
+        {
+            GwenForm CitationViolation = new CitationViolationCode();
+            CitationViolation.Show();
+            while (CitationViolation.Window.IsVisible)
+                GameFiber.Yield();
+        }
+
+        private void OnBackButtonClick(Gwen.Control.Base sender, Gwen.Control.ClickedEventArgs e)
+        {
+            this.Window.Close();
+            ComputerMain.form_report = new GameFiber(ComputerMain.OpenReportMenuForm);
+            ComputerMain.form_report.Start();
         }
     }
 }
