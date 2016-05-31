@@ -1,4 +1,4 @@
-﻿using Rage;
+using Rage;
 using Rage.Forms;
 using System;
 using System.Collections.Generic;
@@ -13,10 +13,11 @@ using System.IO;
 using LSPD_First_Response.Engine.Scripting.Entities;
 using Gwen.ControlInternal;
 using System.Media;
+using System.Drawing;
 
 namespace ComputerPlus
 {
-    public class FIRemarksCode2 : GwenForm
+    internal class FIRemarksCode : GwenForm
     {
         DateTime BDay;
         Persona PedPersona;
@@ -34,6 +35,8 @@ namespace ComputerPlus
         string Address;
         string Occupation;
         string SSN;
+        string FirstName;
+        string LastName;
 
         // Housekeeping
         private Label FiskeyLabel;
@@ -66,9 +69,8 @@ namespace ComputerPlus
         private MultilineTextBox RemarkBox;
         // Button
         private Button FISubmitButton;
-        private Button FIBackButton;
 
-        public FIRemarksCode2()
+        public FIRemarksCode()
             : base(typeof(FIRemarksForm))
         {
 
@@ -79,69 +81,91 @@ namespace ComputerPlus
             GameFiber.StartNew(delegate
             {
                 base.InitializeLayout();
-                Game.LogTrivial("Initializing FI Main");
+                Game.LogTrivial("Initializing FI Remarks");
+                this.Position = new Point(Game.Resolution.Width / 2 - this.Window.Width / 2, Game.Resolution.Height / 2 - this.Window.Height / 2);
                 FISubmitButton.Clicked += OnFISubmitButtonClick;
-                FIBackButton.Clicked += OnFIBackButtonClick;
-                foreach (Ped ped in World.GetAllPeds())
-                {
-                    if (ped.Exists())
-                    {
-                        Persona pers = Functions.GetPersonaForPed(ped);
-                        if (Functions.IsPedStoppedByPlayer(ped) == true)
-                        {
-                            PedPersona1 = pers;
-                            PedName1 = pers.FullName;
-                            CurrentStoppedBox1.Text = PedName1;
-                        }
-                    }
-                }
-                foreach (Ped ped in World.GetAllPeds())
-                {
-                    if (ped.Exists())
-                    {
-                        Persona pers = Functions.GetPersonaForPed(ped);
-                        if (Functions.IsPedStoppedByPlayer(ped) == true && pers.FullName != PedPersona1.FullName)
-                        {
-                            PedPersona2 = pers;
-                            PedName2 = pers.FullName;
-                            CurrentStoppedBox2.Text = PedName2;
-                        }
-                    }
-                }
-                foreach (Ped ped in World.GetAllPeds())
-                {
-                    if (ped.Exists())
-                    {
-                        Persona pers = Functions.GetPersonaForPed(ped);
-                        if (Functions.IsPedStoppedByPlayer(ped) == true && pers.FullName != PedPersona1.FullName && pers.FullName != PedPersona2.FullName)
-                        {
-                            PedPersona3 = pers;
-                            PedName3 = pers.FullName;
-                            CurrentStoppedBox3.Text = PedName3;
-                        }
-                    }
-                }
-                foreach (Ped ped in World.GetAllPeds())
-                {
-                    if (ped.Exists())
-                    {
-                        Persona pers = Functions.GetPersonaForPed(ped);
-                        if (Functions.IsPedStoppedByPlayer(ped) == true && pers.FullName != PedPersona1.FullName && pers.FullName != PedPersona2.FullName && pers.FullName != PedPersona3.FullName)
-                        {
-                            PedPersona4 = pers;
-                            PedName4 = pers.FullName;
-                            CurrentStoppedBox4.Text = PedName4;
-                        }
-                    }
-                }
+                PedCheck();
+
                 GameFiber.Yield();
             });
         }
 
-        private void OnFISubmitButtonClick(Gwen.Control.Base sender, Gwen.Control.ClickedEventArgs e)
+        internal void PedCheck()
+        {
+            if (Functions.IsPlayerPerformingPullover() == true)
+            {
+                LHandle pullover = Functions.GetCurrentPullover();
+                Ped pulloverped = Functions.GetPulloverSuspect(pullover);
+                if (pulloverped.Exists())
+                {
+                    Persona pers = Functions.GetPersonaForPed(pulloverped);
+                    PedPersona1 = pers;
+                    FirstName = pers.Forename;
+                    LastName = pers.Surname;
+                    SuspectLastBox.Text = LastName;
+                    SuspectFirstBox.Text = FirstName;
+                    CurrentStoppedBox1.Text = pers.FullName;
+                }
+            }
+
+            foreach (Ped ped in World.GetAllPeds())
+            {
+                if (ped.Exists())
+                {
+                    Persona pers = Functions.GetPersonaForPed(ped);
+                    if (Functions.IsPedStoppedByPlayer(ped) == true)
+                    {
+                        PedPersona1 = pers;
+                        PedName1 = pers.FullName;
+                        CurrentStoppedBox1.Text = PedName1;
+                    }
+                }
+            }
+            foreach (Ped ped in World.GetAllPeds())
+            {
+                if (ped.Exists())
+                {
+                    Persona pers = Functions.GetPersonaForPed(ped);
+                    if (Functions.IsPedStoppedByPlayer(ped) == true && pers.FullName != PedPersona1.FullName)
+                    {
+                        PedPersona2 = pers;
+                        PedName2 = pers.FullName;
+                        CurrentStoppedBox2.Text = PedName2;
+                    }
+                }
+            }
+            foreach (Ped ped in World.GetAllPeds())
+            {
+                if (ped.Exists())
+                {
+                    Persona pers = Functions.GetPersonaForPed(ped);
+                    if (Functions.IsPedStoppedByPlayer(ped) == true && pers.FullName != PedPersona1.FullName && pers.FullName != PedPersona2.FullName)
+                    {
+                        PedPersona3 = pers;
+                        PedName3 = pers.FullName;
+                        CurrentStoppedBox3.Text = PedName3;
+                    }
+                }
+            }
+            foreach (Ped ped in World.GetAllPeds())
+            {
+                if (ped.Exists())
+                {
+                    Persona pers = Functions.GetPersonaForPed(ped);
+                    if (Functions.IsPedStoppedByPlayer(ped) == true && pers.FullName != PedPersona1.FullName && pers.FullName != PedPersona2.FullName && pers.FullName != PedPersona3.FullName)
+                    {
+                        PedPersona4 = pers;
+                        PedName4 = pers.FullName;
+                        CurrentStoppedBox4.Text = PedName4;
+                    }
+                }
+            }
+        }
+
+        internal void OnFISubmitButtonClick(Gwen.Control.Base sender, Gwen.Control.ClickedEventArgs e)
         {
             Game.LogTrivial("FI remarks saving for: " + SuspectLastBox.Text.ToString() + " " + SuspectFirstBox.Text.ToString());
-            using (StreamWriter Information = new StreamWriter("LSPDFR/MDT/FIs/" + SuspectLastBox.Text.ToLower() + SuspectFirstBox.Text.ToLower() + ".txt", true))
+            using (StreamWriter Information = new StreamWriter("Plugins/LSPDFR/ComputerPlus/field interviews/" + SuspectLastBox.Text.ToLower() + SuspectFirstBox.Text.ToLower() + ".txt", true))
             {
                 // 3 lines
                 Information.WriteLine("---REMARKS---");
@@ -149,12 +173,10 @@ namespace ComputerPlus
                 Information.WriteLine("Date & Time Submitted: " + System.DateTime.Now.ToShortDateString() + System.DateTime.Now.ToShortTimeString());
             }
             Game.DisplayNotification("Page 3 of 3 saved.  Field interaction for: ~r~" + SuspectLastBox.Text.ToString() + ", " + SuspectFirstBox.Text.ToString() + " ~w~ completed successfully!");
-            Window.Close();
-        }
 
-        private void OnFIBackButtonClick(Gwen.Control.Base sender, Gwen.Control.ClickedEventArgs e)
-        {
-            Window.Close();
+            this.Window.Close();
+            ComputerMain.form_report = new GameFiber(ComputerMain.OpenReportMenuForm);
+            ComputerMain.form_report.Start();
         }
     }
 }
