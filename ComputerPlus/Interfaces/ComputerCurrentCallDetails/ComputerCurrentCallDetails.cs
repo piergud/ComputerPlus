@@ -36,7 +36,7 @@ namespace ComputerPlus
             this.Position = new Point(Game.Resolution.Width / 2 - this.Window.Width / 2, Game.Resolution.Height / 2 - this.Window.Height / 2);
             this.Window.DisableResizing();
             CreateComponents();
-            //FillCallDetails();
+            FillCallDetails();
         }
 
         public void CreateComponents()
@@ -226,17 +226,50 @@ namespace ComputerPlus
 
         private void FillCallDetails()
         {
-            String callText = "";
-
             if (EntryPoint.gActiveCallout != null)
             {
-                /*callText += EntryPoint.gActiveCallout.FullName;
-                callText += Environment.NewLine;
-                callText += Environment.NewLine;
-                callText += EntryPoint.gActiveCallout.Description;*/
-            }
+                DateTime dt = Function.GetMixedDateTime();
 
-            //output_info.Text = callText;
+                out_id.Text = EntryPoint.gActiveCallout.ID.ToString();
+                out_date.Text = dt.ToString("MM/dd/yy");
+                out_time.Text = dt.ToString("hh:mm:ss");
+                out_call.Text = EntryPoint.gActiveCallout.CallName;
+                out_loc.Text = World.GetStreetName(EntryPoint.gActiveCallout.Location);
+                out_stat.Text = EntryPoint.gActiveCallout.Status.ToString();
+                out_unit.Text = "1-A-12";
+                out_resp.Text = EntryPoint.gActiveCallout.ResponseType.ToString();
+                out_desc.Text = EntryPoint.gActiveCallout.Information;
+
+                List<Ped> peds = EntryPoint.gActiveCallout.Peds;
+                if (peds != null)
+                {
+                    for (int i = 0; i < peds.Count; i++)
+                    {
+                        if (i != 0)
+                            out_peds.Text += ", ";
+                        out_peds.Text += Functions.GetPersonaForPed(peds[i]).FullName;
+                    }
+                }
+                else
+                {
+                    out_peds.Text = "No information available at this time.";
+                }
+
+                List<Vehicle> vehs = EntryPoint.gActiveCallout.Vehicles;
+                if (vehs != null)
+                {
+                    for (int i = 0; i < vehs.Count; i++)
+                    {
+                        if (i != 0)
+                            out_vehs.Text += ", ";
+                        out_vehs.Text += vehs[i].LicensePlate;
+                    }
+                }
+                else
+                {
+                    out_vehs.Text = "No information available at this time.";
+                }
+            }
         }
     }
 }
