@@ -7,41 +7,104 @@ using Rage;
 
 namespace ComputerPlus.API
 {
-    public class CalloutData : ICalloutData
+    public sealed class CalloutData : ICalloutData
     {
-        private string _info;
-
-        public CalloutData(Guid ID, string callName, string callNameAbbreviated, Vector3 location,
-            EResponseType response, string info = "", ECallStatus status = ECallStatus.Created, 
-            List<Ped> peds = null, List<Vehicle> vehicles = null)
+        public CalloutData(string callName, string shortName, Vector3 location,
+            EResponseType response, string description = "", ECallStatus status = ECallStatus.Created, 
+            List<Ped> callPeds = null, List<Vehicle> callVehicles = null)
         {
-            this.ID = ID;
-            this.CallName = callName;
-            this.CallNameAbbreviation = callNameAbbreviated;
-            this._info = String.Format("[{0:MM/dd/yy HH:mm:ss}] {1}", Function.GetMixedDateTime(), info);
-            this.Location = location;
-            this.ResponseType = response;
-            this.Status = status;
-            this.Peds = peds;
-            this.Vehicles = vehicles;
+            ID = Guid.NewGuid();
+            Name = callName;
+            ShortName = shortName;
+            mDescription = description;
+            Location = location;
+            TimeReceived = DateTime.Now;
+            mTimeConcluded = null;
+            ResponseType = response;
+            mStatus = status;
+            mPeds = new List<Ped>();
+            mVehicles = new List<Vehicle>();
+
+            if (Peds != null)
+                Peds.AddRange(callPeds);
+
+            if (Vehicles != null)
+                Vehicles.AddRange(callVehicles);
+
+            mLastUpdated = DateTime.Now;
+            mUpdates = new List<CalloutUpdate>();
         }
 
-        public void UpdateInformation(string text)
+        internal void AddUpdate(string pText)
         {
-            this._info += String.Format("\n[{0:MM/dd/yy HH:mm:ss}] {1}", Function.GetMixedDateTime(), text);
+            mUpdates.Add(new CalloutUpdate(pText));
+            mLastUpdated = DateTime.Now;
+        }
+
+        internal void UpdateDescription(string pText)
+        {
+            mDescription = pText;
+            mLastUpdated = DateTime.Now;
+            AddUpdate("Description updated.");
+        }
+
+        internal void UpdateStatus(ECallStatus status)
+        {
+            if(status != mStatus)
+                AddUpdate(String.Format("STATUS -- {0} => {1}", mStatus, status));
+
+            mStatus = status;
+        }
+
+        internal void AddPed(Ped ped)
+        {
+            mPeds.Add(ped);
+            mLastUpdated = DateTime.Now;
+        }
+
+        internal void AddVehicle(Vehicle veh)
+        {
+            mVehicles.Add(veh);
+            mLastUpdated = DateTime.Now;
+        }
+
+        internal void ConcludeCallout()
+        {
+            mTimeConcluded = DateTime.Now;
+            UpdateStatus(ECallStatus.Completed);
+            AddUpdate("Code 4; all units return to patrol.");
         }
 
         #region Properties
 
         public Guid ID { get; }
-        public string CallName { get; }
-        public string CallNameAbbreviation { get; }
-        public string Information { get { return _info; } }
-        public Vector3 Location { get; set;}
-        public EResponseType ResponseType { get; set; }
-        public ECallStatus Status { get; set; }
-        public List<Ped> Peds { get; set; }
-        public List<Vehicle> Vehicles { get; set; }
+        public string Name { get; }
+        public string ShortName { get; }
+
+        private string mDescription = "";
+        public string Description { get { return mDescription; } }
+
+        public Vector3 Location { get; }
+        public DateTime TimeReceived { get; }
+
+        private DateTime? mTimeConcluded = null;
+        public DateTime? TimeConcluded { get { return mTimeConcluded; } }
+        public EResponseType ResponseType { get; }
+
+        private ECallStatus mStatus = ECallStatus.Created;
+        public ECallStatus Status { get { return mStatus; } }
+
+        private List<Ped> mPeds = new List<Ped>();
+        public List<Ped> Peds { get { return mPeds; } }
+
+        private List<Vehicle> mVehicles = new List<Vehicle>();
+        public List<Vehicle> Vehicles { get { return mVehicles; } }
+
+        private DateTime mLastUpdated;
+        public DateTime LastUpdated { get { return mLastUpdated; } }
+
+        private List<CalloutUpdate> mUpdates = new List<CalloutUpdate>();
+        public List<CalloutUpdate> Updates { get { return mUpdates.OrderBy(x=> x.TimeAdded).ToList(); } }
 
         #endregion
     }

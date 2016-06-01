@@ -75,9 +75,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\CalloutData.cs" />
+    <Compile Include="API\CalloutUpdate.cs" />
     <Compile Include="API\Functions.cs" />
     <Compile Include="API\ICalloutData.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="Globals.cs" />
     <Compile Include="Interfaces\ComputerCurrentCallDetails\ComputerCurrentCallDetails.cs" />
     <Compile Include="Interfaces\ComputerCurrentCallDetails\Reference.cs">
       <SubType>Form</SubType>
@@ -166,7 +168,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetPath)" "C:\Program Files\Rockstar Games\Grand Theft Auto V\Plugins\LSPDFR\$(TargetFileName)"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

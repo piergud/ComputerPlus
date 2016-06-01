@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ComputerPlus.API;
+using System;
 using System.Threading;
 using System.Drawing;
 using System.ComponentModel;
@@ -226,28 +227,33 @@ namespace ComputerPlus
 
         private void FillCallDetails()
         {
-            if (EntryPoint.gActiveCallout != null)
+            if (Globals.ActiveCallout != null)
             {
                 DateTime dt = Function.GetMixedDateTime();
 
-                out_id.Text = EntryPoint.gActiveCallout.ID.ToString();
-                out_date.Text = dt.ToString("MM/dd/yy");
+                out_id.Text = Globals.ActiveCallout.ID.ToString();
+                out_date.Text = dt.ToString("MM/dd/yyyy");
                 out_time.Text = dt.ToString("hh:mm:ss");
-                out_call.Text = EntryPoint.gActiveCallout.CallName;
-                out_loc.Text = World.GetStreetName(EntryPoint.gActiveCallout.Location);
-                out_stat.Text = EntryPoint.gActiveCallout.Status.ToString();
-                out_unit.Text = "1-A-12";
-                out_resp.Text = EntryPoint.gActiveCallout.ResponseType.ToString();
-                out_desc.Text = EntryPoint.gActiveCallout.Information;
+                out_call.Text = Globals.ActiveCallout.Name;
+                out_loc.Text = World.GetStreetName(Globals.ActiveCallout.Location);
+                out_stat.Text = Globals.ActiveCallout.Status.ToString();
+                out_unit.Text = Configs.UnitNumber;
+                out_resp.Text = Globals.ActiveCallout.ResponseType.ToString();
+                out_desc.Text = Globals.ActiveCallout.Description + Environment.NewLine;
 
-                List<Ped> peds = EntryPoint.gActiveCallout.Peds;
+                foreach (CalloutUpdate u in Globals.ActiveCallout.Updates)
+                {
+                    out_desc.Text += String.Format("{0}{1} {2}", Environment.NewLine, Function.GetFormattedDateTime(u.TimeAdded), u.Text);
+                }
+
+                List<Ped> peds = Globals.ActiveCallout.Peds;
                 if (peds != null)
                 {
                     for (int i = 0; i < peds.Count; i++)
                     {
                         if (i != 0)
                             out_peds.Text += ", ";
-                        out_peds.Text += Functions.GetPersonaForPed(peds[i]).FullName;
+                        out_peds.Text += LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(peds[i]).FullName;
                     }
                 }
                 else
@@ -255,7 +261,7 @@ namespace ComputerPlus
                     out_peds.Text = "No information available at this time.";
                 }
 
-                List<Vehicle> vehs = EntryPoint.gActiveCallout.Vehicles;
+                List<Vehicle> vehs = Globals.ActiveCallout.Vehicles;
                 if (vehs != null)
                 {
                     for (int i = 0; i < vehs.Count; i++)

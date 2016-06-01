@@ -11,7 +11,7 @@ namespace ComputerPlus
     {
         static InitializationFile ini_file = new InitializationFile(@"Plugins\LSPDFR\ComputerPlus.ini");
         internal static Dictionary<uint,string> bgs = new Dictionary<uint,string>();
-        static string user, pass;
+        static string user, pass, unit;
         static bool skip;
 
         internal static void RunConfigCheck()
@@ -24,10 +24,13 @@ namespace ComputerPlus
             user = ini_file.ReadString("SETTINGS", "LoginName");
             pass = ini_file.ReadString("SETTINGS", "LoginPass");
             skip = ini_file.ReadBoolean("SETTINGS", "SkipLogin");
+            unit = ini_file.ReadString("SETTINGS", "UnitNumber");
             if (String.IsNullOrWhiteSpace(user))
                 user = "Officer";
             if (String.IsNullOrWhiteSpace(pass))
                 pass = "DoNuTz";
+            if (String.IsNullOrWhiteSpace(unit))
+                pass = "1-A-12";
 
             foreach (string key in ini_file.GetKeyNames("VEHICLE BACKGROUNDS"))
             {
@@ -41,6 +44,7 @@ namespace ComputerPlus
             ini_file.Write("SETTINGS", "LoginName", "OfficerHotStuff");
             ini_file.Write("SETTINGS", "LoginPass", "DoNuTz");
             ini_file.Write("SETTINGS", "SkipLogin", "false");
+            ini_file.Write("SETTINGS", "UnitNumber", "1-A-12");
         }
 
         internal static string Username
@@ -57,7 +61,12 @@ namespace ComputerPlus
         {
             get { return skip; }
         }
-        
+
+        internal static string UnitNumber
+        {
+            get { return unit; }
+        }
+
         /*public static Keys NotebookKey { get { return ini_file.ReadEnum<Keys>("General", "NotebookKey", Keys.D2); } }
         public static Keys NotebookKeyModifier { get { return ini_file.ReadEnum<Keys>("General", "NotebookKeyModifier", Keys.LControlKey); } }
 
