@@ -9,19 +9,13 @@ namespace ComputerPlus.API
 {
     public interface ICalloutData
     {
-        Guid ID { get; set; }
-        string FullName { get; set; }
-        string Abbreviation { get; set; }
-        string Description { get; set; }
+        Guid ID { get; }
+        string CallName { get; }
+        string CallNameAbbreviation { get; }
         Vector3 Location { get; set; }
-        string Address { get; set; }
-        DateTime CallReceived { get; set; }
-        DateTime UnitDispatched { get; set; }
-        DateTime CallConcluded { get; set; }
         EResponseType ResponseType { get; set; }
-        ECallStatus State { get; set; }
+        ECallStatus Status { get; set; }
         List<Ped> Peds { get; set; }
         List<Vehicle> Vehicles { get; set; }
-        List<CalloutUpdate> Updates { get; set; }
     }
 }

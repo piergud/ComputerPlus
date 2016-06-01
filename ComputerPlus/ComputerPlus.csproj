@@ -75,11 +75,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\CalloutData.cs" />
-    <Compile Include="API\CalloutUpdate.cs" />
     <Compile Include="API\Functions.cs" />
     <Compile Include="API\ICalloutData.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Interfaces\ComputerCurrentCallDetails\ComputerCurrentCallDetails.cs" />
+    <Compile Include="Interfaces\ComputerCurrentCallDetails\Reference.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interfaces\ComputerCurrentCallDetails\Reference.Designer.cs">
+      <DependentUpon>Reference.cs</DependentUpon>
+    </Compile>
     <Compile Include="Interfaces\ComputerCurrentCallDetails\ComputerCurrentCallDetailsTemplate.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -133,6 +138,9 @@
     <Compile Include="TrafficPolicerFunction.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Interfaces\ComputerCurrentCallDetails\Reference.resx">
+      <DependentUpon>Reference.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Interfaces\ComputerLogin\ComputerLoginTemplate.resx">
       <DependentUpon>ComputerLoginTemplate.cs</DependentUpon>
     </EmbeddedResource>

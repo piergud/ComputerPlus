@@ -44,7 +44,7 @@
             // 
             this.btn_ped_db.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btn_ped_db.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.btn_ped_db.Location = new System.Drawing.Point(72, 155);
+            this.btn_ped_db.Location = new System.Drawing.Point(64, 158);
             this.btn_ped_db.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btn_ped_db.Name = "btn_ped_db";
             this.btn_ped_db.Size = new System.Drawing.Size(125, 30);
@@ -57,7 +57,7 @@
             // 
             this.btn_veh_db.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btn_veh_db.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.btn_veh_db.Location = new System.Drawing.Point(201, 155);
+            this.btn_veh_db.Location = new System.Drawing.Point(193, 158);
             this.btn_veh_db.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btn_veh_db.Name = "btn_veh_db";
             this.btn_veh_db.Size = new System.Drawing.Size(125, 30);
@@ -70,7 +70,7 @@
             // 
             this.btn_logout.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btn_logout.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.btn_logout.Location = new System.Drawing.Point(588, 155);
+            this.btn_logout.Location = new System.Drawing.Point(258, 194);
             this.btn_logout.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btn_logout.Name = "btn_logout";
             this.btn_logout.Size = new System.Drawing.Size(125, 30);
@@ -88,7 +88,7 @@
             this.list_recent.Location = new System.Drawing.Point(15, 25);
             this.list_recent.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.list_recent.Name = "list_recent";
-            this.list_recent.Size = new System.Drawing.Size(770, 121);
+            this.list_recent.Size = new System.Drawing.Size(619, 121);
             this.list_recent.TabIndex = 3;
             this.list_recent.SelectedIndexChanged += new System.EventHandler(this.list_recent_SelectedIndexChanged);
             // 
@@ -96,13 +96,14 @@
             // 
             this.btn_request.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btn_request.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.btn_request.Location = new System.Drawing.Point(330, 155);
+            this.btn_request.Location = new System.Drawing.Point(322, 158);
             this.btn_request.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btn_request.Name = "btn_request";
             this.btn_request.Size = new System.Drawing.Size(125, 30);
             this.btn_request.TabIndex = 4;
             this.btn_request.Text = "Request Backup";
             this.btn_request.UseVisualStyleBackColor = true;
+            this.btn_request.Click += new System.EventHandler(this.btn_request_Click);
             // 
             // label1
             // 
@@ -117,12 +118,12 @@
             // 
             this.btn_activecalls.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btn_activecalls.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.btn_activecalls.Location = new System.Drawing.Point(459, 155);
+            this.btn_activecalls.Location = new System.Drawing.Point(451, 158);
             this.btn_activecalls.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btn_activecalls.Name = "btn_activecalls";
             this.btn_activecalls.Size = new System.Drawing.Size(125, 30);
             this.btn_activecalls.TabIndex = 6;
-            this.btn_activecalls.Text = "Active Calls";
+            this.btn_activecalls.Text = "Call Details";
             this.btn_activecalls.UseVisualStyleBackColor = true;
             // 
             // ComputerMainTemplate
@@ -130,7 +131,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(799, 197);
+            this.ClientSize = new System.Drawing.Size(645, 233);
             this.Controls.Add(this.btn_activecalls);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btn_request);

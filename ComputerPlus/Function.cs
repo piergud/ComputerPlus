@@ -186,6 +186,19 @@ namespace ComputerPlus
         }
 
         /// <summary>
+        /// Gets a DateTime object with the computer's date and the game's time.
+        /// </summary>
+        /// <returns>DateTime object</returns>
+        internal static DateTime GetMixedDateTime()
+        {
+            DateTime game = World.DateTime;
+            DateTime real = DateTime.Now;
+            DateTime mixed = new DateTime(real.Year, real.Month, real.Day, 
+                game.Hour, game.Minute, game.Second, game.Millisecond);
+            return mixed;
+        }
+
+        /// <summary>
         /// Gets the in-game display name of a specified vehicle.
         /// </summary>
         /// <param name="veh">The vehicle</param>
