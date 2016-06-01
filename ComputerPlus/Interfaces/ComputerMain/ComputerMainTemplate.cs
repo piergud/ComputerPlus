@@ -41,5 +41,10 @@ namespace ComputerPlus
         {
 
         }
+
+        private void btn_request_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

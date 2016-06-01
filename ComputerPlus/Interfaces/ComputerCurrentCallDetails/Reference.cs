@@ -11,9 +11,9 @@ using Rage;
 
 namespace ComputerPlus
 {
-    internal partial class ComputerCurrentCallDetailsTemplate : Form
+    internal partial class Reference : Form
     {
-        public ComputerCurrentCallDetailsTemplate()
+        public Reference()
         {
             InitializeComponent();
         }
@@ -59,6 +59,11 @@ namespace ComputerPlus
         }
 
         private void tabPage1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void list_calls_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
