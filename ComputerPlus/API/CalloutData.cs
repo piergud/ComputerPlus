@@ -28,7 +28,7 @@ namespace ComputerPlus.API
 
         public void UpdateInformation(string text)
         {
-            this._info += String.Format("[{0:MM/dd/yy HH:mm:ss}] {1}", Function.GetMixedDateTime(), text);
+            this._info += String.Format("\n[{0:MM/dd/yy HH:mm:ss}] {1}", Function.GetMixedDateTime(), text);
         }
 
         #region Properties
