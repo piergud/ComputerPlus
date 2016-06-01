@@ -2,8 +2,8 @@
 {
     public enum EResponseType
     {
-        Code2,
-        Code3
+        Code_2,
+        Code_3
     }
 
     public enum ECallStatus
@@ -11,8 +11,8 @@
         Cancelled,
         Created,
         Dispatched,
-        UnitResponding,
-        AtScene,
+        Unit_Responding,
+        At_Scene,
         Completed
     }
 }

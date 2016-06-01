@@ -29,7 +29,7 @@ namespace ComputerPlus.API
             ShortName = shortName;
             mDescription = description;
             Location = location;
-            TimeReceived = DateTime.Now;
+            TimeReceived = Function.GetMixedDateTime();
             mTimeConcluded = null;
             ResponseType = response;
             mStatus = status;
@@ -42,20 +42,20 @@ namespace ComputerPlus.API
             if (Vehicles != null)
                 Vehicles.AddRange(callVehicles);
 
-            mLastUpdated = DateTime.Now;
+            mLastUpdated = Function.GetMixedDateTime();
             mUpdates = new List<CalloutUpdate>();
         }
 
         internal void AddUpdate(string pText)
         {
             mUpdates.Add(new CalloutUpdate(pText));
-            mLastUpdated = DateTime.Now;
+            mLastUpdated = Function.GetMixedDateTime();
         }
 
         internal void UpdateDescription(string pText)
         {
             mDescription = pText;
-            mLastUpdated = DateTime.Now;
+            mLastUpdated = Function.GetMixedDateTime();
             AddUpdate("Description updated.");
         }
 
@@ -70,20 +70,38 @@ namespace ComputerPlus.API
         internal void AddPed(Ped ped)
         {
             mPeds.Add(ped);
-            mLastUpdated = DateTime.Now;
+            mLastUpdated = Function.GetMixedDateTime();
         }
 
         internal void AddVehicle(Vehicle veh)
         {
             mVehicles.Add(veh);
-            mLastUpdated = DateTime.Now;
+            mLastUpdated = Function.GetMixedDateTime();
         }
 
         internal void ConcludeCallout()
         {
-            mTimeConcluded = DateTime.Now;
+            if (mStatus == ECallStatus.Completed || mStatus == ECallStatus.Cancelled)
+                return;
+
+            mTimeConcluded = Function.GetMixedDateTime();
             UpdateStatus(ECallStatus.Completed);
             AddUpdate("Code 4; all units return to patrol.");
+        }
+
+        internal void CancelCallout()
+        {
+            if (mStatus == ECallStatus.Completed || mStatus == ECallStatus.Cancelled)
+                return;
+
+            mTimeConcluded = Function.GetMixedDateTime();
+            UpdateStatus(ECallStatus.Cancelled);
+            AddUpdate("Call is unfounded. Code 4; all units return to patrol.");
+        }
+
+        internal void AssignCallToAIUnit()
+        {
+            throw new NotImplementedException("This feature has not yet been implemented.");
         }
 
         #region Properties

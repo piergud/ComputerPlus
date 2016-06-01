@@ -209,17 +209,22 @@ namespace ComputerPlus
             return String.Format("[{0:MM/dd/yyyy HH:mm:ss}]", date);
         }
 
-        internal static void ClearActiveCall()
+        internal static void ClearActiveCall(Guid? callID = null)
         {
-            if (Globals.ActiveCallout != null)
+            // Specifying callID only clears the active call if the active call's ID is equal to callID
+            // Shouldn't be an issue, but is a safety check in case the user gets a call while they are already on a call
+            if (callID == null || Globals.ActiveCallID == callID.Value)
             {
-                foreach (var x in Globals.CallQueue.Where(x => x.ID == Globals.ActiveCallID))
+                if (Globals.ActiveCallout != null)
                 {
-                    x.ConcludeCallout();
+                    foreach (var x in Globals.CallQueue.Where(x => x.ID == Globals.ActiveCallID))
+                    {
+                        x.ConcludeCallout();
+                    }
                 }
-            }
 
-            Globals.ActiveCallID = Guid.Empty;
+                Globals.ActiveCallID = Guid.Empty;
+            }
         }
 
         /// <summary>
