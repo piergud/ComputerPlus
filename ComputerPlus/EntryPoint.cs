@@ -17,10 +17,7 @@ namespace ComputerPlus
         private static float _stored_speed;
         private static bool _opened = false;
         internal static List<string> recent_text = new List<string>();
-        internal static bool gIsPlayerOnDuty = false;
         internal static GameFiber fCheckIfCalloutActive = new GameFiber(CheckIfCalloutActive);
-        internal static List<CalloutData> gCallQueue = new List<CalloutData>();
-        internal static CalloutData gActiveCallout = null;
 
         internal static float StoredSpeed
         {
@@ -63,12 +60,12 @@ namespace ComputerPlus
 
         private static void DutyStateChangedHandler(bool on_duty)
         {
-            gIsPlayerOnDuty = on_duty;
+            Globals.IsPlayerOnDuty = on_duty;
 
             if (on_duty) 
             {
                 Game.FrameRender += Process;
-                Game.LogTrivial("Successfully loaded LSPDFR Computer+.");
+                Game.LogTrivial("Successfully loaded ~b~LSPDFR Computer+~w~.");
 
                 fCheckIfCalloutActive = new GameFiber(CheckIfCalloutActive);
                 fCheckIfCalloutActive.Start();
@@ -83,7 +80,7 @@ namespace ComputerPlus
                 if (Function.IsPoliceVehicle(curr_veh)
                     && LSPD_First_Response.Mod.API.Functions.GetCurrentPullover() != null)
                 {
-                    Game.DisplayHelp("Hold ~INPUT_CONTEXT~ to open LSPDFR Computer+.");
+                    Game.DisplayHelp("Hold ~INPUT_CONTEXT~ to open ~b~LSPDFR Computer+~w~.");
                 }
             }
         }
@@ -171,13 +168,13 @@ namespace ComputerPlus
         {
             //set active callout to null whenever a callout ends
 
-            while(gIsPlayerOnDuty)
+            while(Globals.IsPlayerOnDuty)
             {
                 GameFiber.Yield();
 
-                if (LSPD_First_Response.Mod.API.Functions.IsCalloutRunning() == false && gActiveCallout != null)
+                if (LSPD_First_Response.Mod.API.Functions.IsCalloutRunning() == false && Globals.ActiveCallout != null)
                 {
-                    gActiveCallout = null;
+                    Function.ClearActiveCall();
                 }
             }
         }

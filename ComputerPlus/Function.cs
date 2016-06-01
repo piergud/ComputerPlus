@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Rage;
@@ -196,6 +197,29 @@ namespace ComputerPlus
             DateTime mixed = new DateTime(real.Year, real.Month, real.Day, 
                 game.Hour, game.Minute, game.Second, game.Millisecond);
             return mixed;
+        }
+
+        internal static string GetFormattedMixedDateTime()
+        {
+            return String.Format("[{0:MM/dd/yyyy HH:mm:ss}]", Function.GetMixedDateTime());
+        }
+
+        internal static string GetFormattedDateTime(DateTime date)
+        {
+            return String.Format("[{0:MM/dd/yyyy HH:mm:ss}]", date);
+        }
+
+        internal static void ClearActiveCall()
+        {
+            if (Globals.ActiveCallout != null)
+            {
+                foreach (var x in Globals.CallQueue.Where(x => x.ID == Globals.ActiveCallID))
+                {
+                    x.ConcludeCallout();
+                }
+            }
+
+            Globals.ActiveCallID = Guid.Empty;
         }
 
         /// <summary>
