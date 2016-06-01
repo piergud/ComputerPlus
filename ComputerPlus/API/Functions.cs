@@ -106,7 +106,7 @@ namespace ComputerPlus.API
         }
 
         /// <summary>
-        /// Assign the call to an AI unit if the player does not accept it.
+        /// Assign the call to an AI unit if the player does not accept it. (Sets status to Unit_Responding, and removes the call from the 'Active Call' tab)
         /// </summary>
         /// <param name="callID">The ID of the callout.</param>
         public static void AssignCallToAIUnit(Guid callID)

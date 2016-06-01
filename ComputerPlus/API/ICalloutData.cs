@@ -22,5 +22,7 @@ namespace ComputerPlus.API
         List<Vehicle> Vehicles { get; }
         DateTime LastUpdated { get; }
         List<CalloutUpdate> Updates { get; }
+        bool IsPlayerAssigned { get; }
+        string PrimaryUnit { get; }
     }
 }
