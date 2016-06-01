@@ -227,6 +227,17 @@ namespace ComputerPlus
             }
         }
 
+        internal static string GetRandomAIUnit()
+        {
+            char[] unitTypes = { 'A', 'L', 'X' };
+
+            int division = Globals.Random.Next(1, 8);
+            int uType = unitTypes[Globals.Random.Next(unitTypes.Length)];
+            int beatNum = Globals.Random.Next(25, 60);
+
+            return String.Format("{0}-{1}-{2}", division, uType, beatNum);
+        }
+
         /// <summary>
         /// Gets the in-game display name of a specified vehicle.
         /// </summary>

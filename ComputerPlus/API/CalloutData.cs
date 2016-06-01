@@ -44,6 +44,9 @@ namespace ComputerPlus.API
 
             mLastUpdated = Function.GetMixedDateTime();
             mUpdates = new List<CalloutUpdate>();
+
+            mIsPlayerAssigned = true;
+            mPrimaryUnit = Configs.UnitNumber;
         }
 
         internal void AddUpdate(string pText)
@@ -101,7 +104,9 @@ namespace ComputerPlus.API
 
         internal void AssignCallToAIUnit()
         {
-            throw new NotImplementedException("This feature has not yet been implemented.");
+            mPrimaryUnit = Function.GetRandomAIUnit();
+            UpdateStatus(ECallStatus.Unit_Responding);
+            mIsPlayerAssigned = false;
         }
 
         #region Properties
@@ -134,6 +139,12 @@ namespace ComputerPlus.API
 
         private List<CalloutUpdate> mUpdates = new List<CalloutUpdate>();
         public List<CalloutUpdate> Updates { get { return mUpdates.OrderBy(x=> x.TimeAdded).ToList(); } }
+
+        private bool mIsPlayerAssigned = true;
+        public bool IsPlayerAssigned { get { return IsPlayerAssigned; } }
+
+        private string mPrimaryUnit = "";
+        public string PrimaryUnit { get { return mPrimaryUnit; } }
 
         #endregion
     }
