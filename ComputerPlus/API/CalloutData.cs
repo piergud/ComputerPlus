@@ -9,6 +9,17 @@ namespace ComputerPlus.API
 {
     public sealed class CalloutData : ICalloutData
     {
+        /// <summary>
+        /// Constructs a new CalloutData object.
+        /// </summary>
+        /// <param name="callName">The name of the callout.</param>
+        /// <param name="shortName">A short name for the callout; this could be anything, such as a radio/penal code, or abbreviation.</param>
+        /// <param name="location">The location of the call.</param>
+        /// <param name="response">Whether the call requires a Code 2 or Code 3 response.</param>
+        /// <param name="description">The description of the call, as received by 911.</param>
+        /// <param name="status">The status of the call. Set this to Created or Dispatched, and then update it to UnitResponding when the player accepts the call.</param>
+        /// <param name="callPeds">The list of peds to be added to the call. Can be null to not add any peds; peds can always be added later on (for example, you can add a victim ped now, and then add a suspect ped after the player meets him/her).</param>
+        /// <param name="callVehicles">The list of vehicles to be added to the call. Can be null to not add any vehicles; vehicles can always be added later on, for example, after the player encounters a suspect vehicle).</param>
         public CalloutData(string callName, string shortName, Vector3 location,
             EResponseType response, string description = "", ECallStatus status = ECallStatus.Created, 
             List<Ped> callPeds = null, List<Vehicle> callVehicles = null)
