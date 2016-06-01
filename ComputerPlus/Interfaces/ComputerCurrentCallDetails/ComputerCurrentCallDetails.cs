@@ -1,4 +1,5 @@
 ﻿using ComputerPlus.API;
+using ComputerPlus.Extensions;
 using System;
 using System.Threading;
 using System.Drawing;
@@ -236,9 +237,9 @@ namespace ComputerPlus
                 out_time.Text = dt.ToString("hh:mm:ss");
                 out_call.Text = Globals.ActiveCallout.Name;
                 out_loc.Text = World.GetStreetName(Globals.ActiveCallout.Location);
-                out_stat.Text = Globals.ActiveCallout.Status.ToString();
+                out_stat.Text = Globals.ActiveCallout.Status.ToFriendlyString();
                 out_unit.Text = Configs.UnitNumber;
-                out_resp.Text = Globals.ActiveCallout.ResponseType.ToString();
+                out_resp.Text = Globals.ActiveCallout.ResponseType.ToFriendlyString();
                 out_desc.Text = Globals.ActiveCallout.Description + Environment.NewLine;
 
                 foreach (CalloutUpdate u in Globals.ActiveCallout.Updates)

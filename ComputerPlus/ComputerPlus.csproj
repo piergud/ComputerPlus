@@ -79,6 +79,7 @@
     <Compile Include="API\Functions.cs" />
     <Compile Include="API\ICalloutData.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="Interfaces\ComputerCurrentCallDetails\ComputerCurrentCallDetails.cs" />
     <Compile Include="Interfaces\ComputerCurrentCallDetails\Reference.cs">
