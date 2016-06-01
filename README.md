@@ -1,9 +1,9 @@
 # ComputerPlus
-LSPDFR Computer+ aims to recreate the old LCPDFR computer with some extra features.
+**LSPDFR Computer+ aims to recreate the old LCPDFR computer with some extra features.**
 
 ![banner](http://i.imgur.com/Ihf8uiE.png)
 
-Authors: PieRGud, Stealth22, AlconH, Albo1125, fiskey111
+**Authors:** PieRGud, Stealth22, AlconH, Albo1125, fiskey111
 
 **Current Features**
 - Ability to search for persons and vehicles without keys conflicting with other mods.
