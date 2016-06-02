@@ -230,11 +230,11 @@ namespace ComputerPlus
         {
             if (Globals.ActiveCallout != null)
             {
-                DateTime dt = Function.GetMixedDateTime();
+                DateTime dt = DateTime.UtcNow;
 
                 out_id.Text = Globals.ActiveCallout.ID.ToString();
-                out_date.Text = dt.ToString("MM/dd/yyyy");
-                out_time.Text = dt.ToString("hh:mm:ss");
+                out_date.Text = dt.ToLocalTime().ToString("MM/dd/yyyy");
+                out_time.Text = dt.ToLocalTime().ToString("hh:mm:ss");
                 out_call.Text = Globals.ActiveCallout.Name;
                 out_loc.Text = World.GetStreetName(Globals.ActiveCallout.Location);
                 out_stat.Text = Globals.ActiveCallout.Status.ToFriendlyString();

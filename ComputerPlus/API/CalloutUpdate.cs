@@ -10,7 +10,7 @@ namespace ComputerPlus.API
     {
         internal CalloutUpdate(string pText)
         {
-            TimeAdded = Function.GetMixedDateTime();
+            TimeAdded = DateTime.UtcNow;
             Text = pText;
         }
 

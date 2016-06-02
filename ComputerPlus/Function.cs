@@ -186,27 +186,12 @@ namespace ComputerPlus
             return false;
         }
 
-        /// <summary>
-        /// Gets a DateTime object with the computer's date and the game's time.
-        /// </summary>
-        /// <returns>DateTime object</returns>
-        internal static DateTime GetMixedDateTime()
+        internal static string GetFormattedDateTime(DateTime? date = null)
         {
-            DateTime game = World.DateTime;
-            DateTime real = DateTime.Now;
-            DateTime mixed = new DateTime(real.Year, real.Month, real.Day, 
-                game.Hour, game.Minute, game.Second, game.Millisecond);
-            return mixed;
-        }
+            if (date == null || !date.HasValue)
+                date = DateTime.UtcNow;
 
-        internal static string GetFormattedMixedDateTime()
-        {
-            return String.Format("[{0:MM/dd/yyyy HH:mm:ss}]", Function.GetMixedDateTime());
-        }
-
-        internal static string GetFormattedDateTime(DateTime date)
-        {
-            return String.Format("[{0:MM/dd/yyyy HH:mm:ss}]", date);
+            return String.Format("[{0:MM/dd/yyyy HH:mm:ss}]", date.Value.ToLocalTime());
         }
 
         internal static void ClearActiveCall(Guid? callID = null)
