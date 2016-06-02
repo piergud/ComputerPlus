@@ -9,6 +9,8 @@ using LSPD_First_Response.Engine.Scripting.Entities;
 
 namespace ComputerPlus
 {
+    /*
+
     /// <summary>
     /// This is the API for the Citation form.
     /// </summary>
@@ -218,4 +220,6 @@ namespace ComputerPlus
             }
         }
     }
+
+    */
 }
