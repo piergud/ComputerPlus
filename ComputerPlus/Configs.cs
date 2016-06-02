@@ -30,7 +30,7 @@ namespace ComputerPlus
             if (String.IsNullOrWhiteSpace(pass))
                 pass = "DoNuTz";
             if (String.IsNullOrWhiteSpace(unit))
-                pass = "1-A-12";
+                unit = "1-A-12";
 
             foreach (string key in ini_file.GetKeyNames("VEHICLE BACKGROUNDS"))
             {
