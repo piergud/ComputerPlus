@@ -29,7 +29,7 @@ namespace ComputerPlus.API
             ShortName = shortName;
             mDescription = description;
             Location = location;
-            TimeReceived = Function.GetMixedDateTime();
+            TimeReceived = DateTime.UtcNow;
             mTimeConcluded = null;
             ResponseType = response;
             mStatus = status;
@@ -42,7 +42,7 @@ namespace ComputerPlus.API
             if (Vehicles != null)
                 Vehicles.AddRange(callVehicles);
 
-            mLastUpdated = Function.GetMixedDateTime();
+            mLastUpdated = DateTime.UtcNow;
             mUpdates = new List<CalloutUpdate>();
 
             mIsPlayerAssigned = true;
@@ -52,13 +52,13 @@ namespace ComputerPlus.API
         internal void AddUpdate(string pText)
         {
             mUpdates.Add(new CalloutUpdate(pText));
-            mLastUpdated = Function.GetMixedDateTime();
+            mLastUpdated = DateTime.UtcNow;
         }
 
         internal void UpdateDescription(string pText)
         {
             mDescription = pText;
-            mLastUpdated = Function.GetMixedDateTime();
+            mLastUpdated = DateTime.UtcNow;
             AddUpdate("Description updated.");
         }
 
@@ -73,13 +73,13 @@ namespace ComputerPlus.API
         internal void AddPed(Ped ped)
         {
             mPeds.Add(ped);
-            mLastUpdated = Function.GetMixedDateTime();
+            mLastUpdated = DateTime.UtcNow;
         }
 
         internal void AddVehicle(Vehicle veh)
         {
             mVehicles.Add(veh);
-            mLastUpdated = Function.GetMixedDateTime();
+            mLastUpdated = DateTime.UtcNow;
         }
 
         internal void ConcludeCallout()
@@ -87,7 +87,7 @@ namespace ComputerPlus.API
             if (mStatus == ECallStatus.Completed || mStatus == ECallStatus.Cancelled)
                 return;
 
-            mTimeConcluded = Function.GetMixedDateTime();
+            mTimeConcluded = DateTime.UtcNow;
             UpdateStatus(ECallStatus.Completed);
             AddUpdate("Code 4; all units return to patrol.");
         }
@@ -97,7 +97,7 @@ namespace ComputerPlus.API
             if (mStatus == ECallStatus.Completed || mStatus == ECallStatus.Cancelled)
                 return;
 
-            mTimeConcluded = Function.GetMixedDateTime();
+            mTimeConcluded = DateTime.UtcNow;
             UpdateStatus(ECallStatus.Cancelled);
             AddUpdate("Call is unfounded. Code 4; all units return to patrol.");
         }
@@ -119,10 +119,18 @@ namespace ComputerPlus.API
         public string Description { get { return mDescription; } }
 
         public Vector3 Location { get; }
+
+        /// <summary>
+        /// The time the call was dispatched (in GMT/UTC)
+        /// </summary>
         public DateTime TimeReceived { get; }
 
         private DateTime? mTimeConcluded = null;
+        /// <summary>
+        /// The time the call was concluded (in GMT/UTC)
+        /// </summary>
         public DateTime? TimeConcluded { get { return mTimeConcluded; } }
+
         public EResponseType ResponseType { get; }
 
         private ECallStatus mStatus = ECallStatus.Created;
@@ -141,7 +149,7 @@ namespace ComputerPlus.API
         public List<CalloutUpdate> Updates { get { return mUpdates.OrderBy(x=> x.TimeAdded).ToList(); } }
 
         private bool mIsPlayerAssigned = true;
-        public bool IsPlayerAssigned { get { return IsPlayerAssigned; } }
+        public bool IsPlayerAssigned { get { return mIsPlayerAssigned; } }
 
         private string mPrimaryUnit = "";
         public string PrimaryUnit { get { return mPrimaryUnit; } }
