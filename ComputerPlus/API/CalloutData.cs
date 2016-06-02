@@ -36,10 +36,10 @@ namespace ComputerPlus.API
             mPeds = new List<Ped>();
             mVehicles = new List<Vehicle>();
 
-            if (Peds != null)
+            if (callPeds != null)
                 Peds.AddRange(callPeds);
 
-            if (Vehicles != null)
+            if (callVehicles != null)
                 Vehicles.AddRange(callVehicles);
 
             mLastUpdated = DateTime.UtcNow;
