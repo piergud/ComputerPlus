@@ -18,8 +18,7 @@ namespace ComputerPlus
         private MultilineTextBox output_info;
         private TextBox input_name;
         internal static GameFiber form_main = new GameFiber(OpenMainMenuForm);
-        internal static GameFiber search_fiber = new GameFiber(OpenMainMenuForm);
-        private BackgroundWorker veh_search;
+        internal static GameFiber search_fiber = new GameFiber(null);
         private bool _initial_clear = false;
 
         public ComputerVehDB() : base(typeof(ComputerVehDBTemplate))
@@ -34,9 +33,6 @@ namespace ComputerPlus
             this.btn_main.Clicked += this.MainMenuButtonClickedHandler;
             this.input_name.Clicked += this.InputNameFieldClickedHandler;
             this.input_name.SubmitPressed += this.InputNameSubmitHandler;
-            veh_search = new BackgroundWorker();
-            veh_search.DoWork += new DoWorkEventHandler(VehSearchProcess);
-            veh_search.RunWorkerCompleted += new RunWorkerCompletedEventHandler(VehSearchCompleted);
             this.Position = new Point(Game.Resolution.Width / 2 - this.Window.Width / 2, Game.Resolution.Height / 2 - this.Window.Height / 2);
             this.Window.DisableResizing();
             output_info.KeyboardInputEnabled = false;
@@ -45,11 +41,10 @@ namespace ComputerPlus
                 Ped ped = Functions.GetPulloverSuspect(Functions.GetCurrentPullover());
                 if (ped.LastVehicle != null)
                 {
-                    input_name.SetText(ped.LastVehicle.LicensePlate);
+                    input_name.Text = ped.LastVehicle.LicensePlate;
                     _initial_clear = true;
                 }
             }
-            //sc = SynchronizationContext.Current;
         }
 
         private void InputNameSubmitHandler(Base sender, EventArgs e)
@@ -78,42 +73,6 @@ namespace ComputerPlus
             }
         }
 
-        private void VehSearchProcess(object sender, DoWorkEventArgs e)
-        {
-            Thread.Sleep(2500);
-            string lp_input = ((string)e.Argument).ToLower();
-            List<Vehicle> vehs = World.GetAllVehicles().ToList();
-            Vehicle veh = vehs.Where(v => v.Exists() && v.LicensePlate.ToLower().Trim() == lp_input).FirstOrDefault();
-
-            if (veh != null)
-            {
-                if (veh)
-                    e.Result = veh;
-            }
-        }
-
-        private void VehSearchCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            Vehicle veh = (Vehicle)e.Result;
-            if (veh != null)
-            {
-                if (veh)
-                {
-                    //output_info.Text = veh.LicensePlate;
-                    output_info.Text = GetFormattedInfoForVehicle(veh);
-                    Function.AddVehicleToRecents(veh);
-                }
-                else
-                {
-                    output_info.Text = "No record for the specified license plate was found.";
-                }
-            }
-            else
-            {
-                output_info.Text = "No record for the specified license plate was found.";
-            }
-        }
-
         private static void OpenMainMenuForm()
         {
             GwenForm main = new ComputerMain();
@@ -124,10 +83,28 @@ namespace ComputerPlus
 
         private void SearchForVehicle()
         {
-            if (!veh_search.IsBusy)
+            if (!search_fiber.IsAlive)
             {
                 output_info.Text = "Searching. Please wait...";
-                veh_search.RunWorkerAsync(input_name.Text);
+                search_fiber = GameFiber.StartNew(delegate
+                {
+                    Thread.Sleep(2500);
+                    string lp_input = input_name.Text.ToLower();
+                    List<Vehicle> vehs = World.GetAllVehicles().ToList();
+                    vehs.RemoveAll(v => !v);
+                    vehs.OrderBy(v => Vector3.Distance(Game.LocalPlayer.Character.CurrentVehicle.Position, v.Position));
+                    Vehicle veh = vehs.Where(v => v && v.LicensePlate.ToLower().Trim() == lp_input).FirstOrDefault();
+
+                    if (veh)
+                    {
+                        output_info.Text = GetFormattedInfoForVehicle(veh);
+                        Function.AddVehicleToRecents(veh);
+                    }
+                    else
+                    {
+                        output_info.Text = "No record for the specified license plate was found.";
+                    }
+                });
             }
         }
 
@@ -136,7 +113,7 @@ namespace ComputerPlus
             string info = "";
             string veh_name = Function.GetVehicleDisplayName(veh);
             string veh_owner = Functions.GetVehicleOwnerName(veh);
-            info = String.Format("Information found for license plate \"{0}\":\nVehicle: {1}\nOwner: {2}", veh.LicensePlate,
+            info = String.Format("Information found for license plate \"{0}\":\nVehicle: {1}\nOwner: {2}", veh.LicensePlate.Trim(),
                 veh_name, veh_owner);
 
             if (Function.IsLSPDFRPluginRunning("Traffic Policer"))
@@ -155,23 +132,22 @@ namespace ComputerPlus
             }
 
             List<Ped> peds = World.GetAllPeds().ToList();
-            Ped ped = peds.Where(p => p.Exists() && Functions.GetPersonaForPed(p).FullName == veh_owner).FirstOrDefault();
-            if (ped != null)
+            peds.RemoveAll(p => !p);
+            peds.OrderBy(p => Vector3.Distance(Game.LocalPlayer.Character.CurrentVehicle.Position, p.Position));
+            Ped ped = peds.Where(p => p && Functions.GetPersonaForPed(p).FullName == veh_owner).FirstOrDefault();
+            if (ped)
             {
-                if (ped)
-                {
-                    Persona p = Functions.GetPersonaForPed(ped);
-                    string wanted_text = "No active warrant(s)", leo_text = "";
-                    if (p.Wanted)
-                        wanted_text = "Suspect has an active warrant";
-                    if (p.IsCop)
-                        leo_text = "Note: Suspect is an off-duty police officer";
-                    else if (p.IsAgent)
-                        leo_text = "Note: Suspect is a federal agent";
-                    info += String.Format("\n\nInformation found about vehicle owner \"{0}\":\nDOB: {1}\nCitations: {2}\nGender: {3}\nLicense: {4}\n"
-                        + "Times Stopped: {5}\nWanted: {6}\n{7}", p.FullName, String.Format("{0:dddd, MMMM dd, yyyy}", p.BirthDay), p.Citations, p.Gender, p.LicenseState,
-                        p.TimesStopped, wanted_text, leo_text);
-                }
+                Persona p = Functions.GetPersonaForPed(ped);
+                string wanted_text = "No active warrant(s)", leo_text = "";
+                if (p.Wanted)
+                    wanted_text = "Suspect has an active warrant";
+                if (p.IsCop)
+                    leo_text = "Note: Suspect is an off-duty police officer";
+                else if (p.IsAgent)
+                    leo_text = "Note: Suspect is a federal agent";
+                info += String.Format("\n\nInformation found about vehicle owner \"{0}\":\nDOB: {1}\nCitations: {2}\nGender: {3}\nLicense: {4}\n"
+                    + "Times Stopped: {5}\nWanted: {6}\n{7}", p.FullName, String.Format("{0:dddd, MMMM dd, yyyy}", p.BirthDay), p.Citations, p.Gender, p.LicenseState,
+                    p.TimesStopped, wanted_text, leo_text);
             }
             return info;
         }

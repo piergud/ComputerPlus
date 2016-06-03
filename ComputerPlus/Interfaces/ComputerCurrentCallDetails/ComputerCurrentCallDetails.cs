@@ -34,10 +34,10 @@ namespace ComputerPlus
         public override void InitializeLayout()
         {
             base.InitializeLayout();
+            CreateComponents();
             this.btn_main.Clicked += this.MainMenuButtonClickedHandler;
             this.Position = new Point(Game.Resolution.Width / 2 - this.Window.Width / 2, Game.Resolution.Height / 2 - this.Window.Height / 2);
             this.Window.DisableResizing();
-            CreateComponents();
             FillCallDetails();
         }
 
@@ -46,18 +46,18 @@ namespace ComputerPlus
             /***** Main Tab Control *****/
             tc_main = new TabControl(this);
             tc_main.SetPosition(15, 12);
-            tc_main.SetSize(485, 292);
+            tc_main.SetSize(625, 389);
 
             /***** Call List Tab *****/
             // base container
             base_calls = new Base(this);
             base_calls.SetPosition(0, 0);
-            base_calls.SetSize(485, 200);
+            base_calls.SetSize(617, 358);
 
             // calls listbox
             list_calls = new ListBox(base_calls);
             list_calls.SetPosition(0, 18);
-            list_calls.SetSize(472, 240);
+            list_calls.SetSize(613, 333);
 
             // "Unit" label
             lbl_c_unit = new Label(base_calls);
@@ -87,7 +87,7 @@ namespace ComputerPlus
             // base container
             base_active = new Base(this);
             base_active.SetPosition(0, 0);
-            base_active.SetSize(485, 200);
+            base_active.SetSize(617, 358);
 
             // "ID No." label
             lbl_a_id = new Label(base_active);
@@ -97,22 +97,22 @@ namespace ComputerPlus
             // "ID No." textbox
             out_id = new TextBox(base_active);
             out_id.SetPosition(70, 3);
-            out_id.SetSize(175, 20);
+            out_id.SetSize(306, 20);
             out_id.KeyboardInputEnabled = false;
 
             // "Time" label
             lbl_a_time = new Label(base_active);
             lbl_a_time.Text = "Time";
-            lbl_a_time.SetPosition(267, 7);
+            lbl_a_time.SetPosition(422, 7);
             lbl_a_time.SetSize(30, 13);
             // "Time" date textbox
             out_date = new TextBox(base_active);
-            out_date.SetPosition(309, 3);
+            out_date.SetPosition(455, 3);
             out_date.SetSize(66, 20);
             out_date.KeyboardInputEnabled = false;
             // "Time" time textbox
             out_time = new TextBox(base_active);
-            out_time.SetPosition(381, 3);
+            out_time.SetPosition(527, 3);
             out_time.SetSize(66, 20);
             out_time.KeyboardInputEnabled = false;
 
@@ -124,7 +124,7 @@ namespace ComputerPlus
             // "Situation" textbox
             out_call = new TextBox(base_active);
             out_call.SetPosition(70, 29);
-            out_call.SetSize(377, 20);
+            out_call.SetSize(523, 20);
             out_call.KeyboardInputEnabled = false;
 
             // "Location" label
@@ -135,7 +135,7 @@ namespace ComputerPlus
             // "Location" textbox
             out_loc = new TextBox(base_active);
             out_loc.SetPosition(70, 55);
-            out_loc.SetSize(377, 20);
+            out_loc.SetSize(523, 20);
             out_loc.KeyboardInputEnabled = false;
 
             // "Status" label
@@ -152,22 +152,22 @@ namespace ComputerPlus
             // "Unit" label
             lbl_a_unit = new Label(base_active);
             lbl_a_unit.Text = "Unit";
-            lbl_a_unit.SetPosition(183, 84);
+            lbl_a_unit.SetPosition(258, 84);
             lbl_a_unit.SetSize(26, 13);
             // "Unit" textbox
             out_unit = new TextBox(base_active);
-            out_unit.SetPosition(214, 81);
+            out_unit.SetPosition(290, 81);
             out_unit.SetSize(86, 20);
             out_unit.KeyboardInputEnabled = false;
 
             // "Response" label
             lbl_a_resp = new Label(base_active);
             lbl_a_resp.Text = "Response";
-            lbl_a_resp.SetPosition(309, 84);
+            lbl_a_resp.SetPosition(454, 84);
             lbl_a_resp.SetSize(55, 13);
             // "Response" textbox
             out_resp = new TextBox(base_active);
-            out_resp.SetPosition(368, 81);
+            out_resp.SetPosition(514, 81);
             out_resp.SetSize(79, 20);
             out_resp.KeyboardInputEnabled = false;
 
@@ -179,29 +179,29 @@ namespace ComputerPlus
             // "Comments" textbox
             out_desc = new MultilineTextBox(base_active);
             out_desc.SetPosition(70, 110);
-            out_desc.SetSize(377, 45);
+            out_desc.SetSize(523, 103);
             out_desc.KeyboardInputEnabled = false;
 
             // "Persons" label
             lbl_a_peds = new Label(base_active);
             lbl_a_peds.Text = "Persons";
-            lbl_a_peds.SetPosition(19, 161);
+            lbl_a_peds.SetPosition(19, 226);
             lbl_a_peds.SetSize(45, 13);
             // "Persons" textbox
             out_peds = new MultilineTextBox(base_active);
-            out_peds.SetPosition(70, 161);
-            out_peds.SetSize(377, 45);
+            out_peds.SetPosition(70, 226);
+            out_peds.SetSize(523, 57);
             out_peds.KeyboardInputEnabled = false;
 
             // "Vehicles" label
             lbl_a_vehs = new Label(base_active);
             lbl_a_vehs.Text = "Vehicles";
-            lbl_a_vehs.SetPosition(19, 215);
+            lbl_a_vehs.SetPosition(19, 298);
             lbl_a_vehs.SetSize(47, 13);
             // "Vehicles" textbox
             out_vehs = new MultilineTextBox(base_active);
-            out_vehs.SetPosition(70, 212);
-            out_vehs.SetSize(377, 45);
+            out_vehs.SetPosition(70, 295);
+            out_vehs.SetSize(523, 57);
             out_vehs.KeyboardInputEnabled = false;
 
             // Add tabs and their corresponding containers
@@ -240,11 +240,11 @@ namespace ComputerPlus
                 out_stat.Text = Globals.ActiveCallout.Status.ToFriendlyString();
                 out_unit.Text = Configs.UnitNumber;
                 out_resp.Text = Globals.ActiveCallout.ResponseType.ToFriendlyString();
-                out_desc.Text = Globals.ActiveCallout.Description + Environment.NewLine;
+                DescriptionBoxText = Globals.ActiveCallout.Description + Environment.NewLine;
 
                 foreach (CalloutUpdate u in Globals.ActiveCallout.Updates)
                 {
-                    out_desc.Text += String.Format("{0}{1} {2}", Environment.NewLine, Function.GetFormattedDateTime(u.TimeAdded), u.Text);
+                    DescriptionBoxText += String.Format("{0}{1} {2}", Environment.NewLine, Function.GetFormattedDateTime(u.TimeAdded), u.Text);
                 }
 
                 List<Ped> peds = Globals.ActiveCallout.Peds;
@@ -253,13 +253,13 @@ namespace ComputerPlus
                     for (int i = 0; i < peds.Count; i++)
                     {
                         if (i != 0)
-                            out_peds.Text += ", ";
-                        out_peds.Text += LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(peds[i]).FullName;
+                            PedBoxText += ", ";
+                        PedBoxText += LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(peds[i]).FullName;
                     }
                 }
                 else
                 {
-                    out_peds.Text = "No information available at this time.";
+                    PedBoxText = "No information available at this time.";
                 }
 
                 List<Vehicle> vehs = Globals.ActiveCallout.Vehicles;
@@ -268,15 +268,61 @@ namespace ComputerPlus
                     for (int i = 0; i < vehs.Count; i++)
                     {
                         if (i != 0)
-                            out_vehs.Text += ", ";
-                        out_vehs.Text += vehs[i].LicensePlate;
+                            VehicleBoxText += ", ";
+                        VehicleBoxText += vehs[i].LicensePlate;
                     }
                 }
                 else
                 {
-                    out_vehs.Text = "No information available at this time.";
+                    VehicleBoxText = "No information available at this time.";
                 }
             }
         }
+
+        #region Properties
+
+        internal string DescriptionBoxText
+        {
+            get
+            {
+                return out_desc.Text;
+            }
+            set
+            {
+                out_desc.Text = value;
+                out_desc.Text = out_desc.Text.Replace(Environment.NewLine, "");
+                out_desc.WordWrap(350);
+            }
+        }
+
+        internal string PedBoxText
+        {
+            get
+            {
+                return out_peds.Text;
+            }
+            set
+            {
+                out_peds.Text = value;
+                out_peds.Text = out_peds.Text.Replace(Environment.NewLine, "");
+                out_peds.WordWrap(350);
+            }
+        }
+
+        internal string VehicleBoxText
+        {
+            get
+            {
+                return out_vehs.Text;
+            }
+            set
+            {
+                out_vehs.Text = value;
+                out_vehs.Text = out_vehs.Text.Replace(Environment.NewLine, "");
+                out_vehs.WordWrap(350);
+            }
+        }
+
+        #endregion
     }
 }

@@ -15,31 +15,15 @@ namespace ComputerPlus
         private static bool _bg_enabled = false;
 
         /// <summary>
-        /// Gets whether Realism Dispatch Enhanced is installed or not.
-        /// </summary>
-        private static bool HasRDEInstalled
-        {
-            get { return IsDLCPresent("rde"); }
-        }
-
-        /// <summary>
-        /// Gets whether the RDE LSPDFR addon is installed or not.
-        /// </summary>
-        private static bool HasRDELSPDFRAddonInstalled
-        {
-            get { return IsDLCPresent("bcso") && IsDLCPresent("rdesheriffaddon"); }
-        }
-
-        /// <summary>
         /// Gets whether the computer background is enabled or not.
         /// </summary>
-        internal static bool IsBackgroundEnabled
+        internal static bool IsBackgroundEnabled()
         {
-            get { return _bg_enabled; }
+            return _bg_enabled;
         }
 
         /// <summary>
-        /// Returns whether a vehicle is a police vehicle or not.
+        /// Gets whether a vehicle is a police vehicle or not.
         /// </summary>
         /// <param name="veh">The vehicle</param>
         /// <returns>True if it is a police vehicle, false if not.</returns>
@@ -67,7 +51,7 @@ namespace ComputerPlus
             }
             else 
             {
-                Game.RawFrameRender += _OnRawFrameRender;
+                Game.RawFrameRender += OnRawFrameRender;
                 _bg_enabled = true;
             }
         }
@@ -77,11 +61,11 @@ namespace ComputerPlus
         /// </summary>
         internal static void DisableBackground()
         {
-            Game.RawFrameRender -= _OnRawFrameRender;
+            Game.RawFrameRender -= OnRawFrameRender;
             _bg_enabled = false;
         }
 
-        private static void _OnRawFrameRender(object sender, GraphicsEventArgs e) 
+        private static void OnRawFrameRender(object sender, GraphicsEventArgs e) 
         {
             e.Graphics.DrawTexture(_bg, 0f, 0f, Game.Resolution.Width, Game.Resolution.Height);
         }
@@ -115,7 +99,7 @@ namespace ComputerPlus
             return file;
         }
 
-        private static void _MakeSpaceForNewRecent()
+        private static void MakeSpaceForNewRecent()
         {
             if (EntryPoint.recent_text.Count == 7)
                 EntryPoint.recent_text.RemoveAt(0);
@@ -127,7 +111,7 @@ namespace ComputerPlus
         /// <param name="ped">The ped</param>
         internal static void AddPedToRecents(Ped ped)
         {
-            _MakeSpaceForNewRecent();
+            MakeSpaceForNewRecent();
             string name = Functions.GetPersonaForPed(ped).FullName;
             EntryPoint.recent_text.Add(String.Format("Looked up person: {0}", name));
         }
@@ -138,7 +122,7 @@ namespace ComputerPlus
         /// <param name="veh">The vehicle</param>
         internal static void AddVehicleToRecents(Vehicle veh)
         {
-            _MakeSpaceForNewRecent();
+            MakeSpaceForNewRecent();
             string lp = veh.LicensePlate;
             EntryPoint.recent_text.Add(String.Format("Looked up vehicle: {0} ({1})", lp, Function.GetVehicleDisplayName(veh)));
         }
@@ -150,7 +134,7 @@ namespace ComputerPlus
         /// <param name="unit">The unit type</param>
         internal static void AddBackupRequestToRecents(string response, string unit)
         {
-            _MakeSpaceForNewRecent();
+            MakeSpaceForNewRecent();
             EntryPoint.recent_text.Add(String.Format("Requested backup: {0} ({1})", unit, response));
         }
 
