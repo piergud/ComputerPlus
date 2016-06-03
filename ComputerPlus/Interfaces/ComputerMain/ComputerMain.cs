@@ -37,7 +37,7 @@ namespace ComputerPlus
                 list_recent.AddRow(r);
             }
             this.Position = new Point(Game.Resolution.Width / 2 - this.Window.Width / 2, Game.Resolution.Height / 2 - this.Window.Height / 2);
-            if (!Function.IsBackgroundEnabled)
+            if (!Function.IsBackgroundEnabled())
                 Function.EnableBackground();
         }
 

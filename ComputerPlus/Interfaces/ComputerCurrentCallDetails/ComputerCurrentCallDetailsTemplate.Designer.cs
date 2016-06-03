@@ -33,7 +33,7 @@
             // 
             // btn_main
             // 
-            this.btn_main.Location = new System.Drawing.Point(412, 308);
+            this.btn_main.Location = new System.Drawing.Point(550, 410);
             this.btn_main.Name = "btn_main";
             this.btn_main.Size = new System.Drawing.Size(88, 25);
             this.btn_main.TabIndex = 3;
@@ -44,7 +44,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(512, 340);
+            this.ClientSize = new System.Drawing.Size(650, 441);
             this.Controls.Add(this.btn_main);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);

@@ -67,5 +67,10 @@ namespace ComputerPlus
         {
 
         }
+
+        private void btn_main_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

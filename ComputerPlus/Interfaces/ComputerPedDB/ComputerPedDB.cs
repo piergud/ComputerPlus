@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Drawing;
-using System.ComponentModel;
+using System.Collections.Generic;
+using System.Linq;
 using Rage;
 using Rage.Forms;
 using Gwen.Control;
@@ -16,10 +17,8 @@ namespace ComputerPlus
         private MultilineTextBox output_info;
         private TextBox input_name;
         internal static GameFiber form_main = new GameFiber(OpenMainMenuForm);
-        internal static GameFiber search_fiber = new GameFiber(OpenMainMenuForm);
-        private BackgroundWorker ped_search;
+        internal static GameFiber search_fiber = new GameFiber(null);
         private bool _initial_clear = false;
-        private SynchronizationContext sc;
 
         public ComputerPedDB() : base(typeof(ComputerPedDBTemplate))
         {
@@ -33,19 +32,14 @@ namespace ComputerPlus
             this.btn_main.Clicked += this.MainMenuButtonClickedHandler;
             this.input_name.Clicked += this.InputNameFieldClickedHandler;
             this.input_name.SubmitPressed += this.InputNameSubmitHandler;
-            ped_search = new BackgroundWorker();
-            ped_search.DoWork += new DoWorkEventHandler(PedSearchProcess);
-            ped_search.RunWorkerCompleted += new RunWorkerCompletedEventHandler(PedSearchCompleted);
             this.Position = new Point(Game.Resolution.Width / 2 - this.Window.Width / 2, Game.Resolution.Height / 2 - this.Window.Height / 2);
             this.Window.DisableResizing();
             output_info.KeyboardInputEnabled = false;
             if (Functions.GetCurrentPullover() != null)
             {
-                input_name.SetText(Functions.GetPersonaForPed(Functions.GetPulloverSuspect(Functions.GetCurrentPullover())).FullName);
+                input_name.Text = Functions.GetPersonaForPed(Functions.GetPulloverSuspect(Functions.GetCurrentPullover())).FullName;
                 _initial_clear = true;
             }
-
-            sc = SynchronizationContext.Current;
         }
 
         private void InputNameSubmitHandler(Base sender, EventArgs e)
@@ -74,37 +68,6 @@ namespace ComputerPlus
             }
         }
 
-        private void PedSearchProcess(object sender, DoWorkEventArgs e)
-        {
-            Thread.Sleep(2500);
-            Ped[] peds = World.GetAllPeds();
-            for (int i = 0; i < peds.Length; i++)
-            {
-                Persona persona = Functions.GetPersonaForPed(peds[i]);
-                if (persona.FullName.ToLower() == ((string)e.Argument).ToLower())
-                {
-                    e.Result = peds[i];
-                    break;
-                }
-                else if (i == peds.Length - 1)
-                    e.Result = null;
-            }
-        }
-
-        private void PedSearchCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            Ped ped = (Ped)e.Result;
-            if (ped != null)
-            {
-                sc.Post(UpdateResult, GetFormattedInfoForPersona(Functions.GetPersonaForPed(ped)));
-                Function.AddPedToRecents(ped);
-            }
-            else
-            {
-                sc.Post(UpdateResult, "No record for the specified name was found.");
-            }
-        }
-
         private static void OpenMainMenuForm()
         {
             GwenForm main = new ComputerMain();
@@ -115,15 +78,35 @@ namespace ComputerPlus
 
         private void SearchForSuspect() 
         {
-            if (!ped_search.IsBusy)
+            if (!search_fiber.IsAlive)
             {
                 output_info.SetText("Searching. Please wait...");
-                ped_search.RunWorkerAsync(input_name.Text);
+
+                search_fiber = GameFiber.StartNew(delegate 
+                {
+                    Thread.Sleep(2500);
+                    string name = input_name.Text.ToLower();
+                    List<Ped> peds = World.GetAllPeds().ToList();
+                    peds.RemoveAll(p => !p);
+                    peds.OrderBy(p => Vector3.Distance(Game.LocalPlayer.Character.CurrentVehicle.Position, p.Position));
+                    Ped ped = peds.Where(p => p && Functions.GetPersonaForPed(p).FullName == name).FirstOrDefault();
+
+                    if (ped)
+                    {
+                        output_info.Text = GetFormattedInfoForPed(ped);
+                        Function.AddPedToRecents(ped);
+                    }
+                    else
+                    {
+                        output_info.Text = "No record for the specified name was found.";
+                    }
+                });
             }
         }
 
-        private string GetFormattedInfoForPersona(Persona p)
+        private string GetFormattedInfoForPed(Ped ped)
         {
+            Persona p = Functions.GetPersonaForPed(ped);
             string wanted_text = "No active warrant(s)", leo_text = "";
             if (p.Wanted)
                 wanted_text = "Suspect has an active warrant";
@@ -134,12 +117,6 @@ namespace ComputerPlus
             return String.Format("Information found about \"{0}\":\nDOB: {1}\nCitations: {2}\nGender: {3}\nLicense: {4}\n"
                 + "Times Stopped: {5}\nWanted: {6}\n{7}", p.FullName, String.Format("{0:dddd, MMMM dd, yyyy}", p.BirthDay), p.Citations, p.Gender, p.LicenseState,
                 p.TimesStopped, wanted_text, leo_text);
-        }
-
-        internal void UpdateResult(object state)
-        {
-            string result = state as string;
-            output_info.Text = result;
         }
     }
 }
