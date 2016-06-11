@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Drawing;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using Rage;
 using Rage.Forms;
 using Gwen.Control;
@@ -89,7 +89,7 @@ namespace ComputerPlus
                     List<Ped> peds = World.GetAllPeds().ToList();
                     peds.RemoveAll(p => !p);
                     peds.OrderBy(p => Vector3.Distance(Game.LocalPlayer.Character.CurrentVehicle.Position, p.Position));
-                    Ped ped = peds.Where(p => p && Functions.GetPersonaForPed(p).FullName == name).FirstOrDefault();
+                    Ped ped = peds.Where(p => p && Functions.GetPersonaForPed(p).FullName.ToLower() == name).FirstOrDefault();
 
                     if (ped)
                     {
