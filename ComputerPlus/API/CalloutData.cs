@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Rage;
+using ComputerPlus.Extensions;
 
 namespace ComputerPlus.API
 {
@@ -65,7 +66,7 @@ namespace ComputerPlus.API
         internal void UpdateStatus(ECallStatus status)
         {
             if(status != mStatus)
-                AddUpdate(String.Format("STATUS -- {0} => {1}", mStatus, status));
+                AddUpdate(String.Format("STATUS -- {0} => {1}", mStatus.ToFriendlyString(), status.ToFriendlyString()));
 
             mStatus = status;
         }
