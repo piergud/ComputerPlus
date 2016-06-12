@@ -5,6 +5,7 @@ using System.Threading;
 using System.Drawing;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Linq;
 using Rage;
 using Rage.Forms;
 using Gwen.Control;
@@ -74,13 +75,13 @@ namespace ComputerPlus
             // "Status" label
             lbl_c_status = new Label(base_calls);
             lbl_c_status.Text = "Status";
-            lbl_c_status.SetPosition(96, 1);
+            lbl_c_status.SetPosition(120, 1);
             lbl_c_status.SetSize(37, 13);
 
             // "Call" label
             lbl_c_call = new Label(base_calls);
             lbl_c_call.Text = "Call";
-            lbl_c_call.SetPosition(162, 1);
+            lbl_c_call.SetPosition(230, 1);
             lbl_c_call.SetSize(24, 13);
 
             /***** Active Call Tab *****/
@@ -208,7 +209,14 @@ namespace ComputerPlus
             tc_main.AddPage("Call List", base_calls);
             tc_main.AddPage("Active Call", base_active);
 
-            list_calls.AddRow(String.Format("{0} {1, 10} {2, 15} {3, 25}", "1-A-12", "15:54", "At Scene", "OFC DROPPED DONUT"));
+            //list_calls.AddRow(String.Format("{0} {1, 10} {2, 15} {3, 25}", "1-A-12", "15:54", "At Scene", "OFC DROPPED DONUT"));
+
+            List<CalloutData> mActiveCalls = (from CalloutData x in Globals.CallQueue orderby x.TimeReceived descending select x).ToList();
+
+            foreach (CalloutData x in mActiveCalls)
+            {
+                list_calls.AddRow(String.Format("{0} {1, 10} {2, 25} {3, 25}", x.PrimaryUnit, x.TimeReceived.ToLocalTime().ToString("HH:mm"), x.Status.ToFriendlyString(), x.Name.ToUpper()));
+            }
         }
 
         private void MainMenuButtonClickedHandler(Base sender, ClickedEventArgs e)
@@ -234,13 +242,15 @@ namespace ComputerPlus
 
                 out_id.Text = Globals.ActiveCallout.ID.ToString();
                 out_date.Text = dt.ToLocalTime().ToString("MM/dd/yyyy");
-                out_time.Text = dt.ToLocalTime().ToString("hh:mm:ss");
+                out_time.Text = dt.ToLocalTime().ToString("HH:mm:ss");
                 out_call.Text = Globals.ActiveCallout.Name;
                 out_loc.Text = World.GetStreetName(Globals.ActiveCallout.Location);
                 out_stat.Text = Globals.ActiveCallout.Status.ToFriendlyString();
                 out_unit.Text = Configs.UnitNumber;
                 out_resp.Text = Globals.ActiveCallout.ResponseType.ToFriendlyString();
-                DescriptionBoxText = Globals.ActiveCallout.Description + Environment.NewLine;
+
+                string mDescription = Globals.ActiveCallout.Description.WordWrap(450, out_desc.Font.FaceName.ToString()) + Environment.NewLine;
+                DescriptionBoxText = mDescription;
 
                 foreach (CalloutUpdate u in Globals.ActiveCallout.Updates)
                 {
@@ -290,8 +300,8 @@ namespace ComputerPlus
             set
             {
                 out_desc.Text = value;
-                out_desc.Text = out_desc.Text.Replace(Environment.NewLine, "");
-                out_desc.WordWrap(350);
+                //out_desc.Text = out_desc.Text.Replace(Environment.NewLine, "");
+                //out_desc.WordWrap(450);
             }
         }
 
@@ -303,9 +313,9 @@ namespace ComputerPlus
             }
             set
             {
-                out_peds.Text = value;
-                out_peds.Text = out_peds.Text.Replace(Environment.NewLine, "");
-                out_peds.WordWrap(350);
+                out_peds.Text = value.WordWrap(400, out_peds.Font.FaceName.ToString());
+                //out_peds.Text = out_peds.Text.Replace(Environment.NewLine, "");
+                //out_peds;
             }
         }
 
@@ -317,9 +327,9 @@ namespace ComputerPlus
             }
             set
             {
-                out_vehs.Text = value;
-                out_vehs.Text = out_vehs.Text.Replace(Environment.NewLine, "");
-                out_vehs.WordWrap(350);
+                out_vehs.Text = value.WordWrap(400, out_vehs.Font.FaceName.ToString());
+                //out_vehs.Text = out_vehs.Text.Replace(Environment.NewLine, "");
+                //out_vehs.WordWrap(350);
             }
         }
 
