@@ -17,6 +17,7 @@ namespace ComputerPlus.API
         public static void SetActiveCallout(Guid callID)
         {
             Globals.ActiveCallID = callID;
+            Globals.IsCalloutActive = true;
         }
 
         /// <summary>

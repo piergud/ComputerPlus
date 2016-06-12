@@ -13,6 +13,7 @@ namespace ComputerPlus
         internal static bool IsPlayerOnDuty = false;
         internal static List<CalloutData> CallQueue = new List<CalloutData>();
         internal static Guid ActiveCallID = Guid.Empty;
+        internal static bool IsCalloutActive = false;
 
         /// <summary>
         /// Returns the active callout from the queue.
