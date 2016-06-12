@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
+using System.Drawing;
 using Rage;
 using Rage.Native;
 using LSPD_First_Response.Mod.API;
@@ -13,6 +15,10 @@ namespace ComputerPlus
     {
         private static Texture _bg;
         private static bool _bg_enabled = false;
+        private static RectangleF taskbar = new RectangleF();
+        private static Color taskbar_col = Color.FromArgb(160, 0, 0, 0);
+        private static int width, height;
+        private static string update_text = "";
 
         /// <summary>
         /// Gets whether the computer background is enabled or not.
@@ -20,6 +26,32 @@ namespace ComputerPlus
         internal static bool IsBackgroundEnabled()
         {
             return _bg_enabled;
+        }
+
+        /// <summary>
+        /// Updates version text shown on police computer's taskbar.
+        /// </summary>
+        internal static void UpdateVersionText()
+        {
+            GameFiber.StartNew(delegate
+            {
+                string web_ver_str = UpdateFunction.GetLatestVersion(11453);
+
+                if (web_ver_str != null)
+                {
+                    Version web_ver = new Version(web_ver_str);
+                    Version curr_ver = new Version(FileVersionInfo.GetVersionInfo(@"Plugins\LSPDFR\ComputerPlus.dll").FileVersion);
+
+                    if (curr_ver.CompareTo(web_ver) >= 0)
+                        update_text = "System is up to date";
+                    else
+                        update_text = String.Format("System update available ({0})", web_ver);
+                }
+                else
+                {
+                    update_text = "Failed to check for update";
+                }
+            });
         }
 
         /// <summary>
@@ -67,7 +99,19 @@ namespace ComputerPlus
 
         private static void OnRawFrameRender(object sender, GraphicsEventArgs e) 
         {
+            string time = DateTime.Now.ToString("HH:mm:ss");
+            float length = Rage.Graphics.MeasureText(time, "Arial", 18).Width;
+            taskbar.Size = new SizeF(Game.Resolution.Width, Game.Resolution.Height / 25);
+            taskbar.Location = new PointF(1, 1 + Game.Resolution.Height - (Game.Resolution.Height / 25));
+
             e.Graphics.DrawTexture(_bg, 0f, 0f, Game.Resolution.Width, Game.Resolution.Height);
+            e.Graphics.DrawRectangle(taskbar, taskbar_col);
+            e.Graphics.DrawText(update_text, "Arial", 18,
+                new PointF(taskbar.X + (taskbar.Width / 150), taskbar.Y + (taskbar.Height / 4)), 
+                Color.White);
+            e.Graphics.DrawText(time, "Arial", 18,
+                new PointF(taskbar.Width - length - taskbar.Width / 150, taskbar.Y + (taskbar.Height / 4)),
+                Color.White);
         }
 
         /// <summary>

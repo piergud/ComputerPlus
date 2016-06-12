@@ -12,29 +12,13 @@ namespace ComputerPlus
     public sealed class EntryPoint : Plugin
     {
         internal static GwenForm login = null, main = null;
-        internal static EventHandler OnVehicleStopped;
+        internal delegate void VehicleStoppedEvent(object sender, Vehicle veh);
+        internal static VehicleStoppedEvent OnVehicleStopped;
         static Stopwatch sw = new Stopwatch();
         private static float _stored_speed;
         private static bool _opened = false;
         internal static List<string> recent_text = new List<string>();
         internal static GameFiber fCheckIfCalloutActive = new GameFiber(CheckIfCalloutActive);
-
-        internal static float StoredSpeed
-        {
-            set
-            {
-                if (_stored_speed != value && value == 0f)
-                {
-                    if (OnVehicleStopped != null)
-                        OnVehicleStopped.Invoke(null, new EventArgs());
-                }
-                _stored_speed = value;
-            }
-            get
-            {
-                return Game.LocalPlayer.Character.CurrentVehicle.Speed;
-            }
-        }
 
         public override void Initialize()
         {
@@ -65,19 +49,20 @@ namespace ComputerPlus
             if (on_duty) 
             {
                 Game.FrameRender += Process;
-                Game.LogTrivial("Successfully loaded ~b~LSPDFR Computer+~w~.");
+                Game.LogTrivial("Successfully loaded LSPDFR Computer+.");
 
                 fCheckIfCalloutActive = new GameFiber(CheckIfCalloutActive);
                 fCheckIfCalloutActive.Start();
+
+                Function.UpdateVersionText();
             }
         }
 
-        private static void VehicleStoppedHandler(object sender, EventArgs e)
+        private static void VehicleStoppedHandler(object sender, Vehicle veh)
         {
-            Vehicle curr_veh = Game.LocalPlayer.Character.CurrentVehicle;
-            if (curr_veh) 
+            if (veh) 
             {
-                if (Function.IsPoliceVehicle(curr_veh)
+                if (Function.IsPoliceVehicle(veh)
                     && LSPD_First_Response.Mod.API.Functions.GetCurrentPullover() != null)
                 {
                     Game.DisplayHelp("Hold ~INPUT_CONTEXT~ to open ~b~LSPDFR Computer+~w~.");
@@ -102,7 +87,12 @@ namespace ComputerPlus
             Vehicle curr_veh = Game.LocalPlayer.Character.CurrentVehicle;
             if (curr_veh)
             {
-                StoredSpeed = curr_veh.Speed;
+                if (curr_veh.Speed != _stored_speed)
+                {
+                    _stored_speed = curr_veh.Speed;
+                    if (_stored_speed == 0)
+                        OnVehicleStopped.Invoke(null, curr_veh);
+                }
                 if (Game.IsControlPressed(0, GameControl.Context) && Function.IsPoliceVehicle(curr_veh) && curr_veh.Speed == 0 && !_opened)
                 {
                     if (!sw.IsRunning)
