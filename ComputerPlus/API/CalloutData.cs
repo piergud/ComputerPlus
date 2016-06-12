@@ -69,6 +69,7 @@ namespace ComputerPlus.API
                 AddUpdate(String.Format("STATUS -- {0} => {1}", mStatus.ToFriendlyString(), status.ToFriendlyString()));
 
             mStatus = status;
+            mLastUpdated = DateTime.UtcNow;
         }
 
         internal void AddPed(Ped ped)
@@ -108,9 +109,23 @@ namespace ComputerPlus.API
             mPrimaryUnit = Function.GetRandomAIUnit();
             UpdateStatus(ECallStatus.Unit_Responding);
             mIsPlayerAssigned = false;
+            mTimeConcluded = DateTime.UtcNow;
+            AIUnitMinutesAtScene = Globals.Random.Next(15, 30);
+
+            if (this.ResponseType == EResponseType.Code_3)
+            {
+                AIUnitResponseTime = Globals.Random.Next(4, 7);
+            }
+            else
+            {
+                AIUnitResponseTime = Globals.Random.Next(10, 15);
+            }
         }
 
         #region Properties
+
+        internal int AIUnitMinutesAtScene = 15;
+        internal int AIUnitResponseTime = 10;
 
         public Guid ID { get; }
         public string Name { get; }
