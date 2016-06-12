@@ -6,7 +6,7 @@ namespace ComputerPlus
 {
     internal static class UpdateFunction
     {
-        protected const string UpdateEndpoint = "http://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId=11453&beta=false&textOnly=true";
+        private const string UpdateEndpoint = "http://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId=11453&beta=false&textOnly=true";
         internal static string GetLatestVersion(int fileId, bool betaBranch = false)
         {
             string latestVersion = null;
