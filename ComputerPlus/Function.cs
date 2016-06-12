@@ -186,7 +186,7 @@ namespace ComputerPlus
             {
                 if (Globals.ActiveCallout != null)
                 {
-                    foreach (var x in Globals.CallQueue.Where(x => x.ID == Globals.ActiveCallID))
+                    foreach (var x in Globals.CallQueue.Where(x => x.ID == Globals.ActiveCallID && x.IsPlayerAssigned == true))
                     {
                         x.ConcludeCallout();
                     }
@@ -201,10 +201,70 @@ namespace ComputerPlus
             char[] unitTypes = { 'A', 'L', 'X' };
 
             int division = Globals.Random.Next(1, 8);
-            int uType = unitTypes[Globals.Random.Next(unitTypes.Length)];
+            char uType = unitTypes[Globals.Random.Next(unitTypes.Length)];
             int beatNum = Globals.Random.Next(25, 60);
 
             return String.Format("{0}-{1}-{2}", division, uType, beatNum);
+        }
+
+        internal static void MonitorAICalls()
+        {
+            GameFiber.StartNew(
+                delegate
+                {
+                    while(Globals.IsPlayerOnDuty)
+                    {
+                        foreach(var x in Globals.CallQueue.Where(x => x.IsPlayerAssigned == false))
+                        {
+                            switch(x.Status)
+                            {
+                                case ECallStatus.Created:
+                                    x.UpdateStatus(ECallStatus.Dispatched);
+                                    break;
+
+                                case ECallStatus.Dispatched:
+                                    x.UpdateStatus(ECallStatus.Unit_Responding);
+                                    x.AddUpdate(String.Format("Unit {0} is responding.", x.PrimaryUnit));
+                                    break;
+
+                                case ECallStatus.Unit_Responding:
+                                    TimeSpan drivingTime = (DateTime.UtcNow - x.LastUpdated);
+                                    if (drivingTime.TotalMinutes >= x.AIUnitResponseTime)
+                                    {
+                                        x.UpdateStatus(ECallStatus.At_Scene);
+                                        x.AddUpdate(String.Format("Unit {0} is on scene.", x.PrimaryUnit));
+                                    }
+
+                                    break;
+
+                                case ECallStatus.At_Scene:
+                                    TimeSpan timeAtScene = (DateTime.UtcNow - x.LastUpdated);
+                                    if (timeAtScene.TotalMinutes >= x.AIUnitMinutesAtScene)
+                                    {
+                                        x.ConcludeCallout();
+                                    }
+
+                                    break;
+
+                                default:
+                                    break;
+                            }
+                        }
+
+                        // Clean up abandoned/orphan calls that were assigned to the player
+                        // If 'stuck' for more than 5 minutes, assign to AI
+                        foreach (var x in Globals.CallQueue.Where(x => x.IsPlayerAssigned == true && (x.Status == ECallStatus.Created | x.Status == ECallStatus.Dispatched)))
+                        {
+                            TimeSpan ts = (DateTime.UtcNow - x.LastUpdated);
+                            if (ts.TotalMinutes > 5)
+                            {
+                                x.AssignCallToAIUnit();
+                            }
+                        }
+
+                        GameFiber.Yield();
+                    }
+                });
         }
 
         /// <summary>

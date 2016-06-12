@@ -67,6 +67,7 @@ namespace ComputerPlus
                 Game.FrameRender += Process;
                 Game.LogTrivial("Successfully loaded ~b~LSPDFR Computer+~w~.");
 
+                Function.MonitorAICalls();
                 fCheckIfCalloutActive = new GameFiber(CheckIfCalloutActive);
                 fCheckIfCalloutActive.Start();
             }
@@ -172,7 +173,7 @@ namespace ComputerPlus
             {
                 GameFiber.Yield();
 
-                if (LSPD_First_Response.Mod.API.Functions.IsCalloutRunning() == false && Globals.ActiveCallout != null)
+                if (Globals.IsCalloutActive == true && LSPD_First_Response.Mod.API.Functions.IsCalloutRunning() == false && Globals.ActiveCallout != null)
                 {
                     Function.ClearActiveCall();
                 }

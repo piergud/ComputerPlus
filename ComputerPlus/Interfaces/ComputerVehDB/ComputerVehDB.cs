@@ -91,7 +91,7 @@ namespace ComputerPlus
                     string lp_input = input_name.Text.ToLower();
                     List<Vehicle> vehs = World.GetAllVehicles().ToList();
                     vehs.RemoveAll(v => !v);
-                    vehs.OrderBy(v => Vector3.Distance(Game.LocalPlayer.Character.CurrentVehicle.Position, v.Position));
+                    vehs.OrderBy(v => v.DistanceTo(Game.LocalPlayer.Character.Position));
                     Vehicle veh = vehs.Where(v => v && v.LicensePlate.ToLower().Trim() == lp_input).FirstOrDefault();
 
                     if (veh)

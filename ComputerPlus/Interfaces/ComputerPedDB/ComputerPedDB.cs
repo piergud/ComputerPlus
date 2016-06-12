@@ -88,7 +88,7 @@ namespace ComputerPlus
                     string name = input_name.Text.ToLower();
                     List<Ped> peds = World.GetAllPeds().ToList();
                     peds.RemoveAll(p => !p);
-                    peds.OrderBy(p => Vector3.Distance(Game.LocalPlayer.Character.CurrentVehicle.Position, p.Position));
+                    peds.OrderBy(p => p.DistanceTo(Game.LocalPlayer.Character.Position));
                     Ped ped = peds.Where(p => p && Functions.GetPersonaForPed(p).FullName.ToLower() == name).FirstOrDefault();
 
                     if (ped)
