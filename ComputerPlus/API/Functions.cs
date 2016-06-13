@@ -14,12 +14,15 @@ namespace ComputerPlus.API
         /// The computer will automatically set your callout to "Completed" status when it ends, and a "Code 4" update will be added in the computer.
         /// </summary>
         /// <param name="data">The CalloutData object to register.</param>
-        public static void CreateCallout(CalloutData data)
+        /// <returns>The ID of your callout object (returns it for convenience...its created by the CalloutData constructor)</returns>
+        public static Guid CreateCallout(CalloutData data)
         {
             Globals.CallQueue.Add(data);
 
             Globals.ActiveCallID = data.ID;
             Globals.IsCalloutActive = true;
+
+            return data.ID;
         }
 
         /// <summary>
