@@ -10,17 +10,6 @@ namespace ComputerPlus.API
     public static class Functions
     {
         /// <summary>
-        /// Sets the active callout on the computer.
-        /// (This function will not normally need to be used)
-        /// </summary>
-        /// <param name="callID">The CalloutData object to set as active.</param>
-        public static void SetActiveCallout(Guid callID)
-        {
-            Globals.ActiveCallID = callID;
-            Globals.IsCalloutActive = true;
-        }
-
-        /// <summary>
         /// Registers the callout with the computer. This function also calls Functions.SetActiveCallout(Guid callID).
         /// The computer will automatically set your callout to "Completed" status when it ends, and a "Code 4" update will be added in the computer.
         /// </summary>
@@ -28,7 +17,9 @@ namespace ComputerPlus.API
         public static void CreateCallout(CalloutData data)
         {
             Globals.CallQueue.Add(data);
-            SetActiveCallout(data.ID);
+
+            Globals.ActiveCallID = data.ID;
+            Globals.IsCalloutActive = true;
         }
 
         /// <summary>
