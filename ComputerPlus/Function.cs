@@ -105,7 +105,7 @@ namespace ComputerPlus
             taskbar.Location = new PointF(1, 1 + Game.Resolution.Height - (Game.Resolution.Height / 25));
 
             e.Graphics.DrawTexture(_bg, 0f, 0f, Game.Resolution.Width, Game.Resolution.Height);
-            e.Graphics.DrawRectangle(taskbar, taskbar_col);
+            //e.Graphics.DrawRectangle(taskbar, taskbar_col);
             e.Graphics.DrawText(update_text, "Arial", 18,
                 new PointF(taskbar.X + (taskbar.Width / 150), taskbar.Y + (taskbar.Height / 4)), 
                 Color.White);
