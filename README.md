@@ -12,8 +12,8 @@
 - Search fields are automatically filled out with the subject's information during a traffic stop, so all you have to do is press a button!
 - Dynamic backgrounds! Depending on which police vehicle you're in, you'll get a specialized department background. Comes with RDE support.
 - Looks practically identical to the LCPDFR computer (in terms of the layout).
-- [WIP] Active Calls screen where players can view the status of the currently active, as well as previously dispatched callouts. (Even those not accepted and assigned to an AI unit!!)
-- [WIP] Callout API so callout developers can transmit callout data to LSPDFR Computer+
+[NEW!] - Active Calls screen, which shows all callouts sent by Dispatch, even the ones that AI units respond to! (Must have participating callout plugins installed for this to work)
+[NEW!] - Computer+ now has its own API, for callout developers to use!!
 
 **Planned Improvements**
 - Integration with Albo1125's British Policing Script and soon to be released LSPDFR+.
