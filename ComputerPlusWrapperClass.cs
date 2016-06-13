@@ -7,7 +7,10 @@ using Rage;
 using ComputerPlus.API;
 using ComputerPlus;
 
-namespace AssortedCallouts.API
+// This is an example wrapper class to use with your callout plugins, courtesy of Albo1125.
+// More info to come on the Wiki very soon
+
+namespace YourCallouts.API
 {
     internal static class ComputerPlusFuncs
     {
