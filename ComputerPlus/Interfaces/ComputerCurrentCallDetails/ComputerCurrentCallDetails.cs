@@ -16,7 +16,7 @@ namespace ComputerPlus
 {
     internal class ComputerCurrentCallDetails : GwenForm
     {
-        private Button btn_main;
+        private Button btn_main, btn_help;
         private ListBox list_calls;
         private Label lbl_c_unit, lbl_c_time, lbl_c_status, lbl_c_call;
         private Label lbl_a_id, lbl_a_time, lbl_a_call, lbl_a_loc, lbl_a_stat, lbl_a_unit, lbl_a_resp,
@@ -25,7 +25,8 @@ namespace ComputerPlus
         private MultilineTextBox out_desc, out_peds, out_vehs;
         private Base base_calls, base_active;
         private TabControl tc_main;
-        internal static GameFiber form_main = new GameFiber(OpenMainMenuForm);
+        internal static GameFiber form_main = new GameFiber(OpenMainMenuForm),
+            diag_help = new GameFiber(OpenHelpDialog);
 
         public ComputerCurrentCallDetails() : base(typeof(ComputerCurrentCallDetailsTemplate))
         {
@@ -37,6 +38,7 @@ namespace ComputerPlus
             base.InitializeLayout();
             CreateComponents();
             this.btn_main.Clicked += this.MainMenuButtonClickedHandler;
+            this.btn_help.Clicked += this.HelpButtonClickedHandler;
             this.Position = new Point(Game.Resolution.Width / 2 - this.Window.Width / 2, Game.Resolution.Height / 2 - this.Window.Height / 2);
             this.Window.DisableResizing();
             FillCallDetails();
@@ -206,16 +208,18 @@ namespace ComputerPlus
             out_vehs.KeyboardInputEnabled = false;
 
             // Add tabs and their corresponding containers
+            // Active Call tab is hidden when no callout is active
+            if (Globals.ActiveCallout != null)
+                tc_main.AddPage("Active Call", base_active);
+            else
+                base_active.Hide();
             tc_main.AddPage("Call List", base_calls);
-            tc_main.AddPage("Active Call", base_active);
-
-            //list_calls.AddRow(String.Format("{0} {1, 10} {2, 15} {3, 25}", "1-A-12", "15:54", "At Scene", "OFC DROPPED DONUT"));
 
             List<CalloutData> mActiveCalls = (from CalloutData x in Globals.CallQueue orderby x.TimeReceived descending select x).ToList();
 
             foreach (CalloutData x in mActiveCalls)
             {
-                list_calls.AddRow(String.Format("{0} {1, 10} {2, 25} {3, 25}", x.PrimaryUnit, x.TimeReceived.ToLocalTime().ToString("HH:mm"), x.Status.ToFriendlyString(), x.Name.ToUpper()));
+                list_calls.AddRow(String.Format("{0}{1}{2}{3}", x.PrimaryUnit.PadRight(12), x.TimeReceived.ToLocalTime().ToString("HH:mm").PadRight(21), x.Status.ToFriendlyString().PadRight(31), x.Name.ToUpper()));
             }
         }
 
@@ -226,11 +230,25 @@ namespace ComputerPlus
             form_main.Start();
         }
 
+        private void HelpButtonClickedHandler(Base sender, ClickedEventArgs e)
+        {
+            diag_help = new GameFiber(OpenHelpDialog);
+            diag_help.Start();
+        }
+
         private static void OpenMainMenuForm()
         {
             GwenForm main = new ComputerMain();
             main.Show();
             while (main.Window.IsVisible)
+                GameFiber.Yield();
+        }
+
+        private static void OpenHelpDialog()
+        {
+            GwenForm help = new ComputerHelpDialog();
+            help.Show();
+            while (help.Window.IsVisible)
                 GameFiber.Yield();
         }
 
