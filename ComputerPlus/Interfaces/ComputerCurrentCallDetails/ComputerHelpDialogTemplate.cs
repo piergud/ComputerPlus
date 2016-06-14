@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace ComputerPlus.Interfaces.ComputerCurrentCallDetails
 {
-    public partial class ComputerHelpDialogTemplate : Form
+    partial class ComputerHelpDialogTemplate : Form
     {
         public ComputerHelpDialogTemplate()
         {
