@@ -278,31 +278,43 @@ namespace ComputerPlus
                 List<Ped> peds = Globals.ActiveCallout.Peds;
                 if (peds != null)
                 {
-                    for (int i = 0; i < peds.Count; i++)
+                    if (peds.Count > 0)
                     {
-                        if (i != 0)
-                            PedBoxText += ", ";
-                        PedBoxText += LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(peds[i]).FullName;
+                        for (int i = 0; i < peds.Count; i++)
+                        {
+                            if (peds[i])
+                            {
+                                if (i != 0)
+                                    PedBoxText += ", ";
+                                PedBoxText += LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(peds[i]).FullName;
+                            }
+                        }
                     }
-                }
-                else
-                {
-                    PedBoxText = "No information available at this time.";
+                    else
+                    {
+                        PedBoxText = "No information available at this time.";
+                    }
                 }
 
                 List<Vehicle> vehs = Globals.ActiveCallout.Vehicles;
                 if (vehs != null)
                 {
-                    for (int i = 0; i < vehs.Count; i++)
+                    if (vehs.Count > 0)
                     {
-                        if (i != 0)
-                            VehicleBoxText += ", ";
-                        VehicleBoxText += vehs[i].LicensePlate;
+                        for (int i = 0; i < vehs.Count; i++)
+                        {
+                            if (vehs[i])
+                            {
+                                if (i != 0)
+                                    VehicleBoxText += ", ";
+                                VehicleBoxText += vehs[i].LicensePlate;
+                            }
+                        }
                     }
-                }
-                else
-                {
-                    VehicleBoxText = "No information available at this time.";
+                    else
+                    {
+                        VehicleBoxText = "No information available at this time.";
+                    }
                 }
             }
         }
