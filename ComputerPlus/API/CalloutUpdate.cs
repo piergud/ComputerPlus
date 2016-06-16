@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ComputerPlus.API
 {
-    public class CalloutUpdate
+    internal class CalloutUpdate
     {
         internal CalloutUpdate(string pText)
         {
@@ -14,7 +14,7 @@ namespace ComputerPlus.API
             Text = pText;
         }
 
-        public DateTime TimeAdded { get; }
-        public string Text { get; }
+        internal DateTime TimeAdded { get; }
+        internal string Text { get; }
     }
 }

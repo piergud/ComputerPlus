@@ -162,7 +162,7 @@ namespace ComputerPlus.API
         public DateTime LastUpdated { get { return mLastUpdated; } }
 
         private List<CalloutUpdate> mUpdates = new List<CalloutUpdate>();
-        public List<CalloutUpdate> Updates { get { return mUpdates.OrderBy(x=> x.TimeAdded).ToList(); } }
+        internal List<CalloutUpdate> Updates { get { return mUpdates.OrderBy(x=> x.TimeAdded).ToList(); } }
 
         private bool mIsPlayerAssigned = true;
         public bool IsPlayerAssigned { get { return mIsPlayerAssigned; } }

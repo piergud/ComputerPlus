@@ -14,6 +14,7 @@ namespace ComputerPlus
         internal static List<CalloutData> CallQueue = new List<CalloutData>();
         internal static Guid ActiveCallID = Guid.Empty;
         internal static bool IsCalloutActive = false;
+        internal static int WebAPIFileId = 11453;
 
         /// <summary>
         /// Returns the active callout from the queue.
