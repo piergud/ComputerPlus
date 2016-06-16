@@ -55,7 +55,7 @@ namespace ComputerPlus
                 fCheckIfCalloutActive = new GameFiber(CheckIfCalloutActive);
                 fCheckIfCalloutActive.Start();
 
-                Function.UpdateVersionText();
+                Function.CheckForUpdates();
             }
         }
 

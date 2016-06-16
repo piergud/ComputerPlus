@@ -28,30 +28,73 @@ namespace ComputerPlus
             return _bg_enabled;
         }
 
-        /// <summary>
-        /// Updates version text shown on police computer's taskbar.
-        /// </summary>
-        internal static void UpdateVersionText()
+        internal static async void CheckForUpdates()
         {
-            GameFiber.StartNew(delegate
+            await System.Threading.Tasks.Task.Factory.StartNew(() => SendAPIWebRequest(Globals.WebAPIFileId, false));
+        }
+
+        private static async void SendAPIWebRequest(int fileId, bool beta = false)
+        {
+            string apiURIFormat = "http://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId={0}&beta={1}&textOnly=true";
+            string apiURI = String.Format(apiURIFormat, Globals.WebAPIFileId, beta.ToString().ToLower());
+            string webVersionStr = "";
+
+            try
             {
-                string web_ver_str = UpdateFunction.GetLatestVersion(11453);
-
-                if (web_ver_str != null)
+                using (System.Net.WebClient wc = new System.Net.WebClient())
                 {
-                    Version web_ver = new Version(web_ver_str);
-                    Version curr_ver = new Version(FileVersionInfo.GetVersionInfo(@"Plugins\LSPDFR\ComputerPlus.dll").FileVersion);
+                    webVersionStr = await wc.DownloadStringTaskAsync(apiURI);
+                }
+            }
+            catch (Exception e)
+            {
+                webVersionStr = "";
+                Game.LogTrivial("Error checking for updates -- " + e.ToString());
+            }
 
-                    if (curr_ver.CompareTo(web_ver) >= 0)
-                        update_text = "System is up to date";
+            if (webVersionStr != "")
+            {
+                try
+                {
+                    Version webVersion = null;
+                    Version installedVersion = null;
+
+                    if (!Version.TryParse(webVersionStr, out webVersion))
+                    {
+                        webVersion = null;
+                    }
+
+                    if (!Version.TryParse(FileVersionInfo.GetVersionInfo(@"Plugins\LSPDFR\ComputerPlus.dll").FileVersion, out installedVersion))
+                    {
+                        installedVersion = null;
+                    }
+
+                    if (installedVersion != null && webVersion != null)
+                    {
+                        if (webVersion.CompareTo(installedVersion) > 0)
+                        {
+                            update_text = String.Format("Version: {0} | Update Available: ({1})", installedVersion.ToString(), webVersionStr);
+                        }
+                        else
+                        {
+                            update_text = String.Format("Version: {0} | Up to Date", installedVersion.ToString());
+                        }
+                    }
                     else
-                        update_text = String.Format("System update available ({0})", web_ver);
+                    {
+                        update_text = "System Update Check Failed";
+                    }
                 }
-                else
+                catch (Exception e)
                 {
-                    update_text = "Failed to check for update";
+                    update_text = "System Update Check Failed";
+                    Game.LogTrivial("Error comparing version numbers -- " + e.ToString());
                 }
-            });
+            }
+            else
+            {
+                update_text = "System Update Check Failed";
+            }
         }
 
         /// <summary>

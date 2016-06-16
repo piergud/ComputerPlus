@@ -149,7 +149,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="TrafficPolicerFunction.cs" />
-    <Compile Include="UpdateFunction.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Interfaces\ComputerCurrentCallDetails\ComputerHelpDialogTemplate.resx">
