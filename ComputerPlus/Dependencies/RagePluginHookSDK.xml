@@ -3125,417 +3125,427 @@ Gets the camera currently being rendered.
  } USINGTLS_END;
 
 <summary><para>Helper class for using the game's main TLS.</para><para>Don't make it a reference (UsingTls^) as that'll make the finalization non-deterministic.</para></summary></member>
-        <member name="F:WindowsEdition.WebServerCore">
+        <member name="F:Rage.WindowsEdition.WebServerCore">
             <summary>
 Web Server (core installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.WebServer">
+        <member name="F:Rage.WindowsEdition.WebServer">
             <summary>
 Web Server (full installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.UltimateN">
+        <member name="F:Rage.WindowsEdition.UltimateN">
             <summary>
 Ultimate N
 </summary>
         </member>
-        <member name="F:WindowsEdition.UltimateE">
+        <member name="F:Rage.WindowsEdition.UltimateE">
             <summary>
 Not supported
 </summary>
         </member>
-        <member name="F:WindowsEdition.Ultimate">
+        <member name="F:Rage.WindowsEdition.Ultimate">
             <summary>
 Ultimate
 </summary>
         </member>
-        <member name="F:WindowsEdition.Undefined">
+        <member name="F:Rage.WindowsEdition.Undefined">
             <summary>
 An unknown 
 </summary>
         </member>
-        <member name="F:WindowsEdition.StorageWorkgroupServerCore">
+        <member name="F:Rage.WindowsEdition.StorageWorkgroupServerCore">
             <summary>
 Storage Server Workgroup (core installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.StorageWorkgroupServer">
+        <member name="F:Rage.WindowsEdition.StorageWorkgroupServer">
             <summary>
 Storage Server Workgroup
 </summary>
         </member>
-        <member name="F:WindowsEdition.StorageWorkgroupEvaluationServer">
+        <member name="F:Rage.WindowsEdition.StorageWorkgroupEvaluationServer">
             <summary>
 Storage Server Workgroup (evaluation installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.StorageStandardServerCore">
+        <member name="F:Rage.WindowsEdition.StorageStandardServerCore">
             <summary>
 Storage Server Standard (core installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.StorageStandardServer">
+        <member name="F:Rage.WindowsEdition.StorageStandardServer">
             <summary>
 Storage Server Standard
 </summary>
         </member>
-        <member name="F:WindowsEdition.StorageStandardEvaluationServer">
+        <member name="F:Rage.WindowsEdition.StorageStandardEvaluationServer">
             <summary>
 Storage Server Standard (evaluation installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.StorageExpressServerCore">
+        <member name="F:Rage.WindowsEdition.StorageExpressServerCore">
             <summary>
 Storage Server Express (core installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.StorageExpressServer">
+        <member name="F:Rage.WindowsEdition.StorageExpressServer">
             <summary>
 Storage Server Express
 </summary>
         </member>
-        <member name="F:WindowsEdition.StorageEnterpriseServerCore">
+        <member name="F:Rage.WindowsEdition.StorageEnterpriseServerCore">
             <summary>
 Storage Server Enterprise (core installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.StorageEnterpriseServer">
+        <member name="F:Rage.WindowsEdition.StorageEnterpriseServer">
             <summary>
 Storage Server Enterprise
 </summary>
         </member>
-        <member name="F:WindowsEdition.StarterN">
+        <member name="F:Rage.WindowsEdition.StarterN">
             <summary>
 Starter N
 </summary>
         </member>
-        <member name="F:WindowsEdition.StarterE">
+        <member name="F:Rage.WindowsEdition.StarterE">
             <summary>
 Not supported
 </summary>
         </member>
-        <member name="F:WindowsEdition.Starter">
+        <member name="F:Rage.WindowsEdition.Starter">
             <summary>
 Starter
 </summary>
         </member>
-        <member name="F:WindowsEdition.StandardServerSolutionsCore">
+        <member name="F:Rage.WindowsEdition.StandardServerSolutionsCore">
             <summary>
 Server Solutions Premium (core installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.StandardServerSolutions">
+        <member name="F:Rage.WindowsEdition.StandardServerSolutions">
             <summary>
 Server Solutions Premium
 </summary>
         </member>
-        <member name="F:WindowsEdition.StandardServerCoreV">
+        <member name="F:Rage.WindowsEdition.StandardServerCoreV">
             <summary>
 Server Standard without Hyper-V (core installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.StandardServerV">
+        <member name="F:Rage.WindowsEdition.StandardServerV">
             <summary>
 Server Standard without Hyper-V
 </summary>
         </member>
-        <member name="F:WindowsEdition.StandardServerCore">
+        <member name="F:Rage.WindowsEdition.StandardServerCore">
             <summary>
 Server Standard (core installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.StandardServer">
+        <member name="F:Rage.WindowsEdition.StandardServer">
             <summary>
 Server Standard
 </summary>
         </member>
-        <member name="F:WindowsEdition.StandardEvaluationServer">
+        <member name="F:Rage.WindowsEdition.StandardEvaluationServer">
             <summary>
 Server Standard (evaluation installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.SolutionEmbeddedserver">
+        <member name="F:Rage.WindowsEdition.SolutionEmbeddedserver">
             <summary>
 Windows MultiPoint Server
 </summary>
         </member>
-        <member name="F:WindowsEdition.SmallbusinessServerPremiumCore">
+        <member name="F:Rage.WindowsEdition.SmallbusinessServerPremiumCore">
             <summary>
 Small Business Server Premium (core installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.SmallbusinessServerPremium">
+        <member name="F:Rage.WindowsEdition.SmallbusinessServerPremium">
             <summary>
 Small Business Server Premium
 </summary>
         </member>
-        <member name="F:WindowsEdition.SmallbusinessServer">
+        <member name="F:Rage.WindowsEdition.SmallbusinessServer">
             <summary>
 Windows Small Business Server
 </summary>
         </member>
-        <member name="F:WindowsEdition.SbSolutionServer">
+        <member name="F:Rage.WindowsEdition.SbSolutionServer">
             <summary>
 Windows Small Business Server 2011 Essentials
 </summary>
         </member>
-        <member name="F:WindowsEdition.ServerFoundation">
+        <member name="F:Rage.WindowsEdition.ServerFoundation">
             <summary>
 Server Foundation
 </summary>
         </member>
-        <member name="F:WindowsEdition.ServerForSmallbusinessV">
+        <member name="F:Rage.WindowsEdition.ServerForSmallbusinessV">
             <summary>
 Windows Server 2008 without Hyper-V for Windows Essential Server Solutions
 </summary>
         </member>
-        <member name="F:WindowsEdition.ServerForSmallbusiness">
+        <member name="F:Rage.WindowsEdition.ServerForSmallbusiness">
             <summary>
 Windows Server 2008 for Windows Essential Server Solutions
 </summary>
         </member>
-        <member name="F:WindowsEdition.ServerForSbSolutionsEm">
+        <member name="F:Rage.WindowsEdition.ServerForSbSolutionsEm">
             <summary>
 Server For SB Solutions EM
 </summary>
         </member>
-        <member name="F:WindowsEdition.ServerForSbSolutions">
+        <member name="F:Rage.WindowsEdition.ServerForSbSolutions">
             <summary>
 Server For SB Solutions
 </summary>
         </member>
-        <member name="F:WindowsEdition.SbSolutionServerEm">
+        <member name="F:Rage.WindowsEdition.SbSolutionServerEm">
             <summary>
 Server For SB Solutions EM
 </summary>
         </member>
-        <member name="F:WindowsEdition.ProfessionalWmc">
+        <member name="F:Rage.WindowsEdition.ProfessionalWmc">
             <summary>
 Professional with Media Center
 </summary>
         </member>
-        <member name="F:WindowsEdition.ProfessionalN">
+        <member name="F:Rage.WindowsEdition.ProfessionalN">
             <summary>
 Professional N
 </summary>
         </member>
-        <member name="F:WindowsEdition.ProfessionalE">
+        <member name="F:Rage.WindowsEdition.ProfessionalE">
             <summary>
 Not supported
 </summary>
         </member>
-        <member name="F:WindowsEdition.Professional">
+        <member name="F:Rage.WindowsEdition.Professional">
             <summary>
 Professional
 </summary>
         </member>
-        <member name="F:WindowsEdition.MultipointPremiumServer">
+        <member name="F:Rage.WindowsEdition.MultipointPremiumServer">
             <summary>
 Windows MultiPoint Server Premium (full installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.MultipointStandardServer">
+        <member name="F:Rage.WindowsEdition.MultipointStandardServer">
             <summary>
 Windows MultiPoint Server Standard (full installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.MediumbusinessServerSecurity">
+        <member name="F:Rage.WindowsEdition.MediumbusinessServerSecurity">
             <summary>
 Windows Essential Business Server Security Server
 </summary>
         </member>
-        <member name="F:WindowsEdition.MediumbusinessServerMessaging">
+        <member name="F:Rage.WindowsEdition.MediumbusinessServerMessaging">
             <summary>
 Windows Essential Business Server Messaging Server
 </summary>
         </member>
-        <member name="F:WindowsEdition.MediumbusinessServerManagement">
+        <member name="F:Rage.WindowsEdition.MediumbusinessServerManagement">
             <summary>
 Windows Essential Business Server Management Server
 </summary>
         </member>
-        <member name="F:WindowsEdition.Hyperv">
+        <member name="F:Rage.WindowsEdition.Hyperv">
             <summary>
 Microsoft Hyper-V Server
 </summary>
         </member>
-        <member name="F:WindowsEdition.HomeServer">
+        <member name="F:Rage.WindowsEdition.HomeServer">
             <summary>
 Windows Storage Server 2008 R2 Essentials
 </summary>
         </member>
-        <member name="F:WindowsEdition.HomePremiumServer">
+        <member name="F:Rage.WindowsEdition.HomePremiumServer">
             <summary>
 Windows Home Server 2011
 </summary>
         </member>
-        <member name="F:WindowsEdition.HomePremiumN">
+        <member name="F:Rage.WindowsEdition.HomePremiumN">
             <summary>
 Home Premium N
 </summary>
         </member>
-        <member name="F:WindowsEdition.HomePremiumE">
+        <member name="F:Rage.WindowsEdition.HomePremiumE">
             <summary>
 Not supported
 </summary>
         </member>
-        <member name="F:WindowsEdition.HomePremium">
+        <member name="F:Rage.WindowsEdition.HomePremium">
             <summary>
 Home Premium
 </summary>
         </member>
-        <member name="F:WindowsEdition.HomeBasicN">
+        <member name="F:Rage.WindowsEdition.HomeBasicN">
             <summary>
 Home Basic N
 </summary>
         </member>
-        <member name="F:WindowsEdition.HomeBasicE">
+        <member name="F:Rage.WindowsEdition.HomeBasicE">
             <summary>
 Not supported
 </summary>
         </member>
-        <member name="F:WindowsEdition.HomeBasic">
+        <member name="F:Rage.WindowsEdition.HomeBasic">
             <summary>
 Home Basic
 </summary>
         </member>
-        <member name="F:WindowsEdition.EssentialbusinessServerAddlsvc">
+        <member name="F:Rage.WindowsEdition.EssentialbusinessServerAddlsvc">
             <summary>
 Windows Essential Server Solution Additional SVC
 </summary>
         </member>
-        <member name="F:WindowsEdition.EssentialbusinessServerMgmtsvc">
+        <member name="F:Rage.WindowsEdition.EssentialbusinessServerMgmtsvc">
             <summary>
 Windows Essential Server Solution Management SVC
 </summary>
         </member>
-        <member name="F:WindowsEdition.EssentialbusinessServerAddl">
+        <member name="F:Rage.WindowsEdition.EssentialbusinessServerAddl">
             <summary>
 Windows Essential Server Solution Additional
 </summary>
         </member>
-        <member name="F:WindowsEdition.EssentialbusinessServerMgmt">
+        <member name="F:Rage.WindowsEdition.EssentialbusinessServerMgmt">
             <summary>
 Windows Essential Server Solution Management
 </summary>
         </member>
-        <member name="F:WindowsEdition.EnterpriseServerV">
+        <member name="F:Rage.WindowsEdition.EnterpriseServerV">
             <summary>
 Server Enterprise without Hyper-V (full installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.EnterpriseServerIa64">
+        <member name="F:Rage.WindowsEdition.EnterpriseServerIa64">
             <summary>
 Server Enterprise for Itanium-based Systems
 </summary>
         </member>
-        <member name="F:WindowsEdition.EnterpriseServerCoreV">
+        <member name="F:Rage.WindowsEdition.EnterpriseServerCoreV">
             <summary>
 Server Enterprise without Hyper-V (core installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.EnterpriseServerCore">
+        <member name="F:Rage.WindowsEdition.EnterpriseServerCore">
             <summary>
 Server Enterprise (core installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.EnterpriseServer">
+        <member name="F:Rage.WindowsEdition.EnterpriseServer">
             <summary>
 Server Enterprise (full installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.EnterpriseEvaluation">
+        <member name="F:Rage.WindowsEdition.EnterpriseEvaluation">
             <summary>
 Server Enterprise (evaluation installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.EnterpriseN">
+        <member name="F:Rage.WindowsEdition.EnterpriseN">
             <summary>
 Enterprise N
 </summary>
         </member>
-        <member name="F:WindowsEdition.EnterpriseNEvaluation">
+        <member name="F:Rage.WindowsEdition.EnterpriseNEvaluation">
             <summary>
 Enterprise N (evaluation installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.EnterpriseE">
+        <member name="F:Rage.WindowsEdition.EnterpriseE">
             <summary>
 Not supported
 </summary>
         </member>
-        <member name="F:WindowsEdition.Enterprise">
+        <member name="F:Rage.WindowsEdition.Enterprise">
             <summary>
 Enterprise
 </summary>
         </member>
-        <member name="F:WindowsEdition.DatacenterServerV">
+        <member name="F:Rage.WindowsEdition.EducationN">
+            <summary>
+Windows 10 Education N
+</summary>
+        </member>
+        <member name="F:Rage.WindowsEdition.Education">
+            <summary>
+Windows 10 Education
+</summary>
+        </member>
+        <member name="F:Rage.WindowsEdition.DatacenterServerV">
             <summary>
 Server Datacenter without Hyper-V (full installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.DatacenterServerCoreV">
+        <member name="F:Rage.WindowsEdition.DatacenterServerCoreV">
             <summary>
 Server Datacenter without Hyper-V (core installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.DatacenterServerCore">
+        <member name="F:Rage.WindowsEdition.DatacenterServerCore">
             <summary>
 Server Datacenter (core installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.DatacenterServer">
+        <member name="F:Rage.WindowsEdition.DatacenterServer">
             <summary>
 Server Datacenter (full installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.DatacenterEvaluationServer">
+        <member name="F:Rage.WindowsEdition.DatacenterEvaluationServer">
             <summary>
 Server Datacenter (evaluation installation)
 </summary>
         </member>
-        <member name="F:WindowsEdition.CoreSinglelanguage">
+        <member name="F:Rage.WindowsEdition.CoreSinglelanguage">
             <summary>
 Windows 8 Single Language
 </summary>
         </member>
-        <member name="F:WindowsEdition.CoreCountryspecific">
+        <member name="F:Rage.WindowsEdition.CoreCountryspecific">
             <summary>
 Windows 8 China
 </summary>
         </member>
-        <member name="F:WindowsEdition.CoreN">
+        <member name="F:Rage.WindowsEdition.CoreN">
             <summary>
 Windows 8 N
 </summary>
         </member>
-        <member name="F:WindowsEdition.Core">
+        <member name="F:Rage.WindowsEdition.Core">
             <summary>
 Windows 8
 </summary>
         </member>
-        <member name="F:WindowsEdition.ClusterServerV">
+        <member name="F:Rage.WindowsEdition.ClusterServerV">
             <summary>
 Server Hyper Core V
 </summary>
         </member>
-        <member name="F:WindowsEdition.ClusterServer">
+        <member name="F:Rage.WindowsEdition.ClusterServer">
             <summary>
 HPC Edition
 </summary>
         </member>
-        <member name="F:WindowsEdition.BusinessN">
+        <member name="F:Rage.WindowsEdition.BusinessN">
             <summary>
 Business N
 </summary>
         </member>
-        <member name="F:WindowsEdition.Business">
+        <member name="F:Rage.WindowsEdition.Business">
             <summary>
 Business
 </summary>
         </member>
-        <member name="P:OperatingSystemInfo.VersionNumber">
+        <member name="P:Rage.OperatingSystemInfo.VersionNumber">
             <summary>
 Gets the operating system version number.
 </summary>
@@ -10126,6 +10136,36 @@ Gets a new vector representing this vector projected onto the target vector.
             <param name="target">The vector to project onto.</param>
             <returns>An instance of <see cref="T:Rage.Vector3" /> representing the result.</returns>
         </member>
+        <member name="M:Rage.Vector3.Around2D(System.Single)">
+            <summary>
+Gets a position that's exactly the specified distance from this position, with the same value on the Z-axis as this position.
+</summary>
+            <param name="distance">The distance.</param>
+            <returns>An instance of <see cref="T:Rage.Vector3" /> representing the new position.</returns>
+        </member>
+        <member name="M:Rage.Vector3.Around2D(System.Single,System.Single)">
+            <summary>
+Gets a position that's between the specified minimum and maximum distances from this position, with the same value on the Z-axis as this position.
+</summary>
+            <param name="minimumDistance">The minimum distance.</param>
+            <param name="maximumDistance">The maximum distance.</param>
+            <returns>An instance of <see cref="T:Rage.Vector3" /> representing the new position.</returns>
+        </member>
+        <member name="M:Rage.Vector3.Around(System.Single)">
+            <summary>
+Gets a position that's exactly the specified distance from this position.
+</summary>
+            <param name="distance">The distance.</param>
+            <returns>An instance of <see cref="T:Rage.Vector3" /> representing the new position.</returns>
+        </member>
+        <member name="M:Rage.Vector3.Around(System.Single,System.Single)">
+            <summary>
+Gets a position that's between the specified minimum and maximum distances from this position.
+</summary>
+            <param name="minimumDistance">The minimum distance.</param>
+            <param name="maximumDistance">The maximum distance.</param>
+            <returns>An instance of <see cref="T:Rage.Vector3" /> representing the new position.</returns>
+        </member>
         <member name="P:Rage.Vector3.RelativeBottom">
             <summary>
 Returns the relative Bottom vector. (0,0,-1)
@@ -10184,6 +10224,16 @@ Returns the world Down vector. (0,0,-1)
         <member name="P:Rage.Vector3.WorldUp">
             <summary>
 Returns the world Up vector. (0,0,1)
+</summary>
+        </member>
+        <member name="P:Rage.Vector3.RandomUnit">
+            <summary>
+Returns a unit vector pointing in a random direction on the X and Y axes.
+</summary>
+        </member>
+        <member name="P:Rage.Vector3.RandomUnit2D">
+            <summary>
+Returns a unit vector pointing in a random direction on the X and Y axes.
 </summary>
         </member>
         <member name="M:Rage.Vector3.Equals(Rage.Vector3@,Rage.Vector3@)">
@@ -11762,6 +11812,13 @@ Unloads the active plugin.
 Reloads the active plugin.
 </summary>
         </member>
+        <member name="M:Rage.Game.GetScriptGlobalVariableAddress(System.Int32)">
+            <summary>
+Gets the address of the script global variable with the specified id.
+</summary>
+            <param name="globalId">The global identifier.</param>
+            <returns>An <see cref="T:System.IntPtr" /> representing the address of the global variable.</returns>
+        </member>
         <member name="M:Rage.Game.TerminateAllScripts(System.String[])">
             <summary>
 Terminates all scripts.
@@ -12196,7 +12253,7 @@ Gets the build number of the game.
         </member>
         <member name="M:Rage.Game.LogExtremelyVerboseDebug(System.String)">
             <summary>
-                <para>Logs the specified text to the RAGE Plugin Hook log file, if the current logging verbosity setting is set to <see cref="!:LoggingVerbosity::ExtremelyVerbose" />.</para>
+                <para>Logs the specified text to the RAGE Plugin Hook log file, if the current logging verbosity setting is equal to, or greater than <see cref="!:LoggingVerbosity::ExtremelyVerbose" />.</para>
                 <para>When the calling <see cref="T:System.Reflection.Assembly" /> is not compiled in DEBUG mode, calls to this method will not be compiled.</para>
             </summary>
             <remarks>See <see cref="M:Rage.Game.LogTrivialDebug(System.String)" /> for an example.</remarks>
@@ -12204,7 +12261,7 @@ Gets the build number of the game.
         </member>
         <member name="M:Rage.Game.LogVeryVerboseDebug(System.String)">
             <summary>
-                <para>Logs the specified text to the RAGE Plugin Hook log file, if the current logging verbosity setting is set to <see cref="!:LoggingVerbosity::VeryVerbose" />.</para>
+                <para>Logs the specified text to the RAGE Plugin Hook log file, if the current logging verbosity setting is equal to, or greater than <see cref="!:LoggingVerbosity::VeryVerbose" />.</para>
                 <para>When the calling <see cref="T:System.Reflection.Assembly" /> is not compiled in DEBUG mode, calls to this method will not be compiled.</para>
             </summary>
             <remarks>See <see cref="M:Rage.Game.LogTrivialDebug(System.String)" /> for an example.</remarks>
@@ -12212,7 +12269,7 @@ Gets the build number of the game.
         </member>
         <member name="M:Rage.Game.LogVerboseDebug(System.String)">
             <summary>
-                <para>Logs the specified text to the RAGE Plugin Hook log file, if the current logging verbosity setting is set to <see cref="!:LoggingVerbosity::Verbose" />.</para>
+                <para>Logs the specified text to the RAGE Plugin Hook log file, if the current logging verbosity setting is equal to, or greater than <see cref="!:LoggingVerbosity::Verbose" />.</para>
                 <para>When the calling <see cref="T:System.Reflection.Assembly" /> is not compiled in DEBUG mode, calls to this method will not be compiled.</para>
             </summary>
             <remarks>See <see cref="M:Rage.Game.LogTrivialDebug(System.String)" /> for an example.</remarks>
@@ -12220,7 +12277,7 @@ Gets the build number of the game.
         </member>
         <member name="M:Rage.Game.LogTrivialDebug(System.String)">
             <summary>
-                <para>Logs the specified text to the RAGE Plugin Hook log file, if the current logging verbosity setting is set to <see cref="!:LoggingVerbosity::Trivial" />.</para>
+                <para>Logs the specified text to the RAGE Plugin Hook log file, if the current logging verbosity setting is equal to, or greater than <see cref="!:LoggingVerbosity::Trivial" />.</para>
                 <para>When the calling <see cref="T:System.Reflection.Assembly" /> is not compiled in DEBUG mode, calls to this method will not be compiled.</para>
             </summary>
             <param name="text">The text to log.</param>
@@ -12286,25 +12343,25 @@ void SpawnPoliceVehicle()
         </member>
         <member name="M:Rage.Game.LogExtremelyVerbose(System.String)">
             <summary>
-Logs the specified text to the RAGE Plugin Hook log file, if the current logging verbosity setting is set to <see cref="!:LoggingVerbosity::ExtremelyVerbose" />.
+Logs the specified text to the RAGE Plugin Hook log file, if the current logging verbosity setting is equal to, or greater than <see cref="!:LoggingVerbosity::ExtremelyVerbose" />.
 </summary>
             <param name="text">The text to log.</param>
         </member>
         <member name="M:Rage.Game.LogVeryVerbose(System.String)">
             <summary>
-Logs the specified text to the RAGE Plugin Hook log file, if the current logging verbosity setting is set to <see cref="!:LoggingVerbosity::VeryVerbose" />.
+Logs the specified text to the RAGE Plugin Hook log file, if the current logging verbosity setting is equal to, or greater than <see cref="!:LoggingVerbosity::VeryVerbose" />.
 </summary>
             <param name="text">The text to log.</param>
         </member>
         <member name="M:Rage.Game.LogVerbose(System.String)">
             <summary>
-Logs the specified text to the RAGE Plugin Hook log file, if the current logging verbosity setting is set to <see cref="!:LoggingVerbosity::Verbose" />.
+Logs the specified text to the RAGE Plugin Hook log file, if the current logging verbosity setting is equal to, or greater than <see cref="!:LoggingVerbosity::Verbose" />.
 </summary>
             <param name="text">The text to log.</param>
         </member>
         <member name="M:Rage.Game.LogTrivial(System.String)">
             <summary>
-Logs the specified text to the RAGE Plugin Hook log file, if the current logging verbosity setting is set to <see cref="!:LoggingVerbosity::Trivial" />.
+Logs the specified text to the RAGE Plugin Hook log file, if the current logging verbosity setting is equal to, or greater than <see cref="!:LoggingVerbosity::Trivial" />.
 </summary>
             <param name="text">The text to log.</param>
         </member>
