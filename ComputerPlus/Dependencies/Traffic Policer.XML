@@ -36,7 +36,42 @@
             Sets the insurance status for a vehicle. Used when vehicle is checked.
             </summary>
             <param name="vehicle"></param>
-            <param name="Insured"></param>
+            <param name="Insured">If false, sets insurance status to expired/none at random.</param>
+        </member>
+        <member name="M:Traffic_Policer.API.Functions.SetVehicleInsuranceStatus(Rage.Vehicle,Traffic_Policer.EVehicleDetailsStatus)">
+            <summary>
+            Sets the insurance status for a vehicle. Used when vehicle is checked.
+            </summary>
+            <param name="vehicle"></param>
+            <param name="InsuranceStatus"></param>
+        </member>
+        <member name="M:Traffic_Policer.API.Functions.SetVehicleRegistrationStatus(Rage.Vehicle,System.Boolean)">
+            <summary>
+            Sets the registration status for a vehicle. Used when vehicle is checked.
+            </summary>
+            <param name="vehicle"></param>
+            <param name="registrationValid">If false, sets status to expired/none at random </param>
+        </member>
+        <member name="M:Traffic_Policer.API.Functions.SetVehicleRegistrationStatus(Rage.Vehicle,Traffic_Policer.EVehicleDetailsStatus)">
+            <summary>
+            Sets the registration status for a vehicle. Used when vehicle is checked.
+            </summary>
+            <param name="vehicle"></param>
+            <param name="RegistrationStatus"></param>
+        </member>
+        <member name="M:Traffic_Policer.API.Functions.GetVehicleRegistrationStatus(Rage.Vehicle)">
+            <summary>
+            Gets the registration status for a vehicle. Used when vehicle is checked.
+            </summary>
+            <param name="veh"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Traffic_Policer.API.Functions.GetVehicleInsuranceStatus(Rage.Vehicle)">
+            <summary>
+            Gets the insurance status for a vehicle. Used when vehicle is checked.
+            </summary>
+            <param name="veh"></param>
+            <returns></returns>
         </member>
         <member name="M:Traffic_Policer.API.Functions.SetPedDrugsLevels(Rage.Ped,System.Boolean,System.Boolean)">
             <summary>
@@ -52,19 +87,31 @@
             </summary>
             <param name="ped"></param>
         </member>
-        <member name="M:Traffic_Policer.API.Functions.SetAutomaticInsuranceChecksEnabled(System.Boolean)">
+        <member name="M:Traffic_Policer.API.Functions.SetAutomaticVehicleDeatilsChecksEnabled(System.Boolean)">
             <summary>
-            Use this only if you don't want the insurance to appear after typing in a licence plate in a custom window. Remember to reactivate this after you're done fetching the input.
+            Use this only if you don't want the vehicle details to appear after typing in a licence plate in a custom window. Remember to reactivate this after you're done fetching the input.
             </summary>
             <param name="enabled"></param>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:Traffic_Policer.API.Functions.SetTicketReasonsEnabled(System.Boolean)" -->
+        <member name="M:Traffic_Policer.API.Functions.SetTicketReasonsEnabled(System.Boolean)">
+            <summary>
+            Use this only if you don't want the ticket reasons to display while writing a ticket for your plugin. Remember to reactivate this after you're done.
+            /// </summary>
+            <param name="enabled"></param>
+        </member>
         <member name="M:Traffic_Policer.API.Functions.SetPedAlcoholLevel(Rage.Ped,Traffic_Policer.Impairment_Tests.AlcoholLevels)">
             <summary>
             Sets the alcohol level for the ped. Used by Traffic Policer's Breathalyzer. Automatically converts the AlcoholLevel to an appropriate reading depending on the player's personal alcohol limit.
             </summary>
             <param name="ped"></param>
             <param name="AlcoholLevel"></param>
+        </member>
+        <member name="M:Traffic_Policer.API.Functions.SetPedAlcoholLevel(Rage.Ped,System.Boolean)">
+            <summary>
+            Sets whether the ped is over the alcohol limit or not.
+            </summary>
+            <param name="ped"></param>
+            <param name="OverTheAlcoholLimit">If true, sets ped as over the limit. If false, sets ped as under the limit.</param>
         </member>
         <member name="M:Traffic_Policer.API.Functions.GetRandomOverTheLimitAlcoholLevel">
             <summary>
@@ -91,6 +138,12 @@
             </summary>
             <param name="ped"></param>
             <returns></returns>
+        </member>
+        <member name="M:Traffic_Policer.API.Functions.SetAutomaticInsuranceChecksEnabled(System.Boolean)">
+            <summary>
+            Use this only if you don't want the insurance to appear after typing in a licence plate in a custom window. Remember to reactivate this after you're done fetching the input.
+            </summary>
+            <param name="enabled"></param>
         </member>
         <member name="M:Traffic_Policer.Callouts.DrugsRunners.searchForDrugs">
             <summary>
@@ -140,16 +193,6 @@
         <member name="M:Traffic_Policer.Callouts.OwnerWanted.situationLSPDFR(System.Boolean)">
             <summary>
             Leave it to LSPDFR.
-            </summary>
-        </member>
-        <member name="M:Traffic_Policer.EntryPoint.registerCallouts">
-            <summary>
-            Registers the callouts with LSPDFR
-            </summary>
-        </member>
-        <member name="M:Traffic_Policer.EntryPoint.loadValuesFromIniFile">
-            <summary>
-            Reads all the values from the ini file and loads them into the plugin
             </summary>
         </member>
         <member name="M:Traffic_Policer.EntryPoint.mainLoop">

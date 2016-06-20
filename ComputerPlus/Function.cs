@@ -257,6 +257,11 @@ namespace ComputerPlus
             return false;
         }
 
+        internal static bool IsTrafficPolicerRunning()
+        {
+            return IsLSPDFRPluginRunning("Traffic Policer", new Version(6, 9, 8, 1));
+        }
+
         internal static string GetFormattedDateTime(DateTime? date = null)
         {
             if (date == null || !date.HasValue)

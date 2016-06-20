@@ -15,4 +15,11 @@
         At_Scene,
         Completed
     }
+
+    internal enum EVehicleStatus
+    {
+        Valid,
+        Expired,
+        None
+    }
 }

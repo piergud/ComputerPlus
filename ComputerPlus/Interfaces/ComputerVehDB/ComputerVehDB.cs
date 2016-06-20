@@ -115,13 +115,12 @@ namespace ComputerPlus
             info = String.Format("Information found for license plate \"{0}\":\nVehicle: {1}\nOwner: {2}", veh.LicensePlate.Trim(),
                 veh_name, veh_owner);
 
-            if (Function.IsLSPDFRPluginRunning("Traffic Policer"))
+            if (Function.IsTrafficPolicerRunning())
             {
-                string insurance_text = "None";
-                if (TrafficPolicerFunction.GetVehicleInsured(veh))
-                {
-                    insurance_text = "Insured";
-                }
+                string reg_text = TrafficPolicerFunction.GetVehicleRegistrationStatus(veh).ToString();
+                info += String.Format("\nRegistration Status: {0}", reg_text);
+
+                string insurance_text = TrafficPolicerFunction.GetVehicleInsuranceStatus(veh).ToString();
                 info += String.Format("\nInsurance Status: {0}", insurance_text);
             }
 
