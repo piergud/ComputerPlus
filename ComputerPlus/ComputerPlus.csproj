@@ -80,7 +80,6 @@
     <Compile Include="API\ExternalUI.cs" />
     <Compile Include="API\Functions.cs" />
     <Compile Include="API\ICalloutData.cs" />
-    <Compile Include="API\IExternalUI.cs" />
     <Compile Include="API\MDTAPI.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
