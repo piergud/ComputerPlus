@@ -1,8 +1,10 @@
 ﻿
 using System.Drawing;
+using System.Linq;
 using Rage;
 using Rage.Forms;
 using Gwen.Control;
+using System;
 
 namespace ComputerPlus
 {
@@ -10,12 +12,22 @@ namespace ComputerPlus
     {
         private Button btn_logout, btn_ped_db, btn_veh_db, btn_request, btn_activecalls;
         internal ListBox list_recent;
+        private Label label_external_ui;
+        private ComboBox list_external_ui;
         internal static GameFiber form_ped_db = new GameFiber(OpenPedDBForm);
         internal static GameFiber form_veh_db = new GameFiber(OpenVehDBForm);
         internal static GameFiber form_backup = new GameFiber(OpenRequestBackupForm);
         internal static GameFiber form_report = new GameFiber(OpenReportMenuForm);
         internal static GameFiber form_active_calls = new GameFiber(OpenActiveCallsForm);
         //private Button btn_ReportMain; // Fiskey111 Edit
+
+        private bool ShouldShowExtraUIControls
+        {
+            get
+            {
+                return Globals.ExternalUI.Count > 0;
+            }
+        }
 
         public ComputerMain() : base(typeof(ComputerMainTemplate))
         {
@@ -24,7 +36,7 @@ namespace ComputerPlus
 
         public override void InitializeLayout()
         {
-            base.InitializeLayout();
+            base.InitializeLayout();                        
             this.btn_logout.Clicked += this.LogoutButtonClickedHandler;
             this.btn_ped_db.Clicked += this.PedDBButtonClickedHandler;
             this.btn_veh_db.Clicked += this.VehDBButtonClickedHandler;
@@ -39,6 +51,15 @@ namespace ComputerPlus
             this.Position = new Point(Game.Resolution.Width / 2 - this.Window.Width / 2, Game.Resolution.Height / 2 - this.Window.Height / 2);
             if (!Function.IsBackgroundEnabled())
                 Function.EnableBackground();
+
+            if (ShouldShowExtraUIControls)
+            {
+                ControlExternalUISelectVisibility(ShouldShowExtraUIControls);
+                list_external_ui.AddItem("Select One");
+                Globals.SortedExternalUI.ToList().ForEach(x => list_external_ui.AddItem(x.DisplayName, x.Identifier.ToString()));
+                list_external_ui.ItemSelected += ExternalUISelected;
+            }
+            
         }
 
         private void LogoutButtonClickedHandler(Base sender, ClickedEventArgs e) 
@@ -81,6 +102,36 @@ namespace ComputerPlus
             form_active_calls.Start();
         }
 
+        private void ExternalUISelected(Base sender, ItemSelectedEventArgs arguments)
+        {
+            if (arguments.SelectedItem.Name == null) return;
+            System.Guid guid = System.Guid.Parse(arguments.SelectedItem.Name);
+            var match = Globals.ExternalUI.DefaultIfEmpty(null).FirstOrDefault(x => x.Identifier == guid);
+            if (match == null) return;
+
+            try
+            {
+                GameFiber.StartNew(delegate
+                {
+                    var form = match.Creator();
+                    if (form == null)
+                    {
+                        Game.DisplayNotification(string.Format("Empty form provided for {0}", match.DisplayName));
+                        return;
+                    }    
+                    form.Show();
+                    if (match.OnOpen != null)
+                        match.OnOpen();
+                    Globals.ActiveExternalUI_ID = match.Identifier;
+                });
+            }
+            catch(Exception e)
+            {
+                Game.LogVerbose(string.Format("Error while initializing extra form {0}", match.DisplayName));
+                Game.LogVerbose(e.Message);
+            }
+        }
+
         internal static void OpenPedDBForm()
         {
             GwenForm ped_db = new ComputerPedDB();
@@ -119,6 +170,20 @@ namespace ComputerPlus
             active_calls.Show();
             while (active_calls.Window.IsVisible)
                 GameFiber.Yield();
+        }
+
+        private void ControlExternalUISelectVisibility(bool visible)
+        {
+            if(visible)
+            {
+                label_external_ui.Show();
+                list_external_ui.Show();
+            }
+            else
+            {
+                label_external_ui.Hide();
+                label_external_ui.Hide();
+            }
         }
     }
 }
