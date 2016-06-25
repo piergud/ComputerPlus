@@ -38,13 +38,15 @@
             this.btn_request = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.btn_activecalls = new System.Windows.Forms.Button();
+            this.label_external_ui = new System.Windows.Forms.Label();
+            this.list_external_ui = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // btn_ped_db
             // 
             this.btn_ped_db.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btn_ped_db.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.btn_ped_db.Location = new System.Drawing.Point(64, 158);
+            this.btn_ped_db.Location = new System.Drawing.Point(64, 192);
             this.btn_ped_db.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btn_ped_db.Name = "btn_ped_db";
             this.btn_ped_db.Size = new System.Drawing.Size(125, 30);
@@ -57,7 +59,7 @@
             // 
             this.btn_veh_db.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btn_veh_db.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.btn_veh_db.Location = new System.Drawing.Point(193, 158);
+            this.btn_veh_db.Location = new System.Drawing.Point(193, 192);
             this.btn_veh_db.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btn_veh_db.Name = "btn_veh_db";
             this.btn_veh_db.Size = new System.Drawing.Size(125, 30);
@@ -70,7 +72,7 @@
             // 
             this.btn_logout.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btn_logout.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.btn_logout.Location = new System.Drawing.Point(258, 194);
+            this.btn_logout.Location = new System.Drawing.Point(258, 228);
             this.btn_logout.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btn_logout.Name = "btn_logout";
             this.btn_logout.Size = new System.Drawing.Size(125, 30);
@@ -96,7 +98,7 @@
             // 
             this.btn_request.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btn_request.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.btn_request.Location = new System.Drawing.Point(322, 158);
+            this.btn_request.Location = new System.Drawing.Point(322, 192);
             this.btn_request.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btn_request.Name = "btn_request";
             this.btn_request.Size = new System.Drawing.Size(125, 30);
@@ -118,7 +120,7 @@
             // 
             this.btn_activecalls.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btn_activecalls.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.btn_activecalls.Location = new System.Drawing.Point(451, 158);
+            this.btn_activecalls.Location = new System.Drawing.Point(451, 192);
             this.btn_activecalls.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btn_activecalls.Name = "btn_activecalls";
             this.btn_activecalls.Size = new System.Drawing.Size(125, 30);
@@ -126,12 +128,33 @@
             this.btn_activecalls.Text = "Call Details";
             this.btn_activecalls.UseVisualStyleBackColor = true;
             // 
+            // label_external_ui
+            // 
+            this.label_external_ui.AutoSize = true;
+            this.label_external_ui.Location = new System.Drawing.Point(79, 164);
+            this.label_external_ui.Name = "label_external_ui";
+            this.label_external_ui.Size = new System.Drawing.Size(36, 13);
+            this.label_external_ui.TabIndex = 7;
+            this.label_external_ui.Text = "Extras";
+            this.label_external_ui.Visible = false;
+            // 
+            // list_external_ui
+            // 
+            this.list_external_ui.FormattingEnabled = true;
+            this.list_external_ui.Location = new System.Drawing.Point(149, 161);
+            this.list_external_ui.Name = "list_external_ui";
+            this.list_external_ui.Size = new System.Drawing.Size(312, 21);
+            this.list_external_ui.TabIndex = 8;
+            this.list_external_ui.Visible = false;
+            // 
             // ComputerMainTemplate
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(645, 233);
+            this.ClientSize = new System.Drawing.Size(645, 267);
+            this.Controls.Add(this.list_external_ui);
+            this.Controls.Add(this.label_external_ui);
             this.Controls.Add(this.btn_activecalls);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btn_request);
@@ -162,5 +185,7 @@
         private Label label1;
         private ListBox list_recent;
         private Button btn_activecalls;
+        private Label label_external_ui;
+        private ComboBox list_external_ui;
     }
 }

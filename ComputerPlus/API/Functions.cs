@@ -150,5 +150,22 @@ namespace ComputerPlus.API
             foreach (var x in Globals.CallQueue.Where(x => x.ID == callID))
                 x.AddVehicle(veh);
         }
+
+        public static Guid RegisterInterface(String displayName, String author, Func<Rage.Forms.GwenForm> creator, Action onOpen = null)
+        {
+            if (String.IsNullOrWhiteSpace(displayName) || String.IsNullOrWhiteSpace(author) || creator == null) return Guid.Empty;
+            //Ensure there are no other UIs registered with the same params, if so, return it
+            var conflict = Globals.ExternalUI.Where(x => x.DisplayName.Equals(displayName) && x.Author.Equals(author)).DefaultIfEmpty(null).FirstOrDefault();
+            if (conflict != null) return conflict.Identifier;
+            //Create a new ExternalUI entry
+            var guid = Guid.NewGuid();
+            Globals.ExternalUI.Add(new ExternalUI(guid, displayName, author, creator, onOpen));
+            return guid;
+        }
+
+        public static void Test()
+        {
+            Game.DisplayNotification("HERE");
+        }
     }
 }
