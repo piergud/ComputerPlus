@@ -32,6 +32,7 @@
             this.input_name = new System.Windows.Forms.TextBox();
             this.btn_main = new System.Windows.Forms.Button();
             this.output_info = new System.Windows.Forms.TextBox();
+            this.ped_holder_button = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btn_search
@@ -67,15 +68,25 @@
             this.output_info.Location = new System.Drawing.Point(12, 12);
             this.output_info.Multiline = true;
             this.output_info.Name = "output_info";
-            this.output_info.Size = new System.Drawing.Size(488, 286);
+            this.output_info.Size = new System.Drawing.Size(297, 286);
             this.output_info.TabIndex = 4;
             this.output_info.TextChanged += new System.EventHandler(this.output_info_TextChanged);
+            // 
+            // ped_holder_button
+            // 
+            this.ped_holder_button.Location = new System.Drawing.Point(318, 12);
+            this.ped_holder_button.Name = "ped_holder_button";
+            this.ped_holder_button.Size = new System.Drawing.Size(182, 232);
+            this.ped_holder_button.TabIndex = 5;
+            this.ped_holder_button.Text = "Search";
+            this.ped_holder_button.UseVisualStyleBackColor = true;
             // 
             // ComputerPedDBTemplate
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(512, 339);
+            this.Controls.Add(this.ped_holder_button);
             this.Controls.Add(this.output_info);
             this.Controls.Add(this.btn_main);
             this.Controls.Add(this.input_name);
@@ -97,5 +108,6 @@
         private System.Windows.Forms.TextBox input_name;
         private System.Windows.Forms.Button btn_main;
         private System.Windows.Forms.TextBox output_info;
+        private System.Windows.Forms.Button ped_holder_button;
     }
 }
