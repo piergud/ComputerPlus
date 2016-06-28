@@ -8,26 +8,46 @@ using Rage.Forms;
 using Gwen.Control;
 using LSPD_First_Response.Engine.Scripting.Entities;
 using LSPD_First_Response.Mod.API;
+using Rage.Native;
 
 namespace ComputerPlus
 {
     internal class ComputerPedDB : GwenForm
-    {
+    {        
         private Button btn_search, btn_main;
         private MultilineTextBox output_info;
         private TextBox input_name;
+        private Label ped_image_holder;
+
+        private WindowControl ComputerPedDBTemplate;
+
+        private Texture ped_image = null;
         internal static GameFiber form_main = new GameFiber(OpenMainMenuForm);
         internal static GameFiber search_fiber = new GameFiber(null);
         private bool _initial_clear = false;
+
+        private Ped lastSearched = null;
 
         public ComputerPedDB() : base(typeof(ComputerPedDBTemplate))
         {
 
         }
 
+        ~ComputerPedDB() 
+        {
+            Game.LogVerbose("Removing frame render for ComputerPedDB");
+            Cleanup();
+        }
+
+        public void Cleanup()
+        {            
+            Game.FrameRender -= Game_FrameRender;
+        }
+        
         public override void InitializeLayout()
         {
             base.InitializeLayout();
+            Game.FrameRender += Game_FrameRender;
             this.btn_search.Clicked += this.SearchButtonClickedHandler;
             this.btn_main.Clicked += this.MainMenuButtonClickedHandler;
             this.input_name.Clicked += this.InputNameFieldClickedHandler;
@@ -39,6 +59,14 @@ namespace ComputerPlus
             {
                 input_name.Text = Functions.GetPersonaForPed(Functions.GetPulloverSuspect(Functions.GetCurrentPullover())).FullName;
                 _initial_clear = true;
+            }
+        }        
+
+        private void Game_FrameRender(object sender, GraphicsEventArgs e)
+        {
+            if (ped_image != null)
+            {                
+                e.Graphics.DrawTexture(ped_image, this.Window.X + this.Window.Width + 20, this.Window.Y, 155f, 217f);
             }
         }
 
@@ -93,6 +121,7 @@ namespace ComputerPlus
 
                     if (ped)
                     {
+                        HandleImageLoad(ped);
                         output_info.Text = GetFormattedInfoForPed(ped);
                         Function.AddPedToRecents(ped);
                     }
@@ -117,6 +146,32 @@ namespace ComputerPlus
             return String.Format("Information found about \"{0}\":\nDOB: {1}\nCitations: {2}\nGender: {3}\nLicense: {4}\n"
                 + "Times Stopped: {5}\nWanted: {6}\n{7}", p.FullName, String.Format("{0:dddd, MMMM dd, yyyy}", p.BirthDay), p.Citations, p.Gender, p.LicenseState,
                 p.TimesStopped, wanted_text, leo_text);
+        }
+
+        private void HandleImageLoad(Ped ped)
+        {
+            
+            String modelName = ped.Model.Name;
+            int headDrawableIndex, headDrawableTextureIndex, hairDrawableIndex, hairDrawableTextureIndex,
+                beardDrawableIndex, beardDrawableTextureIndex;
+
+            ped.GetVariation(0, out headDrawableIndex, out headDrawableTextureIndex);
+            ped.GetVariation(2, out hairDrawableIndex, out hairDrawableTextureIndex);
+            ped.GetVariation(1, out beardDrawableIndex, out beardDrawableTextureIndex);
+
+            Game.LogVerboseDebug(String.Format("{0} {1} {2}", 0, headDrawableIndex, headDrawableTextureIndex));
+            Game.LogVerboseDebug(String.Format("{0} {1} {2}", 2, hairDrawableIndex, hairDrawableTextureIndex));
+            Game.LogVerboseDebug(String.Format("{0} {1} {2}", 1, beardDrawableIndex, beardDrawableIndex));
+
+            var imageName = String.Format("{0}__0_{1}_{2}_front", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
+            Game.LogVerboseDebug(String.Format("Loading image {0}", imageName));
+            var image = ComputerPlus.Function.LoadPedImage(imageName);
+            if (image == null)
+            {
+                Game.LogVerboseDebug("Returning default image for model");
+                image = ComputerPlus.Function.LoadPedImage(modelName.ToLower());
+            }
+            ped_image = image;
         }
     }
 }
