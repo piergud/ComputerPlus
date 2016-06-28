@@ -134,10 +134,13 @@ namespace ComputerPlus
 
         internal static void OpenPedDBForm()
         {
-            GwenForm ped_db = new ComputerPedDB();
+            ComputerPedDB ped_db = new ComputerPedDB();
             ped_db.Show();
             while (ped_db.Window.IsVisible)
                 GameFiber.Yield();
+            Game.DisplayNotification("OpenPedDBForm after while");
+            ped_db.Cleanup();
+            ped_db = null;
         }
 
         internal static void OpenVehDBForm()

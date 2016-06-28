@@ -146,7 +146,7 @@ namespace ComputerPlus
             float length = Rage.Graphics.MeasureText(time, "Arial", 18).Width;
             taskbar.Size = new SizeF(Game.Resolution.Width, Game.Resolution.Height / 25);
             taskbar.Location = new PointF(1, 1 + Game.Resolution.Height - (Game.Resolution.Height / 25));
-
+            
             e.Graphics.DrawTexture(_bg, 0f, 0f, Game.Resolution.Width, Game.Resolution.Height);
             //e.Graphics.DrawRectangle(taskbar, taskbar_col);
             e.Graphics.DrawText(update_text, "Arial", 18,
@@ -184,6 +184,13 @@ namespace ComputerPlus
                 file = "lspd.jpg";
             }
             return file;
+        }
+
+        internal static Texture LoadPedImage(String model)
+        {
+            var path = String.Format(@"Plugins\LSPDFR\ComputerPlus\tmp\{0}.jpg", model);
+            Game.LogVerboseDebug(String.Format("LoadPedImage: {0}", path));
+            return Game.CreateTextureFromFile(path);
         }
 
         private static void MakeSpaceForNewRecent()
