@@ -105,6 +105,21 @@
     <Compile Include="Interfaces\ComputerCurrentCallDetails\ComputerCurrentCallDetailsTemplate.Designer.cs">
       <DependentUpon>ComputerCurrentCallDetailsTemplate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\ComputerPedDB\ComputerPedController.cs" />
+    <Compile Include="Interfaces\ComputerPedDB\ComputerPedSearch.cs" />
+    <Compile Include="Interfaces\ComputerPedDB\ComputerPedSearchTemplate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interfaces\ComputerPedDB\ComputerPedSearchTemplate.Designer.cs">
+      <DependentUpon>ComputerPedSearchTemplate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interfaces\ComputerPedDB\ComputerPedView.cs" />
+    <Compile Include="Interfaces\ComputerPedDB\ComputerPedViewTemplate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interfaces\ComputerPedDB\ComputerPedViewTemplate.Designer.cs">
+      <DependentUpon>ComputerPedViewTemplate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Interfaces\ComputerRequestBackup\ComputerRequestBackup.cs" />
     <Compile Include="Interfaces\ComputerRequestBackup\ComputerRequestBackupTemplate.cs">
       <SubType>Form</SubType>
@@ -169,6 +184,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Interfaces\ComputerPedDB\ComputerPedDBTemplate.resx">
       <DependentUpon>ComputerPedDBTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interfaces\ComputerPedDB\ComputerPedSearchTemplate.resx">
+      <DependentUpon>ComputerPedSearchTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interfaces\ComputerPedDB\ComputerPedViewTemplate.resx">
+      <DependentUpon>ComputerPedViewTemplate.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Interfaces\ComputerRequestBackup\ComputerRequestBackupTemplate.resx">
       <DependentUpon>ComputerRequestBackupTemplate.cs</DependentUpon>
