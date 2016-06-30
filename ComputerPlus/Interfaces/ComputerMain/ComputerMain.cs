@@ -5,6 +5,7 @@ using Rage;
 using Rage.Forms;
 using Gwen.Control;
 using System;
+using ComputerPlus.Interfaces.ComputerPedDB;
 
 namespace ComputerPlus
 {
@@ -14,7 +15,6 @@ namespace ComputerPlus
         internal ListBox list_recent;
         private Label label_external_ui;
         private ComboBox list_external_ui;
-        internal static GameFiber form_ped_db = new GameFiber(OpenPedDBForm);
         internal static GameFiber form_veh_db = new GameFiber(OpenVehDBForm);
         internal static GameFiber form_backup = new GameFiber(OpenRequestBackupForm);
         internal static GameFiber form_report = new GameFiber(OpenReportMenuForm);
@@ -62,16 +62,20 @@ namespace ComputerPlus
             
         }
 
+
+
         private void LogoutButtonClickedHandler(Base sender, ClickedEventArgs e) 
         {
             this.Window.Close();
         }
 
+
         private void PedDBButtonClickedHandler(Base sender, ClickedEventArgs e)
         {
             this.Window.Close();
-            form_ped_db = new GameFiber(OpenPedDBForm);
-            form_ped_db.Start();
+            var fiber = ComputerPedController.PedSearchGameFiber;
+            if (fiber.IsHibernating) fiber.Wake();
+            else if(!fiber.IsAlive) fiber.Start();
         }
 
         private void VehDBButtonClickedHandler(Base sender, ClickedEventArgs e)
@@ -132,16 +136,6 @@ namespace ComputerPlus
             }
         }
 
-        internal static void OpenPedDBForm()
-        {
-            ComputerPedDB ped_db = new ComputerPedDB();
-            ped_db.Show();
-            while (ped_db.Window.IsVisible)
-                GameFiber.Yield();
-            Game.DisplayNotification("OpenPedDBForm after while");
-            ped_db.Cleanup();
-            ped_db = null;
-        }
 
         internal static void OpenVehDBForm()
         {

@@ -8,9 +8,17 @@ using System.Drawing;
 using Rage;
 using Rage.Native;
 using LSPD_First_Response.Mod.API;
+using Rage.Forms;
 
 namespace ComputerPlus
 {
+    internal static class GwenFormExtension
+    {
+        internal static Point GetLaunchPosition(this GwenForm form)
+        {
+            return new Point(Game.Resolution.Width / 2 - form.Window.Width / 2, Game.Resolution.Height / 2 - form.Window.Height / 2);
+        }
+    }
     internal static class Function
     {
         private static Texture _bg;
@@ -186,9 +194,14 @@ namespace ComputerPlus
             return file;
         }
 
+        internal static String GetPedImagePath(String model)
+        {
+            return String.Format(@"Plugins\LSPDFR\ComputerPlus\tmp\{0}_front.jpg", model);
+        }
+
         internal static Texture LoadPedImage(String model)
         {
-            var path = String.Format(@"Plugins\LSPDFR\ComputerPlus\tmp\{0}.jpg", model);
+            var path = GetPedImagePath(model);
             Game.LogVerboseDebug(String.Format("LoadPedImage: {0}", path));
             return Game.CreateTextureFromFile(path);
         }
@@ -403,5 +416,7 @@ namespace ComputerPlus
             String str = Marshal.PtrToStringAnsi(ptr);
             return str;
         }
+
+        
     }
 }
