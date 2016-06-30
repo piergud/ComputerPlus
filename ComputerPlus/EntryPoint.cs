@@ -5,7 +5,6 @@ using System.Reflection;
 using Rage;
 using Rage.Forms;
 using LSPD_First_Response.Mod.API;
-using ComputerPlus.API;
 
 namespace ComputerPlus
 {
@@ -163,7 +162,7 @@ namespace ComputerPlus
             {
                 GameFiber.Yield();
 
-                if (Globals.IsCalloutActive == true && LSPD_First_Response.Mod.API.Functions.IsCalloutRunning() == false && Globals.ActiveCallout != null)
+                if (Globals.IsCalloutActive == true && Functions.IsCalloutRunning() == false && Globals.ActiveCallout != null)
                 {
                     Function.ClearActiveCall();
                 }

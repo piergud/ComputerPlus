@@ -211,7 +211,7 @@ namespace ComputerPlus
         {
             MakeSpaceForNewRecent();
             string lp = veh.LicensePlate;
-            EntryPoint.recent_text.Add(String.Format("Looked up vehicle: {0} ({1})", lp, Function.GetVehicleDisplayName(veh)));
+            EntryPoint.recent_text.Add(String.Format("Looked up vehicle: {0} ({1})", lp, GetVehicleDisplayName(veh)));
         }
 
         /// <summary>
