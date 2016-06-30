@@ -150,24 +150,5 @@ namespace ComputerPlus.API
             foreach (var x in Globals.CallQueue.Where(x => x.ID == callID))
                 x.AddVehicle(veh);
         }
-
-        /// <summary>
-        /// Register a Gwen Form that will be added to the extras drop down on the main screen.
-        /// </summary>
-        /// <param name="displayName">The name to display in the drop down list.</param>
-        /// <param name="author">The author's name to display in the drop down list as $displayName - $author</param>
-        /// <param name="creator">The creator function which will return the Gwen Form</param>
-        /// <param name="onOpen">An optional callback that will be excuted when the form.Show() method is called.</param>
-        public static Guid RegisterInterface(String displayName, String author, Func<Rage.Forms.GwenForm> creator, Action onOpen = null)
-        {
-            if (String.IsNullOrWhiteSpace(displayName) || String.IsNullOrWhiteSpace(author) || creator == null) return Guid.Empty;
-            //Ensure there are no other UIs registered with the same params, if so, return it
-            var conflict = Globals.ExternalUI.Where(x => x.DisplayName.Equals(displayName) && x.Author.Equals(author)).DefaultIfEmpty(null).FirstOrDefault();
-            if (conflict != null) return conflict.Identifier;
-            //Create a new ExternalUI entry
-            var guid = Guid.NewGuid();
-            Globals.ExternalUI.Add(new ExternalUI(guid, displayName, author, creator, onOpen));
-            return guid;
-        }
     }
 }
