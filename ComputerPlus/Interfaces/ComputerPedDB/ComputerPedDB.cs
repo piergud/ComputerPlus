@@ -14,7 +14,7 @@ namespace ComputerPlus
 {
     internal class ComputerPedDB : GwenForm
     {        
-        private Button btn_search, btn_main;
+        private Button btn_search, btn_main, btn_ped_image;
         private MultilineTextBox output_info;
         private TextBox input_name;
         private Label ped_image_holder;
@@ -41,13 +41,16 @@ namespace ComputerPlus
 
         public void Cleanup()
         {            
-            Game.FrameRender -= Game_FrameRender;
+            //Game.FrameRender -= Game_FrameRender;
         }
         
         public override void InitializeLayout()
         {
             base.InitializeLayout();
-            Game.FrameRender += Game_FrameRender;
+            Game.LogVerboseDebug("InitializeLayout");
+            //var path = Function.GetPedImagePath("a_f_m_bevhills_01__0_1_2");
+            //this.btn_ped_image.SetImage(path, true);
+            //Game.FrameRender += Game_FrameRender;            
             this.btn_search.Clicked += this.SearchButtonClickedHandler;
             this.btn_main.Clicked += this.MainMenuButtonClickedHandler;
             this.input_name.Clicked += this.InputNameFieldClickedHandler;
@@ -152,26 +155,22 @@ namespace ComputerPlus
         {
             
             String modelName = ped.Model.Name;
-            int headDrawableIndex, headDrawableTextureIndex, hairDrawableIndex, hairDrawableTextureIndex,
-                beardDrawableIndex, beardDrawableTextureIndex;
+            int headDrawableIndex, headDrawableTextureIndex;
 
             ped.GetVariation(0, out headDrawableIndex, out headDrawableTextureIndex);
-            ped.GetVariation(2, out hairDrawableIndex, out hairDrawableTextureIndex);
-            ped.GetVariation(1, out beardDrawableIndex, out beardDrawableTextureIndex);
 
-            Game.LogVerboseDebug(String.Format("{0} {1} {2}", 0, headDrawableIndex, headDrawableTextureIndex));
-            Game.LogVerboseDebug(String.Format("{0} {1} {2}", 2, hairDrawableIndex, hairDrawableTextureIndex));
-            Game.LogVerboseDebug(String.Format("{0} {1} {2}", 1, beardDrawableIndex, beardDrawableIndex));
-
-            var imageName = String.Format("{0}__0_{1}_{2}_front", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
-            Game.LogVerboseDebug(String.Format("Loading image {0}", imageName));
-            var image = ComputerPlus.Function.LoadPedImage(imageName);
-            if (image == null)
+            String _model = String.Format(@"{0}__0_{1}_{2}", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
+            try {
+                var path = String.Format(@"F:\Rockstar Games\Plugins\LSPDFR\ComputerPlus\tmp\{0}", _model);
+                Game.LogVerboseDebug(String.Format("Loading with path {0}", path));
+                //Game.CreateTextureFromFile(path);
+                btn_ped_image.SetImage(path);
+                btn_ped_image.InvalidateParent();
+            } catch(Exception e)
             {
-                Game.LogVerboseDebug("Returning default image for model");
-                image = ComputerPlus.Function.LoadPedImage(modelName.ToLower());
+                Game.LogVerboseDebug(e.ToString());
+                btn_ped_image.SetText("NO IMAGE");
             }
-            ped_image = image;
         }
     }
 }

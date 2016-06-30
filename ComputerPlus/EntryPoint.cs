@@ -6,6 +6,7 @@ using Rage;
 using Rage.Forms;
 using LSPD_First_Response.Mod.API;
 using ComputerPlus.API;
+using ComputerPlus.Interfaces.ComputerPedDB;
 
 namespace ComputerPlus
 {
@@ -127,7 +128,9 @@ namespace ComputerPlus
                 login = new ComputerLogin();
                 login.Show();
 
-                while (login.Window.IsVisible || ComputerLogin.next_form.IsAlive || ComputerMain.form_ped_db.IsAlive
+                while (login.Window.IsVisible || ComputerLogin.next_form.IsAlive
+                    || (ComputerPedController.PedSearchGameFiber.IsAlive && !ComputerPedController.PedSearchGameFiber.IsHibernating)
+                    || (ComputerPedController.PedViewGameFiber.IsAlive && !ComputerPedController.PedViewGameFiber.IsHibernating)
                     || ComputerMain.form_veh_db.IsAlive || ComputerMain.form_backup.IsAlive || ComputerMain.form_active_calls.IsAlive
                     || ComputerPedDB.form_main.IsAlive || ComputerVehDB.form_main.IsAlive || ComputerRequestBackup.form_main.IsAlive 
                     || ComputerCurrentCallDetails.form_main.IsAlive)
@@ -140,13 +143,18 @@ namespace ComputerPlus
                 main = new ComputerMain();
                 main.Show();
 
-                while (main.Window.IsVisible || ComputerMain.form_ped_db.IsAlive || ComputerMain.form_veh_db.IsAlive 
+                while (main.Window.IsVisible
+                    || (ComputerPedController.PedSearchGameFiber.IsAlive && !ComputerPedController.PedSearchGameFiber.IsHibernating) 
+                    || (ComputerPedController.PedViewGameFiber.IsAlive && !ComputerPedController.PedViewGameFiber.IsHibernating) 
+                    || ComputerMain.form_veh_db.IsAlive 
                     || ComputerMain.form_backup.IsAlive || ComputerMain.form_active_calls.IsAlive || ComputerPedDB.form_main.IsAlive
                     || ComputerPedDB.form_main.IsAlive || ComputerVehDB.form_main.IsAlive || ComputerRequestBackup.form_main.IsAlive
                     || ComputerCurrentCallDetails.form_main.IsAlive)
                 {
+                    //Console.WriteLine("A: {0} {1} {2}", main.Window.IsVisible, ComputerPedController.PedSearchGameFiber.IsAlive, ComputerPedController.PedViewGameFiber.IsAlive);                   
                     GameFiber.Yield();
-                }
+                }               
+                
             }
 
             Function.DisableBackground();
