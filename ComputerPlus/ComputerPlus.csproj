@@ -49,6 +49,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ALPRPlus">
+      <HintPath>Dependencies\ALPRPlus.dll</HintPath>
+    </Reference>
     <Reference Include="Gwen, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Dependencies\Gwen.dll</HintPath>
@@ -75,13 +78,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ALPRPlusFunctions.cs" />
     <Compile Include="API\CalloutData.cs" />
     <Compile Include="API\CalloutUpdate.cs" />
     <Compile Include="API\ExternalUI.cs" />
     <Compile Include="API\Functions.cs" />
     <Compile Include="API\ICalloutData.cs" />
     <Compile Include="API\MDTAPI.cs" />
+    <Compile Include="Controllers\Models\ALRP_Arguments.cs" />
+    <Compile Include="Controllers\Models\ComputerPlusEntity.cs" />
+    <Compile Include="Controllers\Models\VehiclePersona.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="Extensions\Gwen\ListBoxExtensions.cs" />
+    <Compile Include="Extensions\Rage\BlipExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Globals.cs" />
@@ -105,7 +114,7 @@
     <Compile Include="Interfaces\ComputerCurrentCallDetails\ComputerCurrentCallDetailsTemplate.Designer.cs">
       <DependentUpon>ComputerCurrentCallDetailsTemplate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interfaces\ComputerPedDB\ComputerPedController.cs" />
+    <Compile Include="Controllers\ComputerPedController.cs" />
     <Compile Include="Interfaces\ComputerPedDB\ComputerPedSearch.cs" />
     <Compile Include="Interfaces\ComputerPedDB\ComputerPedSearchTemplate.cs">
       <SubType>Form</SubType>
@@ -158,6 +167,21 @@
     <Compile Include="Configs.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Function.cs" />
+    <Compile Include="Controllers\ComputerVehicleController.cs" />
+    <Compile Include="Interfaces\ComputerVehDB\ComputerVehicleDetails.cs" />
+    <Compile Include="Interfaces\ComputerVehDB\ComputerVehicleDetailsTemplate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interfaces\ComputerVehDB\ComputerVehicleDetailsTemplate.Designer.cs">
+      <DependentUpon>ComputerVehicleDetailsTemplate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interfaces\ComputerVehDB\ComputerVehicleSearch.cs" />
+    <Compile Include="Interfaces\ComputerVehDB\ComputerVehicleSearchTemplate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interfaces\ComputerVehDB\ComputerVehicleSearchTemplate.Designer.cs">
+      <DependentUpon>ComputerVehicleSearchTemplate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -196,6 +220,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Interfaces\ComputerVehDB\ComputerVehDBTemplate.resx">
       <DependentUpon>ComputerVehDBTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interfaces\ComputerVehDB\ComputerVehicleDetailsTemplate.resx">
+      <DependentUpon>ComputerVehicleDetailsTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interfaces\ComputerVehDB\ComputerVehicleSearchTemplate.resx">
+      <DependentUpon>ComputerVehicleSearchTemplate.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

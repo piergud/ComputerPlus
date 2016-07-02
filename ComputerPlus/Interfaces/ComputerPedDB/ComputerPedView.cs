@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Rage.Forms;
 using Gwen;
 using Gwen.Control;
@@ -31,10 +29,11 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
         public override void InitializeLayout()
         {
             base.InitializeLayout();
-            Game.LogVerboseDebug("ComputerPedView InitializeLayout");
-            btn_ped_image_holder.SetImage(DetermineImagePath(Ped), true);
+            Game.LogVerboseDebug("ComputerPedView InitializeLayout");            
+            if (Persona == null || Ped == null) return;
             this.Position = this.GetLaunchPosition();
-            if (Persona == null || Ped == null) return;            
+            this.Window.DisableResizing();
+            btn_ped_image_holder.SetImage(DetermineImagePath(Ped), true);
             text_first_name.KeyboardInputEnabled = false;
             text_last_name.KeyboardInputEnabled = false;
             text_home_address.KeyboardInputEnabled = false;
@@ -71,10 +70,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
         private void BindData()
         {
-            if(Ped.Metadata.HomeAddress == null)
-            {
-                Ped.Metadata.HomeAddress = ComputerPedController.GetRandomStreetAddress();
-            }
+            
             switch (Persona.LicenseState)
             {
                 case ELicenseState.Expired:
@@ -104,7 +100,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             text_age.Text = ((int)age).ToString();
             text_first_name.Text = Persona.Forename;
             text_last_name.Text = Persona.Surname;
-            text_home_address.Text = Ped.Metadata.HomeAddress;
+            text_home_address.Text = Ped.GetHomeAddress();
             text_dob.Text = Persona.BirthDay.ToString("MM/dd/yyyy");
             text_dob.SetToolTipText("MM/dd/yyyy");
             text_wanted_status.Text = (Persona.Wanted) ? "Wanted" : "None";

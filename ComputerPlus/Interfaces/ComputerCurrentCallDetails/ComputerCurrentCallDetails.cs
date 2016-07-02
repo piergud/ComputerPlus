@@ -25,8 +25,8 @@ namespace ComputerPlus
         private MultilineTextBox out_desc, out_peds, out_vehs;
         private Base base_calls, base_active;
         private TabControl tc_main;
-        internal static GameFiber form_main = new GameFiber(OpenMainMenuForm),
-            diag_help = new GameFiber(OpenHelpDialog);
+        //internal static GameFiber form_main = new GameFiber(OpenMainMenuForm),
+       //     diag_help = new GameFiber(OpenHelpDialog);
 
         public ComputerCurrentCallDetails() : base(typeof(ComputerCurrentCallDetailsTemplate))
         {
@@ -225,17 +225,17 @@ namespace ComputerPlus
 
         private void MainMenuButtonClickedHandler(Base sender, ClickedEventArgs e)
         {
-            this.Window.Close();
-            form_main = new GameFiber(OpenMainMenuForm);
-            form_main.Start();
+            //this.Window.Close();
+            //form_main = new GameFiber(OpenMainMenuForm);
+            //form_main.Start();
         }
 
         private void HelpButtonClickedHandler(Base sender, ClickedEventArgs e)
         {
-            diag_help = new GameFiber(OpenHelpDialog);
-            diag_help.Start();
+            /*diag_help = new GameFiber(OpenHelpDialog);
+            diag_help.Start();*/
         }
-
+        /*
         private static void OpenMainMenuForm()
         {
             GwenForm main = new ComputerMain();
@@ -243,7 +243,7 @@ namespace ComputerPlus
             while (main.Window.IsVisible)
                 GameFiber.Yield();
         }
-
+        */
         private static void OpenHelpDialog()
         {
             GwenForm help = new ComputerHelpDialog();
