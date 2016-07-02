@@ -1996,6 +1996,48 @@ Stiffness of body. Feeds through to roll_up.
 Stiffness of body. Feeds through to roll_up.
 </summary>
         </member>
+        <member name="P:Rage.Attributes.EuphoriaParameterAttribute.Name">
+            <summary>
+Gets or sets the name of this parameter.
+</summary>
+        </member>
+        <member name="M:Rage.Attributes.EuphoriaParameterAttribute.#ctor">
+            <summary>
+Initializes a new instance of the <see cref="!:ConsoleVariableAttribute" /> class.
+</summary>
+        </member>
+        <member name="M:Rage.Attributes.EuphoriaParameterAttribute.#ctor(System.String)">
+            <summary>
+Initializes a new instance of the <see cref="!:ConsoleVariableAttribute" /> class.
+</summary>
+            <param name="name">The name of the parameter, used in the message.</param>
+        </member>
+        <member name="M:Rage.Euphoria.EuphoriaMessage.PushArgument(System.String,System.Object)">
+            <summary>
+                <para>Adds the specified argument to this <see cref="T:Rage.Euphoria.EuphoriaMessage" />.</para>
+                <para>Note that this does not override existing arguments with the same name. If this is desired, use the <see cref="!:Rage::EuphoriaMessage::SetArgument" /> overload.</para>
+            </summary>
+            <param name="name">The name of the argument.</param>
+            <param name="value">
+The value of the argument.
+The following types are supported:
+<see cref="T:System.Int32" /><see cref="T:System.Single" /><see cref="T:System.Boolean" /><see cref="T:System.String" /><see cref="!:Rage::Vector3" /><see cref="!:Rage::IHandleable" /> (Rage.Vehicle, Rage.Ped, Rage.Object, etc.)
+<see cref="T:Rage.PoolHandle" /></param>
+            <exception cref="T:System.ArgumentException">Thrown if the specified value is of an unsupported type.</exception>
+        </member>
+        <member name="M:Rage.Euphoria.EuphoriaMessage.SetArgument(System.String,System.Object)">
+            <summary>
+                <para>Sets the specified argument to this <see cref="T:Rage.Euphoria.EuphoriaMessage" />.</para>
+                <para>Note that this overrides existing arguments with the same name. If this is not desired, use the <see cref="!:Rage::EuphoriaMessage::PushArgument" /> overload.</para>
+            </summary>
+            <param name="name">The name of the argument.</param>
+            <param name="value">
+The value of the argument.
+The following types are supported:
+<see cref="T:System.Int32" /><see cref="T:System.Single" /><see cref="T:System.Boolean" /><see cref="T:System.String" /><see cref="!:Rage::Vector3" /><see cref="!:Rage::IHandleable" /> (Rage.Vehicle, Rage.Ped, Rage.Object, etc.)
+<see cref="T:Rage.PoolHandle" /></param>
+            <exception cref="T:System.ArgumentException">Thrown if the specified value is of an unsupported type.</exception>
+        </member>
         <member name="M:Rage.ConsoleCommands.ArgumentParsers.ConsoleCommandArgumentParserVehicle.Parse(System.String)">
             <summary>
 Parses the specified argument as a <see cref="T:Rage.Vehicle" />.
@@ -2878,7 +2920,7 @@ Gets or sets the sprite of this <see cref="T:Rage.Blip" />.
         </member>
         <member name="P:Rage.Blip.Name">
             <summary>
-Gets the name of this <see cref="T:Rage.Blip" />. The name is what appears in the legends list on the map.
+Gets or sets the name of this <see cref="T:Rage.Blip" />. The name is what appears in the legends list on the map.
 </summary>
             <value>The name of this <see cref="T:Rage.Blip" />.</value>
         </member>
@@ -2959,6 +3001,138 @@ Initializes a new instance of the <see cref="T:Rage.Attributes.ConsoleCommandArg
         <member name="T:Rage.Attributes.ConsoleCommandArgumentParserAttribute">
             <summary>
 Attribute to let argument parsers specify which types they support.
+</summary>
+        </member>
+        <member name="M:Rage.GameFiber.WaitThis(System.Int32)">
+            <summary>
+                <para>Waits this instance the specified duration. Note that only the active <see cref="T:Rage.GameFiber" /> can be set to wait.</para>
+                <para>Unlike sleep, wait is scaled based on game time dilation.</para>
+            </summary>
+        </member>
+        <member name="M:Rage.GameFiber.SleepThis(System.Int32)">
+            <summary>
+Sleeps this instance the specified duration. Note that only the active <see cref="T:Rage.GameFiber" /> can be set to sleep.
+</summary>
+        </member>
+        <member name="M:Rage.GameFiber.HibernateThis">
+            <summary>
+Hibernates this instance. Note that only the active <see cref="T:Rage.GameFiber" /> can be set to hibernate.
+</summary>
+        </member>
+        <member name="M:Rage.GameFiber.Wake">
+            <summary>
+Awakens this instance from hibernation.
+</summary>
+        </member>
+        <member name="M:Rage.GameFiber.Wait(System.Int32)">
+            <summary>
+                <para>Waits the active instance the specified duration.</para>
+                <para>Unlike sleep, wait is scaled based on game time dilation.</para>
+            </summary>
+        </member>
+        <member name="M:Rage.GameFiber.Sleep(System.Int32)">
+            <summary>
+Sleeps the active instance the specified duration.
+</summary>
+        </member>
+        <member name="M:Rage.GameFiber.Hibernate">
+            <summary>
+                <para>Makes the active <see cref="T:Rage.GameFiber" /> sleep indefinitely.</para>
+                <para>Other <see cref="T:Rage.GameFiber" />s can awaken this instance by calling Wake() on the instance.</para>
+            </summary>
+        </member>
+        <member name="M:Rage.GameFiber.StartNew(System.Threading.ThreadStart,System.String)">
+            <summary>
+Starts a new <see cref="T:Rage.GameFiber" /> instance.
+</summary>
+            <param name="start">The method to execute on the <see cref="T:Rage.GameFiber" />.</param>
+            <param name="name">The name of the <see cref="T:Rage.GameFiber" />.</param>
+            <returns>An instance of <see cref="!:Rage.GameFiber" />.</returns>
+        </member>
+        <member name="M:Rage.GameFiber.StartNew(System.Threading.ThreadStart)">
+            <summary>
+Starts a new <see cref="T:Rage.GameFiber" /> instance.
+</summary>
+            <param name="start">The method to execute on the <see cref="T:Rage.GameFiber" />.</param>
+            <returns>An instance of <see cref="!:Rage.GameFiber" />.</returns>
+        </member>
+        <member name="M:Rage.GameFiber.Yield">
+            <summary>
+Yields this instance allowing other instances to be processed. Equivalent to Sleep(0);
+</summary>
+        </member>
+        <member name="M:Rage.GameFiber.Abort">
+            <summary>
+Aborts this instance.
+</summary>
+        </member>
+        <member name="M:Rage.GameFiber.Start">
+            <summary>
+Starts this instance.
+</summary>
+        </member>
+        <member name="P:Rage.GameFiber.Thread">
+            <summary>
+Gets the thread associated with this <see cref="T:Rage.GameFiber" />.
+</summary>
+            <value>The thread associated with this <see cref="T:Rage.GameFiber" />.</value>
+        </member>
+        <member name="P:Rage.GameFiber.IsAlive">
+            <summary>
+Gets a value indicating whether this instance is still running.
+</summary>
+            <value>
+                <c>true</c> if this instance is still running; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Rage.GameFiber.IsHibernating">
+            <summary>
+Gets a value indicating whether this instance is hibernating.
+</summary>
+            <value>
+                <c>true</c> if this instance is hibernating; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Rage.GameFiber.IsSleeping">
+            <summary>
+Gets a value indicating whether this instance is sleeping.
+</summary>
+            <value>
+                <c>true</c> if this instance is sleeping; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Rage.GameFiber.IsEntryFiber">
+            <summary>
+Gets or sets a value indicating whether this fiber is the original fiber created when this plugin was loaded.
+</summary>
+            <value>
+                <c>true</c> if this fiber is the original fiber created when this plugin was loaded; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Rage.GameFiber.Name">
+            <summary>
+Gets the name of this instance.
+</summary>
+        </member>
+        <member name="P:Rage.GameFiber.CanSleepNow">
+            <summary>
+Gets a value indicating whether the calling code is executing in the active <see cref="T:Rage.GameFiber" /> instance.
+</summary>
+            <value>
+                <c>true</c> if the calling code is executing in the active <see cref="T:Rage.GameFiber" /> instance; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="M:Rage.GameFiber.#ctor(System.Threading.ThreadStart,System.String)">
+            <summary>
+Initializes a new instance of the <see cref="T:Rage.GameFiber" /> class.
+</summary>
+            <param name="start">The method to execute on the <see cref="T:Rage.GameFiber" />.</param>
+            <param name="name">The name of the <see cref="T:Rage.GameFiber" />.</param>
+        </member>
+        <member name="M:Rage.GameFiber.#ctor(System.Threading.ThreadStart)">
+            <summary>
+Initializes a new instance of the <see cref="T:Rage.GameFiber" /> class.
+</summary>
+            <param name="start">The method to execute on the <see cref="T:Rage.GameFiber" />.</param>
+        </member>
+        <member name="T:Rage.GameFiber">
+            <summary>
+Represents a multi-tasking fiber. Natives can only be invoked from a fiber. Not meant to be inherited.
 </summary>
         </member>
         <member name="T:Rage.Native.DynamicNativeFunction">
@@ -3505,24 +3679,24 @@ Server Datacenter (full installation)
 Server Datacenter (evaluation installation)
 </summary>
         </member>
-        <member name="F:Rage.WindowsEdition.CoreSinglelanguage">
+        <member name="F:Rage.WindowsEdition.CoreSingleLanguage">
             <summary>
-Windows 8 Single Language
+Home Single Language
 </summary>
         </member>
-        <member name="F:Rage.WindowsEdition.CoreCountryspecific">
+        <member name="F:Rage.WindowsEdition.CoreCountrySpecific">
             <summary>
-Windows 8 China
+Home China
 </summary>
         </member>
         <member name="F:Rage.WindowsEdition.CoreN">
             <summary>
-Windows 8 N
+Home N
 </summary>
         </member>
         <member name="F:Rage.WindowsEdition.Core">
             <summary>
-Windows 8
+Home
 </summary>
         </member>
         <member name="F:Rage.WindowsEdition.ClusterServerV">
@@ -3570,180 +3744,6 @@ When overriden in a derived class, parses the specified argument.
             <summary>
 Handles parsing the arguments for console commands.
 </summary>
-        </member>
-        <member name="P:Rage.Attributes.EuphoriaParameterAttribute.Name">
-            <summary>
-Gets or sets the name of this parameter.
-</summary>
-        </member>
-        <member name="M:Rage.Attributes.EuphoriaParameterAttribute.#ctor">
-            <summary>
-Initializes a new instance of the <see cref="T:Rage.Attributes.ConsoleVariableAttribute" /> class.
-</summary>
-        </member>
-        <member name="M:Rage.Attributes.EuphoriaParameterAttribute.#ctor(System.String)">
-            <summary>
-Initializes a new instance of the <see cref="T:Rage.Attributes.ConsoleVariableAttribute" /> class.
-</summary>
-            <param name="name">The name of the parameter, used in the message.</param>
-        </member>
-        <member name="M:Rage.GameFiber.WaitThis(System.Int32)">
-            <summary>
-                <para>Waits this instance the specified duration. Note that only the active <see cref="T:Rage.GameFiber" /> can be set to wait.</para>
-                <para>Unlike sleep, wait is scaled based on game time dilation.</para>
-            </summary>
-        </member>
-        <member name="M:Rage.GameFiber.SleepThis(System.Int32)">
-            <summary>
-Sleeps this instance the specified duration. Note that only the active <see cref="T:Rage.GameFiber" /> can be set to sleep.
-</summary>
-        </member>
-        <member name="M:Rage.GameFiber.HibernateThis">
-            <summary>
-Hibernates this instance. Note that only the active <see cref="T:Rage.GameFiber" /> can be set to hibernate.
-</summary>
-        </member>
-        <member name="M:Rage.GameFiber.Wake">
-            <summary>
-Awakens this instance from hibernation.
-</summary>
-        </member>
-        <member name="M:Rage.GameFiber.Wait(System.Int32)">
-            <summary>
-                <para>Waits the active instance the specified duration.</para>
-                <para>Unlike sleep, wait is scaled based on game time dilation.</para>
-            </summary>
-        </member>
-        <member name="M:Rage.GameFiber.Sleep(System.Int32)">
-            <summary>
-Sleeps the active instance the specified duration.
-</summary>
-        </member>
-        <member name="M:Rage.GameFiber.Hibernate">
-            <summary>
-                <para>Makes the active <see cref="T:Rage.GameFiber" /> sleep indefinitely.</para>
-                <para>Other <see cref="T:Rage.GameFiber" />s can awaken this instance by calling Wake() on the instance.</para>
-            </summary>
-        </member>
-        <member name="M:Rage.GameFiber.StartNew(System.Threading.ThreadStart,System.String)">
-            <summary>
-Starts a new <see cref="T:Rage.GameFiber" /> instance.
-</summary>
-            <param name="start">The method to execute on the <see cref="T:Rage.GameFiber" />.</param>
-            <param name="name">The name of the <see cref="T:Rage.GameFiber" />.</param>
-            <returns>An instance of <see cref="!:Rage.GameFiber" />.</returns>
-        </member>
-        <member name="M:Rage.GameFiber.StartNew(System.Threading.ThreadStart)">
-            <summary>
-Starts a new <see cref="T:Rage.GameFiber" /> instance.
-</summary>
-            <param name="start">The method to execute on the <see cref="T:Rage.GameFiber" />.</param>
-            <returns>An instance of <see cref="!:Rage.GameFiber" />.</returns>
-        </member>
-        <member name="M:Rage.GameFiber.Yield">
-            <summary>
-Yields this instance allowing other instances to be processed. Equivalent to Sleep(0);
-</summary>
-        </member>
-        <member name="M:Rage.GameFiber.Abort">
-            <summary>
-Aborts this instance.
-</summary>
-        </member>
-        <member name="M:Rage.GameFiber.Start">
-            <summary>
-Starts this instance.
-</summary>
-        </member>
-        <member name="P:Rage.GameFiber.Thread">
-            <summary>
-Gets the thread associated with this <see cref="T:Rage.GameFiber" />.
-</summary>
-            <value>The thread associated with this <see cref="T:Rage.GameFiber" />.</value>
-        </member>
-        <member name="P:Rage.GameFiber.IsAlive">
-            <summary>
-Gets a value indicating whether this instance is still running.
-</summary>
-            <value>
-                <c>true</c> if this instance is still running; otherwise, <c>false</c>.</value>
-        </member>
-        <member name="P:Rage.GameFiber.IsHibernating">
-            <summary>
-Gets a value indicating whether this instance is hibernating.
-</summary>
-            <value>
-                <c>true</c> if this instance is hibernating; otherwise, <c>false</c>.</value>
-        </member>
-        <member name="P:Rage.GameFiber.IsSleeping">
-            <summary>
-Gets a value indicating whether this instance is sleeping.
-</summary>
-            <value>
-                <c>true</c> if this instance is sleeping; otherwise, <c>false</c>.</value>
-        </member>
-        <member name="P:Rage.GameFiber.IsEntryFiber">
-            <summary>
-Gets or sets a value indicating whether this fiber is the original fiber created when this plugin was loaded.
-</summary>
-            <value>
-                <c>true</c> if this fiber is the original fiber created when this plugin was loaded; otherwise, <c>false</c>.</value>
-        </member>
-        <member name="P:Rage.GameFiber.Name">
-            <summary>
-Gets the name of this instance.
-</summary>
-        </member>
-        <member name="P:Rage.GameFiber.CanSleepNow">
-            <summary>
-Gets a value indicating whether the calling code is executing in the active <see cref="T:Rage.GameFiber" /> instance.
-</summary>
-            <value>
-                <c>true</c> if the calling code is executing in the active <see cref="T:Rage.GameFiber" /> instance; otherwise, <c>false</c>.</value>
-        </member>
-        <member name="M:Rage.GameFiber.#ctor(System.Threading.ThreadStart,System.String)">
-            <summary>
-Initializes a new instance of the <see cref="T:Rage.GameFiber" /> class.
-</summary>
-            <param name="start">The method to execute on the <see cref="T:Rage.GameFiber" />.</param>
-            <param name="name">The name of the <see cref="T:Rage.GameFiber" />.</param>
-        </member>
-        <member name="M:Rage.GameFiber.#ctor(System.Threading.ThreadStart)">
-            <summary>
-Initializes a new instance of the <see cref="T:Rage.GameFiber" /> class.
-</summary>
-            <param name="start">The method to execute on the <see cref="T:Rage.GameFiber" />.</param>
-        </member>
-        <member name="T:Rage.GameFiber">
-            <summary>
-Represents a multi-tasking fiber. Natives can only be invoked from a fiber. Not meant to be inherited.
-</summary>
-        </member>
-        <member name="M:Rage.Euphoria.EuphoriaMessage.PushArgument(System.String,System.Object)">
-            <summary>
-                <para>Adds the specified argument to this <see cref="T:Rage.Euphoria.EuphoriaMessage" />.</para>
-                <para>Note that this does not override existing arguments with the same name. If this is desired, use the <see cref="!:Rage::EuphoriaMessage::SetArgument" /> overload.</para>
-            </summary>
-            <param name="name">The name of the argument.</param>
-            <param name="value">
-The value of the argument.
-The following types are supported:
-<see cref="T:System.Int32" /><see cref="T:System.Single" /><see cref="T:System.Boolean" /><see cref="T:System.String" /><see cref="!:Rage::Vector3" /><see cref="!:Rage::IHandleable" /> (Rage.Vehicle, Rage.Ped, Rage.Object, etc.)
-<see cref="T:Rage.PoolHandle" /></param>
-            <exception cref="T:System.ArgumentException">Thrown if the specified value is of an unsupported type.</exception>
-        </member>
-        <member name="M:Rage.Euphoria.EuphoriaMessage.SetArgument(System.String,System.Object)">
-            <summary>
-                <para>Sets the specified argument to this <see cref="T:Rage.Euphoria.EuphoriaMessage" />.</para>
-                <para>Note that this overrides existing arguments with the same name. If this is not desired, use the <see cref="!:Rage::EuphoriaMessage::PushArgument" /> overload.</para>
-            </summary>
-            <param name="name">The name of the argument.</param>
-            <param name="value">
-The value of the argument.
-The following types are supported:
-<see cref="T:System.Int32" /><see cref="T:System.Single" /><see cref="T:System.Boolean" /><see cref="T:System.String" /><see cref="!:Rage::Vector3" /><see cref="!:Rage::IHandleable" /> (Rage.Vehicle, Rage.Ped, Rage.Object, etc.)
-<see cref="T:Rage.PoolHandle" /></param>
-            <exception cref="T:System.ArgumentException">Thrown if the specified value is of an unsupported type.</exception>
         </member>
         <member name="M:Rage.Utilities.CheckArrayBounds(System.Array,System.Int32,System.Int32@)">
             <summary>
@@ -4764,7 +4764,7 @@ Adds a new console variable to this console.
         </member>
         <member name="M:Rage.GameConsole.AddConsoleCommands(Rage.Plugin,System.Object)">
             <summary>
-Adds all methods with <see cref="!:Rage::Attributes::ConsoleCommandAttriute" />s specified from the specified source as console commands to this console.
+Adds all methods with <see cref="T:Rage.Attributes.ConsoleCommandAttribute" />s specified from the specified source as console commands to this console.
 </summary>
             <param name="plugin">The plugin this console command belongs to; <c>null</c> if part of the hook.</param>
             <param name="source">The object to add console commands from. Cannot be <c>null</c>.</param>
@@ -5330,6 +5330,34 @@ Rotates the specified heading the specified number of degrees, and returns the n
             <param name="heading">The heading to base the rotation on.</param>
             <param name="degrees">The degrees to rotate.</param>
             <returns>The rotated and normalized heading.</returns>
+        </member>
+        <member name="M:Rage.MathHelper.Square(System.Int64)">
+            <summary>
+Gets the specified value multiplied by itself.
+</summary>
+            <param name="value">The value to square.</param>
+            <returns>The value multiplied by itself.</returns>
+        </member>
+        <member name="M:Rage.MathHelper.Square(System.Int32)">
+            <summary>
+Gets the specified value multiplied by itself.
+</summary>
+            <param name="value">The value to square.</param>
+            <returns>The squared value.</returns>
+        </member>
+        <member name="M:Rage.MathHelper.Square(System.Single)">
+            <summary>
+Gets the specified value multiplied by itself.
+</summary>
+            <param name="value">The value to square.</param>
+            <returns>The squared value.</returns>
+        </member>
+        <member name="M:Rage.MathHelper.Square(System.Double)">
+            <summary>
+Gets the specified value multiplied by itself.
+</summary>
+            <param name="value">The value to square.</param>
+            <returns>The squared value.</returns>
         </member>
         <member name="M:Rage.MathHelper.Median``1(``0[])">
             <summary>
@@ -6318,7 +6346,7 @@ Adds a new speed zone limiting the maximum driving speed of AI-driven vehicles i
         </member>
         <member name="M:Rage.World.SpawnExplosion(Rage.Vector3,System.Int32,System.Single,System.Boolean,System.Boolean,System.Single)">
             <summary>
-Spawns a position at the specified position.
+Spawns an explosion at the specified position.
 </summary>
             <param name="position">The position to spawn the explosion at.</param>
             <param name="explosionType">The type of explosion.</param>
@@ -6437,6 +6465,27 @@ Gets all <see cref="T:Rage.Vehicle" />s currently in the game world.
 Gets all <see cref="T:Rage.Ped" />s currently in the game world.
 </summary>
             <returns>An array of all <see cref="T:Rage.Ped" />s currently in the game world.</returns>
+        </member>
+        <member name="M:Rage.World.EnumerateObjects">
+            <summary>
+Gets an enumerable collection of the <see cref="T:Rage.Object" />s currently in the game world.
+</summary>
+            <returns>An enumerable collection of the <see cref="T:Rage.Object" />s currently in the game world.</returns>
+            <remarks>Using this over <see cref="M:Rage.World.GetAllObjects" /> can be faster because the iteration can be interrupted without retrieving all objects; however, if the collection is changed, enumeration may not continue.</remarks>
+        </member>
+        <member name="M:Rage.World.EnumerateVehicles">
+            <summary>
+Gets an enumerable collection of the <see cref="T:Rage.Vehicle" />s currently in the game world.
+</summary>
+            <returns>An enumerable collection of the <see cref="T:Rage.Vehicle" />s currently in the game world.</returns>
+            <remarks>Using this over <see cref="M:Rage.World.GetAllVehicles" /> can be faster because the iteration can be interrupted without retrieving all vehicles; however, if the collection is changed, enumeration may not continue.</remarks>
+        </member>
+        <member name="M:Rage.World.EnumeratePeds">
+            <summary>
+Gets an enumerable collection of the <see cref="T:Rage.Ped" />s currently in the game world.
+</summary>
+            <returns>An enumerable collection of the <see cref="T:Rage.Ped" />s currently in the game world.</returns>
+            <remarks>Using this over <see cref="M:Rage.World.GetAllPeds" /> can be faster because the iteration can be interrupted without retrieving all peds; however, if the collection is changed, enumeration may not continue.</remarks>
         </member>
         <member name="M:Rage.World.GetAllEntities">
             <summary>
@@ -11862,16 +11911,24 @@ Adds a new notification above the map.
 </summary>
             <param name="textureDictionaryName">The name of the game defined texture dictionary to display.</param>
             <param name="textureName">The name of the texture in the dictionary to display.</param>
-            <param name="title">The title of the notification.</param>
-            <param name="subtitle">The subtitle of the notification.</param>
-            <param name="text">The text to display.</param>
+            <param name="title">The title of the notification. Any HTML tags will be stripped.</param>
+            <param name="subtitle">The subtitle of the notification. Any HTML tags will be stripped.</param>
+            <param name="text">
+                <para>The text to display.</para>
+                <para>Supports a small subset of HTML.</para>
+                <para>Note, that while the limit for this parameter is ~960 characters, notifications displayed using this overload has a small visual limit. The smaller the font size, the more text can be displayed. Use the overload for long texts.</para>
+            </param>
             <returns>An unsigned 32-bit integer, representing the handle to the notification.</returns>
         </member>
         <member name="M:Rage.Game.DisplayNotification(System.String)">
             <summary>
 Adds a new notification above the map.
 </summary>
-            <param name="text">The text to display.</param>
+            <param name="text">
+                <para>The text to display.</para>
+                <para>Supports a small subset of HTML.</para>
+                <para>Note, that while the limit for this parameter is ~960 characters, the notification can only visually contain around ~800 characters of default sized text. The limit of ~960 characters can still be reached for texts that are shorter than 800 characters, eg. lots of HTML encoding.</para>
+            </param>
             <returns>An unsigned 32-bit integer, representing the handle to the notification.</returns>
         </member>
         <member name="M:Rage.Game.DisplaySubtitle(System.String,System.Int32)">
@@ -12432,52 +12489,52 @@ Attribute to let parameter auto completers specify which types they support.
         <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleCommandAttribute'. -->
         <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleVariableAttribute'. -->
         <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
+        <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
+        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleCommandAttribute'. -->
+        <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
+        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleCommandAttribute'. -->
+        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleVariableAttribute'. -->
+        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleCommandAttribute'. -->
+        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleVariableAttribute'. -->
+        <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:Rage.MathHelper.Max``1(``0[])'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:Rage.MathHelper.Min``1(``0[])'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:Rage.MathHelper.Average``1(``0[])'. -->
+        <!-- Discarding badly formed XML document comment for member 'P:Rage.Game.TickCount'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:Rage.Player.IsFreeAimingAtEntity(Rage.Entity)'. -->
+        <!-- Discarding badly formed XML document comment for member 'T:UsingString'. -->
+        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleCommandAttribute'. -->
+        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleVariableAttribute'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:Rage.MathHelper.Max``1(``0[])'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:Rage.MathHelper.Min``1(``0[])'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:Rage.MathHelper.Average``1(``0[])'. -->
+        <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:Rage.Player.IsFreeAimingAtEntity(Rage.Entity)'. -->
+        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleCommandAttribute'. -->
+        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleVariableAttribute'. -->
+        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleCommandAttribute'. -->
+        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleVariableAttribute'. -->
+        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleCommandAttribute'. -->
+        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleVariableAttribute'. -->
+        <!-- Discarding badly formed XML document comment for member 'P:Rage.Game.TickCount'. -->
+        <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:Rage.Player.IsFreeAimingAtEntity(Rage.Entity)'. -->
+        <!-- Discarding badly formed XML document comment for member 'T:UsingString'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:Rage.MathHelper.Max``1(``0[])'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:Rage.MathHelper.Min``1(``0[])'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:Rage.MathHelper.Average``1(``0[])'. -->
+        <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
+        <!-- Discarding badly formed XML document comment for member 'P:Rage.Game.TickCount'. -->
+        <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
+        <!-- Discarding badly formed XML document comment for member 'M:Rage.Player.IsFreeAimingAtEntity(Rage.Entity)'. -->
+        <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
+        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.EuphoriaParameterAttribute'. -->
+        <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
         <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleCommandAttribute'. -->
         <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleVariableAttribute'. -->
         <!-- Discarding badly formed XML document comment for member 'T:UsingString'. -->
         <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.EuphoriaParameterAttribute'. -->
         <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
-        <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
-        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleCommandAttribute'. -->
-        <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
-        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleCommandAttribute'. -->
-        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleVariableAttribute'. -->
-        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleCommandAttribute'. -->
-        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleVariableAttribute'. -->
-        <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:Rage.MathHelper.Max``1(``0[])'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:Rage.MathHelper.Min``1(``0[])'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:Rage.MathHelper.Average``1(``0[])'. -->
-        <!-- Discarding badly formed XML document comment for member 'P:Rage.Game.TickCount'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:Rage.Player.IsFreeAimingAtEntity(Rage.Entity)'. -->
-        <!-- Discarding badly formed XML document comment for member 'T:UsingString'. -->
-        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleCommandAttribute'. -->
-        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleVariableAttribute'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:Rage.MathHelper.Max``1(``0[])'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:Rage.MathHelper.Min``1(``0[])'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:Rage.MathHelper.Average``1(``0[])'. -->
-        <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:Rage.Player.IsFreeAimingAtEntity(Rage.Entity)'. -->
-        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleCommandAttribute'. -->
-        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleVariableAttribute'. -->
-        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleCommandAttribute'. -->
-        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleVariableAttribute'. -->
-        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleCommandAttribute'. -->
-        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleVariableAttribute'. -->
-        <!-- Discarding badly formed XML document comment for member 'P:Rage.Game.TickCount'. -->
-        <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:Rage.Player.IsFreeAimingAtEntity(Rage.Entity)'. -->
-        <!-- Discarding badly formed XML document comment for member 'T:UsingString'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:Rage.MathHelper.Max``1(``0[])'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:Rage.MathHelper.Min``1(``0[])'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:Rage.MathHelper.Average``1(``0[])'. -->
-        <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
-        <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
-        <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.EuphoriaParameterAttribute'. -->
-        <!-- Discarding badly formed XML document comment for member 'P:Rage.Game.TickCount'. -->
-        <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
-        <!-- Discarding badly formed XML document comment for member 'M:Rage.Player.IsFreeAimingAtEntity(Rage.Entity)'. -->
-        <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
         <!-- Discarding badly formed XML document comment for member 'M:Rage.Player.IsFreeAimingAtEntity(Rage.Entity)'. -->
         <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
         <!-- Discarding badly formed XML document comment for member 'T:UsingString'. -->
@@ -12576,6 +12633,7 @@ Attribute to let parameter auto completers specify which types they support.
         <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
         <!-- Discarding badly formed XML document comment for member 'P:Rage.Game.TickCount'. -->
         <!-- Discarding badly formed XML document comment for member 'P:Rage.Game.TickCount'. -->
+        <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
         <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleVariableAttribute'. -->
         <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleCommandAttribute'. -->
         <!-- Discarding badly formed XML document comment for member 'T:Rage.Attributes.ConsoleVariableAttribute'. -->
@@ -12591,6 +12649,7 @@ Attribute to let parameter auto completers specify which types they support.
         <!-- Discarding badly formed XML document comment for member 'P:Rage.Game.TickCount'. -->
         <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
         <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
+        <!-- Discarding badly formed XML document comment for member 'T:UsingString'. -->
         <!-- Discarding badly formed XML document comment for member 'P:Rage.Game.TickCount'. -->
         <!-- Discarding badly formed XML document comment for member 'T:UsingString'. -->
         <!-- Discarding badly formed XML document comment for member 'P:Rage.Entity.IsInAir'. -->
