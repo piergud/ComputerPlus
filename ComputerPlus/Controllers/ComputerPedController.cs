@@ -1,18 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Rage;
 using LSPD_First_Response;
 using LSPD_First_Response.Engine.Scripting.Entities;
 using LSPD_First_Response.Mod.API;
-using System.Drawing;
 using Rage.Forms;
 
 namespace ComputerPlus.Interfaces.ComputerPedDB
 {
+    internal static class PedExtension
+    {
+        internal static String GetHomeAddress(this Ped ped)
+        {
+            if (ped.Metadata.HomeAddress == null) ped.Metadata.HomeAddress = ComputerPedController.GetRandomStreetAddress();
+            return ped.Metadata.HomeAddress;
+        }
+    }
     internal static class ListExtension
     {
         internal static Tuple<Ped, Persona> AddPed(this List<Tuple<Ped, Persona>> list, Ped ped, Persona persona, bool allowDuplicates = true)
@@ -24,18 +28,6 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             var t = new Tuple<Ped, Persona>(ped, persona);
             list.Add(t);
             return t;
-        }
-    }
-
-    internal static class ListBoxExtension
-    {
-        internal static void AddPed(this Gwen.Control.ListBox listBox, Tuple<Ped, Persona> ped)
-        {
-            // "{0} {1} {2} {3}" ped.Item2.Wanted ? String.Empty : "WANTED "
-            listBox.AddRow(
-                String.Format("({0}) {1} | {2}", ped.Item2.Gender == Gender.Male ? "M" : "F", ped.Item2.FullName, ped.Item2.BirthDay.ToString("MMMM dd yyyy")),
-                String.Format("{0}_{1}", ped.Item2.Forename, ped.Item2.Surname),
-                ped);
         }
     }
 
@@ -86,9 +78,10 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             get
             {
                 LHandle pulloverHandle = Functions.GetCurrentPullover();
+                
                 Ped pulledOverSuspect = (pulloverHandle != null) ? Functions.GetPulloverSuspect(pulloverHandle) : null;
-                return World.GetAllPeds().Where(x => {
-                    return (Functions.IsPedStoppedByPlayer(x) || (pulledOverSuspect != null && pulledOverSuspect == x));
+                return World.EnumeratePeds().Where(x => {
+                    return (Functions.IsPedArrested(x) || Functions.IsPedGettingArrested(x) || Functions.IsPedStoppedByPlayer(x) || (pulledOverSuspect != null && pulledOverSuspect == x));
                 }).ToList();
             }
         }
@@ -101,15 +94,21 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
         internal Tuple<Ped, Persona> LookupPersona(String name)
         {
             List<Ped> peds = World.GetAllPeds().ToList();
-            peds.RemoveAll(p => !p || !p.IsValid());
+            peds.RemoveAll(p => !p || !p.Exists());
             peds.OrderBy(p => p.DistanceTo(Game.LocalPlayer.Character.Position));
-            var ped = peds.Where(p => p && Functions.GetPersonaForPed(p).FullName.ToLower() == name).DefaultIfEmpty(null).FirstOrDefault();
-            return LookupPersona(ped);
+            var ped = peds.Where(p => p && Functions.GetPersonaForPed(p).FullName.ToLower().Equals(name.ToLower())).FirstOrDefault();
+            var persona =  LookupPersona(ped);
+            return persona;
         }
        
         internal Tuple<Ped, Persona> LookupPersona(Ped ped)
         {
+            if (ped == null || !ped.Exists())
+            {
+                return null;
+            }
             var search = new Tuple<Ped, Persona>(ped, Functions.GetPersonaForPed(ped));
+            
             RecentSearches.Add(search);
             return search;
         }
@@ -144,7 +143,6 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
         private static void ShowPedView()
         {
-            //For some reason it's not updating the view for second ped lookups
             while (true)
             {
                 var form = new ComputerPedView(LastSelected.Item2, LastSelected.Item1);

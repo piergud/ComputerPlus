@@ -74,10 +74,10 @@ namespace ComputerPlus
 
         private static void OpenMainMenuForm()
         {
-            GwenForm main = new ComputerMain();
+           /* GwenForm main = new ComputerMain();
             main.Show();
             while (main.Window.IsVisible)
-                GameFiber.Yield();
+                GameFiber.Yield();*/
         }
 
         private void SearchForVehicle()

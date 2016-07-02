@@ -6,6 +6,7 @@ using Rage.Forms;
 using Gwen.Control;
 using System;
 using ComputerPlus.Interfaces.ComputerPedDB;
+using ComputerPlus.Interfaces.ComputerVehDB;
 
 namespace ComputerPlus
 {
@@ -15,7 +16,8 @@ namespace ComputerPlus
         internal ListBox list_recent;
         private Label label_external_ui;
         private ComboBox list_external_ui;
-        internal static GameFiber form_veh_db = new GameFiber(OpenVehDBForm);
+        private CheckBox cb_toggle_pause, cb_toggle_background;
+        internal static GameFiber ComputerMainGameFiber = new GameFiber(ShowMain);
         internal static GameFiber form_backup = new GameFiber(OpenRequestBackupForm);
         internal static GameFiber form_report = new GameFiber(OpenReportMenuForm);
         internal static GameFiber form_active_calls = new GameFiber(OpenActiveCallsForm);
@@ -36,11 +38,15 @@ namespace ComputerPlus
 
         public override void InitializeLayout()
         {
-            base.InitializeLayout();                        
-            this.btn_logout.Clicked += this.LogoutButtonClickedHandler;
+            base.InitializeLayout();
+            this.cb_toggle_background.IsChecked = EntryPoint.HasBackground;
+            this.cb_toggle_pause.IsChecked = EntryPoint.IsPaused;
+            this.btn_logout.Clicked += this.LogoutButtonClickedHandler;            
             this.btn_ped_db.Clicked += this.PedDBButtonClickedHandler;
             this.btn_veh_db.Clicked += this.VehDBButtonClickedHandler;
             this.btn_request.Clicked += this.RequestBackupButtonClickedHandler;
+            this.cb_toggle_background.CheckChanged += checkbox_change;
+            this.cb_toggle_pause.CheckChanged += checkbox_change;
             //this.btn_ReportMain.Clicked += this.ReportMainClickedHandler;  // Fiskey111 Edit
             this.btn_activecalls.Clicked += this.ActiveCallsClickedHandler;
             this.Window.DisableResizing();
@@ -49,8 +55,6 @@ namespace ComputerPlus
                 list_recent.AddRow(r);
             }
             this.Position = new Point(Game.Resolution.Width / 2 - this.Window.Width / 2, Game.Resolution.Height / 2 - this.Window.Height / 2);
-            if (!Function.IsBackgroundEnabled())
-                Function.EnableBackground();
 
             if (ShouldShowExtraUIControls)
             {
@@ -62,7 +66,14 @@ namespace ComputerPlus
             
         }
 
-
+        private void checkbox_change(Base sender, EventArgs arguments)
+        {
+            Game.LogVerboseDebug("ALERT checkbox_change");
+            if (sender == cb_toggle_pause)
+                EntryPoint.TogglePause();
+            else if (sender == cb_toggle_background)
+                EntryPoint.ToggleBackground();
+        }
 
         private void LogoutButtonClickedHandler(Base sender, ClickedEventArgs e) 
         {
@@ -72,7 +83,7 @@ namespace ComputerPlus
 
         private void PedDBButtonClickedHandler(Base sender, ClickedEventArgs e)
         {
-            this.Window.Close();
+            //this.Window.Close();
             var fiber = ComputerPedController.PedSearchGameFiber;
             if (fiber.IsHibernating) fiber.Wake();
             else if(!fiber.IsAlive) fiber.Start();
@@ -80,9 +91,10 @@ namespace ComputerPlus
 
         private void VehDBButtonClickedHandler(Base sender, ClickedEventArgs e)
         {
-            this.Window.Close();
-            form_veh_db = new GameFiber(OpenVehDBForm);
-            form_veh_db.Start();
+            //this.Window.Close();
+            var fiber = ComputerVehicleController.VehicleSearchGameFiber;
+            if (fiber.IsHibernating) fiber.Wake();
+            else if (!fiber.IsAlive) fiber.Start();
         }
 
         private void RequestBackupButtonClickedHandler(Base sender, ClickedEventArgs e)
@@ -137,14 +149,6 @@ namespace ComputerPlus
         }
 
 
-        internal static void OpenVehDBForm()
-        {
-            GwenForm veh_db = new ComputerVehDB();
-            veh_db.Show();
-            while (veh_db.Window.IsVisible)
-                GameFiber.Yield();
-        }
-
         internal static void OpenRequestBackupForm()
         {
             GwenForm backup = new ComputerRequestBackup();
@@ -180,6 +184,24 @@ namespace ComputerPlus
             {
                 label_external_ui.Hide();
                 label_external_ui.Hide();
+            }
+        }
+
+        internal static void ShowMain()
+        {            
+            while (true)
+            {
+                var form = new ComputerMain();
+                form.Show();
+                Game.LogVerboseDebug("Init new ComputerMain");                
+                do
+                {
+                    GameFiber.Yield();
+                }
+                while (form.IsOpen());
+                Game.LogVerboseDebug(String.Format("Close ComputerMain? {0}", form.IsOpen()));
+                Game.LogVerboseDebug("ComputerMain Hibernating");
+                GameFiber.Hibernate();
             }
         }
     }

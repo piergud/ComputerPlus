@@ -199,6 +199,11 @@ namespace ComputerPlus
             return String.Format(@"Plugins\LSPDFR\ComputerPlus\tmp\{0}_front.jpg", model);
         }
 
+        internal static String GetVehicleImagePath(String model)
+        {
+            return String.Format(@"Plugins\LSPDFR\ComputerPlus\vehicles\{0}f.jpg", model);
+        }
+
         internal static Texture LoadPedImage(String model)
         {
             var path = GetPedImagePath(model);
@@ -280,6 +285,11 @@ namespace ComputerPlus
         internal static bool IsTrafficPolicerRunning()
         {
             return IsLSPDFRPluginRunning("Traffic Policer", new Version(6, 9, 8, 1));
+        }
+
+        internal static bool IsAlprPlusRunning()
+        {
+            return IsLSPDFRPluginRunning("ALPRPlus", new Version(0, 2, 0, 0));
         }
 
         internal static string GetFormattedDateTime(DateTime? date = null)
