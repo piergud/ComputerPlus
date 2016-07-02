@@ -128,7 +128,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             var vehiclePersona = data.VehiclePersona;
             vehiclePersona.Alert = e.Message;
             data.VehiclePersona = vehiclePersona;
-            if (list_collected_tags.RowCount == 6)
+            if (list_collected_tags.RowCount >= 6)
             {
                 var entry = list_collected_tags[0];
                 var first = entry.UserData as ComputerPlusEntity;
@@ -136,7 +136,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                     first.IsPersistent = false;
                     Game.LogVerboseDebug(String.Format("OnAlprVanillaMessage Removed persistance flag for {0}", first.PedPersona.FullName));
                 }
-                list_collected_tags.RemoveRow(0);
+                while(list_collected_tags.RowCount >= 6)
+                    list_collected_tags.RemoveRow(0);
             }         
             list_collected_tags.AddVehicle(data);
         }

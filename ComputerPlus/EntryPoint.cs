@@ -129,7 +129,7 @@ namespace ComputerPlus
             var fiber = EntryPoint.RunComputerPlus;
 
             Vehicle curr_veh = Game.LocalPlayer.Character.Exists() ? Game.LocalPlayer.Character.LastVehicle : null;
-            if (curr_veh)
+            if (curr_veh && curr_veh.Driver == Game.LocalPlayer.Character)
             {
                 if (curr_veh.Speed != _stored_speed)
                 {
