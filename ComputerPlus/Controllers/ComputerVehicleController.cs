@@ -70,34 +70,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         private static  Dictionary<Blip, Vehicle> Blips
         {
             get
-            {
-                LHandle handle = null;
-                if(Functions.IsPlayerPerformingPullover())
-                    handle = Functions.GetCurrentPullover();
-                if (_Blips.Count == 0) return _Blips;
-                var data = _Blips
-                    .ToList();
-                _Blips.Clear();
-                data.Where(x => (x.Key != null && x.Key.Exists()) && (x.Value != null && x.Value.Exists()))
-               
-                .ToList()
-                .ForEach(x =>
-                {
-                   if(handle != null)
-                    {
-                        var suspect = Functions.GetPulloverSuspect(handle);
-                        if(suspect.LastVehicle != null && suspect.LastVehicle == x.Value && x.Key != null && x.Key.Exists())
-                        {
-                            x.Key.Delete();
-                        }
-                        else
-                        {
-                            _Blips.Add(x.Key, x.Value);
-                        }
-                    }
-                    else                    
-                        _Blips.Add(x.Key, x.Value);
-                });
+            {                
                 return _Blips;
             }
         }
@@ -116,12 +89,41 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         static ComputerVehicleController()
         {
-            timer.Elapsed += BlipCleanup;
+         //   timer.Elapsed += BlipCleanup;
         }
 
         private static void BlipCleanup(object sender, ElapsedEventArgs e)
         {
-            var d = Blips;
+            LHandle handle = null;
+            Ped suspect = null;
+            if (_Blips.Count == 0) return;
+            handle = Functions.GetCurrentPullover();
+            if (handle != null)
+                suspect = Functions.GetPulloverSuspect(handle);
+            lock (_Blips) {
+                var data = _Blips.ToList();
+                _Blips.Clear();
+                data.Where(x => (x.Key != null && x.Key.Exists()) && (x.Value != null && x.Value.Exists()))                
+                .ToList()
+                .ForEach(x =>
+                {
+
+                    if (suspect != null && suspect.Exists())
+                    {
+
+                        if (suspect.LastVehicle != null && suspect.LastVehicle == x.Value && x.Key != null && x.Key.Exists())
+                        {
+                            x.Key.Delete();
+                        }
+                        else
+                        {
+                            _Blips.Add(x.Key, x.Value);
+                        }
+                    }
+                    else
+                        _Blips.Add(x.Key, x.Value);
+                });
+            }
         }
 
         
@@ -209,8 +211,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         internal static Blip BlipVehicle(Vehicle vehicle, Color color)
         {
-            if (!timer.Enabled)
-                timer.Start();
+           // if (!timer.Enabled)
+            //    timer.Start();
             var blip = vehicle.AddBlipSafe(color);
             _Blips.Add(blip, vehicle);
             return blip;
