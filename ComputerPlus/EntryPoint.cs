@@ -5,6 +5,9 @@ using System.Reflection;
 using Rage;
 using Rage.Forms;
 using LSPD_First_Response.Mod.API;
+using ComputerPlus.Interfaces.ComputerPedDB;
+using ComputerPlus.Interfaces.ComputerVehDB;
+using ComputerPlus.Controllers.Models;
 
 namespace ComputerPlus
 {
@@ -15,9 +18,24 @@ namespace ComputerPlus
         internal static VehicleStoppedEvent OnVehicleStopped;
         static Stopwatch sw = new Stopwatch();
         private static float _stored_speed;
-        private static bool _opened = false;
+        internal static bool HasBackground
+        {
+            get;
+            private set;
+        } = false;
+        internal static bool IsOpen
+        {
+            get;
+            private set;
+        } = false;
+        internal static bool IsPaused
+        {
+            get;
+            private set;
+        } = false;
         internal static List<string> recent_text = new List<string>();
         internal static GameFiber fCheckIfCalloutActive = new GameFiber(CheckIfCalloutActive);
+        private static GameFiber RunComputerPlus =  new GameFiber(ShowPoliceComputer);
 
         public override void Initialize()
         {
@@ -37,8 +55,11 @@ namespace ComputerPlus
                 }
             }
             if (Game.IsPaused)
-                Game.IsPaused = false;
-            Function.DisableBackground();
+            {
+                Game.LogVerboseDebug("Pause false EntryPoint.Finally");
+                PauseGame(false);
+            }
+            ShowBackground(false);
         }
 
         private static void DutyStateChangedHandler(bool on_duty)
@@ -55,7 +76,27 @@ namespace ComputerPlus
                 fCheckIfCalloutActive.Start();
 
                 Function.CheckForUpdates();
+                if (Function.IsAlprPlusRunning())
+                {
+                    Game.LogVerboseDebug("Registering for ALPR+ Events");
+                    ALPRPlusFunctions.RegisterForEvents();
+                    ALPRPlusFunctions.OnAlprPlusMessage += ALPRPlusFunctions_OnAlprPlusMessage;
+                }
+                else
+                    Game.LogVerboseDebug("ALPR+ Not Detected");
             }
+            else
+            {
+                if (Function.IsAlprPlusRunning())
+                {
+                    ALPRPlusFunctions.OnAlprPlusMessage -= ALPRPlusFunctions_OnAlprPlusMessage;
+                }
+            }
+        }
+
+        private static void ALPRPlusFunctions_OnAlprPlusMessage(object sender, ALPR_Arguments e)
+        {
+            ComputerVehicleController.AddAlprScan(e);
         }
 
         private static void VehicleStoppedHandler(object sender, Vehicle veh)
@@ -81,11 +122,13 @@ namespace ComputerPlus
             }
             return null;
         }
-
+        static bool alprRunning = false;
         private static void Process(object sender, GraphicsEventArgs e)
         {
-            Vehicle curr_veh = Game.LocalPlayer.Character.CurrentVehicle;
-            if (curr_veh)
+            var fiber = EntryPoint.RunComputerPlus;
+
+            Vehicle curr_veh = Game.LocalPlayer.Character.Exists() ? Game.LocalPlayer.Character.LastVehicle : null;
+            if (curr_veh && curr_veh.Driver == Game.LocalPlayer.Character)
             {
                 if (curr_veh.Speed != _stored_speed)
                 {
@@ -93,7 +136,7 @@ namespace ComputerPlus
                     if (_stored_speed == 0)
                         OnVehicleStopped.Invoke(null, curr_veh);
                 }
-                if (Game.IsControlPressed(0, GameControl.Context) && Function.IsPoliceVehicle(curr_veh) && curr_veh.Speed == 0 && !_opened)
+                if (Game.IsControlPressed(0, GameControl.Context) && Function.IsPoliceVehicle(curr_veh) && !IsOpen)
                 {
                     if (!sw.IsRunning)
                     {
@@ -103,8 +146,8 @@ namespace ComputerPlus
                     {
                         sw.Stop();
                         sw.Reset();
-                        GameFiber.StartNew(() => ShowPoliceComputer());
-                        _opened = true;
+                        if (fiber.IsHibernating) fiber.Wake();
+                        else if (!fiber.IsAlive) fiber.Start();
                     }
                 }
                 else
@@ -114,44 +157,102 @@ namespace ComputerPlus
                         sw.Stop();
                         sw.Reset();
                     }
-                }
+                }                
+            }          
+
+            if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.LControlKey) && Game.IsKeyDown(System.Windows.Forms.Keys.U))
+            {
+                if (!alprRunning) ComputerVehicleController.RunVanillaAlpr();
+                else ComputerVehicleController.StopVanillaAlpr();
+                alprRunning = !alprRunning;
             }
+        }
+
+        private static bool AreGameFibersRunning
+        {
+            get
+            {
+                return
+                    (ComputerLogin.ComputerLoginGameFiber.IsAlive && !ComputerLogin.ComputerLoginGameFiber.IsHibernating)
+                    || (ComputerMain.ComputerMainGameFiber.IsAlive && !ComputerMain.ComputerMainGameFiber.IsHibernating)
+                    || (ComputerPedController.PedSearchGameFiber.IsAlive && !ComputerPedController.PedSearchGameFiber.IsHibernating)
+                    || (ComputerPedController.PedViewGameFiber.IsAlive && !ComputerPedController.PedViewGameFiber.IsHibernating)
+                    || (ComputerVehicleController.VehicleSearchGameFiber.IsAlive && !ComputerVehicleController.VehicleSearchGameFiber.IsHibernating)
+                    || (ComputerVehicleController.VehicleDetailsGameFiber.IsAlive && !ComputerVehicleController.VehicleDetailsGameFiber.IsHibernating);
+                   // || ComputerMain.form_backup.IsAlive || ComputerMain.form_active_calls.IsAlive
+                    //|| ComputerPedDB.form_main.IsAlive || ComputerVehDB.form_main.IsAlive || ComputerRequestBackup.form_main.IsAlive;
+                    //|| ComputerCurrentCallDetails.form_main.IsAlive;
+            }
+        }
+
+        internal static void OpenMain()
+        {
+            var fiber = ComputerMain.ComputerMainGameFiber;
+            if (fiber.IsHibernating) fiber.Wake();
+            else if (!fiber.IsAlive) fiber.Start();
+        }
+
+        internal static void OpenLogin()
+        {
+            var fiber = ComputerLogin.ComputerLoginGameFiber;
+            if (fiber.IsHibernating) fiber.Wake();
+            else if (!fiber.IsAlive) fiber.Start();
         }
 
         private static void ShowPoliceComputer()
         {
-            Game.IsPaused = true;
-            if (!Configs.SkipLogin)
+            while (true)
             {
-                login = new ComputerLogin();
-                login.Show();
-
-                while (login.Window.IsVisible || ComputerLogin.next_form.IsAlive || ComputerMain.form_ped_db.IsAlive
-                    || ComputerMain.form_veh_db.IsAlive || ComputerMain.form_backup.IsAlive || ComputerMain.form_active_calls.IsAlive
-                    || ComputerPedDB.form_main.IsAlive || ComputerVehDB.form_main.IsAlive || ComputerRequestBackup.form_main.IsAlive 
-                    || ComputerCurrentCallDetails.form_main.IsAlive)
+                IsOpen = true;
+                PauseGame(true);
+                Game.LogVerboseDebug("Pause true EntryPoint.ShowPoliceComputer");
+                ShowBackground(true);
+                if (!Configs.SkipLogin)
+                {
+                    OpenLogin();
+                }
+                else
+                {
+                    OpenMain();
+                }
+                do
                 {
                     GameFiber.Yield();
                 }
+                while (AreGameFibersRunning);
+                PauseGame(false);
+                ShowBackground(false);
+                IsOpen = false;
+                Game.LogVerboseDebug("Pause false EntryPoint.ShowPoliceComputer");
+                GameFiber.Hibernate();
             }
+           
+        }
+
+        private static void PauseGame(bool pause)
+        {
+            IsPaused = pause;
+            Game.IsPaused = pause;
+        }
+
+
+        internal static void TogglePause()
+        {
+            PauseGame(!IsPaused);
+        }
+
+        private static void ShowBackground(bool visible)
+        {
+            HasBackground = visible;
+            if (visible)
+                Function.EnableBackground();
             else
-            {
-                main = new ComputerMain();
-                main.Show();
+                Function.DisableBackground();
+        }
 
-                while (main.Window.IsVisible || ComputerMain.form_ped_db.IsAlive || ComputerMain.form_veh_db.IsAlive 
-                    || ComputerMain.form_backup.IsAlive || ComputerMain.form_active_calls.IsAlive || ComputerPedDB.form_main.IsAlive
-                    || ComputerPedDB.form_main.IsAlive || ComputerVehDB.form_main.IsAlive || ComputerRequestBackup.form_main.IsAlive
-                    || ComputerCurrentCallDetails.form_main.IsAlive)
-                {
-                    GameFiber.Yield();
-                }
-            }
-
-            Function.DisableBackground();
-
-            _opened = false;
-            Game.IsPaused = false;
+        internal static void ToggleBackground()
+        {
+            ShowBackground(!HasBackground);
         }
 
         private static void CheckIfCalloutActive()

@@ -3,6 +3,7 @@ using System.Drawing;
 using Rage;
 using Rage.Forms;
 using Gwen.Control;
+using ComputerPlus.Interfaces.ComputerPedDB;
 
 namespace ComputerPlus
 {
@@ -13,7 +14,7 @@ namespace ComputerPlus
         private TextBoxPassword pass;
         private Label label_invalid;
         private ImagePanel panel_invalid_user, panel_invalid_pass;
-        internal static GameFiber next_form = new GameFiber(OpenMainForm);
+        internal static GameFiber ComputerLoginGameFiber = new GameFiber(ShowLogin);
 
         public ComputerLogin() : base(typeof(ComputerLoginTemplate))
         {
@@ -32,8 +33,8 @@ namespace ComputerPlus
             this.label_invalid.Hide();
             this.input_user.Text = Configs.Username;
             this.pass.Text = Configs.Password;
-            Function.EnableBackground();
         }
+        
 
         private void LoginButtonClickedHandler(Base sender, ClickedEventArgs e) 
         {
@@ -51,8 +52,7 @@ namespace ComputerPlus
                 && this.pass.Text == Configs.Password)
             {
                 this.Window.Close();
-                next_form = new GameFiber(OpenMainForm);
-                next_form.Start();
+                EntryPoint.OpenMain();
             }
             else
             {
@@ -60,12 +60,20 @@ namespace ComputerPlus
             }
         }
 
-        internal static void OpenMainForm()
+        internal static void ShowLogin()
         {
-            GwenForm main = new ComputerMain();
-            main.Show();
-            while (main.Window.IsVisible)
-                GameFiber.Yield();
+            while (true)
+            {
+                var form = new ComputerLogin();
+                Game.LogVerboseDebug("Init new ComputerLogin");
+                form.Show();
+                while (form.IsOpen())
+                    GameFiber.Yield();                
+                Game.LogVerboseDebug("Close ComputerLogin");
+                form.Close();
+                Game.LogVerboseDebug("ComputerLogin Hibernating");
+                GameFiber.Hibernate();
+            }
         }
     }
 }
