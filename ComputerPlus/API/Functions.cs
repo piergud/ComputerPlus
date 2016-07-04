@@ -158,7 +158,7 @@ namespace ComputerPlus.API
         /// <param name="author">The author's name to display in the drop down list as $displayName - $author</param>
         /// <param name="creator">The creator function which will return the Gwen Form</param>
         /// <param name="onOpen">An optional callback that will be excuted when the form.Show() method is called.</param>
-        public static Guid RegisterInterface(String displayName, String author, Func<Rage.Forms.GwenForm> creator, Action onOpen = null)
+        public static Guid RegisterInterface(String displayName, String author, Func<Rage.Forms.GwenForm> creator, Action onOpen = null, Action onClose = null)
         {
             if (String.IsNullOrWhiteSpace(displayName) || String.IsNullOrWhiteSpace(author) || creator == null) return Guid.Empty;
             //Ensure there are no other UIs registered with the same params, if so, return it
@@ -166,7 +166,7 @@ namespace ComputerPlus.API
             if (conflict != null) return conflict.Identifier;
             //Create a new ExternalUI entry
             var guid = Guid.NewGuid();
-            Globals.ExternalUI.Add(new ExternalUI(guid, displayName, author, creator, onOpen));
+            Globals.ExternalUI.Add(new ExternalUI(guid, displayName, author, creator, onOpen, onClose));
             return guid;
         }
     }

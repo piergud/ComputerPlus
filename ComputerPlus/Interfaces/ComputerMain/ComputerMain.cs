@@ -17,10 +17,12 @@ namespace ComputerPlus
         private Label label_external_ui;
         private ComboBox list_external_ui;
         private CheckBox cb_toggle_pause, cb_toggle_background;
+        MenuItem external_ui_default;
         internal static GameFiber ComputerMainGameFiber = new GameFiber(ShowMain);
         internal static GameFiber form_backup = new GameFiber(OpenRequestBackupForm);
         internal static GameFiber form_report = new GameFiber(OpenReportMenuForm);
         internal static GameFiber form_active_calls = new GameFiber(OpenActiveCallsForm);
+        internal static GameFiber external_ui_fiber = null;
         //private Button btn_ReportMain; // Fiskey111 Edit
 
         private bool ShouldShowExtraUIControls
@@ -59,7 +61,7 @@ namespace ComputerPlus
             if (ShouldShowExtraUIControls)
             {
                 ControlExternalUISelectVisibility(ShouldShowExtraUIControls);
-                list_external_ui.AddItem("Select One");
+                external_ui_default = list_external_ui.AddItem("Select One", "placeholder");
                 Globals.SortedExternalUI.ToList().ForEach(x => list_external_ui.AddItem(x.DisplayName, x.Identifier.ToString()));
                 list_external_ui.ItemSelected += ExternalUISelected;
             }
@@ -120,14 +122,15 @@ namespace ComputerPlus
 
         private void ExternalUISelected(Base sender, ItemSelectedEventArgs arguments)
         {
-            if (arguments.SelectedItem.Name == null) return;
+            if (String.IsNullOrWhiteSpace(arguments.SelectedItem.Name) || arguments.SelectedItem.Name.Equals("placeholder")) return;
+            Game.LogVerboseDebug(String.Format("External UI Selected {0}", arguments.SelectedItem.Name));
             System.Guid guid = System.Guid.Parse(arguments.SelectedItem.Name);
             var match = Globals.ExternalUI.DefaultIfEmpty(null).FirstOrDefault(x => x.Identifier == guid);
             if (match == null) return;
-
+            list_external_ui.SelectedItem = external_ui_default;
             try
             {
-                GameFiber.StartNew(delegate
+                var fiber = GameFiber.StartNew(delegate
                 {
                     var form = match.Creator();
                     if (form == null)
@@ -139,7 +142,12 @@ namespace ComputerPlus
                     if (match.OnOpen != null)
                         match.OnOpen();
                     Globals.ActiveExternalUI_ID = match.Identifier;
-                });
+                });  
+                while(fiber.IsAlive && !fiber.IsHibernating)
+                {
+                        GameFiber.Yield();
+                }
+                match.OnClose();
             }
             catch(Exception e)
             {
