@@ -20,6 +20,8 @@ namespace ExampleExternalUI
         public override void InitializeLayout()
         {
             button1.Clicked += Button1_Clicked;
+            //Show in the middle of the screen
+            this.Position = new Point(Game.Resolution.Width / 2 - this.Window.Width / 2, Game.Resolution.Height / 2 - this.Window.Height / 2);
         }
 
         private void Button1_Clicked(Base sender, ClickedEventArgs arguments)

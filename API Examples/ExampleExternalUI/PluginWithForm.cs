@@ -27,7 +27,13 @@ namespace ExampleExternalUI
                 () =>
                 {
                     Game.DisplayNotification("On Open");
-                });
+                },
+                () =>
+                {
+                    //If you need to dispose of any objects, this would be the place
+                    //Game.DisplayNotification("On Close");
+                }
+                );
                 Game.DisplayNotification("Registered");
 
                 ComputerPlusWrapper.RegisterComputerPlusInterface("Another", "ainesophaur", () => new ExampleTwoForm());

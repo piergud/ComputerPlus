@@ -48,9 +48,8 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Gwen, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ComputerPlus\Dependencies\Gwen.dll</HintPath>
+    <Reference Include="Gwen">
+      <HintPath>..\..\ComputerPlus\Dependencies\Gwen.dll</HintPath>
     </Reference>
     <Reference Include="LSPD First Response, Version=0.3.38.5436, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -91,7 +90,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ComputerPlus\ComputerPlus.csproj">
+    <ProjectReference Include="..\..\ComputerPlus\ComputerPlus.csproj">
       <Project>{95d73ac3-854f-4c32-94e8-e9778ea0404c}</Project>
       <Name>ComputerPlus</Name>
     </ProjectReference>
