@@ -28,22 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.btn_main = new System.Windows.Forms.Button();
             this.btn_help = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // btn_main
-            // 
-            this.btn_main.Location = new System.Drawing.Point(550, 410);
-            this.btn_main.Name = "btn_main";
-            this.btn_main.Size = new System.Drawing.Size(88, 25);
-            this.btn_main.TabIndex = 3;
-            this.btn_main.Text = "Main Menu";
-            this.btn_main.UseVisualStyleBackColor = true;
-            // 
             // btn_help
             // 
-            this.btn_help.Location = new System.Drawing.Point(456, 410);
+            this.btn_help.Location = new System.Drawing.Point(550, 404);
             this.btn_help.Name = "btn_help";
             this.btn_help.Size = new System.Drawing.Size(88, 25);
             this.btn_help.TabIndex = 4;
@@ -56,7 +46,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(650, 441);
             this.Controls.Add(this.btn_help);
-            this.Controls.Add(this.btn_main);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.MaximizeBox = false;
@@ -68,7 +57,6 @@
         }
 
         #endregion
-        private System.Windows.Forms.Button btn_main;
         private System.Windows.Forms.Button btn_help;
     }
 }
