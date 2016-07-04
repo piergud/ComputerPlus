@@ -101,21 +101,18 @@ namespace ComputerPlus
 
         private void RequestBackupButtonClickedHandler(Base sender, ClickedEventArgs e)
         {
-            this.Window.Close();
             form_backup = new GameFiber(OpenRequestBackupForm);
             form_backup.Start();
         }
 
         private void ReportMainClickedHandler(Base sender, ClickedEventArgs e)   // Fiskey111 Edit
         {
-            this.Window.Close();
             form_report = new GameFiber(OpenReportMenuForm);
             form_report.Start();
         }
 
         private void ActiveCallsClickedHandler(Base sender, ClickedEventArgs e)
         {
-            this.Window.Close();
             form_active_calls = new GameFiber(OpenActiveCallsForm);
             form_active_calls.Start();
         }
