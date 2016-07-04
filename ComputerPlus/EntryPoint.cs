@@ -25,6 +25,7 @@ namespace ComputerPlus
             OnVehicleStopped += VehicleStoppedHandler;
             AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(AssemblyResolve);
             Configs.RunConfigCheck();
+            Function.checkForRageVersionClass.checkForRageVersion(0.41f);
         }
 
         public override void Finally()
