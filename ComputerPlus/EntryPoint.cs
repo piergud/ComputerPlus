@@ -178,10 +178,12 @@ namespace ComputerPlus
                     || (ComputerPedController.PedSearchGameFiber.IsAlive && !ComputerPedController.PedSearchGameFiber.IsHibernating)
                     || (ComputerPedController.PedViewGameFiber.IsAlive && !ComputerPedController.PedViewGameFiber.IsHibernating)
                     || (ComputerVehicleController.VehicleSearchGameFiber.IsAlive && !ComputerVehicleController.VehicleSearchGameFiber.IsHibernating)
-                    || (ComputerVehicleController.VehicleDetailsGameFiber.IsAlive && !ComputerVehicleController.VehicleDetailsGameFiber.IsHibernating);
+                    || (ComputerVehicleController.VehicleDetailsGameFiber.IsAlive && !ComputerVehicleController.VehicleDetailsGameFiber.IsHibernating)
+                    || (ComputerMain.form_active_calls.IsAlive && !ComputerMain.form_active_calls.IsHibernating)
+                    || (ComputerMain.form_backup.IsAlive && !ComputerMain.form_backup.IsHibernating);
                    // || ComputerMain.form_backup.IsAlive || ComputerMain.form_active_calls.IsAlive
-                    //|| ComputerPedDB.form_main.IsAlive || ComputerVehDB.form_main.IsAlive || ComputerRequestBackup.form_main.IsAlive;
-                    //|| ComputerCurrentCallDetails.form_main.IsAlive;
+                   //|| ComputerPedDB.form_main.IsAlive || ComputerVehDB.form_main.IsAlive || ComputerRequestBackup.form_main.IsAlive;
+                   //|| ComputerCurrentCallDetails.form_main.IsAlive;
             }
         }
 
