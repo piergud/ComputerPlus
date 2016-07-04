@@ -97,6 +97,91 @@ namespace ComputerPlus
             }
         }
 
+        internal static class checkForRageVersionClass
+        {
+            private static bool correctVersion;
+
+            /// <summary>
+            /// Checks whether the person has the specified minimum version or higher. 
+            /// </summary>
+            /// <param name="minimumVersion">Provide in the format of a float i.e.: 0.22</param>
+            /// <returns></returns>
+            public static bool checkForRageVersion(float minimumVersion)
+            {
+
+                var versionInfo = FileVersionInfo.GetVersionInfo("RAGEPluginHook.exe");
+                float Rageversion;
+                try
+                {
+                    //If you decide to use this in your plugin, I would appreciate some credit :)
+                    Rageversion = float.Parse(versionInfo.ProductVersion.Substring(0, 4), CultureInfo.InvariantCulture);
+                    Game.LogTrivial("ComputerPlus detected RAGEPluginHook version: " + Rageversion.ToString());
+
+                    //If user's RPH version is older than the minimum
+                    if (Rageversion < minimumVersion)
+                    {
+                        correctVersion = false;
+                        GameFiber.StartNew(delegate
+                        {
+                            while (Game.IsLoading)
+                            {
+                                GameFiber.Yield();
+                            }
+                            //If you decide to use this in your plugin, I would appreciate some credit :)
+                            Game.DisplayNotification("RPH ~r~v" + Rageversion.ToString() + " ~s~detected. ~b~ComputerPlus ~s~requires ~b~v" + minimumVersion.ToString() + " ~s~or higher.");
+                            GameFiber.Sleep(5000);
+                            Game.LogTrivial("RAGEPluginHook version " + Rageversion.ToString() + " detected. ComputerPlus requires v" + minimumVersion.ToString() + " or higher.");
+                            Game.LogTrivial("Preparing redirect...");
+                            Game.DisplayNotification("You are being redirected to the RagePluginHook website so you can download the latest version.");
+                            Game.DisplayNotification("Press Backspace to cancel the redirect.");
+
+                            int count = 0;
+                            while (true)
+                            {
+                                GameFiber.Sleep(10);
+                                count++;
+                                if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Back))
+                                {
+                                    break;
+                                }
+                                if (count >= 300)
+                                {
+                                    //URL to the RPH download page.
+                                    //I use bit.ly to track the number of times this is called: at the moment, it has been called 327 times over the past 2 days! What a timesaver for me.
+                                    System.Diagnostics.Process.Start("http://bit.ly/RPHDownload");
+                                    break;
+                                }
+                            }
+
+                        });
+                    }
+                    //If user's RPH version is (above) the specified minimum
+                    else
+                    {
+                        correctVersion = true;
+                    }
+                }
+                catch (Exception e)
+                {
+                    //If for whatever reason the version couldn't be found.
+                    Game.LogTrivial(e.ToString());
+                    Game.LogTrivial("Unable to detect your Rage installation.");
+                    if (File.Exists("RAGEPluginHook.exe"))
+                    {
+                        Game.LogTrivial("RAGEPluginHook.exe exists");
+                    }
+                    else { Game.LogTrivial("RAGEPluginHook doesn't exist."); }
+                    Game.LogTrivial("Rage Version: " + versionInfo.ProductVersion.ToString());
+                    Game.DisplayNotification("ComputerPlus unable to detect RPH installation. Please send me your logfile.");
+                    correctVersion = false;
+
+                }
+
+                return correctVersion;
+
+            }
+        }
+
         /// <summary>
         /// Gets whether a vehicle is a police vehicle or not.
         /// </summary>
