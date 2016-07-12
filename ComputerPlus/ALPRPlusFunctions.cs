@@ -21,16 +21,16 @@ namespace ComputerPlus {
         internal static void RegisterForEvents()
         {
 
-            Events.ALPRResultDisplayed += Events_ALPRResultDisplayed;
-            Events.ALPRFlagGenerated += Events_ALPRFlagGenerated;
+            Functions.ALPRResultDisplayed += Functions_ALPRResultDisplayed;
+            Functions.ALPRFlagGenerated += Functions_ALPRFlagGenerated;
         }
 
-        private static void Events_ALPRFlagGenerated(Vehicle veh, ALPREventArgs e)
+        private static void Functions_ALPRFlagGenerated(Vehicle veh, ALPREventArgs e)
         {
             Game.LogVerboseDebug("Events_ALPRFlagGenerated");
         }
 
-        private static void Events_ALPRResultDisplayed(Rage.Vehicle veh, Stealth.Plugins.ALPRPlus.API.Types.ALPREventArgs e)
+        private static void Functions_ALPRResultDisplayed(Rage.Vehicle veh, Stealth.Plugins.ALPRPlus.API.Types.ALPREventArgs e)
         {
             Game.LogVerboseDebug("ALPRPlusFunctions Events_ALPRResultDisplayed");
             EventHandler<ALPR_Arguments> handler = (EventHandler<ALPR_Arguments>)OnAlprPlusMessage;
