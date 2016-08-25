@@ -16,6 +16,6 @@
 - [NEW!] Computer+ now has its own API, for callout developers to use!!
 
 **Planned Improvements**
-- Integration with Albo1125's British Policing Script and soon to be released LSPDFR+.
+- Integration with Albo1125's British Policing Script.
 - Combining Computer+ and fiskey111's LSPDFR PolicingMDT into one mod.
 
