@@ -141,6 +141,12 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             return World.GetAllVehicles().Where(x => x.HasDriver && x.Driver == ped).First();
         }
 
+        internal static ComputerPlusEntity LookupVehicle(String vehicleTag)
+        {
+            var vehicle = World.EnumerateVehicles().Where(x => x.LicensePlate.Equals(vehicleTag.ToUpper())).First();
+            return vehicle != null ? LookupVehicle(vehicle) : null;
+        }
+
         internal static ComputerPlusEntity LookupVehicle(Vehicle vehicle)
         {
             var ownerName = Functions.GetVehicleOwnerName(vehicle);
