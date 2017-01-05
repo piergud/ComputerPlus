@@ -84,7 +84,7 @@ namespace ComputerPlus
 
                 search_fiber = GameFiber.StartNew(delegate 
                 {
-                    Thread.Sleep(2500);
+                    GameFiber.Sleep(2500);
                     string name = input_name.Text.ToLower();
                     List<Ped> peds = World.GetAllPeds().ToList();
                     peds.RemoveAll(p => !p);

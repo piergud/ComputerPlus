@@ -15,7 +15,7 @@ namespace ComputerPlus
         internal static VehicleStoppedEvent OnVehicleStopped;
         static Stopwatch sw = new Stopwatch();
         private static float _stored_speed;
-        private static bool _opened = false;
+        private static bool _opened, _prompted;
         internal static List<string> recent_text = new List<string>();
         internal static GameFiber fCheckIfCalloutActive = new GameFiber(CheckIfCalloutActive);
 
@@ -63,9 +63,11 @@ namespace ComputerPlus
             if (veh) 
             {
                 if (Function.IsPoliceVehicle(veh)
-                    && LSPD_First_Response.Mod.API.Functions.GetCurrentPullover() != null)
+                    && LSPD_First_Response.Mod.API.Functions.GetCurrentPullover() != null
+                    && !_prompted)
                 {
                     Game.DisplayHelp("Hold ~INPUT_CONTEXT~ to open ~b~LSPDFR Computer+~w~.");
+                    _prompted = true;
                 }
             }
         }
