@@ -16,6 +16,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         ListBox list_collected_tags;
         ListBox list_manual_results;
         List<Vehicle> AlprDetectedVehicles = new List<Vehicle>();
+        TextBox text_manual_name;
         bool IsFloatingWindow = false;
 
         internal ComputerVehicleSearch() : base(typeof(ComputerVehicleSearchTemplate))
@@ -39,12 +40,25 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             list_manual_results.AllowMultiSelect = false;
             list_collected_tags.RowSelected += onListItemSelected;
             list_manual_results.RowSelected += onListItemSelected;
+            text_manual_name.SubmitPressed += onSearchSubmit;
         }
 
         private void ClearSelections()
         {
             list_collected_tags.UnselectAll();
             list_manual_results.UnselectAll();
+        }
+
+        private void onSearchSubmit(Base sender, EventArgs arguments)
+        {
+            String tag = text_manual_name.Text.ToUpper();
+            if (String.IsNullOrWhiteSpace(tag)) return;
+            var vehicle = ComputerVehicleController.LookupVehicle(tag);
+            
+            if (vehicle != null)
+            {
+                list_manual_results.AddVehicle(vehicle);
+            }
         }
 
         private void onListItemSelected(Base sender, ItemSelectedEventArgs arguments)
