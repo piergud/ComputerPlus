@@ -107,7 +107,8 @@ namespace ComputerPlus
             if (veh.HasSiren
                 && veh.Model.Hash != 0x73920F8E // Ambulance
                 && veh.Model.Hash != 0x45D56ADA // Fire Truck
-                && veh.Model.Hash != 0x1BF8D381) // Lifeguard SUV
+                && veh.Model.Hash != 0x1BF8D381 // Lifeguard SUV
+                && veh.Model.Hash != 0x91EFE36F) // Merryweather Patriot (RDE)
                 return true;
             else
                 return false;
@@ -181,7 +182,7 @@ namespace ComputerPlus
             }
             catch (KeyNotFoundException)
             {
-                file = "lspd.jpg";
+                file = "generic.jpg";
             }
             return file;
         }
