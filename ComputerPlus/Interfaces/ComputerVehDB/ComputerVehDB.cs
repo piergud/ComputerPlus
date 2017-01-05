@@ -87,7 +87,7 @@ namespace ComputerPlus
                 output_info.Text = "Searching. Please wait...";
                 search_fiber = GameFiber.StartNew(delegate
                 {
-                    Thread.Sleep(2500);
+                    GameFiber.Sleep(2500);
                     string lp_input = input_name.Text.ToLower();
                     List<Vehicle> vehs = World.GetAllVehicles().ToList();
                     vehs.RemoveAll(v => !v);
