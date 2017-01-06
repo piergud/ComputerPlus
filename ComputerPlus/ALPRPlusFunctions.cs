@@ -20,40 +20,34 @@ namespace ComputerPlus {
         internal static event EventHandler<ALPR_Arguments> OnAlprPlusMessage;
         internal static void RegisterForEvents()
         {
+            ALPRPlusFunctions.OnAlprPlusMessage += Events_ALPRResultDisplayed;
 
-            Events.ALPRResultDisplayed += Events_ALPRResultDisplayed;
-            Events.ALPRFlagGenerated += Events_ALPRFlagGenerated;
         }
 
-        private static void Events_ALPRFlagGenerated(Vehicle veh, ALPREventArgs e)
-        {
-            Game.LogVerboseDebug("Events_ALPRFlagGenerated");
-        }
-
-        private static void Events_ALPRResultDisplayed(Rage.Vehicle veh, Stealth.Plugins.ALPRPlus.API.Types.ALPREventArgs e)
+        private static void Events_ALPRResultDisplayed(object sender, ALPR_Arguments e)
         {
             Game.LogVerboseDebug("ALPRPlusFunctions Events_ALPRResultDisplayed");
             EventHandler<ALPR_Arguments> handler = (EventHandler<ALPR_Arguments>)OnAlprPlusMessage;
             if (handler != null)
             {
                 ALPR_Position position = ALPR_Position.FRONT;
-                switch (e.Camera)
+                switch (e.Position)
                 {
-                    case ECamera.Driver_Front:
+                    case ALPR_Position.FRONT_DRIVER:
                         position = ALPR_Position.FRONT_DRIVER;
                         break;
-                    case ECamera.Passenger_Front:
+                    case ALPR_Position.FRONT_PASSENGER:
                         position = ALPR_Position.FRONT_PASSENGER;
                         break;
-                    case ECamera.Driver_Rear:
+                    case ALPR_Position.REAR_DRIVER:
                         position = ALPR_Position.REAR_DRIVER;
                         break;
-                    case ECamera.Passenger_Rear:
+                    case ALPR_Position.REAR_PASSENGER:
                         position = ALPR_Position.REAR_PASSENGER;
                         break;                    
                 }
                 Game.LogVerboseDebug("ALPRPlusFunctions sending to handler");
-                handler(null, new ALPR_Arguments(e.Result.Vehicle, position, e.Result.Result));
+                handler(null, new ALPR_Arguments(e.Vehicle, position, e.Message));
             }
             else
                 Game.LogVerboseDebug("ALPRPlusFunctions has no handler");
