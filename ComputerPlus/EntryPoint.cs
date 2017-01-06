@@ -160,14 +160,17 @@ namespace ComputerPlus
                 }                
             }          
 
+           /* 
+            @TODO @ainesophaur discuss whether to include a vanilla ALPR in C+ and optimize the vehicle enumeration calls
             if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.LControlKey) && Game.IsKeyDown(System.Windows.Forms.Keys.U))
             {
                 if (!alprRunning) ComputerVehicleController.RunVanillaAlpr();
                 else ComputerVehicleController.StopVanillaAlpr();
                 alprRunning = !alprRunning;
             }
+           */
         }
-
+        //@TODO put all game fibers in an array and filter through to find any that are alive
         private static bool AreGameFibersRunning
         {
             get
