@@ -44,6 +44,10 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             if (ped != null)
             {
                 list_manual_results.AddPed(ped);
+            } else
+            {
+                text_manual_name.BoundsOutlineColor = System.Drawing.Color.Red;
+                text_manual_name.SetToolTipText("No persons found");
             }
         }
 
