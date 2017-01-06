@@ -137,8 +137,6 @@
     <Compile Include="Interfaces\ComputerRequestBackup\ComputerRequestBackupTemplate.Designer.cs">
       <DependentUpon>ComputerRequestBackupTemplate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interfaces\ComputerVehDB\ComputerVehDB.cs" />
-    <Compile Include="Interfaces\ComputerPedDB\ComputerPedDB.cs" />
     <Compile Include="Interfaces\ComputerMain\ComputerMain.cs" />
     <Compile Include="Interfaces\ComputerLogin\ComputerLoginTemplate.cs">
       <SubType>Form</SubType>
