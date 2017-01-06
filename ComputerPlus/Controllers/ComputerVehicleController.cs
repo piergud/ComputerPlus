@@ -143,8 +143,13 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         internal static ComputerPlusEntity LookupVehicle(String vehicleTag)
         {
-            var vehicle = World.EnumerateVehicles().Where(x => x.LicensePlate.Equals(vehicleTag.ToUpper())).First();
-            return vehicle != null ? LookupVehicle(vehicle) : null;
+            try {
+                var vehicle = World.EnumerateVehicles().Where(x => x.LicensePlate.Equals(vehicleTag.ToUpper())).First();
+                return LookupVehicle(vehicle);
+            } catch
+            {
+                return null;
+            }
         }
 
         internal static ComputerPlusEntity LookupVehicle(Vehicle vehicle)
@@ -217,14 +222,10 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         internal static Blip BlipVehicle(Vehicle vehicle, Color color)
         {
-           // if (!timer.Enabled)
-            //    timer.Start();
             var blip = vehicle.AddBlipSafe(color);
-            _Blips.Add(blip, vehicle);
+            if (blip != null && (vehicle != null && vehicle.IsValid())) _Blips.Add(blip, vehicle);
             return blip;
         }
-        //private static Vector3 lastPosition = Vector3.Zero;
-        //private static bool hasBlip = false, hasCheckpoint = false;
 
         public static void RunVanillaAlpr()
         {
