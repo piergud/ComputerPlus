@@ -41,6 +41,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             list_collected_tags.RowSelected += onListItemSelected;
             list_manual_results.RowSelected += onListItemSelected;
             text_manual_name.SubmitPressed += onSearchSubmit;
+            var currentPullover = ComputerVehicleController.CurrentlyPulledOver;
+            if (currentPullover != null) list_collected_tags.AddVehicle(currentPullover);
         }
 
         private void ClearSelections()
@@ -57,8 +59,27 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             
             if (vehicle != null)
             {
+                text_manual_name.TextColorOverride = System.Drawing.Color.Green;
+                text_manual_name.UpdateColors();
+                text_manual_name.SetToolTipText(String.Empty);
                 list_manual_results.AddVehicle(vehicle);
+                ComputerVehicleController.LastSelected = vehicle;                
+                this.ShowDetailsView();
             }
+            else
+            {                
+                text_manual_name.TextColorOverride = System.Drawing.Color.Red;
+                text_manual_name.UpdateColors();
+                text_manual_name.SetToolTipText("No vehicles found");
+            }
+        }
+
+        private void ShowDetailsView()
+        {
+            if (ComputerVehicleController.LastSelected == null) return;
+            var fiber = ComputerVehicleController.VehicleDetailsGameFiber;
+            if (fiber.IsHibernating) fiber.Wake();
+            else if (!fiber.IsAlive) fiber.Start();
         }
 
         private void onListItemSelected(Base sender, ItemSelectedEventArgs arguments)
@@ -69,9 +90,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 ComputerVehicleController.LastSelected = arguments.SelectedItem.UserData as ComputerPlusEntity;
                 ClearSelections();
                 Game.LogVerboseDebug(String.Format("ComputerVehicleController.LastSelected ? null {0}", ComputerVehicleController.LastSelected == null));
-                var fiber = ComputerVehicleController.VehicleDetailsGameFiber;
-                if (fiber.IsHibernating) fiber.Wake();
-                else if(!fiber.IsAlive) fiber.Start();
+                this.ShowDetailsView();
                 Game.LogVerboseDebug("ComputerVehicleSearch.onListItemSelected successful");
             }
             else
