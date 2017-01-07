@@ -80,12 +80,13 @@ namespace ComputerPlus
                 Function.CheckForUpdates();
                 if (Function.IsAlprPlusRunning())
                 {
-                    Game.LogVerboseDebug("Registering for ALPR+ Events");
-                    ALPRPlusFunctions.RegisterForEvents();
+                    Game.LogTrivial("C+: Registering for ALPR+ Events");                    
                     ALPRPlusFunctions.OnAlprPlusMessage += ALPRPlusFunctions_OnAlprPlusMessage;
+                    ALPRPlusFunctions.RegisterForEvents();
                 }
-                else
-                    Game.LogVerboseDebug("ALPR+ Not Detected");
+                else {
+                    Game.LogTrivial("C+: ALPR+ Not Detected");
+                }
             }
             else
             {
