@@ -48,15 +48,15 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
         private String DetermineImagePath(Ped ped)
         {
-
-            String modelName = ped.Model.Name;
-            int headDrawableIndex, headDrawableTextureIndex;
-
-            ped.GetVariation(0, out headDrawableIndex, out headDrawableTextureIndex);
-
-            String _model = String.Format(@"{0}__0_{1}_{2}", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
             try
             {
+                if (ped == null || !ped.Exists()) return Function.DefaultPedImagePath;
+                String modelName = ped.Model.Name;
+                int headDrawableIndex, headDrawableTextureIndex;
+
+                ped.GetVariation(0, out headDrawableIndex, out headDrawableTextureIndex);
+
+                String _model = String.Format(@"{0}__0_{1}_{2}", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
                 var path = Function.GetPedImagePath(_model);
                 Game.LogVerboseDebug(String.Format("Loading image for model from  {0}", path));
                 return path;
@@ -64,7 +64,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             catch
             {
                 Game.LogVerboseDebug("DetermineImagePath Error");
-                return null;
+                return Function.DefaultPedImagePath;
             }
         }
 

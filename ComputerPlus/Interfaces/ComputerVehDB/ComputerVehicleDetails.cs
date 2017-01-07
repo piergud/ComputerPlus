@@ -106,6 +106,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         {           
             try
             {
+                if (ped == null || !ped.Exists()) return Function.DefaultPedImagePath;
                 String modelName = ped.Model.Name;
                 int headDrawableIndex, headDrawableTextureIndex;
 
@@ -127,6 +128,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         {            
             try
             {
+                if (vehicle == null || !vehicle.Exists()) return Function.DefaultVehicleImagePath;
                 String modelName = vehicle.Model.Name;
                 var path = Function.GetVehicleImagePath(modelName);                
                 Game.LogVerbose(String.Format("Loading image for vehicle from {0}", path));
