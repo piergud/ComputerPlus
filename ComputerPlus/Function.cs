@@ -8,9 +8,19 @@ using System.Drawing;
 using Rage;
 using Rage.Native;
 using LSPD_First_Response.Mod.API;
+using Rage.Forms;
+using System.Globalization;
+using System.IO;
 
 namespace ComputerPlus
 {
+    internal static class GwenFormExtension
+    {
+        internal static Point GetLaunchPosition(this GwenForm form)
+        {
+            return new Point(Game.Resolution.Width / 2 - form.Window.Width / 2, Game.Resolution.Height / 2 - form.Window.Height / 2);
+        }
+    }
     internal static class Function
     {
         private static Texture _bg;
@@ -232,7 +242,7 @@ namespace ComputerPlus
             float length = Rage.Graphics.MeasureText(time, "Arial", 18).Width;
             taskbar.Size = new SizeF(Game.Resolution.Width, Game.Resolution.Height / 25);
             taskbar.Location = new PointF(1, 1 + Game.Resolution.Height - (Game.Resolution.Height / 25));
-
+            
             e.Graphics.DrawTexture(_bg, 0f, 0f, Game.Resolution.Width, Game.Resolution.Height);
             //e.Graphics.DrawRectangle(taskbar, taskbar_col);
             e.Graphics.DrawText(update_text, "Arial", 18,
@@ -270,6 +280,23 @@ namespace ComputerPlus
                 file = "generic.jpg";
             }
             return file;
+        }
+
+        internal static String GetPedImagePath(String model)
+        {
+            return String.Format(@"Plugins\LSPDFR\ComputerPlus\tmp\{0}_front.jpg", model);
+        }
+
+        internal static String GetVehicleImagePath(String model)
+        {
+            return String.Format(@"Plugins\LSPDFR\ComputerPlus\vehicles\{0}f.jpg", model);
+        }
+
+        internal static Texture LoadPedImage(String model)
+        {
+            var path = GetPedImagePath(model);
+            Game.LogVerboseDebug(String.Format("LoadPedImage: {0}", path));
+            return Game.CreateTextureFromFile(path);
         }
 
         private static void MakeSpaceForNewRecent()
@@ -346,6 +373,11 @@ namespace ComputerPlus
         internal static bool IsTrafficPolicerRunning()
         {
             return IsLSPDFRPluginRunning("Traffic Policer", new Version(6, 9, 8, 1));
+        }
+
+        internal static bool IsAlprPlusRunning()
+        {
+            return IsLSPDFRPluginRunning("ALPRPlus", new Version(0, 2, 0, 0));
         }
 
         internal static string GetFormattedDateTime(DateTime? date = null)
@@ -482,5 +514,7 @@ namespace ComputerPlus
             String str = Marshal.PtrToStringAnsi(ptr);
             return str;
         }
+
+        
     }
 }
