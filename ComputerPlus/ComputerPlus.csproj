@@ -215,8 +215,12 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>xcopy /Y "$(TargetDir)Gwen.dll" "$(TargetDir)Packaged\"
+xcopy /Y "$(TargetDir)ComputerPlus.dll" "$(TargetDir)Packaged\Plugins\LCPDFR\"
+xcopy /Y "$(ProjectDir)Resources\*.jpg" "$(TargetDir)Packaged\Plugins\LCPDFR\ComputerPlus\"
+xcopy /Y "$(ProjectDir)Resources\*.png" "$(TargetDir)Packaged\Plugins\LCPDFR\ComputerPlus\"
+xcopy /Y "$(ProjectDir)Resources\backgrounds\*.jpg" "$(TargetDir)Packaged\Plugins\LCPDFR\ComputerPlus\backgrounds\"
+xcopy /Y "$(ProjectDir)Resources\ComputerPlus.ini" "$(TargetDir)Packaged\Plugins\LCPDFR\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
