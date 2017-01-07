@@ -43,7 +43,15 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             var ped = controller.LookupPersona(name);
             if (ped != null)
             {
-                list_manual_results.AddPed(ped);
+                if (ped.Item1 == null || !ped.Item1.IsValid())
+                {
+                    text_manual_name.BoundsOutlineColor = System.Drawing.Color.Red;
+                    text_manual_name.SetToolTipText("This person no longer exists");
+                }
+                else {
+                    text_manual_name.ToolTip = null;
+                    list_manual_results.AddPed(ped);
+                }
             } else
             {
                 text_manual_name.BoundsOutlineColor = System.Drawing.Color.Red;
@@ -60,16 +68,20 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
         {
             ComputerPedController controller = ComputerPedController.Instance;
             list_collected_ids.Clear();
-            var results = controller.GetRecentSearches();
+            var results = controller.GetRecentSearches()
+            .Where(x => x.Item1 != null && x.Item1.IsValid()).ToList(); 
+            //@TODO choose if we want to remove null items from the list -- may cause user confusion
             if (results != null && results.Count > 0)
+            {
                 results.ForEach(x => list_manual_results.AddPed(x));
+            }
         }
 
         public void PopulateStoppedPedsList()
         {
             ComputerPedController controller = ComputerPedController.Instance;
             list_collected_ids.Clear();
-            var results = controller.PedsCurrentlyStoppedByPlayer.ToArray();
+            var results = controller.PedsCurrentlyStoppedByPlayer.Where(x => x != null && x.IsValid()).ToArray();
             if (results != null && results.Length > 0)
                 results
                 .Select(x => controller.LookupPersona(x))
@@ -87,7 +99,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
         {
             if (arguments.SelectedItem.UserData is Tuple<Ped, Persona>)
             {
-                ComputerPedController.LastSelected = arguments.SelectedItem.UserData as Tuple<Ped, Persona>;
+                ComputerPedController.LastSelected = arguments.SelectedItem.UserData as Tuple<Ped, Persona>;                
                 Game.LogVerboseDebug(String.Format("ComputerPedSearch.onListItemSelected updated ComputerPedController.LastSelected {0}", ComputerPedController.LastSelected.Item2.FullName));
                 ClearSelections();
                 var fiber = ComputerPedController.PedViewGameFiber;

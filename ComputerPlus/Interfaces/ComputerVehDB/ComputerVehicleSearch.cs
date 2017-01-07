@@ -61,7 +61,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             {
                 text_manual_name.TextColorOverride = System.Drawing.Color.Green;
                 text_manual_name.UpdateColors();
-                text_manual_name.SetToolTipText(String.Empty);
+                text_manual_name.ToolTip = null;
                 list_manual_results.AddVehicle(vehicle);
                 ComputerVehicleController.LastSelected = vehicle;                
                 this.ShowDetailsView();
