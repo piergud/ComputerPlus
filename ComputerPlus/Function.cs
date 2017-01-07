@@ -8,9 +8,19 @@ using System.Drawing;
 using Rage;
 using Rage.Native;
 using LSPD_First_Response.Mod.API;
+using Rage.Forms;
+using System.Globalization;
+using System.IO;
 
 namespace ComputerPlus
 {
+    internal static class GwenFormExtension
+    {
+        internal static Point GetLaunchPosition(this GwenForm form)
+        {
+            return new Point(Game.Resolution.Width / 2 - form.Window.Width / 2, Game.Resolution.Height / 2 - form.Window.Height / 2);
+        }
+    }
     internal static class Function
     {
         private static Texture _bg;
@@ -208,7 +218,9 @@ namespace ComputerPlus
             if (_bg == null) 
             {
                 Game.LogTrivial(@"Failed to load LSPDFR Computer+ background. Please ensure all backgrounds are present in Plugins\LSPDFR\ComputerPlus\backgrounds\.");
+                Game.LogTrivial(@"Ensure your ComputerPlus.ini contains entries for [VEHICLE BACKGROUNDS] in the format of vehicleModel=backgroundImage.jpg");
                 Game.DisplayNotification("3dtextures", "mpgroundlogo_cops", "LSPDFR Computer+", "~r~Error", @"Failed to load background in Plugins\LSPDFR\ComputerPlus\backgrounds\.");
+                _bg = LoadBackground(Globals.DefaultBackgroundImage);
             }
             else 
             {
@@ -232,7 +244,7 @@ namespace ComputerPlus
             float length = Rage.Graphics.MeasureText(time, "Arial", 18).Width;
             taskbar.Size = new SizeF(Game.Resolution.Width, Game.Resolution.Height / 25);
             taskbar.Location = new PointF(1, 1 + Game.Resolution.Height - (Game.Resolution.Height / 25));
-
+            
             e.Graphics.DrawTexture(_bg, 0f, 0f, Game.Resolution.Width, Game.Resolution.Height);
             //e.Graphics.DrawRectangle(taskbar, taskbar_col);
             e.Graphics.DrawText(update_text, "Arial", 18,
@@ -267,9 +279,42 @@ namespace ComputerPlus
             }
             catch (KeyNotFoundException)
             {
-                file = "generic.jpg";
+                file = Globals.DefaultBackgroundImage;
             }
             return file;
+        }
+
+        internal static String GetPedImagePath(String model, String variant = "front")
+        {
+            return String.Format(@"Plugins\LSPDFR\ComputerPlus\images\peds\{0}_{1}.jpg", model, variant);
+        }
+
+        internal static String GetVehicleImagePath(String model, String variant = "f")
+        {
+            return String.Format(@"Plugins\LSPDFR\ComputerPlus\images\vehicles\{0}{1}.jpg", model, variant);
+        }
+
+        internal static String DefaultVehicleImagePath
+        {
+            get
+            {
+                return String.Format(@"Plugins\LSPDFR\ComputerPlus\{0}.jpg", Globals.EmptyImageVehicle);
+            }
+        }
+
+        internal static String DefaultPedImagePath
+        {
+            get
+            {
+                return String.Format(@"Plugins\LSPDFR\ComputerPlus\{0}.jpg", Globals.EmptyImagePed);
+            }
+        }
+
+        internal static Texture LoadPedImage(String model)
+        {
+            var path = GetPedImagePath(model);
+            Game.LogVerboseDebug(String.Format("LoadPedImage: {0}", path));
+            return Game.CreateTextureFromFile(path);
         }
 
         private static void MakeSpaceForNewRecent()
@@ -346,6 +391,11 @@ namespace ComputerPlus
         internal static bool IsTrafficPolicerRunning()
         {
             return IsLSPDFRPluginRunning("Traffic Policer", new Version(6, 9, 8, 1));
+        }
+
+        internal static bool IsAlprPlusRunning()
+        {
+            return IsLSPDFRPluginRunning("ALPRPlus", new Version(0, 2, 0, 0));
         }
 
         internal static string GetFormattedDateTime(DateTime? date = null)
@@ -482,5 +532,7 @@ namespace ComputerPlus
             String str = Marshal.PtrToStringAnsi(ptr);
             return str;
         }
+
+        
     }
 }
