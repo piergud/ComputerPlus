@@ -17,9 +17,9 @@ namespace ComputerPlus
         internal static int WebAPIFileId = 11453;
         internal static Guid ActiveExternalUI_ID = Guid.Empty;
         internal static List<ExternalUI> ExternalUI = new List<API.ExternalUI>();
-        internal readonly static String EmptyImageVehicle = "no_vehicle_image";
-        internal readonly static String EmptyImagePed = "no_ped_image";
-        internal readonly static String DefaultBackgroundImage = "lspd.jpeg";
+        internal readonly static String EmptyImageVehicle = "no_vehicle_image.jpg";
+        internal readonly static String EmptyImagePed = "no_ped_image.jpg";
+        internal readonly static String DefaultBackgroundImage = "lspd.jpg";
 
         /// <summary>
         /// Returns the active callout from the queue.

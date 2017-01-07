@@ -219,7 +219,7 @@ namespace ComputerPlus
             {
                 Game.LogTrivial(@"Failed to load LSPDFR Computer+ background. Please ensure all backgrounds are present in Plugins\LSPDFR\ComputerPlus\backgrounds\.");
                 Game.LogTrivial(@"Ensure your ComputerPlus.ini contains entries for [VEHICLE BACKGROUNDS] in the format of vehicleModel=backgroundImage.jpg");
-                Game.DisplayNotification("3dtextures", "mpgroundlogo_cops", "LSPDFR Computer+", "~r~Error", @"Failed to load background in Plugins\LSPDFR\ComputerPlus\backgrounds\.");
+                //Game.DisplayNotification("3dtextures", "mpgroundlogo_cops", "LSPDFR Computer+", "~r~Error", @"Failed to load background in Plugins\LSPDFR\ComputerPlus\backgrounds\.");
                 _bg = LoadBackground(Globals.DefaultBackgroundImage);
             }
             else 
@@ -298,7 +298,7 @@ namespace ComputerPlus
         {
             get
             {
-                return String.Format(@"Plugins\LSPDFR\ComputerPlus\{0}.jpg", Globals.EmptyImageVehicle);
+                return String.Format(@"Plugins\LSPDFR\ComputerPlus\{0}", Globals.EmptyImageVehicle);
             }
         }
 
@@ -306,7 +306,7 @@ namespace ComputerPlus
         {
             get
             {
-                return String.Format(@"Plugins\LSPDFR\ComputerPlus\{0}.jpg", Globals.EmptyImagePed);
+                return String.Format(@"Plugins\LSPDFR\ComputerPlus\{0}", Globals.EmptyImagePed);
             }
         }
 
@@ -318,13 +318,15 @@ namespace ComputerPlus
         }
 
         internal static String GetPedImagePath(String model)
-        {
-            return String.Format(@"Plugins\LSPDFR\ComputerPlus\tmp\{0}_front.jpg", model);
+        {            
+            var path = String.Format(@"Plugins\LSPDFR\ComputerPlus\images\peds\{0}_front.jpg", model);
+            return File.Exists(path) ? path : Function.DefaultPedImagePath;
         }
 
         internal static String GetVehicleImagePath(String model)
         {
-            return String.Format(@"Plugins\LSPDFR\ComputerPlus\vehicles\{0}f.jpg", model);
+            var path = String.Format(@"Plugins\LSPDFR\ComputerPlus\images\vehicles\{0}f.jpg", model);
+            return File.Exists(path) ? path : Function.DefaultVehicleImagePath;
         }
 
 

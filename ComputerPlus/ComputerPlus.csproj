@@ -157,12 +157,6 @@
     <Compile Include="Interfaces\ComputerPedDB\ComputerPedDBTemplate.Designer.cs">
       <DependentUpon>ComputerPedDBTemplate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interfaces\ComputerVehDB\ComputerVehDBTemplate.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Interfaces\ComputerVehDB\ComputerVehDBTemplate.Designer.cs">
-      <DependentUpon>ComputerVehDBTemplate.cs</DependentUpon>
-    </Compile>
     <Compile Include="Configs.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Function.cs" />
@@ -216,9 +210,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Interfaces\ComputerRequestBackup\ComputerRequestBackupTemplate.resx">
       <DependentUpon>ComputerRequestBackupTemplate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Interfaces\ComputerVehDB\ComputerVehDBTemplate.resx">
-      <DependentUpon>ComputerVehDBTemplate.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Interfaces\ComputerVehDB\ComputerVehicleDetailsTemplate.resx">
       <DependentUpon>ComputerVehicleDetailsTemplate.cs</DependentUpon>
