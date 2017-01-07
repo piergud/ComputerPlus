@@ -408,7 +408,7 @@ namespace ComputerPlus
 
         internal static bool IsAlprPlusRunning()
         {
-            return IsLSPDFRPluginRunning("ALPRPlus", new Version(0, 2, 0, 0));
+            return IsLSPDFRPluginRunning("ALPRPlus", new Version(1, 0, 0, 0));
         }
 
         internal static string GetFormattedDateTime(DateTime? date = null)
