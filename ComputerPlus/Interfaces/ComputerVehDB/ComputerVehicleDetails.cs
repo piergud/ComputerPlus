@@ -9,6 +9,7 @@ using LSPD_First_Response;
 using LSPD_First_Response.Engine.Scripting.Entities;
 using ComputerPlus.Interfaces.ComputerPedDB;
 using ComputerPlus.Controllers.Models;
+using System.IO;
 
 namespace ComputerPlus.Interfaces.ComputerVehDB
 {
@@ -102,42 +103,39 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         }
 
         private String DetermineImagePath(Ped ped)
-        {
-
-            String modelName = ped.Model.Name;
-            int headDrawableIndex, headDrawableTextureIndex;
-
-            ped.GetVariation(0, out headDrawableIndex, out headDrawableTextureIndex);
-
-            String _model = String.Format(@"{0}__0_{1}_{2}", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
+        {           
             try
             {
+                String modelName = ped.Model.Name;
+                int headDrawableIndex, headDrawableTextureIndex;
+
+                ped.GetVariation(0, out headDrawableIndex, out headDrawableTextureIndex);
+
+                String _model = String.Format(@"{0}__0_{1}_{2}", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
                 var path = Function.GetPedImagePath(_model);
-                Game.LogVerboseDebug(String.Format("Loading image for model from  {0}", path));
+                Game.LogVerbose(String.Format("Loading image for model from  {0}", path));
                 return path;
             }
             catch
             {
-                Game.LogVerboseDebug("DetermineImagePath Error");
-                return null;
+                Game.LogVerbose("DetermineImagePath Error");
+                return Function.DefaultPedImagePath;
             }
         }
 
         private String DetermineImagePath(Vehicle vehicle)
-        {
-
-            String modelName = vehicle.Model.Name;
-
+        {            
             try
             {
-                var path = Function.GetVehicleImagePath(modelName);
-                Game.LogVerboseDebug(String.Format("Loading image for vehicle from {0}", path));
+                String modelName = vehicle.Model.Name;
+                var path = Function.GetVehicleImagePath(modelName);                
+                Game.LogVerbose(String.Format("Loading image for vehicle from {0}", path));
                 return path;
             }
             catch
             {
-                Game.LogVerboseDebug("DetermineImagePath Error");
-                return null;
+                Game.LogVerbose("DetermineImagePath Error");
+                return Function.DefaultVehicleImagePath;
             }
         }
 
