@@ -16,7 +16,7 @@ namespace ComputerPlus
 {
     internal class ComputerCurrentCallDetails : GwenForm
     {
-        private Button btn_main, btn_help;
+        private Button btn_help;
         private ListBox list_calls;
         private Label lbl_c_unit, lbl_c_time, lbl_c_status, lbl_c_call;
         private Label lbl_a_id, lbl_a_time, lbl_a_call, lbl_a_loc, lbl_a_stat, lbl_a_unit, lbl_a_resp,
@@ -25,8 +25,8 @@ namespace ComputerPlus
         private MultilineTextBox out_desc, out_peds, out_vehs;
         private Base base_calls, base_active;
         private TabControl tc_main;
-        internal static GameFiber form_main = new GameFiber(OpenMainMenuForm),
-            diag_help = new GameFiber(OpenHelpDialog);
+        //internal static GameFiber form_main = new GameFiber(OpenMainMenuForm),
+       //     diag_help = new GameFiber(OpenHelpDialog);
 
         public ComputerCurrentCallDetails() : base(typeof(ComputerCurrentCallDetailsTemplate))
         {
@@ -37,7 +37,6 @@ namespace ComputerPlus
         {
             base.InitializeLayout();
             CreateComponents();
-            this.btn_main.Clicked += this.MainMenuButtonClickedHandler;
             this.btn_help.Clicked += this.HelpButtonClickedHandler;
             this.Position = new Point(Game.Resolution.Width / 2 - this.Window.Width / 2, Game.Resolution.Height / 2 - this.Window.Height / 2);
             this.Window.DisableResizing();
@@ -223,27 +222,12 @@ namespace ComputerPlus
             }
         }
 
-        private void MainMenuButtonClickedHandler(Base sender, ClickedEventArgs e)
-        {
-            this.Window.Close();
-            form_main = new GameFiber(OpenMainMenuForm);
-            form_main.Start();
-        }
-
         private void HelpButtonClickedHandler(Base sender, ClickedEventArgs e)
         {
-            diag_help = new GameFiber(OpenHelpDialog);
-            diag_help.Start();
+            /*diag_help = new GameFiber(OpenHelpDialog);
+            diag_help.Start();*/
         }
-
-        private static void OpenMainMenuForm()
-        {
-            GwenForm main = new ComputerMain();
-            main.Show();
-            while (main.Window.IsVisible)
-                GameFiber.Yield();
-        }
-
+       
         private static void OpenHelpDialog()
         {
             GwenForm help = new ComputerHelpDialog();

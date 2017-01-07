@@ -32,6 +32,7 @@
             this.input_name = new System.Windows.Forms.TextBox();
             this.btn_main = new System.Windows.Forms.Button();
             this.output_info = new System.Windows.Forms.TextBox();
+            this.btn_ped_image = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btn_search
@@ -67,15 +68,25 @@
             this.output_info.Location = new System.Drawing.Point(12, 12);
             this.output_info.Multiline = true;
             this.output_info.Name = "output_info";
-            this.output_info.Size = new System.Drawing.Size(488, 286);
+            this.output_info.Size = new System.Drawing.Size(297, 286);
             this.output_info.TabIndex = 4;
             this.output_info.TextChanged += new System.EventHandler(this.output_info_TextChanged);
+            // 
+            // btn_ped_image
+            // 
+            this.btn_ped_image.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.btn_ped_image.Location = new System.Drawing.Point(333, 12);
+            this.btn_ped_image.Name = "btn_ped_image";
+            this.btn_ped_image.Size = new System.Drawing.Size(155, 217);
+            this.btn_ped_image.TabIndex = 5;
+            this.btn_ped_image.UseVisualStyleBackColor = false;
             // 
             // ComputerPedDBTemplate
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(512, 339);
+            this.Controls.Add(this.btn_ped_image);
             this.Controls.Add(this.output_info);
             this.Controls.Add(this.btn_main);
             this.Controls.Add(this.input_name);
@@ -97,5 +108,6 @@
         private System.Windows.Forms.TextBox input_name;
         private System.Windows.Forms.Button btn_main;
         private System.Windows.Forms.TextBox output_info;
+        private System.Windows.Forms.Button btn_ped_image;
     }
 }
