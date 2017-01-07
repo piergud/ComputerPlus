@@ -25,9 +25,9 @@ namespace ExampleExternalUI
          *   }
          **/
        
-        public static void RegisterComputerPlusInterface(String name, String author, Func<GwenForm> creator, Action OnOpen = null)
+        public static void RegisterComputerPlusInterface(String name, String author, Func<GwenForm> creator, Action OnOpen = null, Action OnClose = null)
         {
-            Functions.RegisterInterface(name, author, creator, OnOpen);
+            Functions.RegisterInterface(name, author, creator, OnOpen, OnClose);
         }
 
      

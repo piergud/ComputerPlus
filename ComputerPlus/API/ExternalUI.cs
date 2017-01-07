@@ -37,15 +37,22 @@ namespace ComputerPlus.API
         {
             get;
             private set;
-        }         
-        
-        internal ExternalUI(Guid identifier, String displayName, String author, Func<GwenForm> creator, Action onOpen = null)
+        }
+
+        internal Action OnClose
+        {
+            get;
+            private set;
+        }
+
+        internal ExternalUI(Guid identifier, String displayName, String author, Func<GwenForm> creator, Action onOpen = null, Action onClose = null)
         {
             this.Identifier = identifier;
             this.DisplayName = displayName;
             this.Author = author;
             this.Creator = creator;
             this.OnOpen = onOpen;
+            this.OnClose = onClose;
         }
     }
 }
