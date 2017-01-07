@@ -94,36 +94,41 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         private static void BlipCleanup(object sender, ElapsedEventArgs e)
         {
-            LHandle handle = null;
-            Ped suspect = null;
-            if (_Blips.Count == 0) return;
-            handle = Functions.GetCurrentPullover();
-            if (handle != null)
-                suspect = Functions.GetPulloverSuspect(handle);
-            lock (_Blips) {
-                var data = _Blips.ToList();
-                _Blips.Clear();
-                data.Where(x => (x.Key != null && x.Key.Exists()) && (x.Value != null && x.Value.Exists()))                
-                .ToList()
-                .ForEach(x =>
+            try
+            {
+                LHandle handle = null;
+                Ped suspect = null;
+                if (_Blips.Count == 0) return;
+                handle = Functions.GetCurrentPullover();
+                if (handle != null)
+                    suspect = Functions.GetPulloverSuspect(handle);
+                lock (_Blips)
                 {
-
-                    if (suspect != null && suspect.Exists())
+                    var data = _Blips.ToList();
+                    _Blips.Clear();
+                    data.Where(x => (x.Key != null && x.Key.Exists()) && (x.Value != null && x.Value.Exists()))
+                    .ToList()
+                    .ForEach(x =>
                     {
 
-                        if (suspect.LastVehicle != null && suspect.LastVehicle == x.Value && x.Key != null && x.Key.Exists())
+                        if (suspect != null && suspect.Exists())
                         {
-                            x.Key.Delete();
+
+                            if (suspect.LastVehicle != null && suspect.LastVehicle == x.Value && x.Key != null && x.Key.Exists())
+                            {
+                                x.Key.Delete();
+                            }
+                            else
+                            {
+                                _Blips.Add(x.Key, x.Value);
+                            }
                         }
                         else
-                        {
                             _Blips.Add(x.Key, x.Value);
-                        }
-                    }
-                    else
-                        _Blips.Add(x.Key, x.Value);
-                });
+                    });
+                }
             }
+            catch { }
         }
 
         
@@ -138,7 +143,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         internal static Vehicle FindPedVehicle(Ped ped)
         {
-            return World.GetAllVehicles().Where(x => x.HasDriver && x.Driver == ped).First();
+            return World.EnumerateVehicles().Where(x => x.HasDriver && x.Driver == ped).First();
         }
 
         internal static ComputerPlusEntity LookupVehicle(String vehicleTag)
