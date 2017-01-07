@@ -157,6 +157,13 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             }
         }
 
+        protected internal static void ActivatePedView()
+        {
+            var fiber = ComputerPedController.PedViewGameFiber;
+            if (fiber.IsHibernating) fiber.Wake();
+            else if (!fiber.IsAlive) fiber.Start();
+        }
+
         private static ComputerPedController _instance = new ComputerPedController();
         public static ComputerPedController Instance
         {
