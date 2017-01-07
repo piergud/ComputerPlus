@@ -65,7 +65,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
     class ComputerPedController
     {
-        private List<Tuple<Ped, Persona>> RecentSearches = new List<Tuple<Ped, Persona>>();
+        private readonly static List<Tuple<Ped, Persona>> RecentSearches = new List<Tuple<Ped, Persona>>();
         public static Tuple<Ped, Persona> LastSelected = null;
 
         public static GameFiber PedSearchGameFiber = new GameFiber(ShowPedSearch);

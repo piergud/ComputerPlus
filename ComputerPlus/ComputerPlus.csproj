@@ -151,12 +151,6 @@
       <DependentUpon>ComputerMainTemplate.cs</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\ComputerLogin\ComputerLogin.cs" />
-    <Compile Include="Interfaces\ComputerPedDB\ComputerPedDBTemplate.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Interfaces\ComputerPedDB\ComputerPedDBTemplate.Designer.cs">
-      <DependentUpon>ComputerPedDBTemplate.cs</DependentUpon>
-    </Compile>
     <Compile Include="Configs.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Function.cs" />
@@ -198,9 +192,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Interfaces\ComputerCurrentCallDetails\ComputerCurrentCallDetailsTemplate.resx">
       <DependentUpon>ComputerCurrentCallDetailsTemplate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Interfaces\ComputerPedDB\ComputerPedDBTemplate.resx">
-      <DependentUpon>ComputerPedDBTemplate.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Interfaces\ComputerPedDB\ComputerPedSearchTemplate.resx">
       <DependentUpon>ComputerPedSearchTemplate.cs</DependentUpon>
