@@ -7,6 +7,7 @@ using Gwen.Control;
 using Rage;
 using LSPD_First_Response;
 using LSPD_First_Response.Engine.Scripting.Entities;
+using ComputerPlus.Controllers.Models;
 
 namespace ComputerPlus.Interfaces.ComputerPedDB
 {
@@ -26,6 +27,13 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             Persona = persona;
             Ped = ped;
         }
+
+        internal ComputerPedView(ComputerPlusEntity entity) : base(typeof(ComputerPedViewTemplate))
+        {
+            this.Ped = entity.Ped;
+            this.Persona = entity.PedPersona;
+        }
+
         public override void InitializeLayout()
         {
             base.InitializeLayout();

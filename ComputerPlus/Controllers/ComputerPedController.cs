@@ -6,6 +6,7 @@ using LSPD_First_Response;
 using LSPD_First_Response.Engine.Scripting.Entities;
 using LSPD_First_Response.Mod.API;
 using Rage.Forms;
+using ComputerPlus.Controllers.Models;
 
 namespace ComputerPlus.Interfaces.ComputerPedDB
 {
@@ -16,20 +17,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             if (ped.Metadata.HomeAddress == null) ped.Metadata.HomeAddress = ComputerPedController.GetRandomStreetAddress();
             return ped.Metadata.HomeAddress;
         }
-    }
-    internal static class ListExtension
-    {
-        internal static Tuple<Ped, Persona> AddPed(this List<Tuple<Ped, Persona>> list, Ped ped, Persona persona, bool allowDuplicates = true)
-        {
-            if (allowDuplicates == false && list.Exists(x => x.Item1 == ped || x.Item2.FullName.Equals(persona.FullName)))
-            {
-                return list.First(x => x.Item1 == ped || x.Item2.FullName.Equals(persona.FullName));
-            }
-            var t = new Tuple<Ped, Persona>(ped, persona);
-            list.Add(t);
-            return t;
-        }
-    }
+    }    
 
     internal static class GwenExtension
     {
@@ -65,12 +53,26 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
     class ComputerPedController
     {
-        private readonly static List<Tuple<Ped, Persona>> RecentSearches = new List<Tuple<Ped, Persona>>();
-        public static Tuple<Ped, Persona> LastSelected = null;
-
+        private readonly static List<ComputerPlusEntity> RecentSearches = new List<ComputerPlusEntity>();       
         public static GameFiber PedSearchGameFiber = new GameFiber(ShowPedSearch);
         public static GameFiber PedViewGameFiber = new GameFiber(ShowPedView);
 
+        private static ComputerPlusEntity _LastSelected = null;
+        public static ComputerPlusEntity LastSelected
+        {
+            get
+            {
+                if (_LastSelected != null && _LastSelected.Validate())
+                {
+                    return _LastSelected;
+                }
+                return null;
+            }
+            set
+            {
+                _LastSelected = value;
+            }
+        }
 
 
         internal List<Ped> PedsCurrentlyStoppedByPlayer
@@ -91,29 +93,27 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             LastSelected = null;
         }
 
-        internal Tuple<Ped, Persona> LookupPersona(String name)
+        internal ComputerPlusEntity LookupPersona(String name)
         {
             List<Ped> peds = World.GetAllPeds().ToList();
             peds.RemoveAll(p => !p || !p.Exists());
             peds.OrderBy(p => p.DistanceTo(Game.LocalPlayer.Character.Position));
             var ped = peds.Where(p => p && Functions.GetPersonaForPed(p).FullName.ToLower().Equals(name.ToLower())).FirstOrDefault();
-            var persona =  LookupPersona(ped);
-            return persona;
+            return LookupPersona(ped);
         }
        
-        internal Tuple<Ped, Persona> LookupPersona(Ped ped)
+        internal ComputerPlusEntity LookupPersona(Ped ped)
         {
-            if (ped == null || !ped.Exists())
+            if (!ped)
             {
                 return null;
             }
-            var search = new Tuple<Ped, Persona>(ped, Functions.GetPersonaForPed(ped));
-            
-            RecentSearches.Add(search);
-            return search;
+            var entity = new ComputerPlusEntity(ped, Functions.GetPersonaForPed(ped));            
+            RecentSearches.Add(entity);
+            return entity;
         }
 
-        internal List<Tuple<Ped,Persona>> GetRecentSearches()
+        internal List<ComputerPlusEntity> GetRecentSearches()
         {
             return RecentSearches;
         }
@@ -132,7 +132,8 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             while (true)
             {
                 var form = new ComputerPedSearch();
-                form.Show();
+                Game.LogVerboseDebug("ShowPedSearch Show");
+                form.Show();                
                 while (form.IsOpen())
                     GameFiber.Yield();                
                 form.Close();
@@ -145,9 +146,9 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
         {
             while (true)
             {
-                var form = new ComputerPedView(LastSelected.Item2, LastSelected.Item1);
-                Game.LogVerboseDebug(String.Format("Init new ComputerPedView for {0}", LastSelected.Item2.FullName));
+                var form = new ComputerPedView(LastSelected);                
                 form.Show();
+                Game.LogVerboseDebug("Show ComputerPedView");
                 while (form.IsOpen())
                     GameFiber.Yield();
                 Game.LogVerboseDebug("Close ComputerPedView");
