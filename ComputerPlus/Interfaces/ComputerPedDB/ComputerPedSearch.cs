@@ -43,7 +43,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             var ped = controller.LookupPersona(name);
             if (ped != null)
             {
-                if (ped.Item1 == null || !ped.Item1.IsValid())
+                if (!ped.Item1)
                 {
                     text_manual_name.BoundsOutlineColor = System.Drawing.Color.Red;
                     text_manual_name.SetToolTipText("This person no longer exists");
@@ -51,6 +51,8 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 else {
                     text_manual_name.ToolTip = null;
                     list_manual_results.AddPed(ped);
+                    ComputerPedController.LastSelected = new Tuple<Ped, Persona>(ped.Item1, ped.Item2);
+                    ComputerPedController.ActivatePedView();
                 }
             } else
             {
@@ -102,9 +104,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 ComputerPedController.LastSelected = arguments.SelectedItem.UserData as Tuple<Ped, Persona>;                
                 Game.LogVerboseDebug(String.Format("ComputerPedSearch.onListItemSelected updated ComputerPedController.LastSelected {0}", ComputerPedController.LastSelected.Item2.FullName));
                 ClearSelections();
-                var fiber = ComputerPedController.PedViewGameFiber;
-                if (fiber.IsHibernating) fiber.Wake();
-                else fiber.Start();
+                ComputerPedController.ActivatePedView();
                 Game.LogVerboseDebug("ComputerPedSearch.onListItemSelected successful");
             }
             else
