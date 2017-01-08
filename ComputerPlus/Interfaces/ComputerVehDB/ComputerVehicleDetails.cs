@@ -183,7 +183,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             }
 
             cb_action.AddItem("Select One", "Placeholder");
-            cb_action.AddItem("Blip", "Blip");
+            cb_action.AddItem("Blip (30 sec)", "Blip");
             
             var age = (DateTime.Today - OwnerPersona.BirthDay).Days / 365.25m;
             text_age.Text = ((int)age).ToString();

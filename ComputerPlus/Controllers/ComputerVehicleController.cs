@@ -12,10 +12,10 @@ using System.Drawing;
 using System.Timers;
 using ComputerPlus.Controllers.Models;
 using ComputerPlus.Extensions.Rage;
+using System.Threading.Tasks;
 
 namespace ComputerPlus.Interfaces.ComputerVehDB
-{  
-
+{
     internal static class ComputerVehicleController
     {
         private readonly static List<ComputerPlusEntity> RecentSearches = new List<ComputerPlusEntity>();
@@ -225,10 +225,25 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             timer.Stop();
         }
 
+       
+
         internal static Blip BlipVehicle(Vehicle vehicle, Color color)
         {
-            var blip = vehicle.AddBlipSafe(color);
+            var blip = vehicle.AddBlipSafe(color);            
             if (blip != null && (vehicle != null && vehicle.IsValid())) _Blips.Add(blip, vehicle);
+
+            GameFiber.StartNew(() =>
+            {
+                var stopAt = DateTime.Now.AddMilliseconds(30000);
+                while (DateTime.Now < stopAt) GameFiber.Yield();
+                try {
+                    if (blip != null && blip.IsValid()) blip.Delete();
+                } catch (Exception e)
+                {
+                    Game.LogTrivial(e.Message);
+                }
+
+            });
             return blip;
         }
 
