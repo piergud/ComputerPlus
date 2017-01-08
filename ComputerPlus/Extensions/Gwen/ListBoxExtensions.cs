@@ -30,6 +30,26 @@ namespace ComputerPlus.Extensions.Gwen
 
         }
 
+        internal static ListBoxRow AddPed(this ListBox listBox, ComputerPlusEntity entry)
+        {
+            String alert = entry.PedPersona.Wanted ? "(ALERT) " : String.Empty;
+            String rowId = String.Format("{0}_{1}_{2}",
+               entry.PedPersona.FullName,
+               entry.PedPersona.Surname,
+               entry.Ped.Model.Name
+               );
+            var previousRow = listBox.FindChildByName(rowId);
+            if (previousRow == null)
+            {
+                var row = listBox.AddRow(
+                    String.Format("{0}({1}) | {2}", alert, entry.PedPersona.Gender.ToFriendlyString().First(), entry.PedPersona.FullName),
+                    rowId,
+                    entry);
+                return row;
+            }
+            return previousRow as ListBoxRow;
+        }
+
         internal static ListBoxRow AddVehicle(this ListBox listBox, ComputerPlusEntity entry)
         {
             String alert = (entry.PedPersona.Wanted
