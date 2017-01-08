@@ -229,7 +229,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         internal static Blip BlipVehicle(Vehicle vehicle, Color color)
         {
-            var blip = vehicle.AddBlipSafe(color);            
+            var blip = vehicle.AddBlipSafe(color);
             if (blip != null && (vehicle != null && vehicle.IsValid())) _Blips.Add(blip, vehicle);
 
             GameFiber.StartNew(() =>
