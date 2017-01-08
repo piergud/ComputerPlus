@@ -25,6 +25,7 @@
 **Troubleshooting**
 
 - If your mouse does not appear in Computer+, then make sure the display resolution in game matches your windows display resolution. If the resolutions do not match, you will not see a mouse cursor
+- If you play in windows or windows borderless mode, make sure to keep your mouse inside of the game window until the game fully loads
 
 **Planned Improvements**
 - Integration with Albo1125's British Policing Script.

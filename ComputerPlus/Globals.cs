@@ -50,7 +50,10 @@ namespace ComputerPlus
             {
                 if (ActiveExternalUI_ID == Guid.Empty)
                     return null;
-                return ExternalUI.Where(x => x.Identifier == ActiveExternalUI_ID).First();
+                var results = ExternalUI.Where(x => x.Identifier == ActiveExternalUI_ID).DefaultIfEmpty(null).FirstOrDefault();
+                if (results != null) return results;
+                Function.Log("ActiveExternalUI_ID is not Empty, but there is no matching interface");
+                return null;
             }
         }
     }

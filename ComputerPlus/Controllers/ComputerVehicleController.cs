@@ -45,7 +45,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             }
             set
             {
-                Game.LogVerboseDebug(String.Format("Set LastSelected with {0}", value == null));
                 _LastSelected = value;
             }
         }
@@ -54,12 +53,18 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         {
             get
             {
+                Function.Log("CurrentPulledOver get handle");
                 var handle = Functions.GetCurrentPullover();
+                Function.Log("CurrentPulledOver got handle");
                 if (handle != null)
                 {
+                    Function.Log("CurrentPulledOver get suspect handle");
                     Ped ped = Functions.GetPulloverSuspect(handle);
+                    Function.Log("CurrentPulledOver got suspect handle");
                     Vehicle vehicle = FindPedVehicle(ped);
+                    Function.Log("CurrentPulledOver found vehicle");
                     if (vehicle == null || !vehicle.Exists()) return null;
+                    Function.Log("CurrentPulledOver return LookupVehicle");
                     return LookupVehicle(vehicle);
                 }
                 return null;
@@ -143,28 +148,31 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         internal static Vehicle FindPedVehicle(Ped ped)
         {
-            return World.EnumerateVehicles().Where(x => x.HasDriver && x.Driver == ped).First();
+            return World.EnumerateVehicles().Where(x => x.HasDriver && x.Driver == ped).DefaultIfEmpty(null).ToList().FirstOrDefault();
         }
 
         internal static ComputerPlusEntity LookupVehicle(String vehicleTag)
         {
-            try {
-                var vehicle = World.EnumerateVehicles().Where(x => x.LicensePlate.Equals(vehicleTag.ToUpper())).First();
-                return LookupVehicle(vehicle);
-            } catch
-            {
-                return null;
-            }
+           var vehicle = World.EnumerateVehicles().Where(x => x.LicensePlate.Equals(vehicleTag.ToUpper())).DefaultIfEmpty(null).ToList().FirstOrDefault();
+            return vehicle ? LookupVehicle(vehicle) : null;
         }
 
         internal static ComputerPlusEntity LookupVehicle(Vehicle vehicle)
         {
+            if (!vehicle) return null;
+            var vehiclePersona = new VehiclePersona();
+            if (Function.IsTrafficPolicerRunning())
+            {
+                vehiclePersona.HasInsurance = TrafficPolicerFunction.GetVehicleInsuranceStatus(vehicle) == EVehicleStatus.Valid ? true : false;
+                vehiclePersona.IsRegistered = TrafficPolicerFunction.GetVehicleRegistrationStatus(vehicle) == EVehicleStatus.Valid ? true : false;
+            }
+            
             var ownerName = Functions.GetVehicleOwnerName(vehicle);
             var driver = vehicle.HasDriver ? vehicle.Driver : null;           
-            Tuple<Ped, Persona> owner = ComputerPedController.Instance.LookupPersona(ownerName);
-            if(owner == null || owner.Item1 == null)
+            ComputerPlusEntity owner = ComputerPedController.Instance.LookupPersona(ownerName);
+            if(!owner.Validate())
             {
-                Game.LogVerboseDebug(String.Format("LookupVehicle owner was null, performing fixup on {0}", ownerName));
+                Function.Log(String.Format("LookupVehicle owner was null, performing fixup on {0}", ownerName));
 
                 var parts = ownerName.Split(' ');
                 while(parts.Length < 2)
@@ -180,11 +188,11 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 Ped ped = null;
                 while (ped == null || !ped.Exists())
                 {
-                    Game.LogVerboseDebug("Selecting a new random ped for fixup");
+                    Function.Log("Selecting a new random ped for fixup");
                     int position = rnd.Next(0, peds.Count() - 1);
                     ped = peds.ElementAt(position);
                 }
-                Game.LogVerboseDebug("Found a new ped for fixup");
+                Function.Log("Found a new ped for fixup");
                 var persona = new Persona(
                     ped,
                     Gender.Random,
@@ -199,22 +207,11 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                     false
                     );
                 Functions.SetPersonaForPed(ped, persona);
-                owner = new Tuple<Ped, Persona>(ped, persona);
+                owner.PedPersona = persona;
             }
-            bool? hasInsurance = null, isRegistered = null;
-            if (Function.IsTrafficPolicerRunning())
-            {
-                hasInsurance = TrafficPolicerFunction.GetVehicleInsuranceStatus(vehicle) == EVehicleStatus.Valid ? true : false;
-                isRegistered = TrafficPolicerFunction.GetVehicleRegistrationStatus(vehicle) == EVehicleStatus.Valid ? true : false;
-            }
-            //Mark the ped as persistent so they do not get GC
-            //owner.Item1.MakePersistent();
-            return new ComputerPlusEntity(
-                owner.Item1,
-                owner.Item2,
-                vehicle,                
-                new VehiclePersona(hasInsurance, isRegistered)
-            );
+           
+          
+            return new ComputerPlusEntity(owner.Ped, owner.PedPersona, vehicle, vehiclePersona);
         }        
 
         internal static void Cleanup()
@@ -240,7 +237,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                     if (blip != null && blip.IsValid()) blip.Delete();
                 } catch (Exception e)
                 {
-                    Game.LogTrivial(e.Message);
+                    Function.Log(e.Message);
                 }
 
             });
@@ -249,10 +246,10 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         public static void RunVanillaAlpr()
         {
-            Game.LogVerboseDebug("RunVanillaAlpr");
+           Function.LogDebug("RunVanillaAlpr");
             if (VanillaAlprGameFiber.IsHibernating)
             {
-                Game.LogVerboseDebug("Wake RunVanillaAlpr");
+               Function.LogDebug("Wake RunVanillaAlpr");
                 EventHandler handler = (EventHandler)OnStopAlprVanilla;
                 if (handler != null)
                 {
@@ -263,24 +260,24 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             }
             else if (!VanillaAlprGameFiber.IsAlive && !VanillaAlprGameFiber.IsSleeping)
             {
-                Game.LogVerboseDebug("Start RunVanillaAlpr");
+               Function.LogDebug("Start RunVanillaAlpr");
                 VanillaAlprGameFiber.Start();
             }
         }
         public static void StopVanillaAlpr()
         {
-            Game.LogVerboseDebug("StopVanillaAlpr");
+           Function.LogDebug("StopVanillaAlpr");
             if (!VanillaAlprGameFiber.IsHibernating && VanillaAlprGameFiber.IsAlive)
             {
                 EventHandler handler = (EventHandler)OnStopAlprVanilla;
                 if(handler != null)
                 {
-                    Game.LogVerboseDebug("StopVanillaAlpr handler");
+                   Function.LogDebug("StopVanillaAlpr handler");
                     handler(null, null);
                 }
                 else
                 {
-                    Game.LogVerboseDebug("StopVanillaAlpr no handler");
+                   Function.LogDebug("StopVanillaAlpr no handler");
                 }
             }
         }
@@ -293,7 +290,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         private static void  VanillaALPR()
         {
-            Game.LogVerboseDebug("Executing VanillaALPR");
+           Function.LogDebug("Executing VanillaALPR");
             bool shouldRun = true;
             OnStopAlprVanilla += (sender, args) =>
             {
@@ -316,7 +313,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                             .Where(x => x.IsCar && x.ShouldVehiclesYieldToThisVehicle)                            
                             .Select(x =>
                             {
-                                Game.LogVerboseDebug(String.Format("Detected plate: {0}", x.LicensePlate));
+                               Function.LogDebug(String.Format("Detected plate: {0}", x.LicensePlate));
                                 return x;
                             });
                         if (nearVehicles != null)
@@ -328,23 +325,23 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                                 ALPR_Arguments entry = null;
                                 if (x.Position.DistanceTo(front) <= ReadDistanceThreshold)
                                 {
-                                    Game.LogVeryVerboseDebug("Vehicle detected FRONT");
+                                    Function.LogDebug("Vehicle detected FRONT");
                                     entry = new ALPR_Arguments(x, ALPR_Position.FRONT);
 
                                 }
                                 else if (x.Position.DistanceTo(rear) <= ReadDistanceThreshold)
                                 {
-                                    Game.LogVeryVerboseDebug("Vehicle detected REAR");
+                                    Function.LogDebug("Vehicle detected REAR");
                                     entry = new ALPR_Arguments(x, ALPR_Position.REAR);
                                 }
                                 else if (x.Position.DistanceTo(driver) <= ReadDistanceThreshold)
                                 {
-                                    Game.LogVeryVerboseDebug("Vehicle detected DRIVER");
+                                    Function.LogDebug("Vehicle detected DRIVER");
                                     entry = new ALPR_Arguments(x, ALPR_Position.DRIVER);
                                 }
                                 else if (x.Position.DistanceTo(passenger) <= ReadDistanceThreshold)
                                 {
-                                    Game.LogVeryVerboseDebug("Vehicle detected PASSENGER");
+                                    Function.LogDebug("Vehicle detected PASSENGER");
                                     entry = new ALPR_Arguments(x, ALPR_Position.PASSENGER);
                                 }
 
@@ -356,7 +353,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                                     {
                                         var msg = String.Format("~r~Wanted Owner:~w~ {0} {1} {2}", data.Vehicle.Model.Name, data.Vehicle.LicensePlate, data.PedPersona.FullName);
                                         Game.DisplayNotification(msg);
-                                        Game.LogVerboseDebug(msg);
+                                       Function.Log(msg);
                                     }
                                     if (handler != null)
                                         handler(null, entry);
@@ -375,13 +372,13 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             while (true)
             {
                 var form = new ComputerVehicleSearch();
-                Game.LogVerboseDebug("Init new ComputerVehicleSearch");
+               Function.LogDebug("Init new ComputerVehicleSearch");
                 form.Show();
                 while (form.IsOpen())
                     GameFiber.Yield();
-                Game.LogVerboseDebug("Close ComputerVehicleSearch");
+               Function.LogDebug("Close ComputerVehicleSearch");
                 form.Close();
-                Game.LogVerboseDebug("ShowVehicleSearch Hibernating");
+               Function.LogDebug("ShowVehicleSearch Hibernating");
                 GameFiber.Hibernate();
             }
         }
@@ -394,14 +391,14 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 if (LastSelected != null && LastSelected.Validate())
                 {
                     var form = new ComputerVehicleDetails(LastSelected);
-                    Game.LogVerboseDebug("Init new ComputerVehicleDetails");
+                   Function.LogDebug("Init new ComputerVehicleDetails");
                     form.Show();
                     while (form.IsOpen())
                         GameFiber.Yield();
-                    Game.LogVerboseDebug("Close ComputerVehicleDetails");
+                   Function.LogDebug("Close ComputerVehicleDetails");
                     form.Close();
                 }
-                Game.LogVerboseDebug("ShowVehicleDetails Hibernating");
+               Function.LogDebug("ShowVehicleDetails Hibernating");
                 GameFiber.Hibernate();
             }
         }
