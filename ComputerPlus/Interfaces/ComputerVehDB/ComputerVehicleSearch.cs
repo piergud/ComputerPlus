@@ -122,7 +122,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 
                 return data;
             })
-            .Where(x => x.Validate())
+            .Where(x => x != null && x.Validate())
             .ToList()
             .ForEach(x =>
             {
