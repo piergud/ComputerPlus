@@ -552,7 +552,7 @@ namespace ComputerPlus
         }
         internal static void LogDebug(String message)
         {
-            if (!String.IsNullOrWhiteSpace(message)) Game.LogTrivialDebug(String.Format("C+ DEV: {0}", message));
+            if (!String.IsNullOrWhiteSpace(message)) Game.LogVerboseDebug(String.Format("C+ DEV: {0}", message));
         }
 
     }
