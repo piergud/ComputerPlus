@@ -26,8 +26,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 lock (_ALPR_Detected)
                 {
                     var data = _ALPR_Detected.ToList().Where(x => x.Vehicle != null && x.Vehicle.Exists()).ToList();
-                    _ALPR_Detected.Clear();
-                    _ALPR_Detected.AddRange(data);
                     return data;
                 }
             }
@@ -170,7 +168,11 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             var ownerName = Functions.GetVehicleOwnerName(vehicle);
             var driver = vehicle.HasDriver ? vehicle.Driver : null;           
             ComputerPlusEntity owner = ComputerPedController.Instance.LookupPersona(ownerName);
-            if(!owner.Validate())
+            if (owner == null)
+            {
+                return null; //Driver no longer exists
+            }
+            else if(!owner.Validate())
             {
                 Function.Log(String.Format("LookupVehicle owner was null, performing fixup on {0}", ownerName));
 
@@ -207,7 +209,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                     false
                     );
                 Functions.SetPersonaForPed(ped, persona);
-                owner.PedPersona = persona;
+                
             }
            
           

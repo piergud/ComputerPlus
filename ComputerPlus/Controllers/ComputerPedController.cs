@@ -99,16 +99,16 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             peds.RemoveAll(p => !p || !p.Exists());
             peds.OrderBy(p => p.DistanceTo(Game.LocalPlayer.Character.Position));
             var ped = peds.Where(p => p && Functions.GetPersonaForPed(p).FullName.ToLower().Equals(name.ToLower())).FirstOrDefault();
+            if (ped == null) return null;
             return LookupPersona(ped);
         }
        
         internal ComputerPlusEntity LookupPersona(Ped ped)
         {
-            if (!ped)
-            {
-                return null;
-            }
-            var entity = new ComputerPlusEntity(ped, Functions.GetPersonaForPed(ped));            
+            if (ped == null) return null;
+            var persona = Functions.GetPersonaForPed(ped);
+            if (persona == null) return null;
+            var entity = new ComputerPlusEntity(ped, persona);            
             RecentSearches.Add(entity);
             return entity;
         }
