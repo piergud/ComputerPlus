@@ -57,7 +57,7 @@ namespace ComputerPlus
                     case EBackupResponseType.Code2: AddCode2Units(); break;
                     case EBackupResponseType.Code3: AddCode3Units(); break;
                     case EBackupResponseType.Pursuit: AddPursuitUnits(); break;
-                    case EBackupResponseType.SuspectTransporter: AddCode2Units(); break;
+                    case EBackupResponseType.SuspectTransporter: AddTransportUnits(); break;
                 }
 
             }
@@ -116,6 +116,15 @@ namespace ComputerPlus
             list_unit.AddRow("Local EMS Unit", "localEms", EBackupUnitType.Ambulance);
             list_unit.AddRow("Local Fire Unit", "fire", EBackupUnitType.Firetruck);
             list_unit.SelectRow(0);
+        }
+
+        private void AddTransportUnits()
+        {
+            list_unit.Clear();
+            list_unit.AddRow("Local Patrol Unit", "localPatrol", EBackupUnitType.LocalUnit);
+            list_unit.AddRow("State Patrol Unit", "statePatrol", EBackupUnitType.StateUnit);
+            list_unit.SelectRow(0);
+
         }
     }
 }
