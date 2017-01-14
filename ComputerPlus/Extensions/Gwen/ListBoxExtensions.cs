@@ -13,6 +13,7 @@ namespace ComputerPlus.Extensions.Gwen
     {
         internal static ListBoxRow AddPed(this ListBox listBox, Tuple<Ped, Persona> ped)
         {
+            if (listBox == null) return null;
             String rowId = String.Format("{0}_{1}",
                ped.Item2.Forename,
                ped.Item2.Surname
@@ -32,6 +33,7 @@ namespace ComputerPlus.Extensions.Gwen
 
         internal static ListBoxRow AddPed(this ListBox listBox, ComputerPlusEntity entry)
         {
+            if (listBox == null) return null;
             String alert = entry.PedPersona.Wanted ? "(ALERT) " : String.Empty;
             String rowId = String.Format("{0}_{1}_{2}",
                entry.PedPersona.FullName,
@@ -52,6 +54,7 @@ namespace ComputerPlus.Extensions.Gwen
 
         internal static ListBoxRow AddVehicle(this ListBox listBox, ComputerPlusEntity entry)
         {
+            if (listBox == null) return null;
             String alert = (entry.PedPersona.Wanted
                 || (entry.VehiclePersona.HasInsurance.HasValue && !entry.VehiclePersona.HasInsurance.Value)
                 || (entry.VehiclePersona.IsRegistered.HasValue && !entry.VehiclePersona.IsRegistered.Value)) ?
