@@ -38,6 +38,21 @@ namespace ComputerPlus
 
         }
 
+        ~ComputerMain()
+        {
+            this.btn_logout.Clicked -= this.LogoutButtonClickedHandler;
+            this.btn_ped_db.Clicked -= this.PedDBButtonClickedHandler;
+            this.btn_veh_db.Clicked -= this.VehDBButtonClickedHandler;
+            this.btn_request.Clicked -= this.RequestBackupButtonClickedHandler;
+            this.cb_toggle_background.CheckChanged -= checkbox_change;
+            this.cb_toggle_pause.CheckChanged -= checkbox_change;
+            this.btn_activecalls.Clicked -= this.ActiveCallsClickedHandler;
+            if (ShouldShowExtraUIControls)
+            {
+                list_external_ui.ItemSelected -= ExternalUISelected;
+            }
+        }
+
         public override void InitializeLayout()
         {
             base.InitializeLayout();
@@ -70,7 +85,6 @@ namespace ComputerPlus
 
         private void checkbox_change(Base sender, EventArgs arguments)
         {
-            Game.LogVerboseDebug("ALERT checkbox_change");
             if (sender == cb_toggle_pause)
                 EntryPoint.TogglePause();
             else if (sender == cb_toggle_background)
@@ -120,7 +134,7 @@ namespace ComputerPlus
         private void ExternalUISelected(Base sender, ItemSelectedEventArgs arguments)
         {
             if (String.IsNullOrWhiteSpace(arguments.SelectedItem.Name) || arguments.SelectedItem.Name.Equals("placeholder")) return;
-            Game.LogVerboseDebug(String.Format("External UI Selected {0}", arguments.SelectedItem.Name));
+            Function.LogDebug(String.Format("External UI Selected {0}", arguments.SelectedItem.Name));
             System.Guid guid = System.Guid.Parse(arguments.SelectedItem.Name);
             var match = Globals.ExternalUI.DefaultIfEmpty(null).FirstOrDefault(x => x.Identifier == guid);
             if (match == null) return;
@@ -132,7 +146,7 @@ namespace ComputerPlus
                     var form = match.Creator();
                     if (form == null)
                     {
-                        Game.DisplayNotification(string.Format("Empty form provided for {0}", match.DisplayName));
+                        Game.DisplayNotification(String.Format("Empty form provided for {0}", match.DisplayName));
                         return;
                     }
                     form.Show();
@@ -148,8 +162,8 @@ namespace ComputerPlus
             }
             catch (Exception e)
             {
-                Game.LogVerbose(string.Format("Error while initializing extra form {0}", match.DisplayName));
-                Game.LogVerbose(e.Message);
+                Function.Log(String.Format("Error while initializing extra form {0}", match.DisplayName));
+                Function.Log(e.Message);
             }
         }
 
@@ -198,14 +212,14 @@ namespace ComputerPlus
             {
                 var form = new ComputerMain();
                 form.Show();
-                Game.LogVerboseDebug("Init new ComputerMain");
+                Function.LogDebug("Init new ComputerMain");
                 do
                 {
                     GameFiber.Yield();
                 }
                 while (form.IsOpen());
-                Game.LogVerboseDebug(String.Format("Close ComputerMain? {0}", form.IsOpen()));
-                Game.LogVerboseDebug("ComputerMain Hibernating");
+                Function.LogDebug(String.Format("Close ComputerMain? {0}", form.IsOpen()));
+                Function.LogDebug("ComputerMain Hibernating");
                 GameFiber.Hibernate();
             }
         }

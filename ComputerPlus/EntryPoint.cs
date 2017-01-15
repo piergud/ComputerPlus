@@ -58,7 +58,7 @@ namespace ComputerPlus
             }
             if (Game.IsPaused)
             {
-                Game.LogVerboseDebug("Pause false EntryPoint.Finally");
+                Function.LogDebug("Pause false EntryPoint.Finally");
                 PauseGame(false);
             }
             ShowBackground(false);
@@ -71,7 +71,7 @@ namespace ComputerPlus
             if (on_duty) 
             {
                 Game.FrameRender += Process;
-                Game.LogTrivial("Successfully loaded LSPDFR Computer+.");
+                Function.LogDebug("Successfully loaded LSPDFR Computer+.");
 
                 Function.MonitorAICalls();
                 fCheckIfCalloutActive = new GameFiber(CheckIfCalloutActive);
@@ -80,12 +80,12 @@ namespace ComputerPlus
                 Function.CheckForUpdates();
                 if (Function.IsAlprPlusRunning())
                 {
-                    Game.LogTrivial("C+: Registering for ALPR+ Events");                    
+                    Function.LogDebug("C+: Registering for ALPR+ Events");                    
                     ALPRPlusFunctions.OnAlprPlusMessage += ALPRPlusFunctions_OnAlprPlusMessage;
                     ALPRPlusFunctions.RegisterForEvents();
                 }
                 else {
-                    Game.LogTrivial("C+: ALPR+ Not Detected");
+                    Function.LogDebug("C+: ALPR+ Not Detected");
                 }
             }
             else
@@ -215,7 +215,7 @@ namespace ComputerPlus
             {
                 IsOpen = true;
                 PauseGame(true);
-                Game.LogVerboseDebug("Pause true EntryPoint.ShowPoliceComputer");
+                Function.LogDebug("Pause true EntryPoint.ShowPoliceComputer");
                 ShowBackground(true);
                 if (!Configs.SkipLogin)
                 {
@@ -233,7 +233,7 @@ namespace ComputerPlus
                 PauseGame(false);
                 ShowBackground(false);
                 IsOpen = false;
-                Game.LogVerboseDebug("Pause false EntryPoint.ShowPoliceComputer");
+                Function.LogDebug("Pause false EntryPoint.ShowPoliceComputer");
                 GameFiber.Hibernate();
             }
            

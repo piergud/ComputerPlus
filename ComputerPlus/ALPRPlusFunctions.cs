@@ -49,7 +49,7 @@ namespace ComputerPlus {
             }
             else
             {
-                Game.LogTrivial("C+: ALPRPlusFunctions has no handler");
+                Function.LogDebug("C+: ALPRPlusFunctions has no handler");
             }
                 
         }

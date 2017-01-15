@@ -17,6 +17,23 @@ namespace ComputerPlus.Extensions.Gwen
             textbox.UpdateColors();
         }
 
+        internal static void Warn(this TextBox textbox, String message)
+        {
+            if (textbox == null) return;
+            textbox.PaddingOutlineColor = System.Drawing.Color.Yellow;
+            textbox.MarginOutlineColor = System.Drawing.Color.Yellow;
+            textbox.TextColorOverride = System.Drawing.Color.Red;
+            textbox.SetText(message);
+            textbox.UpdateColors();
+        }
+
+        internal static void ClearWarn(this TextBox textbox)
+        {
+            if (textbox == null) return;
+            //textbox.TextColorOverride = textbox.TextColor;
+            textbox.MakeColorNormal();
+        }
+
         internal static void ClearError(this TextBox textbox)
         {
             if (textbox == null) return;

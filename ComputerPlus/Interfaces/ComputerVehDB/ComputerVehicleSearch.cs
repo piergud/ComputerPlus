@@ -17,7 +17,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         ListBox list_manual_results;
         List<Vehicle> AlprDetectedVehicles = new List<Vehicle>();
         TextBox text_manual_name;
-        bool IsFloatingWindow = false;
 
         internal ComputerVehicleSearch() : base(typeof(ComputerVehicleSearchTemplate))
         {
@@ -27,6 +26,9 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         ~ComputerVehicleSearch()
         {
             ComputerVehicleController.OnAlprVanillaMessage -= OnAlprVanillaMessage;
+            list_manual_results.RowSelected -= onListItemSelected;
+            list_collected_tags.RowSelected -= onListItemSelected;
+            text_manual_name.SubmitPressed -= onSearchSubmit;
         }
 
         public override void InitializeLayout()
@@ -35,16 +37,15 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             this.Position = this.GetLaunchPosition();
             this.Window.DisableResizing();
             ComputerVehicleController.OnAlprVanillaMessage += OnAlprVanillaMessage;
-            Function.Log("Populating ALPR list");
+            Function.LogDebug("Populating ALPR list");
             PopulateAnprList();
             list_collected_tags.AllowMultiSelect = false;
             list_manual_results.AllowMultiSelect = false;
             list_collected_tags.RowSelected += onListItemSelected;
             list_manual_results.RowSelected += onListItemSelected;
             text_manual_name.SubmitPressed += onSearchSubmit;
-            Function.Log("Checking currently pulled over");
-            var currentPullover = ComputerVehicleController.CurrentlyPulledOver;
-            Function.Log(String.Format("currently pulled over null is {0}", currentPullover == null));
+            Function.LogDebug("Checking currently pulled over");
+            var currentPullover = ComputerVehicleController.CurrentlyPulledOver;            
             if (currentPullover != null) list_collected_tags.AddVehicle(currentPullover);
         }
 

@@ -22,6 +22,13 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
         {
         }
 
+        ~ComputerPedSearch()
+        {
+            list_manual_results.RowSelected -= onListItemSelected;
+            list_collected_ids.RowSelected -= onListItemSelected;
+            text_manual_name.SubmitPressed -= onSearchSubmit;
+        }
+
         public override void InitializeLayout()
         {
             base.InitializeLayout();
