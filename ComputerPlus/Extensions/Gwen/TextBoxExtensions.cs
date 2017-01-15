@@ -11,7 +11,7 @@ namespace ComputerPlus.Extensions.Gwen
     {
         internal static void Error(this TextBox textbox, String message)
         {
-            if (textbox == null) return;
+            if (textbox == null || String.IsNullOrEmpty(message)) return;
             textbox.TextColorOverride = System.Drawing.Color.Red;
             textbox.SetToolTipText(message);
             textbox.UpdateColors();
@@ -19,7 +19,7 @@ namespace ComputerPlus.Extensions.Gwen
 
         internal static void Warn(this TextBox textbox, String message)
         {
-            if (textbox == null) return;
+            if (textbox == null || String.IsNullOrEmpty(message)) return;
             textbox.PaddingOutlineColor = System.Drawing.Color.Yellow;
             textbox.MarginOutlineColor = System.Drawing.Color.Yellow;
             textbox.TextColorOverride = System.Drawing.Color.Red;
@@ -38,7 +38,7 @@ namespace ComputerPlus.Extensions.Gwen
         {
             if (textbox == null) return;
             textbox.TextColorOverride = textbox.TextColor;
-            textbox.ToolTip = null;
+            textbox.SetToolTipText("Enter Query");
             textbox.UpdateColors();
         }
     }

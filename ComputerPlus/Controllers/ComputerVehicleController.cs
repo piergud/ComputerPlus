@@ -57,7 +57,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 if (handle != null)
                 {
                     Function.Log("CurrentPulledOver get suspect handle");
-                    Ped ped = Functions.GetPulloverSuspect(handle);
+                    Ped ped = Functions.GetPulloverSuspect(handle);                    
                     Function.Log("CurrentPulledOver got suspect handle");
                     Vehicle vehicle = FindPedVehicle(ped);
                     Function.Log("CurrentPulledOver found vehicle");
@@ -151,7 +151,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         internal static ComputerPlusEntity LookupVehicle(String vehicleTag)
         {
-           var vehicle = World.EnumerateVehicles().Where(x => x.LicensePlate.Equals(vehicleTag.ToUpper())).DefaultIfEmpty(null).ToList().FirstOrDefault();
+           var vehicle = World.EnumerateVehicles().Where(x => x.LicensePlate.Equals(vehicleTag, StringComparison.CurrentCultureIgnoreCase)).DefaultIfEmpty(null).ToList().FirstOrDefault();
             return vehicle ? LookupVehicle(vehicle) : null;
         }
 
@@ -170,6 +170,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             ComputerPlusEntity owner = ComputerPedController.Instance.LookupPersona(ownerName);
             if (owner == null)
             {
+                Function.Log(String.Format("LookupVehicle owner was null.. driver may no longer exist", ownerName));
                 return null; //Driver no longer exists
             }
             else if(!owner.Validate())
