@@ -110,7 +110,7 @@ namespace ComputerPlus.Controllers.Models
             }
             catch
             {
-                Game.LogVerboseDebug("ComputerPlusEntity caught exception during Dismiss");
+                Function.LogDebug("ComputerPlusEntity caught exception during Dismiss");
             }
         }
     }
