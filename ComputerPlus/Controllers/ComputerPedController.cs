@@ -132,12 +132,12 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             while (true)
             {
                 var form = new ComputerPedSearch();
-                Game.LogVerboseDebug("ShowPedSearch Show");
+                Function.LogDebug("ShowPedSearch Show");
                 form.Show();                
                 while (form.IsOpen())
                     GameFiber.Yield();                
                 form.Close();
-                Game.LogVerboseDebug("ShowPedSearch Hibernating");
+                Function.LogDebug("ShowPedSearch Hibernating");
                 GameFiber.Hibernate();
             }
         }
@@ -148,12 +148,12 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             {
                 var form = new ComputerPedView(LastSelected);                
                 form.Show();
-                Game.LogVerboseDebug("Show ComputerPedView");
+                Function.LogDebug("Show ComputerPedView");
                 while (form.IsOpen())
                     GameFiber.Yield();
-                Game.LogVerboseDebug("Close ComputerPedView");
+                Function.LogDebug("Close ComputerPedView");
                 form.Close();
-                Game.LogVerboseDebug("ShowPedView Hibernating");
+                Function.LogDebug("ShowPedView Hibernating");
                 GameFiber.Hibernate();
             }
         }
