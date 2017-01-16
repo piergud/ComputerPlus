@@ -91,6 +91,7 @@
     <Compile Include="Controllers\Models\VehiclePersona.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Extensions\Gwen\ListBoxExtensions.cs" />
+    <Compile Include="Extensions\Gwen\TextBoxExtensions.cs" />
     <Compile Include="Extensions\Rage\BlipExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />

@@ -8,6 +8,7 @@ using LSPD_First_Response.Engine.Scripting.Entities;
 
 namespace ComputerPlus.Controllers.Models
 {
+    enum EntityTypes { Ped = 0, Vehicle = 1 }
     class ComputerPlusEntity: IPersistable
     {
         internal Ped Ped
@@ -26,6 +27,7 @@ namespace ComputerPlus.Controllers.Models
             get;
             private set;
         }
+
         internal VehiclePersona VehiclePersona
         {
             get;
@@ -58,37 +60,57 @@ namespace ComputerPlus.Controllers.Models
             }
         }
 
+        private readonly EntityTypes CreatedWith;
+
+        internal ComputerPlusEntity(Ped ped, Persona persona)
+        {
+            this.CreatedWith = EntityTypes.Ped;
+            this.Ped = ped;
+            this.PedPersona = persona;
+        }
+
+        internal ComputerPlusEntity(Vehicle vehicle, VehiclePersona persona)
+        {
+            this.CreatedWith = EntityTypes.Vehicle;
+            this.Vehicle = vehicle;
+            this.VehiclePersona = persona;
+        }
+
+
         internal ComputerPlusEntity(Ped ped, Persona persona, Vehicle vehicle, VehiclePersona vehiclePersona)
         {
+            this.CreatedWith = EntityTypes.Ped | EntityTypes.Vehicle;
             this.Ped = ped;
             this.PedPersona = persona;
             this.Vehicle = vehicle;
-            this.VehiclePersona = vehiclePersona;
-
-            if(!Validate())
-            {
-                throw new ArgumentException("ComputerPlusEntity failed validation");
-            }
+            this.VehiclePersona = vehiclePersona;         
         }
 
         public bool Validate()
         {
-            return Ped != null
-                && Ped.Exists()
-                && Vehicle != null
-                && Vehicle.Exists();
+            if (this.CreatedWith.HasFlag(EntityTypes.Ped) && this.CreatedWith.HasFlag(EntityTypes.Vehicle)) {
+                return this.Ped && this.Vehicle;
+            }
+            else if (this.CreatedWith == EntityTypes.Ped){
+                return this.Ped;
+            }
+            else if (this.CreatedWith == EntityTypes.Vehicle)
+            {
+                return this.Vehicle;
+            }
+            return false;
         }
 
         public void Dismiss()
         {
             try
             {
-                Ped.Dismiss();
-                Vehicle.Dismiss();
+                if (Ped) Ped.Dismiss();
+                if (Vehicle) Vehicle.Dismiss();
             }
             catch
             {
-                Game.LogVerboseDebug("ComputerPlusEntity caught exception during Dismiss");
+                Function.LogDebug("ComputerPlusEntity caught exception during Dismiss");
             }
         }
     }

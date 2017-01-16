@@ -17,7 +17,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         ListBox list_manual_results;
         List<Vehicle> AlprDetectedVehicles = new List<Vehicle>();
         TextBox text_manual_name;
-        bool IsFloatingWindow = false;
 
         internal ComputerVehicleSearch() : base(typeof(ComputerVehicleSearchTemplate))
         {
@@ -27,6 +26,9 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         ~ComputerVehicleSearch()
         {
             ComputerVehicleController.OnAlprVanillaMessage -= OnAlprVanillaMessage;
+            list_manual_results.RowSelected -= onListItemSelected;
+            list_collected_tags.RowSelected -= onListItemSelected;
+            text_manual_name.SubmitPressed -= onSearchSubmit;
         }
 
         public override void InitializeLayout()
@@ -35,13 +37,15 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             this.Position = this.GetLaunchPosition();
             this.Window.DisableResizing();
             ComputerVehicleController.OnAlprVanillaMessage += OnAlprVanillaMessage;
+            Function.LogDebug("Populating ALPR list");
             PopulateAnprList();
             list_collected_tags.AllowMultiSelect = false;
             list_manual_results.AllowMultiSelect = false;
             list_collected_tags.RowSelected += onListItemSelected;
             list_manual_results.RowSelected += onListItemSelected;
             text_manual_name.SubmitPressed += onSearchSubmit;
-            var currentPullover = ComputerVehicleController.CurrentlyPulledOver;
+            Function.LogDebug("Checking currently pulled over");
+            var currentPullover = ComputerVehicleController.CurrentlyPulledOver;            
             if (currentPullover != null) list_collected_tags.AddVehicle(currentPullover);
         }
 
@@ -57,20 +61,21 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             if (String.IsNullOrWhiteSpace(tag)) return;
             var vehicle = ComputerVehicleController.LookupVehicle(tag);
             
-            if (vehicle != null)
+            
+            if (vehicle != null && vehicle.Validate())
             {
-                text_manual_name.TextColorOverride = System.Drawing.Color.Green;
-                text_manual_name.UpdateColors();
-                text_manual_name.ToolTip = null;
+                text_manual_name.ClearError();
                 list_manual_results.AddVehicle(vehicle);
                 ComputerVehicleController.LastSelected = vehicle;                
                 this.ShowDetailsView();
             }
+            else if(vehicle != null)
+            {
+                text_manual_name.Error("The vehicle no longer exists");
+            }
             else
             {                
-                text_manual_name.TextColorOverride = System.Drawing.Color.Red;
-                text_manual_name.UpdateColors();
-                text_manual_name.SetToolTipText("No vehicles found");
+                text_manual_name.Error("No vehicles found");
             }
         }
 
@@ -86,16 +91,9 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         {
             if (arguments.SelectedItem.UserData is ComputerPlusEntity)
             {
-                Game.LogVerboseDebug(String.Format(" arguments.SelectedItem.UserData ? null {0}", arguments.SelectedItem.UserData == null));
                 ComputerVehicleController.LastSelected = arguments.SelectedItem.UserData as ComputerPlusEntity;
                 ClearSelections();
-                Game.LogVerboseDebug(String.Format("ComputerVehicleController.LastSelected ? null {0}", ComputerVehicleController.LastSelected == null));
                 this.ShowDetailsView();
-                Game.LogVerboseDebug("ComputerVehicleSearch.onListItemSelected successful");
-            }
-            else
-            {
-                Game.LogVerboseDebug("ComputerVehicleSearch.onListItemSelected arguments were not valid");
             }
         }
         
@@ -104,19 +102,16 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         {
             var list = ComputerVehicleController.ALPR_Detected
                 .ToList();
-            Game.LogVerboseDebug(String.Format("PopulateAnprList size {0}", list.Count));
             list
             .GroupBy(x => x.Vehicle)
             .Select(x => x.Last())
             .Where(x => x.Vehicle != null && x.Vehicle.Exists())
             .Select(x =>
             {
-                Game.LogVerboseDebug("PopulateAnprList Tuple");
                 var data = ComputerVehicleController.LookupVehicle(x.Vehicle);
                 
                 if (data == null)
                 {
-                    Game.LogVerboseDebug("PopulateAnprList Tuple data was null");
                     return null;
                 }
                 VehiclePersona vehiclePersona = data.VehiclePersona;
@@ -128,7 +123,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 
                 return data;
             })
-            .Where(x => x.Validate())
+            .Where(x => x != null && x.Validate())
             .ToList()
             .ForEach(x =>
             {
@@ -141,20 +136,17 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         {
             if (e.Vehicle == null || !e.Vehicle.Exists())
             {
-                Game.LogVerboseDebug("e.Item1 OnAlprVanillaMessage null or invalid");
                 return;
             }
             var data = ComputerVehicleController.LookupVehicle(e.Vehicle);
             
             if (data == null)
             {
-                Game.LogVerboseDebug("data OnAlprVanillaMessage null or invalid");
                 return;
             }
 
             if (!data.IsPersistent)
             {
-                Game.LogVerboseDebug(String.Format("OnAlprVanillaMessage Adding persistance flag for {0}", data.PedPersona.FullName));
                 data.IsPersistent = true;
             }
             
@@ -167,7 +159,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 var first = entry.UserData as ComputerPlusEntity;
                 if (first != null && first.Validate() && first.IsPersistent) {
                     first.IsPersistent = false;
-                    Game.LogVerboseDebug(String.Format("OnAlprVanillaMessage Removed persistance flag for {0}", first.PedPersona.FullName));
                 }
                 while(list_collected_tags.RowCount >= 6)
                     list_collected_tags.RemoveRow(0);

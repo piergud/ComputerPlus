@@ -10,6 +10,7 @@ using LSPD_First_Response.Engine.Scripting.Entities;
 using ComputerPlus.Interfaces.ComputerPedDB;
 using ComputerPlus.Controllers.Models;
 using System.IO;
+using ComputerPlus.Extensions.Gwen;
 
 namespace ComputerPlus.Interfaces.ComputerVehDB
 {
@@ -66,7 +67,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         public override void InitializeLayout()
         {
             base.InitializeLayout();
-            Game.LogVerboseDebug("ComputerPedView InitializeLayout");
+            Function.LogDebug("ComputerPedView InitializeLayout");
             if (Owner == null || !Owner.Exists() || Vehicle == null || !Vehicle.Exists()) return;
             this.Window.DisableResizing();
             this.Position = this.GetLaunchPosition();
@@ -96,7 +97,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             switch(arguments.SelectedItem.Name)
             {
                 case "Blip":
-                    Game.LogVerboseDebug("ActionSelected Blip Vehicle");
+                    Function.LogDebug("ActionSelected Blip Vehicle");
                     ComputerVehicleController.BlipVehicle(Vehicle, System.Drawing.Color.Yellow);
                     break;
             }
@@ -114,12 +115,12 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
                 String _model = String.Format(@"{0}__0_{1}_{2}", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
                 var path = Function.GetPedImagePath(_model);
-                Game.LogVerbose(String.Format("Loading image for model from  {0}", path));
+                Function.LogDebug(String.Format("Loading image for model from  {0}", path));
                 return path;
             }
             catch
             {
-                Game.LogVerbose("DetermineImagePath Error");
+                Function.LogDebug("DetermineImagePath Error");
                 return Function.DefaultPedImagePath;
             }
         }
@@ -130,13 +131,13 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             {
                 if (vehicle == null || !vehicle.Exists()) return Function.DefaultVehicleImagePath;
                 String modelName = vehicle.Model.Name;
-                var path = Function.GetVehicleImagePath(modelName);                
-                Game.LogVerbose(String.Format("Loading image for vehicle from {0}", path));
+                var path = Function.GetVehicleImagePath(modelName);
+                Function.LogDebug(String.Format("Loading image for vehicle from {0}", path));
                 return path;
             }
             catch
             {
-                Game.LogVerbose("DetermineImagePath Error");
+                Function.LogDebug("DetermineImagePath Error");
                 return Function.DefaultVehicleImagePath;
             }
         }
@@ -147,13 +148,13 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             switch (OwnerPersona.LicenseState)
             {
                 case ELicenseState.Expired:
-                    text_license_status.Text = "Expired";
+                    text_license_status.Warn("Expired");
                     break;
                 case ELicenseState.None:
                     text_license_status.Text = "None";
                     break;
                 case ELicenseState.Suspended:
-                    text_license_status.Text = "Suspended";
+                    text_license_status.Warn("Suspended");
                     break;
                 case ELicenseState.Valid:
                     text_license_status.Text = "Valid";
@@ -162,12 +163,12 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
             if (OwnerPersona.IsAgent)
             {
-                lbl_alert.Text = "Individual is a federal agent";
+                text_license_status.Warn("Individual is a federal agent");
                 lbl_alert.Show();
             }
             else if (OwnerPersona.IsCop)
             {
-                lbl_alert.Text = "Individual is a police officer";
+                text_license_status.Warn("Individual is a police officer");                
                 lbl_alert.Show();
             }
 
@@ -192,15 +193,19 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             text_home_address.Text = Owner.GetHomeAddress();
             text_dob.Text = OwnerPersona.BirthDay.ToString("MM/dd/yyyy");
             text_dob.SetToolTipText("MM/dd/yyyy");
-            text_wanted_status.Text = (OwnerPersona.Wanted) ? "Wanted" : "None";
+            if (OwnerPersona.Wanted) text_wanted_status.Warn("Wanted");
+            else text_wanted_status.SetText("None");
             text_times_stopped.Text = OwnerPersona.TimesStopped.ToString();
 
             text_vehicle_model.Text = Vehicle.Model.Name;
             text_vehicle_license.Text = Vehicle.LicensePlate;
             if (Function.IsTrafficPolicerRunning())
             {
-                text_vehicle_insurance_status.Text = TrafficPolicerFunction.GetVehicleInsuranceStatus(Vehicle) == EVehicleStatus.Valid ? "Valid" : "Expired";
-                text_vehicle_registration_status.Text = TrafficPolicerFunction.GetVehicleRegistrationStatus(Vehicle) == EVehicleStatus.Valid ? "Valid" : "Expired";
+                if (TrafficPolicerFunction.GetVehicleInsuranceStatus(Vehicle) == EVehicleStatus.Valid) text_vehicle_insurance_status.SetText("Valid");
+                else text_vehicle_insurance_status.Warn("Expired");
+
+                if (TrafficPolicerFunction.GetVehicleRegistrationStatus(Vehicle) == EVehicleStatus.Valid) text_vehicle_registration_status.SetText("Valid");
+                else text_vehicle_registration_status.Warn("Expired");
             } else
             {
                 text_vehicle_insurance_status.Hide();

@@ -5,6 +5,7 @@ using Rage.Forms;
 using Gwen.Control;
 using LSPD_First_Response.Mod.API;
 using LSPD_First_Response;
+using ComputerPlus.Interfaces.ComputerPedDB;
 
 namespace ComputerPlus
 {
@@ -14,7 +15,6 @@ namespace ComputerPlus
         private ListBox list_unit;
         private ComboBox dropdown_resp;
         private Label text_resp;
-        internal static GameFiber form_main = new GameFiber(OpenMainMenuForm);
 
         public ComputerRequestBackup() : base(typeof(ComputerRequestBackupTemplate))
         {
@@ -24,13 +24,18 @@ namespace ComputerPlus
         public override void InitializeLayout()
         {
             base.InitializeLayout();
-            this.btn_main.Clicked += this.MainButtonClickedHandler;
             this.btn_request.Clicked += this.RequestButtonClickedHandler;
             this.dropdown_resp.ItemSelected += this.DropdownChangedHandler;
-            this.list_unit.RowSelected += this.ListSelectedHandler;
+            if (Functions.GetActivePursuit() != null)
+                this.dropdown_resp.AddItem("Pursuit", "Pursuit", EBackupResponseType.Pursuit);
+            if (ComputerPedController.Instance.PedsCurrentlyStoppedByPlayer.Count > 0)
+                this.dropdown_resp.AddItem("Suspect Transport", "Transport", EBackupResponseType.SuspectTransporter);
+            this.dropdown_resp.AddItem("Code 2", "Code2", EBackupResponseType.Code2);
+            this.dropdown_resp.AddItem("Code 3", "Code3", EBackupResponseType.Code3);
+           
+            
             this.Position = new Point(Game.Resolution.Width / 2 - this.Window.Width / 2, Game.Resolution.Height / 2 - this.Window.Height / 2);
             this.Window.DisableResizing();
-            this.btn_request.Disable();
             this.text_resp.Alignment = Gwen.Pos.Center;
             if (Functions.GetActivePursuit() != null)
             {
@@ -44,24 +49,18 @@ namespace ComputerPlus
 
         private void DropdownChangedHandler(Base sender, ItemSelectedEventArgs e)
         {
-            if (e.SelectedItem.Name.Contains("Pursuit"))
+            if (e.SelectedItem != null && e.SelectedItem.UserData is EBackupUnitType)
             {
-                AddPursuitUnits();
-            }
-            else if (e.SelectedItem.Name.Contains("Code 3"))
-            {
-                AddCode3Units();
-            }
-            else if (e.SelectedItem.Name.Contains("Code 2"))
-            {
-                AddCode2Units();
-            }
-            this.btn_request.Disable();
-        }
+                var changedTo = (EBackupResponseType)e.SelectedItem.UserData;
+                switch (changedTo)
+                {
+                    case EBackupResponseType.Code2: AddCode2Units(); break;
+                    case EBackupResponseType.Code3: AddCode3Units(); break;
+                    case EBackupResponseType.Pursuit: AddPursuitUnits(); break;
+                    case EBackupResponseType.SuspectTransporter: AddTransportUnits(); break;
+                }
 
-        private void ListSelectedHandler(Base sender, ItemSelectedEventArgs e)
-        {
-            this.btn_request.Enable();
+            }
         }
 
 
@@ -74,102 +73,58 @@ namespace ComputerPlus
                     string resp = dropdown_resp.SelectedItem.Text.Trim();
                     string unit = list_unit.SelectedRow.Text;
                     Functions.RequestBackup(Game.LocalPlayer.Character.CurrentVehicle.Position,
-                    ConvertStringToEBackupResponseType(resp),
-                    ConvertStringToEBackupUnitType(unit));
+                    (EBackupResponseType)dropdown_resp.SelectedItem.UserData,
+                    (EBackupUnitType)list_unit.SelectedRow.UserData);
                     Function.AddBackupRequestToRecents(resp, unit);
                 });
                 text_resp.Text = String.Format("A {0} has been dispatched to your location.", list_unit.SelectedRow.Text);
             }
-        }
-
-        private EBackupUnitType ConvertStringToEBackupUnitType(string unit)
-        {
-            switch (unit)
-            {
-                case "Local Patrol Unit":
-                    return EBackupUnitType.LocalUnit;
-                case "State Patrol Unit":
-                    return EBackupUnitType.StateUnit;
-                case "Local Transport Unit":
-                    return EBackupUnitType.PrisonerTransport;
-                case "Local EMS Unit":
-                    return EBackupUnitType.Ambulance;
-                case "Local SWAT Team":
-                    return EBackupUnitType.SwatTeam;
-                case "NOOSE SWAT Team":
-                    return EBackupUnitType.NooseTeam;
-                case "Local Air Support Unit":
-                    return EBackupUnitType.AirUnit;
-                case "NOOSE Air Support Unit":
-                    return EBackupUnitType.FIBAirUnit;
-                case "Local Fire Unit":
-                    return EBackupUnitType.Firetruck;
-                case "FIB Air Support Unit":
-                    return EBackupUnitType.FIBAirUnit;
-                default:
-                    return EBackupUnitType.LocalUnit;
-            }
-        }
-
-        private EBackupResponseType ConvertStringToEBackupResponseType(string resp)
-        {
-            switch (resp)
-            {
-                case "Pursuit":
-                    return EBackupResponseType.Pursuit;
-                case "Code 3":
-                    return EBackupResponseType.Code3;
-                case "Code 2":
-                    return EBackupResponseType.Code2;
-                default:
-                    return EBackupResponseType.Code3;
-            }
-        }
-
-        private void MainButtonClickedHandler(Base sender, ClickedEventArgs e) 
-        {
-            this.Window.Close();
-            form_main = new GameFiber(OpenMainMenuForm);
-            form_main.Start();
-        }
-
-        internal static void OpenMainMenuForm()
-        {
-            /*GwenForm main = new ComputerMain();
-            main.Show();
-            while (main.Window.IsVisible)
-                GameFiber.Yield();*/
-        }
+        }       
 
         private void AddPursuitUnits()
         {
             list_unit.Clear();
-            list_unit.AddRow("Local Patrol Unit");
-            list_unit.AddRow("State Patrol Unit");
-            list_unit.AddRow("Local SWAT Team");
-            list_unit.AddRow("NOOSE SWAT Team");
-            list_unit.AddRow("Local Air Support Unit");
-            list_unit.AddRow("NOOSE Air Support Unit");
-            list_unit.AddRow("FIB Air Support Unit");
+            
+            list_unit.AddRow("Local Patrol Unit", "localPatrol", EBackupUnitType.LocalUnit);
+            list_unit.AddRow("State Patrol Unit", "statePatrol", EBackupUnitType.StateUnit);
+            list_unit.AddRow("Local SWAT Team", "localSwat", EBackupUnitType.SwatTeam);
+            list_unit.AddRow("NOOSE SWAT Team", "nooseSwat", EBackupUnitType.NooseTeam);
+            list_unit.AddRow("Local Air Support Unit", "localAir", EBackupUnitType.AirUnit);
+            list_unit.AddRow("NOOSE Air Support Unit", "nooseAir", EBackupUnitType.NooseAirUnit);
+            list_unit.AddRow("FIB Air Support Unit", "fbiAir", EBackupUnitType.FIBAirUnit);
+            list_unit.SelectRow(0);
         }
 
         private void AddCode3Units()
         {
             list_unit.Clear();
-            list_unit.AddRow("Local Patrol Unit");
-            list_unit.AddRow("State Patrol Unit");
-            list_unit.AddRow("Local SWAT Team");
-            list_unit.AddRow("NOOSE SWAT Team");
-            list_unit.AddRow("Local EMS Unit");
-            list_unit.AddRow("Local Fire Unit");
+            list_unit.AddRow("Local Patrol Unit", "localPatrol", EBackupUnitType.LocalUnit);
+            list_unit.AddRow("State Patrol Unit", "statePatrol", EBackupUnitType.StateUnit);
+            list_unit.AddRow("Local SWAT Team", "localSwat", EBackupUnitType.SwatTeam);
+            list_unit.AddRow("NOOSE SWAT Team", "nooseSwat", EBackupUnitType.NooseTeam);
+            list_unit.AddRow("Local EMS Unit", "localEms", EBackupUnitType.Ambulance);
+            list_unit.AddRow("Local Fire Unit", "fire", EBackupUnitType.Firetruck);
+            list_unit.SelectRow(0);
+
         }
 
         private void AddCode2Units()
         {
             list_unit.Clear();
-            list_unit.AddRow("Local Patrol Unit");
-            list_unit.AddRow("State Patrol Unit");
-            list_unit.AddRow("Local Transport Unit");
+            list_unit.AddRow("Local Patrol Unit", "localPatrol", EBackupUnitType.LocalUnit);
+            list_unit.AddRow("State Patrol Unit", "statePatrol", EBackupUnitType.StateUnit);
+            list_unit.AddRow("Local EMS Unit", "localEms", EBackupUnitType.Ambulance);
+            list_unit.AddRow("Local Fire Unit", "fire", EBackupUnitType.Firetruck);
+            list_unit.SelectRow(0);
+        }
+
+        private void AddTransportUnits()
+        {
+            list_unit.Clear();
+            list_unit.AddRow("Local Patrol Unit", "localPatrol", EBackupUnitType.LocalUnit);
+            list_unit.AddRow("State Patrol Unit", "statePatrol", EBackupUnitType.StateUnit);
+            list_unit.SelectRow(0);
+
         }
     }
 }
