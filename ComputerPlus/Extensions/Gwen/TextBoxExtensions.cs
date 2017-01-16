@@ -20,8 +20,8 @@ namespace ComputerPlus.Extensions.Gwen
         internal static void Warn(this TextBox textbox, String message)
         {
             if (textbox == null || String.IsNullOrEmpty(message)) return;
-            textbox.PaddingOutlineColor = System.Drawing.Color.Yellow;
-            textbox.MarginOutlineColor = System.Drawing.Color.Yellow;
+            //textbox.PaddingOutlineColor = System.Drawing.Color.Yellow;
+            //textbox.MarginOutlineColor = System.Drawing.Color.Yellow;
             textbox.TextColorOverride = System.Drawing.Color.Red;
             textbox.SetText(message);
             textbox.UpdateColors();
