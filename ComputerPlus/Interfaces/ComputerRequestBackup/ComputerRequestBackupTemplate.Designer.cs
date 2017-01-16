@@ -34,7 +34,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.list_unit = new System.Windows.Forms.ListBox();
             this.btn_request = new System.Windows.Forms.Button();
-            this.btn_main = new System.Windows.Forms.Button();
             this.text_resp = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
@@ -42,14 +41,6 @@
             // 
             this.dropdown_resp.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.dropdown_resp.FormattingEnabled = true;
-            if (Functions.GetActivePursuit() != null)
-                this.dropdown_resp.Items.Add("Pursuit                                                                          " +
-                "                                        ");
-            this.dropdown_resp.Items.AddRange(new object[] {
-            "Code 3                                                                           " +
-                "                                        ",
-            "Code 2                                                                           " +
-                "                                        " });
             this.dropdown_resp.Location = new System.Drawing.Point(12, 25);
             this.dropdown_resp.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.dropdown_resp.Name = "dropdown_resp";
@@ -92,25 +83,14 @@
             // btn_request
             // 
             this.btn_request.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.btn_request.Location = new System.Drawing.Point(87, 235);
+            this.btn_request.Location = new System.Drawing.Point(108, 235);
             this.btn_request.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btn_request.Name = "btn_request";
-            this.btn_request.Size = new System.Drawing.Size(109, 30);
+            this.btn_request.Size = new System.Drawing.Size(166, 30);
             this.btn_request.TabIndex = 4;
             this.btn_request.Text = "Request Unit";
             this.btn_request.UseVisualStyleBackColor = true;
             this.btn_request.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // btn_main
-            // 
-            this.btn_main.Location = new System.Drawing.Point(200, 235);
-            this.btn_main.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
-            this.btn_main.Name = "btn_main";
-            this.btn_main.Size = new System.Drawing.Size(109, 30);
-            this.btn_main.TabIndex = 5;
-            this.btn_main.Text = "Main Menu";
-            this.btn_main.UseVisualStyleBackColor = true;
-            this.btn_main.Click += new System.EventHandler(this.button2_Click);
             // 
             // text_resp
             // 
@@ -129,7 +109,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(407, 277);
             this.Controls.Add(this.text_resp);
-            this.Controls.Add(this.btn_main);
             this.Controls.Add(this.btn_request);
             this.Controls.Add(this.list_unit);
             this.Controls.Add(this.label2);
@@ -154,7 +133,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ListBox list_unit;
         private System.Windows.Forms.Button btn_request;
-        private System.Windows.Forms.Button btn_main;
         private System.Windows.Forms.Label text_resp;
     }
 }

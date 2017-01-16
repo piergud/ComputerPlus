@@ -7,6 +7,8 @@ using Gwen.Control;
 using Rage;
 using LSPD_First_Response.Engine.Scripting.Entities;
 using ComputerPlus.Extensions.Gwen;
+using ComputerPlus.Controllers.Models;
+
 namespace ComputerPlus.Interfaces.ComputerPedDB
 {
     sealed class ComputerPedSearch : GwenForm
@@ -18,6 +20,13 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
         internal ComputerPedSearch() : base(typeof(ComputerPedSearchTemplate))
         {
+        }
+
+        ~ComputerPedSearch()
+        {
+            list_manual_results.RowSelected -= onListItemSelected;
+            list_collected_ids.RowSelected -= onListItemSelected;
+            text_manual_name.SubmitPressed -= onSearchSubmit;
         }
 
         public override void InitializeLayout()
@@ -43,35 +52,29 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             var ped = controller.LookupPersona(name);
             if (ped != null)
             {
-                if (!ped.Item1)
+                if (!ped.Ped)
                 {
-                    text_manual_name.BoundsOutlineColor = System.Drawing.Color.Red;
-                    text_manual_name.SetToolTipText("This person no longer exists");
+                    text_manual_name.Error("The ped no longer exists");
                 }
                 else {
-                    text_manual_name.ToolTip = null;
+                    text_manual_name.ClearError();
                     list_manual_results.AddPed(ped);
-                    ComputerPedController.LastSelected = new Tuple<Ped, Persona>(ped.Item1, ped.Item2);
+                    ComputerPedController.LastSelected = ped;
                     ComputerPedController.ActivatePedView();
                 }
             } else
             {
-                text_manual_name.BoundsOutlineColor = System.Drawing.Color.Red;
-                text_manual_name.SetToolTipText("No persons found");
+                text_manual_name.Error("No matches");
             }
         }
 
-        private void AddPedPersonaToList(List<dynamic> list)
-        {
-
-        }
 
         public void PopulateManualSearchPedsList()
         {
             ComputerPedController controller = ComputerPedController.Instance;
             list_collected_ids.Clear();
             var results = controller.GetRecentSearches()
-            .Where(x => x.Item1 != null && x.Item1.IsValid()).ToList(); 
+            .Where(x => x.Validate()).ToList(); 
             //@TODO choose if we want to remove null items from the list -- may cause user confusion
             if (results != null && results.Count > 0)
             {
@@ -82,13 +85,12 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
         public void PopulateStoppedPedsList()
         {
             ComputerPedController controller = ComputerPedController.Instance;
+            var peds = controller.PedsCurrentlyStoppedByPlayer;
             list_collected_ids.Clear();
-            var results = controller.PedsCurrentlyStoppedByPlayer.Where(x => x != null && x.IsValid()).ToArray();
-            if (results != null && results.Length > 0)
-                results
-                .Select(x => controller.LookupPersona(x))
-                .ToList()
-                .ForEach(x => list_collected_ids.AddPed(x));
+            foreach(var persona in peds.Select(x => controller.LookupPersona(x)))
+            {
+                list_collected_ids.AddPed(persona);
+            }           
         }
 
         private void ClearSelections()
@@ -99,17 +101,15 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
         private void onListItemSelected(Base sender, ItemSelectedEventArgs arguments)
         {
-            if (arguments.SelectedItem.UserData is Tuple<Ped, Persona>)
+            if (arguments.SelectedItem.UserData is ComputerPlusEntity)
             {
-                ComputerPedController.LastSelected = arguments.SelectedItem.UserData as Tuple<Ped, Persona>;                
-                Game.LogVerboseDebug(String.Format("ComputerPedSearch.onListItemSelected updated ComputerPedController.LastSelected {0}", ComputerPedController.LastSelected.Item2.FullName));
+                ComputerPedController.LastSelected = arguments.SelectedItem.UserData as ComputerPlusEntity;                
                 ClearSelections();
                 ComputerPedController.ActivatePedView();
-                Game.LogVerboseDebug("ComputerPedSearch.onListItemSelected successful");
             }
             else
             {
-                Game.LogVerboseDebug("ComputerPedSearch.onListItemSelected arguments were not valid");
+                Function.Log("ComputerPedSearch.onListItemSelected arguments were not valid");
             }         
         }      
     }

@@ -59,7 +59,7 @@ namespace ComputerPlus
             catch (Exception e)
             {
                 webVersionStr = "";
-                Game.LogTrivial("Error checking for updates -- " + e.ToString());
+                Function.Log("Error checking for updates -- " + e.ToString());
             }
 
             if (webVersionStr != "")
@@ -98,7 +98,7 @@ namespace ComputerPlus
                 catch (Exception e)
                 {
                     update_text = "System Update Check Failed";
-                    Game.LogTrivial("Error comparing version numbers -- " + e.ToString());
+                    Function.Log("Error comparing version numbers -- " + e.ToString());
                 }
             }
             else
@@ -125,7 +125,7 @@ namespace ComputerPlus
                 {
                     //If you decide to use this in your plugin, I would appreciate some credit :)
                     Rageversion = float.Parse(versionInfo.ProductVersion.Substring(0, 4), CultureInfo.InvariantCulture);
-                    Game.LogTrivial("ComputerPlus detected RAGEPluginHook version: " + Rageversion.ToString());
+                    Function.LogDebug("ComputerPlus detected RAGEPluginHook version: " + Rageversion.ToString());
 
                     //If user's RPH version is older than the minimum
                     if (Rageversion < minimumVersion)
@@ -140,8 +140,8 @@ namespace ComputerPlus
                             //If you decide to use this in your plugin, I would appreciate some credit :)
                             Game.DisplayNotification("RPH ~r~v" + Rageversion.ToString() + " ~s~detected. ~b~ComputerPlus ~s~requires ~b~v" + minimumVersion.ToString() + " ~s~or higher.");
                             GameFiber.Sleep(5000);
-                            Game.LogTrivial("RAGEPluginHook version " + Rageversion.ToString() + " detected. ComputerPlus requires v" + minimumVersion.ToString() + " or higher.");
-                            Game.LogTrivial("Preparing redirect...");
+                            Function.Log("RAGEPluginHook version " + Rageversion.ToString() + " detected. ComputerPlus requires v" + minimumVersion.ToString() + " or higher.");
+                            Function.Log("Preparing redirect...");
                             Game.DisplayNotification("You are being redirected to the RagePluginHook website so you can download the latest version.");
                             Game.DisplayNotification("Press Backspace to cancel the redirect.");
 
@@ -174,15 +174,15 @@ namespace ComputerPlus
                 catch (Exception e)
                 {
                     //If for whatever reason the version couldn't be found.
-                    Game.LogTrivial(e.ToString());
-                    Game.LogTrivial("Unable to detect your Rage installation.");
+                    Function.Log(e.ToString());
+                    Function.Log("Unable to detect your Rage installation.");
                     if (File.Exists("RAGEPluginHook.exe"))
                     {
-                        Game.LogTrivial("RAGEPluginHook.exe exists");
+                        Function.Log("RAGEPluginHook.exe exists");
                     }
-                    else { Game.LogTrivial("RAGEPluginHook doesn't exist."); }
-                    Game.LogTrivial("Rage Version: " + versionInfo.ProductVersion.ToString());
-                    Game.DisplayNotification("ComputerPlus unable to detect RPH installation. Please send me your logfile.");
+                    else { Function.Log("RAGEPluginHook doesn't exist."); }
+                    Function.Log("Rage Version: " + versionInfo.ProductVersion.ToString());
+                    Function.Log("ComputerPlus unable to detect RPH installation. Please send me your logfile.");
                     correctVersion = false;
 
                 }
@@ -217,8 +217,8 @@ namespace ComputerPlus
             _bg = LoadBackground(GetBackgroundFileNameForVehicle(Game.LocalPlayer.Character.CurrentVehicle));
             if (_bg == null) 
             {
-                Game.LogTrivial(@"Failed to load LSPDFR Computer+ background. Please ensure all backgrounds are present in Plugins\LSPDFR\ComputerPlus\backgrounds\.");
-                Game.LogTrivial(@"Ensure your ComputerPlus.ini contains entries for [VEHICLE BACKGROUNDS] in the format of vehicleModel=backgroundImage.jpg");
+                Function.Log(@"Failed to load LSPDFR Computer+ background. Please ensure all backgrounds are present in Plugins\LSPDFR\ComputerPlus\backgrounds\.");
+                Function.Log(@"Ensure your ComputerPlus.ini contains entries for [VEHICLE BACKGROUNDS] in the format of vehicleModel=backgroundImage.jpg");
                 //Game.DisplayNotification("3dtextures", "mpgroundlogo_cops", "LSPDFR Computer+", "~r~Error", @"Failed to load background in Plugins\LSPDFR\ComputerPlus\backgrounds\.");
                 _bg = LoadBackground(Globals.DefaultBackgroundImage);
             }
@@ -313,7 +313,7 @@ namespace ComputerPlus
         internal static Texture LoadPedImage(String model)
         {
             var path = GetPedImagePath(model);
-            Game.LogVerboseDebug(String.Format("LoadPedImage: {0}", path));
+            Function.LogDebug(String.Format("LoadPedImage: {0}", path));
             return Game.CreateTextureFromFile(path);
         }
 
@@ -546,6 +546,14 @@ namespace ComputerPlus
             return str;
         }
 
-        
+        internal static void Log(String message)
+        {
+            if (!String.IsNullOrWhiteSpace(message)) Game.LogTrivial(String.Format("C+: {0}", message));
+        }
+        internal static void LogDebug(String message)
+        {
+            if (!String.IsNullOrWhiteSpace(message)) Game.LogVerboseDebug(String.Format("C+ DEV: {0}", message));
+        }
+
     }
 }

@@ -65,13 +65,13 @@ namespace ComputerPlus
             while (true)
             {
                 var form = new ComputerLogin();
-                Game.LogVerboseDebug("Init new ComputerLogin");
+                Function.LogDebug("Init new ComputerLogin");
                 form.Show();
                 while (form.IsOpen())
-                    GameFiber.Yield();                
-                Game.LogVerboseDebug("Close ComputerLogin");
+                    GameFiber.Yield();
+                Function.LogDebug("Close ComputerLogin");
                 form.Close();
-                Game.LogVerboseDebug("ComputerLogin Hibernating");
+                Function.LogDebug("ComputerLogin Hibernating");
                 GameFiber.Hibernate();
             }
         }
