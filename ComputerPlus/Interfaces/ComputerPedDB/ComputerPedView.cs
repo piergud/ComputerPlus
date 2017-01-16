@@ -7,6 +7,8 @@ using Gwen.Control;
 using Rage;
 using LSPD_First_Response;
 using LSPD_First_Response.Engine.Scripting.Entities;
+using ComputerPlus.Controllers.Models;
+using ComputerPlus.Extensions.Gwen;
 
 namespace ComputerPlus.Interfaces.ComputerPedDB
 {
@@ -26,10 +28,17 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             Persona = persona;
             Ped = ped;
         }
+
+        internal ComputerPedView(ComputerPlusEntity entity) : base(typeof(ComputerPedViewTemplate))
+        {
+            this.Ped = entity.Ped;
+            this.Persona = entity.PedPersona;
+        }
+
         public override void InitializeLayout()
         {
             base.InitializeLayout();
-            Game.LogVerboseDebug("ComputerPedView InitializeLayout");            
+            Function.LogDebug("ComputerPedView InitializeLayout");            
             if (Persona == null || Ped == null) return;
             this.Position = this.GetLaunchPosition();
             this.Window.DisableResizing();
@@ -58,12 +67,12 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
                 String _model = String.Format(@"{0}__0_{1}_{2}", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
                 var path = Function.GetPedImagePath(_model);
-                Game.LogVerboseDebug(String.Format("Loading image for model from  {0}", path));
+                Function.LogDebug(String.Format("Loading image for model from  {0}", path));
                 return path;
             }
             catch
             {
-                Game.LogVerboseDebug("DetermineImagePath Error");
+                Function.LogDebug("DetermineImagePath Error");
                 return Function.DefaultPedImagePath;
             }
         }
@@ -74,13 +83,13 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             switch (Persona.LicenseState)
             {
                 case ELicenseState.Expired:
-                    text_license_status.Text = "Expired";
+                    text_license_status.Warn("Expired");                    
                     break;
                 case ELicenseState.None:
-                    text_license_status.Text = "None";
+                    text_license_status.Text = "None";                    
                     break;
                 case ELicenseState.Suspended:
-                    text_license_status.Text = "Suspended";
+                    text_license_status.Warn("Suspended");                    
                     break;
                 case ELicenseState.Valid:
                     text_license_status.Text = "Valid";
@@ -103,7 +112,8 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             text_home_address.Text = Ped.GetHomeAddress();
             text_dob.Text = Persona.BirthDay.ToString("MM/dd/yyyy");
             text_dob.SetToolTipText("MM/dd/yyyy");
-            text_wanted_status.Text = (Persona.Wanted) ? "Wanted" : "None";
+            if (Persona.Wanted) text_wanted_status.Warn("Wanted");
+            else text_wanted_status.SetText("None");
             text_times_stopped.Text = Persona.TimesStopped.ToString();
             
         }
