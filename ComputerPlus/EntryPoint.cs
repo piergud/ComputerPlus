@@ -17,8 +17,14 @@ namespace ComputerPlus
         internal delegate void VehicleStoppedEvent(object sender, Vehicle veh);
         internal static VehicleStoppedEvent OnVehicleStopped;
         static Stopwatch sw = new Stopwatch();
-        private static float _stored_speed;
-        private static bool  _prompted;
+
+        private static bool _opened, _prompted;
+        internal static bool HasBackground
+        {
+            get;
+            private set;
+        } = false;
+
         internal static bool IsOpen
         {
             get;
@@ -94,11 +100,10 @@ namespace ComputerPlus
 
         private static void VehicleStoppedHandler(object sender, Vehicle veh)
         {
-            if (veh) 
+            if (veh && !_prompted) 
             {
                 if (Function.IsPoliceVehicle(veh)
-                    && LSPD_First_Response.Mod.API.Functions.GetCurrentPullover() != null
-                    && !_prompted)
+                    && LSPD_First_Response.Mod.API.Functions.GetCurrentPullover() != null)
                 {
                     Game.DisplayHelp("Hold ~INPUT_CONTEXT~ to open ~b~LSPDFR Computer+~w~.");
                     _prompted = true;
@@ -125,34 +130,33 @@ namespace ComputerPlus
             Vehicle curr_veh = Game.LocalPlayer.Character.Exists() ? Game.LocalPlayer.Character.LastVehicle : null;
             if (curr_veh && curr_veh.Driver == Game.LocalPlayer.Character)
             {
-                if (curr_veh.Speed != _stored_speed)
+                if (curr_veh.Speed <= 1)
                 {
-                    _stored_speed = curr_veh.Speed;
-                    if (_stored_speed == 0)
-                        OnVehicleStopped.Invoke(null, curr_veh);
+                    OnVehicleStopped.Invoke(null, curr_veh);
+
+                    if (Game.IsControlPressed(0, GameControl.Context) && Function.IsPoliceVehicle(curr_veh) && !IsOpen)
+                    {
+                        if (!sw.IsRunning)
+                        {
+                            sw.Start();
+                        }
+                        else if (sw.ElapsedMilliseconds > 250)
+                        {
+                            sw.Stop();
+                            sw.Reset();
+                            if (fiber.IsHibernating) fiber.Wake();
+                            else if (!fiber.IsAlive) fiber.Start();
+                        }
+                    }
+                    else
+                    {
+                        if (sw.IsRunning)
+                        {
+                            sw.Stop();
+                            sw.Reset();
+                        }
+                    }
                 }
-                if (Game.IsControlPressed(0, GameControl.Context) && Function.IsPoliceVehicle(curr_veh) && !IsOpen)
-                {
-                    if (!sw.IsRunning)
-                    {
-                        sw.Start();
-                    }
-                    else if (sw.ElapsedMilliseconds > 250)
-                    {
-                        sw.Stop();
-                        sw.Reset();
-                        if (fiber.IsHibernating) fiber.Wake();
-                        else if (!fiber.IsAlive) fiber.Start();
-                    }
-                }
-                else
-                {
-                    if (sw.IsRunning)
-                    {
-                        sw.Stop();
-                        sw.Reset();
-                    }
-                }                
             }          
 
            /* 
