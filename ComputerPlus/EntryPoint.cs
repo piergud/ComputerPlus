@@ -18,18 +18,8 @@ namespace ComputerPlus
         internal static VehicleStoppedEvent OnVehicleStopped;
         static Stopwatch sw = new Stopwatch();
         private static float _stored_speed;
-        private static bool _opened, _prompted;
-        internal static bool HasBackground
-        {
-            get;
-            private set;
-        } = false;
+        private static bool  _prompted;
         internal static bool IsOpen
-        {
-            get;
-            private set;
-        } = false;
-        internal static bool IsPaused
         {
             get;
             private set;
@@ -214,9 +204,8 @@ namespace ComputerPlus
             while (true)
             {
                 IsOpen = true;
-                PauseGame(true);
-                Function.LogDebug("Pause true EntryPoint.ShowPoliceComputer");
-                ShowBackground(true);
+                PauseGame(Globals.PauseGameWhenOpen);
+                ShowBackground(Globals.ShowBackgroundWhenOpen);
                 if (!Configs.SkipLogin)
                 {
                     OpenLogin();
@@ -230,30 +219,29 @@ namespace ComputerPlus
                     GameFiber.Yield();
                 }
                 while (AreGameFibersRunning);
-                PauseGame(false);
-                ShowBackground(false);
+                PauseGame(false, true);
+                ShowBackground(false, true);
                 IsOpen = false;
-                Function.LogDebug("Pause false EntryPoint.ShowPoliceComputer");
                 GameFiber.Hibernate();
             }
            
         }
 
-        private static void PauseGame(bool pause)
+        private static void PauseGame(bool pause, bool gameOnlyChange = false)
         {
-            IsPaused = pause;
+            if (!gameOnlyChange) Globals.PauseGameWhenOpen = pause;
             Game.IsPaused = pause;
         }
 
 
         internal static void TogglePause()
         {
-            PauseGame(!IsPaused);
+            PauseGame(!Globals.PauseGameWhenOpen);
         }
 
-        private static void ShowBackground(bool visible)
+        private static void ShowBackground(bool visible, bool gameOnlyChange = false)
         {
-            HasBackground = visible;
+            if(!gameOnlyChange) Globals.ShowBackgroundWhenOpen = visible;
             if (visible)
                 Function.EnableBackground();
             else
@@ -262,7 +250,7 @@ namespace ComputerPlus
 
         internal static void ToggleBackground()
         {
-            ShowBackground(!HasBackground);
+            ShowBackground(!Globals.ShowBackgroundWhenOpen);
         }
 
         private static void CheckIfCalloutActive()
