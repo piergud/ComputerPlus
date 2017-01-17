@@ -17,6 +17,7 @@ namespace ComputerPlus
         internal delegate void VehicleStoppedEvent(object sender, Vehicle veh);
         internal static VehicleStoppedEvent OnVehicleStopped;
         static Stopwatch sw = new Stopwatch();
+        internal static bool _arrestFirstLogin = true;
 
         private static bool _opened, _prompted;
         internal static bool HasBackground
