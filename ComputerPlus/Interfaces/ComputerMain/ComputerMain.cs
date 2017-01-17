@@ -56,8 +56,8 @@ namespace ComputerPlus
         public override void InitializeLayout()
         {
             base.InitializeLayout();
-            this.cb_toggle_background.IsChecked = EntryPoint.HasBackground;
-            this.cb_toggle_pause.IsChecked = EntryPoint.IsPaused;
+            this.cb_toggle_background.IsChecked = Globals.ShowBackgroundWhenOpen;
+            this.cb_toggle_pause.IsChecked = Globals.PauseGameWhenOpen;
             this.btn_logout.Clicked += this.LogoutButtonClickedHandler;
             this.btn_ped_db.Clicked += this.PedDBButtonClickedHandler;
             this.btn_veh_db.Clicked += this.VehDBButtonClickedHandler;
