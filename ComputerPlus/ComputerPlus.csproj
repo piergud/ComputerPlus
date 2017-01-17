@@ -217,11 +217,16 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y "$(TargetDir)Gwen.dll" "$(TargetDir)Packaged\"
-xcopy /Y "$(TargetDir)ComputerPlus.dll" "$(TargetDir)Packaged\Plugins\LCPDFR\"
-xcopy /Y "$(ProjectDir)Resources\*.jpg" "$(TargetDir)Packaged\Plugins\LCPDFR\ComputerPlus\"
-xcopy /Y "$(ProjectDir)Resources\*.png" "$(TargetDir)Packaged\Plugins\LCPDFR\ComputerPlus\"
-xcopy /Y "$(ProjectDir)Resources\backgrounds\*.jpg" "$(TargetDir)Packaged\Plugins\LCPDFR\ComputerPlus\backgrounds\"
-xcopy /Y "$(ProjectDir)Resources\ComputerPlus.ini" "$(TargetDir)Packaged\Plugins\LCPDFR\"</PostBuildEvent>
+xcopy /Y "$(TargetDir)ComputerPlus.dll" "$(TargetDir)Packaged\Plugins\LSPDFR\"
+xcopy /Y "$(ProjectDir)Resources\*.jpg" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\"
+copy /Y "$(ProjectDir)..\readme.md" "$(TargetDir)Packaged\readme.txt"
+xcopy /Y "$(ProjectDir)Resources\*.png" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\"
+xcopy /Y "$(ProjectDir)Resources\backgrounds\*.jpg" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\backgrounds\"
+xcopy /Y "$(ProjectDir)Resources\ComputerPlus.ini" "$(TargetDir)Packaged\Plugins\LSPDFR\"</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
