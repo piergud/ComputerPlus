@@ -20,6 +20,8 @@ namespace ComputerPlus
         internal readonly static String EmptyImageVehicle = "no_vehicle_image.jpg";
         internal readonly static String EmptyImagePed = "no_ped_image.jpg";
         internal readonly static String DefaultBackgroundImage = "lspd.jpg";
+        internal static bool PauseGameWhenOpen = true;
+        internal static bool ShowBackgroundWhenOpen = true;
 
         /// <summary>
         /// Returns the active callout from the queue.
