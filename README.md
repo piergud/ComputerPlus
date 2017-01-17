@@ -31,3 +31,20 @@
 - Integration with Albo1125's British Policing Script.
 - Combining Computer+ and fiskey111's LSPDFR PolicingMDT into one mod.
 
+**Installation**
+Place ComputerPlus.dll, ComputerPlus.ini and the ComputerPlus folder in Plugins\LSPDFR\.
+LSPDFR will automatically load Computer+ when you go on duty.
+
+**Usage**
+While in a stationary police vehicle, hold E or the Right D-Pad button to bring up Computer+.
+
+**Configuration**
+If you open the ComputerPlus.ini file, you will notice a few things.
+You can change the username and/or password that is displayed on the login screen to anything you want.
+You can also adjust which backgrounds are shown for which vehicles.
+To give an additional police vehicle a background, simply add another entry in the format vehiclename:bgfile.jpg
+ENSURE THAT THE VEHICLE YOU'RE ADDING IS A POLICE VEHICLE AND THE BACKGROUND FILE IS IN .JPG FORMAT.
+
+**Additional Info**
+Computer+ DOES NOT replace the default LSPDFR computer.
+So, if you don't always want to use Computer+ during your patrols, then you need not worry - the default computer is still there.
