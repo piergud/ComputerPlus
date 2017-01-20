@@ -66,7 +66,7 @@ namespace ComputerPlus
 
             if (on_duty) 
             {
-                Game.FrameRender += Process;
+                GameFiber.StartNew(Process);
                 Function.LogDebug("Successfully loaded LSPDFR Computer+.");
 
                 Function.MonitorAICalls();
@@ -123,41 +123,53 @@ namespace ComputerPlus
             return null;
         }
         static bool alprRunning = false;
-        private static void Process(object sender, GraphicsEventArgs e)
+        private static void Process()
         {
             var fiber = EntryPoint.RunComputerPlus;
-
-            Vehicle curr_veh = Game.LocalPlayer.Character.Exists() ? Game.LocalPlayer.Character.LastVehicle : null;
-            if (curr_veh && curr_veh.Driver == Game.LocalPlayer.Character)
+            while (true)
             {
-                if (curr_veh.Speed <= 1)
+                while (!IsOpen)
                 {
-                    OnVehicleStopped.Invoke(null, curr_veh);
+                    Vehicle curr_veh = Game.LocalPlayer.Character.Exists() ? Game.LocalPlayer.Character.LastVehicle : null;
+                    if (curr_veh && curr_veh.Driver == Game.LocalPlayer.Character)
+                    {
+                        if (curr_veh.Speed <= 1)
+                        {
+                            OnVehicleStopped(null, curr_veh);
 
-                    if (Game.IsControlPressed(0, GameControl.Context) && Function.IsPoliceVehicle(curr_veh) && !IsOpen)
-                    {
-                        if (!sw.IsRunning)
-                        {
-                            sw.Start();
-                        }
-                        else if (sw.ElapsedMilliseconds > 250)
-                        {
-                            sw.Stop();
-                            sw.Reset();
-                            if (fiber.IsHibernating) fiber.Wake();
-                            else if (!fiber.IsAlive) fiber.Start();
+                            if (Game.IsControlPressed(0, GameControl.Context) && Function.IsPoliceVehicle(curr_veh))
+                            {
+                                if (!sw.IsRunning)
+                                {
+                                    sw.Start();
+                                }
+                                else if (sw.ElapsedMilliseconds > 250)
+                                {
+                                    sw.Stop();
+                                    sw.Reset();
+                                    if (fiber.IsHibernating) fiber.Wake();
+                                    else if (!fiber.IsAlive) fiber.Start();
+                                }
+                            }
+                            else
+                            {
+                                if (sw.IsRunning)
+                                {
+                                    sw.Stop();
+                                    sw.Reset();
+                                }
+                            }
                         }
                     }
-                    else
-                    {
-                        if (sw.IsRunning)
-                        {
-                            sw.Stop();
-                            sw.Reset();
-                        }
-                    }
+                    GameFiber.Yield();
                 }
-            }          
+                while (IsOpen)
+                {
+                    //@TODO add While open check to see if user is holding escape, if so, close computer+
+                    GameFiber.Yield();
+                }
+                GameFiber.Yield();
+            }    
 
            /* 
             @TODO @ainesophaur discuss whether to include a vanilla ALPR in C+ and optimize the vehicle enumeration calls
