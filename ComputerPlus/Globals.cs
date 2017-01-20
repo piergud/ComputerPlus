@@ -22,6 +22,7 @@ namespace ComputerPlus
         internal readonly static String DefaultBackgroundImage = "lspd.jpg";
         internal static bool PauseGameWhenOpen = true;
         internal static bool ShowBackgroundWhenOpen = true;
+        internal static bool CloseRequested = false;
 
         /// <summary>
         /// Returns the active callout from the queue.

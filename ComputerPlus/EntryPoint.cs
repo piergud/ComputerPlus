@@ -8,6 +8,8 @@ using LSPD_First_Response.Mod.API;
 using ComputerPlus.Interfaces.ComputerPedDB;
 using ComputerPlus.Interfaces.ComputerVehDB;
 using ComputerPlus.Controllers.Models;
+using ComputerPlus.Extensions.Rage;
+using System.Linq;
 
 namespace ComputerPlus
 {
@@ -18,7 +20,7 @@ namespace ComputerPlus
         internal static VehicleStoppedEvent OnVehicleStopped;
         static Stopwatch sw = new Stopwatch();
 
-        private static bool _opened, _prompted;
+        private static bool _prompted;
         internal static bool HasBackground
         {
             get;
@@ -165,6 +167,28 @@ namespace ComputerPlus
                 }
                 while (IsOpen)
                 {
+                    
+                    if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Escape) || Game.IsControllerButtonDownRightNow(ControllerButtons.B))
+                    {
+                        if (!sw.IsRunning)
+                        {
+                            sw.Start();
+                        }
+                        else if (sw.ElapsedMilliseconds > 250)
+                        {
+                            sw.Stop();
+                            sw.Reset();
+                            if (AreGameFibersRunning) Globals.CloseRequested = true;
+                        }
+                    }
+                    else
+                    {
+                        if (sw.IsRunning)
+                        {
+                            sw.Stop();
+                            sw.Reset();
+                        }
+                    }
                     //@TODO add While open check to see if user is holding escape, if so, close computer+
                     GameFiber.Yield();
                 }
@@ -181,23 +205,23 @@ namespace ComputerPlus
             }
            */
         }
-        //@TODO put all game fibers in an array and filter through to find any that are alive
+        private static List<GameFiber> GameFibers = new List<GameFiber>()
+        {
+            ComputerLogin.ComputerLoginGameFiber,
+            ComputerMain.ComputerMainGameFiber,
+            ComputerPedController.PedSearchGameFiber,
+            ComputerPedController.PedViewGameFiber,
+            ComputerVehicleController.VehicleDetailsGameFiber,
+            ComputerVehicleController.VehicleSearchGameFiber,
+            ComputerMain.form_active_calls,
+            ComputerMain.form_backup
+        };
+
         private static bool AreGameFibersRunning
         {
             get
             {
-                return
-                    (ComputerLogin.ComputerLoginGameFiber.IsAlive && !ComputerLogin.ComputerLoginGameFiber.IsHibernating)
-                    || (ComputerMain.ComputerMainGameFiber.IsAlive && !ComputerMain.ComputerMainGameFiber.IsHibernating)
-                    || (ComputerPedController.PedSearchGameFiber.IsAlive && !ComputerPedController.PedSearchGameFiber.IsHibernating)
-                    || (ComputerPedController.PedViewGameFiber.IsAlive && !ComputerPedController.PedViewGameFiber.IsHibernating)
-                    || (ComputerVehicleController.VehicleSearchGameFiber.IsAlive && !ComputerVehicleController.VehicleSearchGameFiber.IsHibernating)
-                    || (ComputerVehicleController.VehicleDetailsGameFiber.IsAlive && !ComputerVehicleController.VehicleDetailsGameFiber.IsHibernating)
-                    || (ComputerMain.form_active_calls.IsAlive && !ComputerMain.form_active_calls.IsHibernating)
-                    || (ComputerMain.form_backup.IsAlive && !ComputerMain.form_backup.IsHibernating);
-                   // || ComputerMain.form_backup.IsAlive || ComputerMain.form_active_calls.IsAlive
-                   //|| ComputerPedDB.form_main.IsAlive || ComputerVehDB.form_main.IsAlive || ComputerRequestBackup.form_main.IsAlive;
-                   //|| ComputerCurrentCallDetails.form_main.IsAlive;
+                return GameFibers.Exists(x => x.IsRunning());
             }
         }
 
@@ -217,6 +241,7 @@ namespace ComputerPlus
 
         private static void ShowPoliceComputer()
         {
+            
             while (true)
             {
                 IsOpen = true;
@@ -234,10 +259,13 @@ namespace ComputerPlus
                 {
                     GameFiber.Yield();
                 }
-                while (AreGameFibersRunning);
+                while (AreGameFibersRunning && !Globals.CloseRequested);                
                 PauseGame(false, true);
                 ShowBackground(false, true);
+                GameFiber.Yield(); //Yield to allow form fibers to close out
                 IsOpen = false;
+                Globals.CloseRequested = false;
+                
                 GameFiber.Hibernate();
             }
            
