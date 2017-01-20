@@ -7,12 +7,14 @@ using Gwen.Control;
 using System;
 using ComputerPlus.Interfaces.ComputerPedDB;
 using ComputerPlus.Interfaces.ComputerVehDB;
+using ComputerPlus.Controllers;
+using ComputerPlus.Extensions.Gwen;
 
 namespace ComputerPlus
 {
     internal class ComputerMain : GwenForm
     {
-        private Button btn_logout, btn_ped_db, btn_veh_db, btn_request, btn_activecalls;
+        private Button btn_logout, btn_ped_db, btn_veh_db, btn_request, btn_activecalls, btn_arrest_report;
         internal ListBox list_recent;
         private Label label_external_ui;
         private ComboBox list_external_ui;
@@ -62,8 +64,10 @@ namespace ComputerPlus
             this.btn_ped_db.Clicked += this.PedDBButtonClickedHandler;
             this.btn_veh_db.Clicked += this.VehDBButtonClickedHandler;
             this.btn_request.Clicked += this.RequestBackupButtonClickedHandler;
+            this.btn_arrest_report.Clicked += this.ReportsClickedHandler;
             this.cb_toggle_background.CheckChanged += checkbox_change;
             this.cb_toggle_pause.CheckChanged += checkbox_change;
+            
             //this.btn_ReportMain.Clicked += this.ReportMainClickedHandler;  // Fiskey111 Edit
             this.btn_activecalls.Clicked += this.ActiveCallsClickedHandler;
             this.Window.DisableResizing();
@@ -94,6 +98,11 @@ namespace ComputerPlus
         private void LogoutButtonClickedHandler(Base sender, ClickedEventArgs e)
         {
             this.Window.Close();
+        }
+
+        private void ReportsClickedHandler(Base sender, ClickedEventArgs e)
+        {
+            ComputerReportsController.ShowArrestReportCreate();
         }
 
 

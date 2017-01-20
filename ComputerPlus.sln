@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComputerPlus", "ComputerPlu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleExternalUI", "API Examples\ExampleExternalUI\ExampleExternalUI.csproj", "{071CCC60-1204-4463-A5E5-642EE0C9261B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportTest", "ReportTest\ReportTest.csproj", "{E53BD6B4-FB8A-4E6A-8752-C60CA6A3D531}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,14 @@ Global
 		{071CCC60-1204-4463-A5E5-642EE0C9261B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{071CCC60-1204-4463-A5E5-642EE0C9261B}.Release|x64.ActiveCfg = Release|x64
 		{071CCC60-1204-4463-A5E5-642EE0C9261B}.Release|x64.Build.0 = Release|x64
+		{E53BD6B4-FB8A-4E6A-8752-C60CA6A3D531}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E53BD6B4-FB8A-4E6A-8752-C60CA6A3D531}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E53BD6B4-FB8A-4E6A-8752-C60CA6A3D531}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E53BD6B4-FB8A-4E6A-8752-C60CA6A3D531}.Debug|x64.Build.0 = Debug|Any CPU
+		{E53BD6B4-FB8A-4E6A-8752-C60CA6A3D531}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E53BD6B4-FB8A-4E6A-8752-C60CA6A3D531}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E53BD6B4-FB8A-4E6A-8752-C60CA6A3D531}.Release|x64.ActiveCfg = Release|Any CPU
+		{E53BD6B4-FB8A-4E6A-8752-C60CA6A3D531}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
