@@ -224,6 +224,7 @@ namespace ComputerPlus
             }
             else 
             {
+                Game.RawFrameRender -= OnRawFrameRender;
                 Game.RawFrameRender += OnRawFrameRender;
                 _bg_enabled = true;
             }
