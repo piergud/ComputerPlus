@@ -42,6 +42,7 @@
             this.list_external_ui = new System.Windows.Forms.ComboBox();
             this.cb_toggle_pause = new System.Windows.Forms.CheckBox();
             this.cb_toggle_background = new System.Windows.Forms.CheckBox();
+            this.btn_arrest_report = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btn_ped_db
@@ -169,12 +170,25 @@
             this.cb_toggle_background.Text = "Toggle Background";
             this.cb_toggle_background.UseVisualStyleBackColor = true;
             // 
+            // btn_arrest_report
+            // 
+            this.btn_arrest_report.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btn_arrest_report.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.btn_arrest_report.Location = new System.Drawing.Point(118, 234);
+            this.btn_arrest_report.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.btn_arrest_report.Name = "btn_arrest_report";
+            this.btn_arrest_report.Size = new System.Drawing.Size(125, 30);
+            this.btn_arrest_report.TabIndex = 11;
+            this.btn_arrest_report.Text = "Report";
+            this.btn_arrest_report.UseVisualStyleBackColor = true;
+            // 
             // ComputerMainTemplate
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(645, 274);
+            this.Controls.Add(this.btn_arrest_report);
             this.Controls.Add(this.cb_toggle_background);
             this.Controls.Add(this.cb_toggle_pause);
             this.Controls.Add(this.list_external_ui);
@@ -213,5 +227,6 @@
         private ComboBox list_external_ui;
         private CheckBox cb_toggle_pause;
         private CheckBox cb_toggle_background;
+        private Button btn_arrest_report;
     }
 }

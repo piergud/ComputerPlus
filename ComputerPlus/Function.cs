@@ -555,5 +555,20 @@ namespace ComputerPlus
             if (!String.IsNullOrWhiteSpace(message)) Game.LogVerboseDebug(String.Format("C+ DEV: {0}", message));
         }
 
+        internal static void ShowError(String message, int duration = 5000)
+        {
+            if (!String.IsNullOrWhiteSpace(message)) Game.DisplaySubtitle(String.Format("~r~C+: ~w~{0}", message), duration);
+        }
+
+        internal static void ShowWarning(String message, int duration = 5000)
+        {
+            if (!String.IsNullOrWhiteSpace(message)) Game.DisplaySubtitle(String.Format("~y~C+: ~w~{0}", message), duration);
+        }
+
+        internal static String GetAssetPath(String fileName)
+        {
+            return Globals.DefaultAssetPath + fileName;
+        }
+
     }
 }
