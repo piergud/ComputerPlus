@@ -8,6 +8,9 @@ using LSPD_First_Response.Mod.API;
 using ComputerPlus.Interfaces.ComputerPedDB;
 using ComputerPlus.Interfaces.ComputerVehDB;
 using ComputerPlus.Controllers.Models;
+using ComputerPlus.DB;
+using ComputerPlus.DB.Models;
+using ComputerPlus.DB.Tables;
 
 namespace ComputerPlus
 {
@@ -41,6 +44,8 @@ namespace ComputerPlus
             AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(AssemblyResolve);
             Configs.RunConfigCheck();
             Function.checkForRageVersionClass.checkForRageVersion(0.41f);
+            XmlConfigs.ReadChargeCategories();
+           
         }
 
         public override void Finally()
@@ -68,7 +73,26 @@ namespace ComputerPlus
             {
                 Game.FrameRender += Process;
                 Function.LogDebug("Successfully loaded LSPDFR Computer+.");
-
+                try {
+                    var storage = Storage.ReadOrInit();
+                    var plan = new SchemaVersion() { Plans = new List<string>() { "initial" } };
+                    var result = storage.Upgrade(plan);
+                    if (result == UpgradeStatus.COMPLETED)
+                    {
+                        var entry = SchemaVersion.Create("1.0.0");
+                        Function.Log("DutyStateChangedHandler table");
+                        var table = new SchemaTable(storage.Connection());
+                        Function.Log("DutyStateChangedHandler table after");
+                        table.Insert(entry);
+                    }
+                    else if (result == UpgradeStatus.MISSING_SCHEMAS)
+                    {
+                        Function.Log("Missing schema");
+                    }
+                } catch (Exception e)
+                {
+                    Function.Log(e.Message);
+                }
                 Function.MonitorAICalls();
                 fCheckIfCalloutActive = new GameFiber(CheckIfCalloutActive);
                 fCheckIfCalloutActive.Start();

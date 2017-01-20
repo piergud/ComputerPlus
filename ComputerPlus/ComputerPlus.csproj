@@ -67,6 +67,9 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>Dependencies\System.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
@@ -86,16 +89,25 @@
     <Compile Include="API\Functions.cs" />
     <Compile Include="API\ICalloutData.cs" />
     <Compile Include="API\MDTAPI.cs" />
+    <Compile Include="Controllers\ComputerReportsController.cs" />
     <Compile Include="Controllers\Models\ALRP_Arguments.cs" />
     <Compile Include="Controllers\Models\ComputerPlusEntity.cs" />
     <Compile Include="Controllers\Models\VehiclePersona.cs" />
+    <Compile Include="DB\Models\BaseModel.cs" />
+    <Compile Include="DB\Models\IDBModel.cs" />
+    <Compile Include="DB\Models\SchemaUpgrade.cs" />
+    <Compile Include="DB\Storage.cs" />
+    <Compile Include="DB\Tables\BaseTable.cs" />
+    <Compile Include="DB\Tables\SchemaTable.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="Extensions\Gwen\GwenForm.cs" />
     <Compile Include="Extensions\Gwen\ListBoxExtensions.cs" />
     <Compile Include="Extensions\Gwen\TextBoxExtensions.cs" />
     <Compile Include="Extensions\Rage\BlipExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Globals.cs" />
+    <Compile Include="Interfaces\Common\TabbableContainer.cs" />
     <Compile Include="Interfaces\ComputerCurrentCallDetails\ComputerHelpDialog.cs" />
     <Compile Include="Interfaces\ComputerCurrentCallDetails\ComputerCurrentCallDetails.cs" />
     <Compile Include="Interfaces\ComputerCurrentCallDetails\ComputerHelpDialogTemplate.cs">
@@ -170,6 +182,37 @@
     <Compile Include="Interfaces\ComputerVehDB\ComputerVehicleSearchTemplate.Designer.cs">
       <DependentUpon>ComputerVehicleSearchTemplate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\Reports\ArrestReport\ArrestAdditionalParties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interfaces\Reports\ArrestReport\ArrestAdditionalParties.Designer.cs">
+      <DependentUpon>ArrestAdditionalParties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interfaces\Reports\ArrestReport\ArrestReportChargeDetails.cs" />
+    <Compile Include="Interfaces\Reports\ArrestReport\ArrestReportChargeDetailsTemplate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interfaces\Reports\ArrestReport\ArrestReportChargeDetailsTemplate.Designer.cs">
+      <DependentUpon>ArrestReportChargeDetailsTemplate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interfaces\Reports\ArrestReport\ArrestReportContainer.cs" />
+    <Compile Include="Interfaces\Reports\ArrestReport\ArrestReportContainerTemplate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interfaces\Reports\ArrestReport\ArrestReportContainerTemplate.Designer.cs">
+      <DependentUpon>ArrestReportContainerTemplate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interfaces\Reports\ArrestReport\ArrestReportPedDetails.cs" />
+    <Compile Include="Interfaces\Reports\ArrestReport\ArrestReportPedDetailsTemplate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interfaces\Reports\ArrestReport\ArrestReportPedDetailsTemplate.Designer.cs">
+      <DependentUpon>ArrestReportPedDetailsTemplate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interfaces\Reports\Models\Charge.cs" />
+    <Compile Include="Interfaces\Reports\Models\ChargeCategories.cs" />
+    <Compile Include="Interfaces\Reports\Models\ChargeCategory.cs" />
+    <Compile Include="Interfaces\Reports\Models\ChargeQuestion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -177,6 +220,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="TrafficPolicerFunction.cs" />
+    <Compile Include="XmlConfigs.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Interfaces\ComputerCurrentCallDetails\ComputerHelpDialogTemplate.resx">
@@ -209,11 +253,24 @@
     <EmbeddedResource Include="Interfaces\ComputerVehDB\ComputerVehicleSearchTemplate.resx">
       <DependentUpon>ComputerVehicleSearchTemplate.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Interfaces\Reports\ArrestReport\ArrestAdditionalParties.resx">
+      <DependentUpon>ArrestAdditionalParties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interfaces\Reports\ArrestReport\ArrestReportChargeDetailsTemplate.resx">
+      <DependentUpon>ArrestReportChargeDetailsTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interfaces\Reports\ArrestReport\ArrestReportContainerTemplate.resx">
+      <DependentUpon>ArrestReportContainerTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interfaces\Reports\ArrestReport\ArrestReportPedDetailsTemplate.resx">
+      <DependentUpon>ArrestReportPedDetailsTemplate.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y "$(TargetDir)Gwen.dll" "$(TargetDir)Packaged\"

@@ -7,6 +7,7 @@ using LSPD_First_Response.Engine.Scripting.Entities;
 using LSPD_First_Response.Mod.API;
 using Rage.Forms;
 using ComputerPlus.Controllers.Models;
+using ComputerPlus.Extensions.Gwen;
 
 namespace ComputerPlus.Interfaces.ComputerPedDB
 {
@@ -18,38 +19,6 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             return ped.Metadata.HomeAddress;
         }
     }    
-
-    internal static class GwenExtension
-    {
-        internal static void Close(this GwenForm form)
-        {
-            if (form.Window.IsClosable)
-                form.Window.Close();
-        }
-        internal static bool IsOnTop(this GwenForm form)
-        {
-            try
-            {
-                return form.Window.IsOnTop;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        internal static bool IsOpen(this GwenForm form)
-        {
-            try
-            {
-                return form.Window.IsVisible;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-    }
 
     class ComputerPedController
     {

@@ -4,6 +4,7 @@ using Rage;
 using Rage.Forms;
 using Gwen.Control;
 using ComputerPlus.Interfaces.ComputerPedDB;
+using ComputerPlus.Extensions.Gwen;
 
 namespace ComputerPlus
 {
