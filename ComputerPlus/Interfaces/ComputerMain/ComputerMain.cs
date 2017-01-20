@@ -7,6 +7,7 @@ using Gwen.Control;
 using System;
 using ComputerPlus.Interfaces.ComputerPedDB;
 using ComputerPlus.Interfaces.ComputerVehDB;
+using ComputerPlus.Extensions.Gwen;
 
 namespace ComputerPlus
 {
@@ -172,8 +173,9 @@ namespace ComputerPlus
         {
             GwenForm backup = new ComputerRequestBackup();
             backup.Show();
-            while (backup.Window.IsVisible)
+            while (backup.Window.IsVisible && !Globals.CloseRequested)
                 GameFiber.Yield();
+            backup.Close();
         }
 
         internal static void OpenReportMenuForm()
@@ -188,8 +190,9 @@ namespace ComputerPlus
         {
             GwenForm active_calls = new ComputerCurrentCallDetails();
             active_calls.Show();
-            while (active_calls.Window.IsVisible)
+            while (active_calls.Window.IsVisible && !Globals.CloseRequested)
                 GameFiber.Yield();
+            active_calls.Close();
         }
 
         private void ControlExternalUISelectVisibility(bool visible)
@@ -217,7 +220,8 @@ namespace ComputerPlus
                 {
                     GameFiber.Yield();
                 }
-                while (form.IsOpen());
+                while (form.IsOpen() && !Globals.CloseRequested);
+                form.Close();
                 Function.LogDebug(String.Format("Close ComputerMain? {0}", form.IsOpen()));
                 Function.LogDebug("ComputerMain Hibernating");
                 GameFiber.Hibernate();

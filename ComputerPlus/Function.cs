@@ -238,16 +238,15 @@ namespace ComputerPlus
             Game.RawFrameRender -= OnRawFrameRender;
             _bg_enabled = false;
         }
-
         private static void OnRawFrameRender(object sender, GraphicsEventArgs e) 
         {
+            
             string time = DateTime.Now.ToString("HH:mm:ss");
             float length = Rage.Graphics.MeasureText(time, "Arial", 18).Width;
             taskbar.Size = new SizeF(Game.Resolution.Width, Game.Resolution.Height / 25);
             taskbar.Location = new PointF(1, 1 + Game.Resolution.Height - (Game.Resolution.Height / 25));
-
             e.Graphics.DrawTexture(_bg, 0f, 0f, Game.Resolution.Width, Game.Resolution.Height);
-            //e.Graphics.DrawRectangle(taskbar, taskbar_col);
+
             e.Graphics.DrawText(update_text, "Arial", 18,
                 new PointF(taskbar.X + (taskbar.Width / 150), taskbar.Y + (taskbar.Height / 4)), 
                 Color.White);

@@ -9,6 +9,7 @@ using LSPD_First_Response;
 using LSPD_First_Response.Engine.Scripting.Entities;
 using ComputerPlus.Controllers.Models;
 using ComputerPlus.Extensions.Gwen;
+using ComputerPlus.Extensions.Rage;
 
 namespace ComputerPlus.Interfaces.ComputerPedDB
 {

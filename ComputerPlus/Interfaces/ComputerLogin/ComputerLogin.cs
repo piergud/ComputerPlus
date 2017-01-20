@@ -4,6 +4,7 @@ using Rage;
 using Rage.Forms;
 using Gwen.Control;
 using ComputerPlus.Interfaces.ComputerPedDB;
+using ComputerPlus.Extensions.Gwen;
 
 namespace ComputerPlus
 {
@@ -67,7 +68,7 @@ namespace ComputerPlus
                 var form = new ComputerLogin();
                 Function.LogDebug("Init new ComputerLogin");
                 form.Show();
-                while (form.IsOpen())
+                while (form.IsOpen() && !Globals.CloseRequested)
                     GameFiber.Yield();
                 Function.LogDebug("Close ComputerLogin");
                 form.Close();

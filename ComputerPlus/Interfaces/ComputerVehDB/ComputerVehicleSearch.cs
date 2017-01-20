@@ -100,9 +100,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         private void PopulateAnprList()
         {
-            var list = ComputerVehicleController.ALPR_Detected
-                .ToList();
-            list
+            ComputerVehicleController.ALPR_Detected
             .GroupBy(x => x.Vehicle)
             .Select(x => x.Last())
             .Where(x => x.Vehicle != null && x.Vehicle.Exists())
