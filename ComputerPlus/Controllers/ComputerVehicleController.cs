@@ -13,6 +13,7 @@ using System.Timers;
 using ComputerPlus.Controllers.Models;
 using ComputerPlus.Extensions.Rage;
 using System.Threading.Tasks;
+using ComputerPlus.Extensions.Gwen;
 
 namespace ComputerPlus.Interfaces.ComputerVehDB
 {
@@ -22,12 +23,9 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         internal static readonly List<ALPR_Arguments> _ALPR_Detected = new List<ALPR_Arguments>(10);
         internal static List<ALPR_Arguments> ALPR_Detected 
         {
-            get {
-                lock (_ALPR_Detected)
-                {
-                    var data = _ALPR_Detected.ToList().Where(x => x.Vehicle != null && x.Vehicle.Exists()).ToList();
-                    return data;
-                }
+            get
+            {
+                return _ALPR_Detected.Where(x => x.Vehicle != null && x.Vehicle.Exists()).ToList();
             }
         }
         private static ComputerPlusEntity _LastSelected = null;
@@ -286,9 +284,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         }
 
         public static void AddAlprScan(ALPR_Arguments args)
-        {
-            lock(_ALPR_Detected)
-                _ALPR_Detected.Add(args);
+        {            
+          _ALPR_Detected.Add(args);
         }
 
         private static void  VanillaALPR()
@@ -377,7 +374,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 var form = new ComputerVehicleSearch();
                Function.LogDebug("Init new ComputerVehicleSearch");
                 form.Show();
-                while (form.IsOpen())
+                while (form.IsOpen() && !Globals.CloseRequested)
                     GameFiber.Yield();
                Function.LogDebug("Close ComputerVehicleSearch");
                 form.Close();
@@ -396,7 +393,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                     var form = new ComputerVehicleDetails(LastSelected);
                    Function.LogDebug("Init new ComputerVehicleDetails");
                     form.Show();
-                    while (form.IsOpen())
+                    while (form.IsOpen() && !Globals.CloseRequested)
                         GameFiber.Yield();
                    Function.LogDebug("Close ComputerVehicleDetails");
                     form.Close();

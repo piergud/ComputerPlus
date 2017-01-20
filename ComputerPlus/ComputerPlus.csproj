@@ -90,9 +90,12 @@
     <Compile Include="Controllers\Models\ComputerPlusEntity.cs" />
     <Compile Include="Controllers\Models\VehiclePersona.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="Extensions\Gwen\FormExtensions.cs" />
     <Compile Include="Extensions\Gwen\ListBoxExtensions.cs" />
     <Compile Include="Extensions\Gwen\TextBoxExtensions.cs" />
     <Compile Include="Extensions\Rage\BlipExtensions.cs" />
+    <Compile Include="Extensions\Rage\GameFiberExtensions.cs" />
+    <Compile Include="Extensions\Rage\PedExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Globals.cs" />

@@ -27,7 +27,7 @@ namespace ComputerPlus {
         private static void Events_ALPRResultDisplayed(Vehicle vehicle, ALPREventArgs args)
         {            
             EventHandler<ALPR_Arguments> handler = (EventHandler<ALPR_Arguments>)OnAlprPlusMessage;
-            if (handler != null)
+            if (handler != null && vehicle.Exists())
             {
                 ALPR_Position position = ALPR_Position.FRONT;
                 switch (args.Camera)
