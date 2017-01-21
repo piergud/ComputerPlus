@@ -17,17 +17,11 @@ using ComputerPlus.Extensions.Gwen;
 
 namespace ComputerPlus.Interfaces.ComputerVehDB
 {
+  
     internal static class ComputerVehicleController
     {
         private readonly static List<ComputerPlusEntity> RecentSearches = new List<ComputerPlusEntity>();
-        internal static readonly List<ALPR_Arguments> _ALPR_Detected = new List<ALPR_Arguments>(10);
-        internal static List<ALPR_Arguments> ALPR_Detected 
-        {
-            get
-            {
-                return _ALPR_Detected.Where(x => x.Vehicle != null && x.Vehicle.Exists()).ToList();
-            }
-        }
+        internal static readonly List<ALPR_Arguments> ALPR_Detected = new List<ALPR_Arguments>(10);
         private static ComputerPlusEntity _LastSelected = null;
         public static ComputerPlusEntity LastSelected
         {
@@ -90,7 +84,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         static ComputerVehicleController()
         {
-         //   timer.Elapsed += BlipCleanup;
         }        
 
         static DateTime RandomDay()
@@ -123,14 +116,24 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             }
             
             var ownerName = Functions.GetVehicleOwnerName(vehicle);
-            var driver = vehicle.HasDriver ? vehicle.Driver : null;           
+
+            var driver = vehicle.HasDriver ? vehicle.Driver : null;
             ComputerPlusEntity owner = ComputerPedController.Instance.LookupPersona(ownerName);
-            if (owner == null)
+            if (owner == null && driver != null)
             {
-                Function.Log(String.Format("LookupVehicle owner was null.. driver may no longer exist", ownerName));
-                return null; //Driver no longer exists
+                owner = ComputerPedController.Instance.LookupPersona(driver);
+            } else
+            {
+                while (owner == null)
+                {
+                    //Last ditch effort to make C+ happy by just providing any ped as the owner and setting them as the owner
+                    Function.Log(String.Format("LookupVehicle owner was null.. driver may no longer exist", ownerName));
+                    var ped = FindRandomPed();
+                    owner = new ComputerPlusEntity(ped, Functions.GetPersonaForPed(ped));
+                }
             }
-            else if(!owner.Validate())
+
+            if (!owner.Validate())
             {
                 Function.Log(String.Format("LookupVehicle owner was null, performing fixup on {0}", ownerName));
 
@@ -142,16 +145,10 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 Functions.SetVehicleOwnerName(vehicle, String.Format("{0} {1}", parts[0], parts[1]));
                 //Work some magic to fix the fact that the ped hasn't been spawned in game
                 //@TODO parse ped model name for age group and randomize other props
-                var rnd = new Random(DateTime.Now.Millisecond);
-                
-                var peds = World.GetAllPeds();
-                Ped ped = null;
-                while (ped == null || !ped.Exists())
-                {
-                    Function.Log("Selecting a new random ped for fixup");
-                    int position = rnd.Next(0, peds.Count() - 1);
-                    ped = peds.ElementAt(position);
-                }
+
+                var ped = FindRandomPed();
+
+
                 Function.Log("Found a new ped for fixup");
                 var persona = new Persona(
                     ped,
@@ -172,7 +169,20 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
            
           
             return new ComputerPlusEntity(owner.Ped, owner.PedPersona, vehicle, vehiclePersona);
-        }        
+        } 
+        
+        private static Ped FindRandomPed()
+        {
+            var rnd = new Random(DateTime.Now.Millisecond);
+            var peds = World.EnumeratePeds().Take(50).ToArray();
+            Ped ped = null;
+            while (!ped.Exists())
+            {
+                int position = rnd.Next(0, peds.Count() - 1);
+                ped = peds.ElementAt(position);
+            }
+            return ped;
+        }       
 
         internal static void Cleanup()
         {
@@ -244,7 +254,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         public static void AddAlprScan(ALPR_Arguments args)
         {            
-          _ALPR_Detected.Add(args);
+          ALPR_Detected.Add(args);
         }
 
         private static void  VanillaALPR()
