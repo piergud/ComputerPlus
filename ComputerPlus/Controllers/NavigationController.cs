@@ -26,20 +26,6 @@ namespace ComputerPlus.Controllers
         internal event FormChangeEventArgs OnFormRemoved;
 
         Stack<NavigationEntry> Stack = new Stack<NavigationEntry>();
-        //Stack<NavigationEntry> Stack
-        //{
-        //    get
-        //    {
-        //        //@TODO GWEN Forms have no closed event exposed... maybe there is a better solution.. right now we'll let gwen forms delete themselves on close
-        //        var entries = mStack.Where(x => x.form != null && x.form.IsOpen());
-        //        if (entries.Intersect(mStack).Count() > 1)
-        //        {
-        //            Function.Log("entries.Interset");
-        //            mStack = new Stack<NavigationEntry>(entries);
-        //        }
-        //        return mStack;
-        //    }
-        //}
 
         internal int Size
         {
@@ -90,9 +76,7 @@ namespace ComputerPlus.Controllers
             {
                 if (Stack.Contains(entry))
                 {
-                    Function.Log("RemoveEntry Stack.Contains... before " + Stack.Count.ToString());
                     Stack = new Stack<NavigationEntry>(Stack.Where(x => !x.Equals(entry)));
-                    Function.Log("RemoveEntry Stack.Contains... after " + Stack.Count.ToString());
                     return true;
                 }                
             }
@@ -106,11 +90,11 @@ namespace ComputerPlus.Controllers
         internal bool Pop()
         {
             try {
-                NavigationEntry entry = Stack.Pop();
-                if (OnFormRemoved != null)
-                    OnFormRemoved(this, entry);
-
-                return true;
+                //NavigationEntry entry = Stack.Pop();
+                //if (OnFormRemoved != null)
+                //    OnFormRemoved(this, entry);
+                //return true;
+                return false;
 
             } catch
             {

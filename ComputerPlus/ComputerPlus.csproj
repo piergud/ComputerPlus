@@ -53,6 +53,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Dependencies\ALPRPlus.dll</HintPath>
     </Reference>
+    <Reference Include="British Policing Script">
+      <HintPath>Dependencies\British Policing Script.dll</HintPath>
+    </Reference>
     <Reference Include="Gwen, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Dependencies\Gwen.dll</HintPath>
@@ -231,8 +234,8 @@ xcopy /Y "$(ProjectDir)Resources\*.png" "$(TargetDir)Packaged\Plugins\LSPDFR\Com
 xcopy /Y "$(ProjectDir)Resources\backgrounds\*.jpg" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\backgrounds\"
 xcopy /Y "$(ProjectDir)Resources\ComputerPlus.ini" "$(TargetDir)Packaged\Plugins\LSPDFR\"
 
-xcopy /Y "$(TargetDir)ComputerPlus.dll" "F:\Rockstar Games\Plugins\LSPDFR"
-xcopy /Y "$(TargetDir)ComputerPlus.pdb" "F:\Rockstar Games\Plugins\LSPDFR"</PostBuildEvent>
+REM xcopy /Y "$(TargetDir)ComputerPlus.dll" "F:\Rockstar Games\Plugins\LSPDFR"
+REM xcopy /Y "$(TargetDir)ComputerPlus.pdb" "F:\Rockstar Games\Plugins\LSPDFR"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
