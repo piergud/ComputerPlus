@@ -81,10 +81,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         private void ShowDetailsView()
         {
-            if (ComputerVehicleController.LastSelected == null) return;
-            var fiber = ComputerVehicleController.VehicleDetailsGameFiber;
-            if (fiber.IsHibernating) fiber.Wake();
-            else if (!fiber.IsAlive) fiber.Start();
+            ComputerVehicleController.ShowVehicleDetails();
         }
 
         private void onListItemSelected(Base sender, ItemSelectedEventArgs arguments)
@@ -101,15 +98,16 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         private void PopulateAnprList()
         {
             ComputerVehicleController.ALPR_Detected
-            .GroupBy(x => x.Vehicle)
-            .Select(x => x.Last())
-            .Where(x => x.Vehicle != null && x.Vehicle.Exists())
+            //.GroupBy(x => x.Vehicle)
+            //.Select(x => x.Last())
+            .Where(x => x.Vehicle.Exists())
             .Select(x =>
             {
                 var data = ComputerVehicleController.LookupVehicle(x.Vehicle);
                 
                 if (data == null)
                 {
+                    Function.Log("ALPR integration issue.. data missing from LookupVehicle");
                     return null;
                 }
                 VehiclePersona vehiclePersona = data.VehiclePersona;
@@ -121,10 +119,10 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 
                 return data;
             })
-            .Where(x => x != null && x.Validate())
+            //.Where(x => x != null && x.Validate())
             .ToList()
             .ForEach(x =>
-            {
+            {                
                 list_collected_tags.AddVehicle(x);
             });
             
