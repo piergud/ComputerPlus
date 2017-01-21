@@ -15,7 +15,6 @@ namespace ComputerPlus
         private TextBoxPassword pass;
         private Label label_invalid;
         private ImagePanel panel_invalid_user, panel_invalid_pass;
-        internal static GameFiber ComputerLoginGameFiber = new GameFiber(ShowLogin);
 
         public ComputerLogin() : base(typeof(ComputerLoginTemplate))
         {
@@ -61,20 +60,5 @@ namespace ComputerPlus
             }
         }
 
-        internal static void ShowLogin()
-        {
-            while (true)
-            {
-                var form = new ComputerLogin();
-                Function.LogDebug("Init new ComputerLogin");
-                form.Show();
-                while (form.IsOpen() && !Globals.CloseRequested)
-                    GameFiber.Yield();
-                Function.LogDebug("Close ComputerLogin");
-                form.Close();
-                Function.LogDebug("ComputerLogin Hibernating");
-                GameFiber.Hibernate();
-            }
-        }
     }
 }
