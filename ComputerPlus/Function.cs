@@ -240,7 +240,7 @@ namespace ComputerPlus
         }
         private static void OnRawFrameRender(object sender, GraphicsEventArgs e) 
         {
-            
+            if (!_bg_enabled) return;
             string time = DateTime.Now.ToString("HH:mm:ss");
             float length = Rage.Graphics.MeasureText(time, "Arial", 18).Width;
             taskbar.Size = new SizeF(Game.Resolution.Width, Game.Resolution.Height / 25);

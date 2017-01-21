@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using ComputerPlus.Controllers;
 namespace ComputerPlus
 {
     internal sealed class Globals
@@ -23,6 +23,7 @@ namespace ComputerPlus
         internal static bool PauseGameWhenOpen = true;
         internal static bool ShowBackgroundWhenOpen = true;
         internal static bool CloseRequested = false;
+        internal static NavigationController Navigation = new NavigationController();
 
         /// <summary>
         /// Returns the active callout from the queue.

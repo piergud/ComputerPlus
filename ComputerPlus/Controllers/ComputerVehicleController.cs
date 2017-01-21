@@ -91,54 +91,13 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         static ComputerVehicleController()
         {
          //   timer.Elapsed += BlipCleanup;
-        }
-
-        private static void BlipCleanup(object sender, ElapsedEventArgs e)
-        {
-            try
-            {
-                LHandle handle = null;
-                Ped suspect = null;
-                if (_Blips.Count == 0) return;
-                handle = Functions.GetCurrentPullover();
-                if (handle != null)
-                    suspect = Functions.GetPulloverSuspect(handle);
-                lock (_Blips)
-                {
-                    var data = _Blips.ToList();
-                    _Blips.Clear();
-                    data.Where(x => (x.Key != null && x.Key.Exists()) && (x.Value != null && x.Value.Exists()))
-                    .ToList()
-                    .ForEach(x =>
-                    {
-
-                        if (suspect != null && suspect.Exists())
-                        {
-
-                            if (suspect.LastVehicle != null && suspect.LastVehicle == x.Value && x.Key != null && x.Key.Exists())
-                            {
-                                x.Key.Delete();
-                            }
-                            else
-                            {
-                                _Blips.Add(x.Key, x.Value);
-                            }
-                        }
-                        else
-                            _Blips.Add(x.Key, x.Value);
-                    });
-                }
-            }
-            catch { }
-        }
-
-        
+        }        
 
         static DateTime RandomDay()
         {
             Random gen = new Random();
             DateTime start = new DateTime(1985, 1, 1);
-            int range = (DateTime.Today - start).Days;
+            int range = (DateTime.Today.AddYears(-16) - start).Days;
             return start.AddDays(gen.Next(range));
         }
 
@@ -367,75 +326,17 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             }
         }
         
-        private static void ShowVehicleSearch()
+        internal static void ShowVehicleSearch()
         {
-            while (true)
-            {
-                var form = new ComputerVehicleSearch();
-               Function.LogDebug("Init new ComputerVehicleSearch");
-                form.Show();
-                while (form.IsOpen() && !Globals.CloseRequested)
-                    GameFiber.Yield();
-               Function.LogDebug("Close ComputerVehicleSearch");
-                form.Close();
-               Function.LogDebug("ShowVehicleSearch Hibernating");
-                GameFiber.Hibernate();
-            }
+            Globals.Navigation.Push(new ComputerVehicleSearch());
         }
 
-        private static void ShowVehicleDetails()
+        internal static void ShowVehicleDetails()
         {
-            
-            while (true)
+            if (LastSelected != null && LastSelected.Validate())
             {
-                if (LastSelected != null && LastSelected.Validate())
-                {
-                    var form = new ComputerVehicleDetails(LastSelected);
-                   Function.LogDebug("Init new ComputerVehicleDetails");
-                    form.Show();
-                    while (form.IsOpen() && !Globals.CloseRequested)
-                        GameFiber.Yield();
-                   Function.LogDebug("Close ComputerVehicleDetails");
-                    form.Close();
-                }
-               Function.LogDebug("ShowVehicleDetails Hibernating");
-                GameFiber.Hibernate();
+                Globals.Navigation.Push(new ComputerVehicleDetails(LastSelected));
             }
-        }
-    }
-
-    public static class EqualityComparerFactory<T>
-    {
-        private class MyComparer : IEqualityComparer<T>
-        {
-            private readonly Func<T, int> _getHashCodeFunc;
-            private readonly Func<T, T, bool> _equalsFunc;
-
-            public MyComparer(Func<T, int> getHashCodeFunc, Func<T, T, bool> equalsFunc)
-            {
-                _getHashCodeFunc = getHashCodeFunc;
-                _equalsFunc = equalsFunc;
-            }
-
-            public bool Equals(T x, T y)
-            {
-                return _equalsFunc(x, y);
-            }
-
-            public int GetHashCode(T obj)
-            {
-                return _getHashCodeFunc(obj);
-            }
-        }
-
-        public static IEqualityComparer<T> CreateComparer(Func<T, int> getHashCodeFunc, Func<T, T, bool> equalsFunc)
-        {
-            if (getHashCodeFunc == null)
-                throw new ArgumentNullException("getHashCodeFunc");
-            if (equalsFunc == null)
-                throw new ArgumentNullException("equalsFunc");
-
-            return new MyComparer(getHashCodeFunc, equalsFunc);
         }
     }
 }
