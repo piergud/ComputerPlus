@@ -68,7 +68,7 @@ namespace ComputerPlus.Controllers
 
         internal bool IsEmpty
         {
-            get { return Stack.Any(); }
+            get { return Size > 0; }
         }
 
         internal bool HasOpenForms
@@ -105,18 +105,25 @@ namespace ComputerPlus.Controllers
 
         internal bool Pop()
         {
-            if (IsEmpty) return false;
-            NavigationEntry entry;
-            do
-            {
-                entry = Stack.Pop();
-            }
-            while (!IsEmpty && (entry.form != null && !entry.form.IsOpen())); //Forms can close 
-                   
-            if (OnFormRemoved != null)
-                OnFormRemoved(this, entry);
+            try {
+                NavigationEntry entry = Stack.Pop();
+                if (OnFormRemoved != null)
+                    OnFormRemoved(this, entry);
 
-            return true;
+                return true;
+
+            } catch
+            {
+                return false;
+            }
+            //do
+            //{
+            //    entry = Stack.Pop();
+            //}
+            //while (!IsEmpty && (entry.form != null && !entry.form.IsOpen())); //Forms can close 
+
+                   
+           
         }
 
         //internal void PopToRoot()
