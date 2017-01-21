@@ -5,6 +5,7 @@ using System.Reflection;
 using Rage;
 using Rage.Forms;
 using LSPD_First_Response.Mod.API;
+using ComputerPlus.Interfaces;
 using ComputerPlus.Interfaces.ComputerPedDB;
 using ComputerPlus.Interfaces.ComputerVehDB;
 using ComputerPlus.Controllers.Models;
@@ -12,6 +13,7 @@ using ComputerPlus.Controllers;
 using ComputerPlus.Extensions.Rage;
 using System.Linq;
 using ComputerPlus.Extensions.Gwen;
+using System.Windows.Forms;
 
 namespace ComputerPlus
 {
@@ -30,20 +32,37 @@ namespace ComputerPlus
 
         private static bool IsOpen = false;
         internal static List<string> recent_text = new List<string>();
-        internal static GameFiber fCheckIfCalloutActive = new GameFiber(CheckIfCalloutActive);
-        private static GameFiber RunComputerPlusFiber = new GameFiber(RunPoliceComputer);
+        internal GameFiber fCheckIfCalloutActive = new GameFiber(CheckIfCalloutActive);
+        private GameFiber DetectOpenCloseRequestedFiber;
+        private GameFiber RunComputerPlusFiber;
+
+        //private static KeyBinder CloseComputerPlusController = new KeyBinder(ControllerButtons.X, false);
+        //private static KeyBinder CloseComputerPlusKeyboard = new KeyBinder(Keys.Escape, false);
+
+        private static KeyBinder OpenCloseComputerPlusBinder = new KeyBinder(GameControl.Context, true);
+
         //private static GameFiber KeyPressFiber = new GameFiber(Process);
         //Try to just run Process without being in a fiber
 
+        KeyBinderMonitor BinderMonitor;
+
+
+        internal EntryPoint()
+        {
+            DetectOpenCloseRequestedFiber = new GameFiber(CheckToggleComputer);
+            RunComputerPlusFiber = new GameFiber(RunPoliceComputer);
+        }
+
         public override void Initialize()
         {
-            LSPD_First_Response.Mod.API.Functions.OnOnDutyStateChanged += DutyStateChangedHandler;
+            Functions.OnOnDutyStateChanged += DutyStateChangedHandler;
             OnVehicleStopped += VehicleStoppedHandler;
             Globals.Navigation.OnFormAdded += NavOnFormAdded;
             Globals.Navigation.OnFormRemoved += NavOnFormRemoved;
             AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(AssemblyResolve);
             Configs.RunConfigCheck();
             Function.checkForRageVersionClass.checkForRageVersion(0.41f);
+   
         }
 
         public override void Finally()
@@ -52,18 +71,18 @@ namespace ComputerPlus
             Globals.Navigation.OnFormRemoved -= NavOnFormRemoved;
             if (RunComputerPlusFiber.IsRunning()) RunComputerPlusFiber.Abort();
             if (fCheckIfCalloutActive.IsRunning()) fCheckIfCalloutActive.Abort();
-            if (KeyPressFiber.IsRunning()) KeyPressFiber.Abort();
+            //if (KeyPressFiber.IsRunning()) KeyPressFiber.Abort();
         }
 
-        private static void DutyStateChangedHandler(bool on_duty)
+
+        private void DutyStateChangedHandler(bool on_duty)
         {
             Globals.IsPlayerOnDuty = on_duty;
 
             if (on_duty)
             {
-                if (KeyPressFiber.IsHibernating) KeyPressFiber.Wake();
-                else KeyPressFiber.Start();
 
+               // BinderMonitor = KeyBinderMonitor.CreateNew(OpenCloseComputerPlusBinder, () => OpenClosePressed = true, null);
                 if (fCheckIfCalloutActive.IsHibernating) fCheckIfCalloutActive.Wake();
                 else fCheckIfCalloutActive.Start();
                 Function.MonitorAICalls();
@@ -120,67 +139,21 @@ namespace ComputerPlus
             return null;
         }
 
-        private static void CheckForOpenTrigger()
+
+        private bool CheckOpenCloseDebouncedTrigger()
         {
-            Vehicle curr_veh = Game.LocalPlayer.Character.Exists() ? Game.LocalPlayer.Character.LastVehicle : null;
-            if (curr_veh && curr_veh.Driver == Game.LocalPlayer.Character)
+            if (OpenCloseComputerPlusBinder.IsPressed)
             {
-                if (curr_veh.Speed <= 1)
-                {
-
-                    OnVehicleStopped(null, curr_veh);
-
-                    if (Game.IsControlPressed(0, GameControl.Context) && Function.IsPoliceVehicle(curr_veh))
-                    {
-                        if (!sw.IsRunning)
-                        {
-                            sw.Start();
-                        }
-                        else if (sw.ElapsedMilliseconds > 250)
-                        {
-                            Function.Log("Show PC");
-                            sw.Stop();
-                            sw.Reset();
-                            ShowPoliceComputer();
-                        }
-                    }
-                    else
-                    {
-                        if (sw.IsRunning)
-                        {
-                            sw.Stop();
-                            sw.Reset();
-                        }
-                    }
-                }
-            }
-        }
-
-
-        private static void CheckForCloseTrigger()
-        {
-            var t1 = Game.IsKeyDown(System.Windows.Forms.Keys.Escape);
-            var t2 = Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Escape);
-            var t3 = Game.IsControllerButtonDown(ControllerButtons.X);
-            var t4 = Game.IsControllerButtonDownRightNow(ControllerButtons.X);
-            if (t2 || t4)
-            {
-                Function.Log("Keys CheckForCloseTrigger");
                 if (!sw.IsRunning)
                 {
-                    Function.Log("Starting Close StopWatch Requested");
                     sw.Start();
                 }
                 else if (sw.ElapsedMilliseconds > 250)
                 {
-                    Function.Log("Close Requested");
+                    Function.Log("Show PC");
                     sw.Stop();
                     sw.Reset();
-                    ClosePoliceComputer();
-                }
-                else
-                {
-                    Function.Log("Close Requested timer " + sw.ElapsedMilliseconds);
+                    return true;
                 }
             }
             else
@@ -189,18 +162,33 @@ namespace ComputerPlus
                 {
                     sw.Stop();
                     sw.Reset();
-                    Function.Log("Resetting SW");
-                }
-                else
-                {
-                    Function.Log(String.Format("No keys pressed: {0} {1} {2} {3}", t1, t2, t3, t4));
                 }
             }
+            return false;
+        }
 
+        private void CheckForOpenTrigger()
+        {
+
+            if (!IsOpen && CheckOpenCloseDebouncedTrigger())
+            {
+                Vehicle curr_veh = Game.LocalPlayer.Character.Exists() ? Game.LocalPlayer.Character.LastVehicle : null;
+                if (curr_veh && curr_veh.Driver == Game.LocalPlayer.Character && curr_veh.Speed <= 1 && Function.IsPoliceVehicle(curr_veh))
+                {
+                    OnVehicleStopped(null, curr_veh);
+                    ShowPoliceComputer();
+                }
+            }
+        }
+
+        private void CheckForCloseTrigger()
+        {
+            if (IsOpen)
+            CheckOpenCloseDebouncedTrigger();
         }
 
 
-        private static void Process()
+        private void CheckToggleComputer()
         {
             do
             {
@@ -223,6 +211,7 @@ namespace ComputerPlus
                 GameFiber.Yield();
             }
             while (Globals.IsPlayerOnDuty);
+            GameFiber.Hibernate();
         }
 
 
@@ -238,7 +227,7 @@ namespace ComputerPlus
             Globals.Navigation.Push(new ComputerLogin());
         }
 
-        private static void ShowPoliceComputer()
+        private void ShowPoliceComputer()
         {
             Globals.CloseRequested = false;
             if (RunComputerPlusFiber.IsHibernating) RunComputerPlusFiber.Wake();
@@ -318,7 +307,7 @@ namespace ComputerPlus
                 Function.Log(e.ToString());
             }
         }
-
+        
         private static void NavOnFormAdded(object sender, NavigationController.NavigationEntry entry)
         {
             try
