@@ -30,18 +30,22 @@ namespace ComputerPlus.Interfaces
                     Key != Keys.None ? KeyBinderInput.Keyboard : KeyBinderInput.Controller;
             }
         }
+        internal bool WasTriggeredOnce;
         internal bool IsPressed
         {
             get
             {
+                bool result;
                 if (Input == KeyBinderInput.Game)
-                    return UseRageKeyPressBuffers ? Game.IsControlPressed(0, GameControlArg) : Game.IsControlJustPressed(0, GameControlArg);
-                else if (Input == KeyBinderInput.Controller && !Game.IsControllerConnected)
-                    return false;
+                    result = UseRageKeyPressBuffers ? Game.IsControlPressed(0, GameControlArg) : Game.IsControlJustPressed(0, GameControlArg);
+                //else if (Input == KeyBinderInput.Controller && !Game.IsControllerConnected)
+                //    result = false;
                 else if (UseRageKeyPressBuffers)
-                    return Input == KeyBinderInput.Keyboard ? Game.IsKeyDown(Key) : Game.IsControllerButtonDown(ControllerButton);
+                    result = Input == KeyBinderInput.Keyboard ? Game.IsKeyDown(Key) : Game.IsControllerButtonDown(ControllerButton);
                 else
-                    return Input == KeyBinderInput.Keyboard ? Game.IsKeyDownRightNow(Key) : Game.IsControllerButtonDownRightNow(ControllerButton);
+                    result = Input == KeyBinderInput.Keyboard ? Game.IsKeyDownRightNow(Key) : Game.IsControllerButtonDownRightNow(ControllerButton);
+                if (!WasTriggeredOnce && result) WasTriggeredOnce = true;
+                return result;
             }
         }
         private KeyBinder(bool useRageKeyPressBuffers = true, GameControl gameControl = GameControl.InteractionMenu)

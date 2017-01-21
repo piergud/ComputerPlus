@@ -23,6 +23,7 @@ namespace ComputerPlus
         internal static bool PauseGameWhenOpen = true;
         internal static bool ShowBackgroundWhenOpen = true;
         internal static bool CloseRequested = false;
+        internal static bool OpenRequested = false;
         internal static NavigationController Navigation = new NavigationController();
 
         /// <summary>
