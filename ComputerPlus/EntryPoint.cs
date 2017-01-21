@@ -30,39 +30,36 @@ namespace ComputerPlus
             private set;
         } = false;
 
-        private static bool IsOpen = false;
         internal static List<string> recent_text = new List<string>();
-        internal GameFiber fCheckIfCalloutActive = new GameFiber(CheckIfCalloutActive);
+        internal GameFiber CheckIfCalloutActiveFiber;
         private GameFiber DetectOpenCloseRequestedFiber;
         private GameFiber RunComputerPlusFiber;
 
-        //private static KeyBinder CloseComputerPlusController = new KeyBinder(ControllerButtons.X, false);
-        //private static KeyBinder CloseComputerPlusKeyboard = new KeyBinder(Keys.Escape, false);
 
-        private static KeyBinder OpenCloseComputerPlusBinder = new KeyBinder(GameControl.Context, true);
+        private static KeyBinder CloseComputerPlusWindow;
 
-        //private static GameFiber KeyPressFiber = new GameFiber(Process);
-        //Try to just run Process without being in a fiber
+        private static KeyBinder OpenCloseComputerPlusBinder;
 
-        KeyBinderMonitor BinderMonitor;
-
-
-        internal EntryPoint()
-        {
-            DetectOpenCloseRequestedFiber = new GameFiber(CheckToggleComputer);
-            RunComputerPlusFiber = new GameFiber(RunPoliceComputer);
-        }
 
         public override void Initialize()
         {
+            Function.Log("Computer+ is loading");
+            DetectOpenCloseRequestedFiber = new GameFiber(CheckToggleComputer);
+            RunComputerPlusFiber = new GameFiber(RunPoliceComputer);
+            CheckIfCalloutActiveFiber = new GameFiber(CheckIfCalloutActive);
             Functions.OnOnDutyStateChanged += DutyStateChangedHandler;
             OnVehicleStopped += VehicleStoppedHandler;
             Globals.Navigation.OnFormAdded += NavOnFormAdded;
             Globals.Navigation.OnFormRemoved += NavOnFormRemoved;
             AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(AssemblyResolve);
             Configs.RunConfigCheck();
+            if (Game.IsControllerConnected)
+                CloseComputerPlusWindow = new KeyBinder(ControllerButtons.X);
+            else
+                CloseComputerPlusWindow = new KeyBinder(Keys.Escape);
+            OpenCloseComputerPlusBinder = new KeyBinder(GameControl.Context);
             Function.checkForRageVersionClass.checkForRageVersion(0.41f);
-   
+
         }
 
         public override void Finally()
@@ -70,8 +67,7 @@ namespace ComputerPlus
             Globals.Navigation.OnFormAdded -= NavOnFormAdded;
             Globals.Navigation.OnFormRemoved -= NavOnFormRemoved;
             if (RunComputerPlusFiber.IsRunning()) RunComputerPlusFiber.Abort();
-            if (fCheckIfCalloutActive.IsRunning()) fCheckIfCalloutActive.Abort();
-            //if (KeyPressFiber.IsRunning()) KeyPressFiber.Abort();
+            if (CheckIfCalloutActiveFiber.IsRunning()) CheckIfCalloutActiveFiber.Abort();
         }
 
 
@@ -82,12 +78,12 @@ namespace ComputerPlus
             if (on_duty)
             {
 
-               // BinderMonitor = KeyBinderMonitor.CreateNew(OpenCloseComputerPlusBinder, () => OpenClosePressed = true, null);
-                if (fCheckIfCalloutActive.IsHibernating) fCheckIfCalloutActive.Wake();
-                else fCheckIfCalloutActive.Start();
+                if (CheckIfCalloutActiveFiber.IsHibernating) CheckIfCalloutActiveFiber.Wake();
+                else CheckIfCalloutActiveFiber.Start();
                 Function.MonitorAICalls();
                 Function.CheckForUpdates();
 
+                DetectOpenCloseRequestedFiber.Resume();
                 Function.LogDebug("Successfully loaded LSPDFR Computer+.");
 
                 if (Function.IsAlprPlusRunning())
@@ -108,6 +104,7 @@ namespace ComputerPlus
                 }
             }
         }
+
 
         private static void ALPRPlusFunctions_OnAlprPlusMessage(object sender, ALPR_Arguments e)
         {
@@ -140,9 +137,9 @@ namespace ComputerPlus
         }
 
 
-        private bool CheckOpenCloseDebouncedTrigger()
+        private bool CheckOpenCloseDebouncedTrigger(KeyBinder binder)
         {
-            if (OpenCloseComputerPlusBinder.IsPressed)
+            if (binder.IsPressed)
             {
                 if (!sw.IsRunning)
                 {
@@ -150,7 +147,6 @@ namespace ComputerPlus
                 }
                 else if (sw.ElapsedMilliseconds > 250)
                 {
-                    Function.Log("Show PC");
                     sw.Stop();
                     sw.Reset();
                     return true;
@@ -167,10 +163,12 @@ namespace ComputerPlus
             return false;
         }
 
+        private DateTime ToggleCooldown = DateTime.Now;
+
         private void CheckForOpenTrigger()
         {
-
-            if (!IsOpen && CheckOpenCloseDebouncedTrigger())
+            
+            if (CheckOpenCloseDebouncedTrigger(OpenCloseComputerPlusBinder))
             {
                 Vehicle curr_veh = Game.LocalPlayer.Character.Exists() ? Game.LocalPlayer.Character.LastVehicle : null;
                 if (curr_veh && curr_veh.Driver == Game.LocalPlayer.Character && curr_veh.Speed <= 1 && Function.IsPoliceVehicle(curr_veh))
@@ -183,8 +181,11 @@ namespace ComputerPlus
 
         private void CheckForCloseTrigger()
         {
-            if (IsOpen)
-            CheckOpenCloseDebouncedTrigger();
+            if(!Globals.CloseRequested && CloseComputerPlusWindow.IsPressed)
+            {
+                //if (!Globals.Navigation.Pop()) //@TODO one day we'll try this again.. for now we'll just let it close
+                ClosePoliceComputer();
+            }
         }
 
 
@@ -192,21 +193,13 @@ namespace ComputerPlus
         {
             do
             {
-                
-                if (!Globals.CloseRequested)
+                if (!Globals.CloseRequested && Globals.OpenRequested)
                 {
-                    if (!IsOpen)
-                    {
-                        CheckForOpenTrigger();
-                    }
-                    else
-                    {
-                        CheckForCloseTrigger();
-                    }
-                }
+                    CheckForCloseTrigger();
+                }                                
                 else
                 {
-                    Function.Log("Process doing nothing CloseRequested");
+                    CheckForOpenTrigger();
                 }
                 GameFiber.Yield();
             }
@@ -229,24 +222,27 @@ namespace ComputerPlus
 
         private void ShowPoliceComputer()
         {
+            Function.Log("ShowPoliceComputer");
             Globals.CloseRequested = false;
+            Globals.OpenRequested = true;
             if (RunComputerPlusFiber.IsHibernating) RunComputerPlusFiber.Wake();
             else if (!RunComputerPlusFiber.IsAlive) RunComputerPlusFiber.Start();
         }
-        private static void ClosePoliceComputer()
+        private void ClosePoliceComputer()
         {
+            Function.Log("ClosePoliceComputer");
             Globals.CloseRequested = true;
+            Globals.OpenRequested = false;
         }
 
-        private static void RunPoliceComputer()
+        private void RunPoliceComputer()
         {
             do
-            {                
-                IsOpen = true;
-                PauseGame(Globals.PauseGameWhenOpen);
+            {
+                
                 ShowBackground(Globals.ShowBackgroundWhenOpen);
-
-
+                GameFiber.Yield();
+                PauseGame(Globals.PauseGameWhenOpen);
                 if (!Configs.SkipLogin)
                 {
                     OpenLogin();
@@ -258,73 +254,54 @@ namespace ComputerPlus
 
 
                 do
-                {
+                {                    
                     GameFiber.Yield();
                 }
-                while (!Globals.CloseRequested && Globals.Navigation.Head != null);
-                Function.Log("------BREAKING OUT-------");
-                if (Globals.CloseRequested)
-                {
-                    Globals.CloseRequested = false;
-                    Function.Log("Close requested");
-                    Globals.Navigation.Clear();
-                }
-                IsOpen = false;                
+                while (Globals.Navigation.Head != null);
+                ClosePoliceComputer();
+                Globals.Navigation.Clear();
                 PauseGame(false, true);
                 ShowBackground(false, true);
                 GameFiber.Yield(); //Yield to allow form fibers to close out
                 GameFiber.Hibernate();
 
             }
-            while (true);
+            while (Globals.IsPlayerOnDuty);
+            GameFiber.Hibernate();
         }
 
-        private static void NavOnFormRemoved(object sender, NavigationController.NavigationEntry entry)
+
+        private void NavOnFormAdded(object sender, NavigationController.NavigationEntry entry)
         {
             try
             {
-                Function.Log("Removing form");
                 GameFiber.StartNew(() =>
                 {
-                    entry.form.Window.Close();
-                    var nav = sender as NavigationController;
-                    if (nav is NavigationController)
-                    {
-                        if (nav.HasOpenForms)
-                        {
-                            Function.Log("Nav has OpenForms");
-                        } else
-                        {
-                          
-                        }
-                    }
-                    
-                });
-                Function.Log("Removed form");
-            }
-            catch (Exception e)
-            {
-                Function.Log(e.ToString());
-            }
-        }
-        
-        private static void NavOnFormAdded(object sender, NavigationController.NavigationEntry entry)
-        {
-            try
-            {
-
-                GameFiber.StartNew(() =>
-                {
-                    Function.Log("Showing form");
                     entry.form.Show();
                     do
                     {
                         GameFiber.Yield();
                     }
                     while (!Globals.CloseRequested && entry.form.IsOpen());
-                    Function.Log("Removing stack form");
+
                     Globals.Navigation.RemoveEntry(entry);
                     NavOnFormRemoved(sender, entry);
+                });
+            }
+            catch (Exception e)
+            {
+                Function.Log(e.ToString());
+            }
+        }
+
+        private void NavOnFormRemoved(object sender, NavigationController.NavigationEntry entry)
+        {
+            try
+            {
+                if (entry.form.Window == null || !entry.form.IsOpen()) return;
+                GameFiber.StartNew(() =>
+                {
+                    entry.form.Window.Close();
                 });
             }
             catch (Exception e)
@@ -359,7 +336,7 @@ namespace ComputerPlus
             ShowBackground(!Globals.ShowBackgroundWhenOpen);
         }
 
-        private static void CheckIfCalloutActive()
+        private void CheckIfCalloutActive()
         {
             //set active callout to null whenever a callout ends
 
