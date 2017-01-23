@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using ComputerPlus.Controllers;
 namespace ComputerPlus
 {
     internal sealed class Globals
@@ -22,6 +22,11 @@ namespace ComputerPlus
         internal readonly static String DefaultBackgroundImage = "lspd.jpg";
         internal static bool PauseGameWhenOpen = true;
         internal static bool ShowBackgroundWhenOpen = true;
+        internal static bool CloseRequested = false;
+        internal static bool OpenRequested = false;
+        internal static NavigationController Navigation = new NavigationController();
+        internal static String SimpleNotepadText = String.Empty;
+        private static String Clipboard = String.Empty;
 
         /// <summary>
         /// Returns the active callout from the queue.
@@ -57,6 +62,19 @@ namespace ComputerPlus
                 Function.Log("ActiveExternalUI_ID is not Empty, but there is no matching interface");
                 return null;
             }
+        }
+
+        internal static String GetClipboard(bool clearAfter = false)
+        {
+            var clip = Clipboard;
+            if (clearAfter) SetClipboard(null);
+            return clip;
+        }
+
+        internal static void SetClipboard(String text)
+        {
+            if (text == null) Clipboard = String.Empty;
+            else Clipboard = String.Empty;
         }
     }
 }

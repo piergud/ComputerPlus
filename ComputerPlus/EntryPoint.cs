@@ -5,78 +5,94 @@ using System.Reflection;
 using Rage;
 using Rage.Forms;
 using LSPD_First_Response.Mod.API;
+using ComputerPlus.Interfaces;
 using ComputerPlus.Interfaces.ComputerPedDB;
 using ComputerPlus.Interfaces.ComputerVehDB;
 using ComputerPlus.Controllers.Models;
+using ComputerPlus.Controllers;
+using ComputerPlus.Extensions.Rage;
+using System.Linq;
+using ComputerPlus.Extensions.Gwen;
+using System.Windows.Forms;
+using ComputerPlus.Interfaces.SimpleNotepad;
 
 namespace ComputerPlus
 {
     public sealed class EntryPoint : Plugin
     {
-        internal static GwenForm login = null, main = null;
         internal delegate void VehicleStoppedEvent(object sender, Vehicle veh);
         internal static VehicleStoppedEvent OnVehicleStopped;
         static Stopwatch sw = new Stopwatch();
 
-        private static bool _opened, _prompted;
+        private static bool _prompted;
         internal static bool HasBackground
         {
             get;
             private set;
         } = false;
 
-        internal static bool IsOpen
-        {
-            get;
-            private set;
-        } = false;
+        internal bool IsMainComputerOpen = false;
+
         internal static List<string> recent_text = new List<string>();
-        internal static GameFiber fCheckIfCalloutActive = new GameFiber(CheckIfCalloutActive);
-        private static GameFiber RunComputerPlus =  new GameFiber(ShowPoliceComputer);
+        internal GameFiber CheckIfCalloutActiveFiber;
+        private GameFiber DetectOpenCloseRequestedFiber;
+        private GameFiber DetectOpenSimpleNotepadFiber;
+        private GameFiber RunComputerPlusFiber;
+
+
+        private static KeyBinder CloseComputerPlusWindow;
+        private KeyBinder OpenSimpleNotepad;
+        private static KeyBinder OpenCloseComputerPlusBinder;
+
 
         public override void Initialize()
         {
-            LSPD_First_Response.Mod.API.Functions.OnOnDutyStateChanged += DutyStateChangedHandler;
+            Function.Log("Computer+ is loading");
+            DetectOpenCloseRequestedFiber = new GameFiber(CheckToggleComputer);
+            RunComputerPlusFiber = new GameFiber(RunPoliceComputer);
+            CheckIfCalloutActiveFiber = new GameFiber(CheckIfCalloutActive);
+            DetectOpenSimpleNotepadFiber = new GameFiber(CheckOpenSimpleNotepad);
+            Functions.OnOnDutyStateChanged += DutyStateChangedHandler;
             OnVehicleStopped += VehicleStoppedHandler;
+            Globals.Navigation.OnFormAdded += NavOnFormAdded;
+            Globals.Navigation.OnFormRemoved += NavOnFormRemoved;
             AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(AssemblyResolve);
             Configs.RunConfigCheck();
+            if (Game.IsControllerConnected)
+                CloseComputerPlusWindow = new KeyBinder(ControllerButtons.X);
+            else
+                CloseComputerPlusWindow = new KeyBinder(Keys.PageDown);
+            OpenCloseComputerPlusBinder = new KeyBinder(GameControl.Context);
+            OpenSimpleNotepad = new KeyBinder(Keys.End);
             Function.checkForRageVersionClass.checkForRageVersion(0.41f);
+
         }
 
         public override void Finally()
         {
-            if (login != null)
-            {
-                if (login.Window.IsVisible)
-                {
-                    login.Window.Close();
-                }
-            }
-            if (Game.IsPaused)
-            {
-                Function.LogDebug("Pause false EntryPoint.Finally");
-                PauseGame(false);
-            }
-            ShowBackground(false);
+            Globals.Navigation.OnFormAdded -= NavOnFormAdded;
+            Globals.Navigation.OnFormRemoved -= NavOnFormRemoved;
+            if (RunComputerPlusFiber.IsRunning()) RunComputerPlusFiber.Abort();
+            if (CheckIfCalloutActiveFiber.IsRunning()) CheckIfCalloutActiveFiber.Abort();
         }
 
-        private static void DutyStateChangedHandler(bool on_duty)
+
+        private void DutyStateChangedHandler(bool on_duty)
         {
             Globals.IsPlayerOnDuty = on_duty;
 
-            if (on_duty) 
-            {
-                Game.FrameRender += Process;
+            if (on_duty)
+            {                               
+                Function.MonitorAICalls();
+                Function.CheckForUpdates();
+                CheckIfCalloutActiveFiber.Resume();
+                DetectOpenSimpleNotepadFiber.Resume();
+                DetectOpenCloseRequestedFiber.Resume();
                 Function.LogDebug("Successfully loaded LSPDFR Computer+.");
 
-                Function.MonitorAICalls();
-                fCheckIfCalloutActive = new GameFiber(CheckIfCalloutActive);
-                fCheckIfCalloutActive.Start();
-
-                Function.CheckForUpdates();
                 if (Function.IsAlprPlusRunning())
                 {
-                    Function.LogDebug("C+: Registering for ALPR+ Events");                    
+                    Function.LogDebug("C+: Registering for ALPR+ Events");
                     ALPRPlusFunctions.OnAlprPlusMessage += ALPRPlusFunctions_OnAlprPlusMessage;
                     ALPRPlusFunctions.RegisterForEvents();
                 }
@@ -93,6 +109,7 @@ namespace ComputerPlus
             }
         }
 
+
         private static void ALPRPlusFunctions_OnAlprPlusMessage(object sender, ALPR_Arguments e)
         {
             ComputerVehicleController.AddAlprScan(e);
@@ -100,7 +117,7 @@ namespace ComputerPlus
 
         private static void VehicleStoppedHandler(object sender, Vehicle veh)
         {
-            if (veh && !_prompted) 
+            if (veh && !_prompted)
             {
                 if (Function.IsPoliceVehicle(veh)
                     && LSPD_First_Response.Mod.API.Functions.GetCurrentPullover() != null)
@@ -122,94 +139,113 @@ namespace ComputerPlus
             }
             return null;
         }
-        static bool alprRunning = false;
-        private static void Process(object sender, GraphicsEventArgs e)
-        {
-            var fiber = EntryPoint.RunComputerPlus;
 
-            Vehicle curr_veh = Game.LocalPlayer.Character.Exists() ? Game.LocalPlayer.Character.LastVehicle : null;
-            if (curr_veh && curr_veh.Driver == Game.LocalPlayer.Character)
+
+        private bool CheckOpenCloseDebouncedTrigger(KeyBinder binder)
+        {
+            if (binder.IsPressed)
             {
-                if (curr_veh.Speed <= 1)
+                if (!sw.IsRunning)
                 {
-                    OnVehicleStopped.Invoke(null, curr_veh);
-
-                    if (Game.IsControlPressed(0, GameControl.Context) && Function.IsPoliceVehicle(curr_veh) && !IsOpen)
-                    {
-                        if (!sw.IsRunning)
-                        {
-                            sw.Start();
-                        }
-                        else if (sw.ElapsedMilliseconds > 250)
-                        {
-                            sw.Stop();
-                            sw.Reset();
-                            if (fiber.IsHibernating) fiber.Wake();
-                            else if (!fiber.IsAlive) fiber.Start();
-                        }
-                    }
-                    else
-                    {
-                        if (sw.IsRunning)
-                        {
-                            sw.Stop();
-                            sw.Reset();
-                        }
-                    }
+                    sw.Start();
                 }
-            }          
+                else if (sw.ElapsedMilliseconds > 250)
+                {
+                    sw.Stop();
+                    sw.Reset();
+                    return true;
+                }
+            }
+            else
+            {
+                if (sw.IsRunning)
+                {
+                    sw.Stop();
+                    sw.Reset();
+                }
+            }
+            return false;
+        }
 
-           /* 
-            @TODO @ainesophaur discuss whether to include a vanilla ALPR in C+ and optimize the vehicle enumeration calls
-            if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.LControlKey) && Game.IsKeyDown(System.Windows.Forms.Keys.U))
-            {
-                if (!alprRunning) ComputerVehicleController.RunVanillaAlpr();
-                else ComputerVehicleController.StopVanillaAlpr();
-                alprRunning = !alprRunning;
-            }
-           */
-        }
-        //@TODO put all game fibers in an array and filter through to find any that are alive
-        private static bool AreGameFibersRunning
+        private DateTime ToggleCooldown = DateTime.Now;
+
+        private void CheckForOpenTrigger()
         {
-            get
+            
+            if (CheckOpenCloseDebouncedTrigger(OpenCloseComputerPlusBinder))
             {
-                return
-                    (ComputerLogin.ComputerLoginGameFiber.IsAlive && !ComputerLogin.ComputerLoginGameFiber.IsHibernating)
-                    || (ComputerMain.ComputerMainGameFiber.IsAlive && !ComputerMain.ComputerMainGameFiber.IsHibernating)
-                    || (ComputerPedController.PedSearchGameFiber.IsAlive && !ComputerPedController.PedSearchGameFiber.IsHibernating)
-                    || (ComputerPedController.PedViewGameFiber.IsAlive && !ComputerPedController.PedViewGameFiber.IsHibernating)
-                    || (ComputerVehicleController.VehicleSearchGameFiber.IsAlive && !ComputerVehicleController.VehicleSearchGameFiber.IsHibernating)
-                    || (ComputerVehicleController.VehicleDetailsGameFiber.IsAlive && !ComputerVehicleController.VehicleDetailsGameFiber.IsHibernating)
-                    || (ComputerMain.form_active_calls.IsAlive && !ComputerMain.form_active_calls.IsHibernating)
-                    || (ComputerMain.form_backup.IsAlive && !ComputerMain.form_backup.IsHibernating);
-                   // || ComputerMain.form_backup.IsAlive || ComputerMain.form_active_calls.IsAlive
-                   //|| ComputerPedDB.form_main.IsAlive || ComputerVehDB.form_main.IsAlive || ComputerRequestBackup.form_main.IsAlive;
-                   //|| ComputerCurrentCallDetails.form_main.IsAlive;
+                Vehicle curr_veh = Game.LocalPlayer.Character.Exists() ? Game.LocalPlayer.Character.LastVehicle : null;
+                if (curr_veh && curr_veh.Driver == Game.LocalPlayer.Character && curr_veh.Speed <= 1 && Function.IsPoliceVehicle(curr_veh))
+                {
+                    OnVehicleStopped(null, curr_veh);
+                    ShowPoliceComputer();
+                }
             }
         }
+
+        private void CheckForCloseTrigger()
+        {
+            if(!Globals.CloseRequested && CloseComputerPlusWindow.IsPressed)
+            {
+                //if (!Globals.Navigation.Pop()) //@TODO one day we'll try this again.. for now we'll just let it close
+                ClosePoliceComputer();
+            }
+        }
+
+
+        private void CheckToggleComputer()
+        {
+            do
+            {
+                if (!Globals.CloseRequested && Globals.OpenRequested)
+                {
+                    CheckForCloseTrigger();
+                }                                
+                else
+                {
+                    CheckForOpenTrigger();
+                }
+                GameFiber.Yield();
+            }
+            while (Globals.IsPlayerOnDuty);
+            GameFiber.Hibernate();
+        }
+
+
 
         internal static void OpenMain()
         {
-            var fiber = ComputerMain.ComputerMainGameFiber;
-            if (fiber.IsHibernating) fiber.Wake();
-            else if (!fiber.IsAlive) fiber.Start();
+            if (Configs.SkipLogin) Globals.Navigation.Push(new ComputerMain());
+            else Globals.Navigation.Replace(new ComputerMain());
         }
 
         internal static void OpenLogin()
         {
-            var fiber = ComputerLogin.ComputerLoginGameFiber;
-            if (fiber.IsHibernating) fiber.Wake();
-            else if (!fiber.IsAlive) fiber.Start();
+            Globals.Navigation.Push(new ComputerLogin());
         }
 
-        private static void ShowPoliceComputer()
+        private void ShowPoliceComputer()
         {
-            while (true)
+            Globals.CloseRequested = false;
+            Globals.OpenRequested = true;
+            if (RunComputerPlusFiber.IsHibernating) RunComputerPlusFiber.Wake();
+            else if (!RunComputerPlusFiber.IsAlive) RunComputerPlusFiber.Start();
+        }
+        private void ClosePoliceComputer()
+        {
+            Globals.CloseRequested = true;
+            Globals.OpenRequested = false;
+        }
+
+        private void RunPoliceComputer()
+        {
+            do
             {
-                IsOpen = true;
-                PauseGame(Globals.PauseGameWhenOpen);
+                
                 ShowBackground(Globals.ShowBackgroundWhenOpen);
+                GameFiber.Yield();
+                PauseGame(Globals.PauseGameWhenOpen);
+                IsMainComputerOpen = true;
                 if (!Configs.SkipLogin)
                 {
                     OpenLogin();
@@ -218,17 +254,64 @@ namespace ComputerPlus
                 {
                     OpenMain();
                 }
+
+
                 do
-                {
-                    GameFiber.Yield();
+                {                    
+                    GameFiber.Yield();                    
                 }
-                while (AreGameFibersRunning);
+                while (!CloseComputerPlusWindow.IsPressed && Globals.Navigation.Head != null);
+                ClosePoliceComputer();
+                Globals.Navigation.Clear();
+                IsMainComputerOpen = false;
                 PauseGame(false, true);
                 ShowBackground(false, true);
-                IsOpen = false;
+                GameFiber.Yield(); //Yield to allow form fibers to close out
                 GameFiber.Hibernate();
+
             }
-           
+            while (Globals.IsPlayerOnDuty);
+            GameFiber.Hibernate();
+        }
+
+
+        private void NavOnFormAdded(object sender, NavigationController.NavigationEntry entry)
+        {
+            try
+            {
+                GameFiber.StartNew(() =>
+                {
+                    entry.form.Show();
+                    do
+                    {
+                        GameFiber.Yield();
+                    }
+                    while (!Globals.CloseRequested && entry.form.IsOpen());
+
+                    Globals.Navigation.RemoveEntry(entry, false);
+                    //NavOnFormRemoved(sender, entry);
+                });
+            }
+            catch (Exception e)
+            {
+                Function.Log(e.ToString());
+            }
+        }
+
+        private void NavOnFormRemoved(object sender, NavigationController.NavigationEntry entry)
+        {
+            try
+            {
+                if (entry.form.Window == null || !entry.form.IsOpen()) return;
+                GameFiber.StartNew(() =>
+                {
+                    entry.form.Window.Close();
+                });
+            }
+            catch (Exception e)
+            {
+                Function.Log(e.ToString());
+            }
         }
 
         private static void PauseGame(bool pause, bool gameOnlyChange = false)
@@ -245,7 +328,7 @@ namespace ComputerPlus
 
         private static void ShowBackground(bool visible, bool gameOnlyChange = false)
         {
-            if(!gameOnlyChange) Globals.ShowBackgroundWhenOpen = visible;
+            if (!gameOnlyChange) Globals.ShowBackgroundWhenOpen = visible;
             if (visible)
                 Function.EnableBackground();
             else
@@ -257,11 +340,11 @@ namespace ComputerPlus
             ShowBackground(!Globals.ShowBackgroundWhenOpen);
         }
 
-        private static void CheckIfCalloutActive()
+        private void CheckIfCalloutActive()
         {
             //set active callout to null whenever a callout ends
 
-            while(Globals.IsPlayerOnDuty)
+            while (Globals.IsPlayerOnDuty)
             {
                 GameFiber.Yield();
 
@@ -271,5 +354,61 @@ namespace ComputerPlus
                 }
             }
         }
+
+        public static void ShowNotepad(bool showPauseButton = true)
+        {
+            SimpleNotepad notepad = new SimpleNotepad();
+            try
+            {
+                var navPushResult = Globals.Navigation.Push(notepad);
+                notepad.Show();
+
+                do
+                {
+
+                    if (showPauseButton)
+                    {
+                        notepad.ShowPause(showPauseButton);
+                        notepad.SetPauseState(Globals.PauseGameWhenOpen);
+                    }
+
+                    GameFiber.Yield();
+
+                }
+                while (!CloseComputerPlusWindow.IsPressed && (Globals.Navigation.Head == notepad || notepad.IsOpen()));
+                notepad.Close();
+
+            }
+            catch { }
+        }
+
+       
+
+        private void CheckOpenSimpleNotepad()
+        {
+            
+            while (Globals.IsPlayerOnDuty)
+            {
+                try {
+                    GameFiber.Yield();
+                    if (!IsMainComputerOpen && OpenSimpleNotepad.IsPressed)
+                    {
+                        EntryPoint.PauseGame(Globals.PauseGameWhenOpen, true);
+                        ShowNotepad();
+                        if (!IsMainComputerOpen) //Make sure game isnt paused if this is opened by itself
+                            EntryPoint.PauseGame(false, true);
+                    }
+                    else
+                    {
+                        
+                    }
+                }
+                catch(Exception e)
+                {
+                    Function.Log(e.ToString());
+                }
+            }
+        }
+
     }
 }
