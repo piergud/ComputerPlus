@@ -14,6 +14,7 @@ using ComputerPlus.Extensions.Rage;
 using System.Linq;
 using ComputerPlus.Extensions.Gwen;
 using System.Windows.Forms;
+using ComputerPlus.Interfaces.SimpleNotepad;
 
 namespace ComputerPlus
 {
@@ -30,14 +31,17 @@ namespace ComputerPlus
             private set;
         } = false;
 
+        internal bool IsMainComputerOpen = false;
+
         internal static List<string> recent_text = new List<string>();
         internal GameFiber CheckIfCalloutActiveFiber;
         private GameFiber DetectOpenCloseRequestedFiber;
+        private GameFiber DetectOpenSimpleNotepadFiber;
         private GameFiber RunComputerPlusFiber;
 
 
         private static KeyBinder CloseComputerPlusWindow;
-
+        private KeyBinder OpenSimpleNotepad;
         private static KeyBinder OpenCloseComputerPlusBinder;
 
 
@@ -47,6 +51,7 @@ namespace ComputerPlus
             DetectOpenCloseRequestedFiber = new GameFiber(CheckToggleComputer);
             RunComputerPlusFiber = new GameFiber(RunPoliceComputer);
             CheckIfCalloutActiveFiber = new GameFiber(CheckIfCalloutActive);
+            DetectOpenSimpleNotepadFiber = new GameFiber(CheckOpenSimpleNotepad);
             Functions.OnOnDutyStateChanged += DutyStateChangedHandler;
             OnVehicleStopped += VehicleStoppedHandler;
             Globals.Navigation.OnFormAdded += NavOnFormAdded;
@@ -56,8 +61,9 @@ namespace ComputerPlus
             if (Game.IsControllerConnected)
                 CloseComputerPlusWindow = new KeyBinder(ControllerButtons.X);
             else
-                CloseComputerPlusWindow = new KeyBinder(Keys.Escape);
+                CloseComputerPlusWindow = new KeyBinder(Keys.PageDown);
             OpenCloseComputerPlusBinder = new KeyBinder(GameControl.Context);
+            OpenSimpleNotepad = new KeyBinder(Keys.End);
             Function.checkForRageVersionClass.checkForRageVersion(0.41f);
 
         }
@@ -76,13 +82,11 @@ namespace ComputerPlus
             Globals.IsPlayerOnDuty = on_duty;
 
             if (on_duty)
-            {
-
-                if (CheckIfCalloutActiveFiber.IsHibernating) CheckIfCalloutActiveFiber.Wake();
-                else CheckIfCalloutActiveFiber.Start();
+            {                               
                 Function.MonitorAICalls();
                 Function.CheckForUpdates();
-
+                CheckIfCalloutActiveFiber.Resume();
+                DetectOpenSimpleNotepadFiber.Resume();
                 DetectOpenCloseRequestedFiber.Resume();
                 Function.LogDebug("Successfully loaded LSPDFR Computer+.");
 
@@ -222,7 +226,6 @@ namespace ComputerPlus
 
         private void ShowPoliceComputer()
         {
-            Function.Log("ShowPoliceComputer");
             Globals.CloseRequested = false;
             Globals.OpenRequested = true;
             if (RunComputerPlusFiber.IsHibernating) RunComputerPlusFiber.Wake();
@@ -230,7 +233,6 @@ namespace ComputerPlus
         }
         private void ClosePoliceComputer()
         {
-            Function.Log("ClosePoliceComputer");
             Globals.CloseRequested = true;
             Globals.OpenRequested = false;
         }
@@ -243,6 +245,7 @@ namespace ComputerPlus
                 ShowBackground(Globals.ShowBackgroundWhenOpen);
                 GameFiber.Yield();
                 PauseGame(Globals.PauseGameWhenOpen);
+                IsMainComputerOpen = true;
                 if (!Configs.SkipLogin)
                 {
                     OpenLogin();
@@ -255,11 +258,12 @@ namespace ComputerPlus
 
                 do
                 {                    
-                    GameFiber.Yield();
+                    GameFiber.Yield();                    
                 }
-                while (Globals.Navigation.Head != null);
+                while (!CloseComputerPlusWindow.IsPressed && Globals.Navigation.Head != null);
                 ClosePoliceComputer();
                 Globals.Navigation.Clear();
+                IsMainComputerOpen = false;
                 PauseGame(false, true);
                 ShowBackground(false, true);
                 GameFiber.Yield(); //Yield to allow form fibers to close out
@@ -284,8 +288,8 @@ namespace ComputerPlus
                     }
                     while (!Globals.CloseRequested && entry.form.IsOpen());
 
-                    Globals.Navigation.RemoveEntry(entry);
-                    NavOnFormRemoved(sender, entry);
+                    Globals.Navigation.RemoveEntry(entry, false);
+                    //NavOnFormRemoved(sender, entry);
                 });
             }
             catch (Exception e)
@@ -351,6 +355,60 @@ namespace ComputerPlus
             }
         }
 
+        public static void ShowNotepad(bool showPauseButton = true)
+        {
+            SimpleNotepad notepad = new SimpleNotepad();
+            try
+            {
+                var navPushResult = Globals.Navigation.Push(notepad);
+                notepad.Show();
+
+                do
+                {
+
+                    if (showPauseButton)
+                    {
+                        notepad.ShowPause(showPauseButton);
+                        notepad.SetPauseState(Globals.PauseGameWhenOpen);
+                    }
+
+                    GameFiber.Yield();
+
+                }
+                while (!CloseComputerPlusWindow.IsPressed && (Globals.Navigation.Head == notepad || notepad.IsOpen()));
+                notepad.Close();
+
+            }
+            catch { }
+        }
+
+       
+
+        private void CheckOpenSimpleNotepad()
+        {
+            
+            while (Globals.IsPlayerOnDuty)
+            {
+                try {
+                    GameFiber.Yield();
+                    if (!IsMainComputerOpen && OpenSimpleNotepad.IsPressed)
+                    {
+                        EntryPoint.PauseGame(Globals.PauseGameWhenOpen, true);
+                        ShowNotepad();
+                        if (!IsMainComputerOpen) //Make sure game isnt paused if this is opened by itself
+                            EntryPoint.PauseGame(false, true);
+                    }
+                    else
+                    {
+                        
+                    }
+                }
+                catch(Exception e)
+                {
+                    Function.Log(e.ToString());
+                }
+            }
+        }
 
     }
 }

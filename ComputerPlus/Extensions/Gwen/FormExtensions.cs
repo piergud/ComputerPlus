@@ -11,9 +11,13 @@ namespace ComputerPlus.Extensions.Gwen
     {
         internal static void Close(this GwenForm form)
         {
-            if (form == null) return;
-            if (form.Window.IsClosable)
-                form.Window.Close();
+            try
+            {
+                if (form == null) return;
+                if (form.Window.IsClosable)
+                    form.Window.Close();
+            }
+            catch { }
         }
         internal static bool IsOnTop(this GwenForm form)
         {
@@ -33,8 +37,8 @@ namespace ComputerPlus.Extensions.Gwen
         {            
             try
             {
-                if (form == null) return false;
-                return form.Window.IsVisible;
+                if (form == null || form.Window == null) return false;
+                return (form.Window.IsVisible || form.Window.IsOnTop || form.Window.IsClosable);
             }
             catch
             {

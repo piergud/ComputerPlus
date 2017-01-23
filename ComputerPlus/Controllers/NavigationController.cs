@@ -8,8 +8,30 @@ using ComputerPlus.Extensions.Gwen;
 
 namespace ComputerPlus.Controllers
 {
+    public class LIFOStack<T> : LinkedList<T>
+    {
+        public T Pop()
+        {
+            T first = this.First<T>();
+            RemoveFirst();
+            return first;
+        }
+
+        public void Push(T item)
+        {
+            AddFirst(item);
+        }
+
+        public T Peek()
+        {
+            return this.First<T>();
+        }
+
+        //Remove(T object) implemented in LinkedList
+    }
     class NavigationController
     {
+
         protected internal struct NavigationEntry
         {
             internal GwenForm form;
@@ -25,7 +47,7 @@ namespace ComputerPlus.Controllers
         internal event FormChangeEventArgs OnFormAdded;
         internal event FormChangeEventArgs OnFormRemoved;
 
-        Stack<NavigationEntry> Stack = new Stack<NavigationEntry>();
+        LIFOStack<NavigationEntry> Stack = new LIFOStack<NavigationEntry>();
 
         internal int Size
         {
@@ -62,21 +84,24 @@ namespace ComputerPlus.Controllers
             get { return Stack.Any(x => x.form != null && x.form.IsOpen()); }
         }
 
-        internal void Push(GwenForm form)
+        internal NavigationEntry Push(GwenForm form, bool notify = true)
         {
             var entry = new NavigationEntry(form);
             Stack.Push(entry);
-            if (OnFormAdded != null)
+            if (notify && OnFormAdded != null)
                 OnFormAdded(this, entry);
+            return entry;
         }
 
-        internal bool RemoveEntry(NavigationEntry entry)
+        internal bool RemoveEntry(NavigationEntry entry, bool notify = true)
         {
             try
             {
                 if (Stack.Contains(entry))
                 {
-                    Stack = new Stack<NavigationEntry>(Stack.Where(x => !x.Equals(entry)));
+                    Stack.Remove(entry);
+                    if (notify && OnFormRemoved != null)
+                        OnFormRemoved(this, entry);
                     return true;
                 }                
             }
