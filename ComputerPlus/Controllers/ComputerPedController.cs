@@ -7,55 +7,15 @@ using LSPD_First_Response.Engine.Scripting.Entities;
 using LSPD_First_Response.Mod.API;
 using Rage.Forms;
 using ComputerPlus.Controllers.Models;
+using ComputerPlus.Extensions.Gwen;
 
 namespace ComputerPlus.Interfaces.ComputerPedDB
 {
-    internal static class PedExtension
-    {
-        internal static String GetHomeAddress(this Ped ped)
-        {
-            if (ped.Metadata.HomeAddress == null) ped.Metadata.HomeAddress = ComputerPedController.GetRandomStreetAddress();
-            return ped.Metadata.HomeAddress;
-        }
-    }    
-
-    internal static class GwenExtension
-    {
-        internal static void Close(this GwenForm form)
-        {
-            if (form.Window.IsClosable)
-                form.Window.Close();
-        }
-        internal static bool IsOnTop(this GwenForm form)
-        {
-            try
-            {
-                return form.Window.IsOnTop;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        internal static bool IsOpen(this GwenForm form)
-        {
-            try
-            {
-                return form.Window.IsVisible;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-    }
+   
 
     class ComputerPedController
     {
         private readonly static List<ComputerPlusEntity> RecentSearches = new List<ComputerPlusEntity>();       
-        public static GameFiber PedSearchGameFiber = new GameFiber(ShowPedSearch);
-        public static GameFiber PedViewGameFiber = new GameFiber(ShowPedView);
 
         private static ComputerPlusEntity _LastSelected = null;
         public static ComputerPlusEntity LastSelected
@@ -127,49 +87,27 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
         }
 
 
-        private static void ShowPedSearch()
+        internal static void ShowPedSearch()
         {
-            while (true)
-            {
-                var form = new ComputerPedSearch();
-                Function.LogDebug("ShowPedSearch Show");
-                form.Show();                
-                while (form.IsOpen())
-                    GameFiber.Yield();                
-                form.Close();
-                Function.LogDebug("ShowPedSearch Hibernating");
-                GameFiber.Hibernate();
-            }
+            Globals.Navigation.Push(new ComputerPedSearch());
         }
 
-        private static void ShowPedView()
+        internal static void ShowPedView()
         {
-            while (true)
-            {
-                var form = new ComputerPedView(LastSelected);                
-                form.Show();
-                Function.LogDebug("Show ComputerPedView");
-                while (form.IsOpen())
-                    GameFiber.Yield();
-                Function.LogDebug("Close ComputerPedView");
-                form.Close();
-                Function.LogDebug("ShowPedView Hibernating");
-                GameFiber.Hibernate();
-            }
+            Globals.Navigation.Push(new ComputerPedView(LastSelected));           
         }
 
         protected internal static void ActivatePedView()
         {
-            var fiber = ComputerPedController.PedViewGameFiber;
-            if (fiber.IsHibernating) fiber.Wake();
-            else if (!fiber.IsAlive) fiber.Start();
+            //@TODO This method may not be needed
+            ShowPedView();
         }
 
-        private static ComputerPedController _instance = new ComputerPedController();
         public static ComputerPedController Instance
         {
-            get { return _instance; }
-        }
+            get;
+            private set;
+        } = new ComputerPedController();
 
     }
 }
