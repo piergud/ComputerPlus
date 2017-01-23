@@ -42,6 +42,7 @@
             this.list_external_ui = new System.Windows.Forms.ComboBox();
             this.cb_toggle_pause = new System.Windows.Forms.CheckBox();
             this.cb_toggle_background = new System.Windows.Forms.CheckBox();
+            this.btn_notepad = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btn_ped_db
@@ -89,7 +90,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.list_recent.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.list_recent.FormattingEnabled = true;
-            this.list_recent.Location = new System.Drawing.Point(15, 25);
+            this.list_recent.Location = new System.Drawing.Point(15, 32);
             this.list_recent.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.list_recent.Name = "list_recent";
             this.list_recent.Size = new System.Drawing.Size(619, 121);
@@ -112,7 +113,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 9);
+            this.label1.Location = new System.Drawing.Point(12, 16);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(103, 13);
             this.label1.TabIndex = 5;
@@ -169,12 +170,25 @@
             this.cb_toggle_background.Text = "Toggle Background";
             this.cb_toggle_background.UseVisualStyleBackColor = true;
             // 
+            // btn_notepad
+            // 
+            this.btn_notepad.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_notepad.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.btn_notepad.Location = new System.Drawing.Point(451, 5);
+            this.btn_notepad.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.btn_notepad.Name = "btn_notepad";
+            this.btn_notepad.Size = new System.Drawing.Size(59, 22);
+            this.btn_notepad.TabIndex = 11;
+            this.btn_notepad.Text = "Notepad";
+            this.btn_notepad.UseVisualStyleBackColor = true;
+            // 
             // ComputerMainTemplate
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(645, 274);
+            this.Controls.Add(this.btn_notepad);
             this.Controls.Add(this.cb_toggle_background);
             this.Controls.Add(this.cb_toggle_pause);
             this.Controls.Add(this.list_external_ui);
@@ -213,5 +227,6 @@
         private ComboBox list_external_ui;
         private CheckBox cb_toggle_pause;
         private CheckBox cb_toggle_background;
+        private Button btn_notepad;
     }
 }

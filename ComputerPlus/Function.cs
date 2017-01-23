@@ -550,6 +550,8 @@ namespace ComputerPlus
         {
             if (!String.IsNullOrWhiteSpace(message)) Game.LogTrivial(String.Format("C+: {0}", message));
         }
+
+        
         internal static void LogDebug(String message)
         {
             if (!String.IsNullOrWhiteSpace(message)) Game.LogVerboseDebug(String.Format("C+ DEV: {0}", message));
