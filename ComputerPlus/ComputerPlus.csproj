@@ -53,6 +53,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Dependencies\ALPRPlus.dll</HintPath>
     </Reference>
+    <Reference Include="British Policing Script">
+      <HintPath>Dependencies\British Policing Script.dll</HintPath>
+    </Reference>
     <Reference Include="Gwen, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Dependencies\Gwen.dll</HintPath>
@@ -90,9 +93,12 @@
     <Compile Include="Controllers\Models\ComputerPlusEntity.cs" />
     <Compile Include="Controllers\Models\VehiclePersona.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="Extensions\Gwen\FormExtensions.cs" />
     <Compile Include="Extensions\Gwen\ListBoxExtensions.cs" />
     <Compile Include="Extensions\Gwen\TextBoxExtensions.cs" />
     <Compile Include="Extensions\Rage\BlipExtensions.cs" />
+    <Compile Include="Extensions\Rage\GameFiberExtensions.cs" />
+    <Compile Include="Extensions\Rage\PedExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Globals.cs" />
@@ -170,6 +176,14 @@
     <Compile Include="Interfaces\ComputerVehDB\ComputerVehicleSearchTemplate.Designer.cs">
       <DependentUpon>ComputerVehicleSearchTemplate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\KeyBinder.cs" />
+    <Compile Include="Interfaces\SimpleNotepad\SimpleNotepad.cs" />
+    <Compile Include="Interfaces\SimpleNotepad\SimpleNotepadTemplate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interfaces\SimpleNotepad\SimpleNotepadTemplate.Designer.cs">
+      <DependentUpon>SimpleNotepadTemplate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -209,11 +223,18 @@
     <EmbeddedResource Include="Interfaces\ComputerVehDB\ComputerVehicleSearchTemplate.resx">
       <DependentUpon>ComputerVehicleSearchTemplate.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Interfaces\SimpleNotepad\SimpleNotepadTemplate.resx">
+      <DependentUpon>SimpleNotepadTemplate.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controllers\NavigationController.cs" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y "$(TargetDir)Gwen.dll" "$(TargetDir)Packaged\"
@@ -222,7 +243,10 @@ xcopy /Y "$(ProjectDir)Resources\*.jpg" "$(TargetDir)Packaged\Plugins\LSPDFR\Com
 copy /Y "$(ProjectDir)..\readme.md" "$(TargetDir)Packaged\readme.txt"
 xcopy /Y "$(ProjectDir)Resources\*.png" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\"
 xcopy /Y "$(ProjectDir)Resources\backgrounds\*.jpg" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\backgrounds\"
-xcopy /Y "$(ProjectDir)Resources\ComputerPlus.ini" "$(TargetDir)Packaged\Plugins\LSPDFR\"</PostBuildEvent>
+xcopy /Y "$(ProjectDir)Resources\ComputerPlus.ini" "$(TargetDir)Packaged\Plugins\LSPDFR\"
+
+REM xcopy /Y "$(TargetDir)ComputerPlus.dll" "F:\Rockstar Games\Plugins\LSPDFR"
+REM xcopy /Y "$(TargetDir)ComputerPlus.pdb" "F:\Rockstar Games\Plugins\LSPDFR"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
