@@ -7,6 +7,7 @@ using Gwen.Control;
 using System;
 using ComputerPlus.Interfaces.ComputerPedDB;
 using ComputerPlus.Interfaces.ComputerVehDB;
+using ComputerPlus.Extensions.Gwen;
 using ComputerPlus.Controllers;
 using ComputerPlus.Extensions.Gwen;
 
@@ -14,16 +15,12 @@ namespace ComputerPlus
 {
     internal class ComputerMain : GwenForm
     {
-        private Button btn_logout, btn_ped_db, btn_veh_db, btn_request, btn_activecalls, btn_arrest_report;
+        private Button btn_logout, btn_ped_db, btn_veh_db, btn_request, btn_activecalls, btn_notepad, btn_arrest_report;
         internal ListBox list_recent;
         private Label label_external_ui;
         private ComboBox list_external_ui;
         private CheckBox cb_toggle_pause, cb_toggle_background;
         MenuItem external_ui_default;
-        internal static GameFiber ComputerMainGameFiber = new GameFiber(ShowMain);
-        internal static GameFiber form_backup = new GameFiber(OpenRequestBackupForm);
-        internal static GameFiber form_report = new GameFiber(OpenReportMenuForm);
-        internal static GameFiber form_active_calls = new GameFiber(OpenActiveCallsForm);
         internal static GameFiber external_ui_fiber = null;
         //private Button btn_ReportMain; // Fiskey111 Edit
 
@@ -64,10 +61,20 @@ namespace ComputerPlus
             this.btn_ped_db.Clicked += this.PedDBButtonClickedHandler;
             this.btn_veh_db.Clicked += this.VehDBButtonClickedHandler;
             this.btn_request.Clicked += this.RequestBackupButtonClickedHandler;
+            this.btn_notepad.Clicked += OpenNotepadHandler;
             this.btn_arrest_report.Clicked += this.ReportsClickedHandler;
             this.cb_toggle_background.CheckChanged += checkbox_change;
             this.cb_toggle_pause.CheckChanged += checkbox_change;
-            
+            this.Window.KeyboardInputEnabled = false;
+            GameFiber.StartNew(() =>
+            {
+                while(true)
+                {
+                    if(this.cb_toggle_pause.IsChecked != Globals.PauseGameWhenOpen)
+                        this.cb_toggle_pause.IsChecked = Globals.PauseGameWhenOpen;
+                    GameFiber.Yield();
+                }
+            });
             //this.btn_ReportMain.Clicked += this.ReportMainClickedHandler;  // Fiskey111 Edit
             this.btn_activecalls.Clicked += this.ActiveCallsClickedHandler;
             this.Window.DisableResizing();
@@ -87,9 +94,14 @@ namespace ComputerPlus
 
         }
 
+        private void OpenNotepadHandler(Base sender, ClickedEventArgs arguments)
+        {
+            EntryPoint.ShowNotepad(false);
+        }
+
         private void checkbox_change(Base sender, EventArgs arguments)
         {
-            if (sender == cb_toggle_pause)
+            if (sender == cb_toggle_pause && cb_toggle_pause.IsChecked != Globals.PauseGameWhenOpen)
                 EntryPoint.TogglePause();
             else if (sender == cb_toggle_background)
                 EntryPoint.ToggleBackground();
@@ -97,7 +109,7 @@ namespace ComputerPlus
 
         private void LogoutButtonClickedHandler(Base sender, ClickedEventArgs e)
         {
-            this.Window.Close();
+            Globals.Navigation.Clear();
         }
 
         private void ReportsClickedHandler(Base sender, ClickedEventArgs e)
@@ -108,36 +120,23 @@ namespace ComputerPlus
 
         private void PedDBButtonClickedHandler(Base sender, ClickedEventArgs e)
         {
-            //this.Window.Close();
-            var fiber = ComputerPedController.PedSearchGameFiber;
-            if (fiber.IsHibernating) fiber.Wake();
-            else if (!fiber.IsAlive) fiber.Start();
+            ComputerPedController.ShowPedSearch();
         }
 
         private void VehDBButtonClickedHandler(Base sender, ClickedEventArgs e)
         {
-            //this.Window.Close();
-            var fiber = ComputerVehicleController.VehicleSearchGameFiber;
-            if (fiber.IsHibernating) fiber.Wake();
-            else if (!fiber.IsAlive) fiber.Start();
+            ComputerVehicleController.ShowVehicleSearch();
         }
 
         private void RequestBackupButtonClickedHandler(Base sender, ClickedEventArgs e)
         {
-            form_backup = new GameFiber(OpenRequestBackupForm);
-            form_backup.Start();
+            OpenRequestBackupForm();
         }
 
-        private void ReportMainClickedHandler(Base sender, ClickedEventArgs e)   // Fiskey111 Edit
-        {
-            form_report = new GameFiber(OpenReportMenuForm);
-            form_report.Start();
-        }
 
         private void ActiveCallsClickedHandler(Base sender, ClickedEventArgs e)
         {
-            form_active_calls = new GameFiber(OpenActiveCallsForm);
-            form_active_calls.Start();
+            OpenActiveCallsForm();
         }
 
         private void ExternalUISelected(Base sender, ItemSelectedEventArgs arguments)
@@ -179,58 +178,23 @@ namespace ComputerPlus
 
         internal static void OpenRequestBackupForm()
         {
-            GwenForm backup = new ComputerRequestBackup();
-            backup.Show();
-            while (backup.Window.IsVisible)
-                GameFiber.Yield();
-        }
-
-        internal static void OpenReportMenuForm()
-        {
-            /*GwenForm reportmenu = new ReportMain();
-            reportmenu.Show();
-            while (reportmenu.Window.IsVisible)
-                GameFiber.Yield();*/
+            Globals.Navigation.Push(new ComputerRequestBackup());
         }
 
         internal static void OpenActiveCallsForm()
         {
-            GwenForm active_calls = new ComputerCurrentCallDetails();
-            active_calls.Show();
-            while (active_calls.Window.IsVisible)
-                GameFiber.Yield();
+            Globals.Navigation.Push(new ComputerCurrentCallDetails());
         }
 
         private void ControlExternalUISelectVisibility(bool visible)
         {
-            if (visible)
-            {
-                label_external_ui.Show();
-                list_external_ui.Show();
-            }
-            else
-            {
-                label_external_ui.Hide();
-                label_external_ui.Hide();
-            }
+            label_external_ui.IsHidden = !visible;
+            list_external_ui.IsHidden = !visible;            
         }
 
         internal static void ShowMain()
         {
-            while (true)
-            {
-                var form = new ComputerMain();
-                form.Show();
-                Function.LogDebug("Init new ComputerMain");
-                do
-                {
-                    GameFiber.Yield();
-                }
-                while (form.IsOpen());
-                Function.LogDebug(String.Format("Close ComputerMain? {0}", form.IsOpen()));
-                Function.LogDebug("ComputerMain Hibernating");
-                GameFiber.Hibernate();
-            }
+            Globals.Navigation.Push(new ComputerMain());
         }
     }
 }

@@ -53,6 +53,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Dependencies\ALPRPlus.dll</HintPath>
     </Reference>
+    <Reference Include="British Policing Script">
+      <HintPath>Dependencies\British Policing Script.dll</HintPath>
+    </Reference>
     <Reference Include="Gwen, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Dependencies\Gwen.dll</HintPath>
@@ -104,6 +107,8 @@
     <Compile Include="Extensions\Gwen\ListBoxExtensions.cs" />
     <Compile Include="Extensions\Gwen\TextBoxExtensions.cs" />
     <Compile Include="Extensions\Rage\BlipExtensions.cs" />
+    <Compile Include="Extensions\Rage\GameFiberExtensions.cs" />
+    <Compile Include="Extensions\Rage\PedExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Globals.cs" />
@@ -271,6 +276,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Compile Include="Controllers\NavigationController.cs" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y "$(TargetDir)Gwen.dll" "$(TargetDir)Packaged\"
@@ -279,7 +288,10 @@ xcopy /Y "$(ProjectDir)Resources\*.jpg" "$(TargetDir)Packaged\Plugins\LSPDFR\Com
 copy /Y "$(ProjectDir)..\readme.md" "$(TargetDir)Packaged\readme.txt"
 xcopy /Y "$(ProjectDir)Resources\*.png" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\"
 xcopy /Y "$(ProjectDir)Resources\backgrounds\*.jpg" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\backgrounds\"
-xcopy /Y "$(ProjectDir)Resources\ComputerPlus.ini" "$(TargetDir)Packaged\Plugins\LSPDFR\"</PostBuildEvent>
+xcopy /Y "$(ProjectDir)Resources\ComputerPlus.ini" "$(TargetDir)Packaged\Plugins\LSPDFR\"
+
+REM xcopy /Y "$(TargetDir)ComputerPlus.dll" "F:\Rockstar Games\Plugins\LSPDFR"
+REM xcopy /Y "$(TargetDir)ComputerPlus.pdb" "F:\Rockstar Games\Plugins\LSPDFR"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
