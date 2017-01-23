@@ -17,20 +17,11 @@ using ComputerPlus.Extensions.Gwen;
 
 namespace ComputerPlus.Interfaces.ComputerVehDB
 {
+  
     internal static class ComputerVehicleController
     {
         private readonly static List<ComputerPlusEntity> RecentSearches = new List<ComputerPlusEntity>();
-        internal static readonly List<ALPR_Arguments> _ALPR_Detected = new List<ALPR_Arguments>(10);
-        internal static List<ALPR_Arguments> ALPR_Detected 
-        {
-            get {
-                lock (_ALPR_Detected)
-                {
-                    var data = _ALPR_Detected.ToList().Where(x => x.Vehicle != null && x.Vehicle.Exists()).ToList();
-                    return data;
-                }
-            }
-        }
+        internal static readonly List<ALPR_Arguments> ALPR_Detected = new List<ALPR_Arguments>(10);
         private static ComputerPlusEntity _LastSelected = null;
         public static ComputerPlusEntity LastSelected
         {
@@ -93,55 +84,13 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         static ComputerVehicleController()
         {
-         //   timer.Elapsed += BlipCleanup;
-        }
-
-        private static void BlipCleanup(object sender, ElapsedEventArgs e)
-        {
-            try
-            {
-                LHandle handle = null;
-                Ped suspect = null;
-                if (_Blips.Count == 0) return;
-                handle = Functions.GetCurrentPullover();
-                if (handle != null)
-                    suspect = Functions.GetPulloverSuspect(handle);
-                lock (_Blips)
-                {
-                    var data = _Blips.ToList();
-                    _Blips.Clear();
-                    data.Where(x => (x.Key != null && x.Key.Exists()) && (x.Value != null && x.Value.Exists()))
-                    .ToList()
-                    .ForEach(x =>
-                    {
-
-                        if (suspect != null && suspect.Exists())
-                        {
-
-                            if (suspect.LastVehicle != null && suspect.LastVehicle == x.Value && x.Key != null && x.Key.Exists())
-                            {
-                                x.Key.Delete();
-                            }
-                            else
-                            {
-                                _Blips.Add(x.Key, x.Value);
-                            }
-                        }
-                        else
-                            _Blips.Add(x.Key, x.Value);
-                    });
-                }
-            }
-            catch { }
-        }
-
-        
+        }        
 
         static DateTime RandomDay()
         {
             Random gen = new Random();
             DateTime start = new DateTime(1985, 1, 1);
-            int range = (DateTime.Today - start).Days;
+            int range = (DateTime.Today.AddYears(-16) - start).Days;
             return start.AddDays(gen.Next(range));
         }
 
@@ -167,14 +116,24 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             }
             
             var ownerName = Functions.GetVehicleOwnerName(vehicle);
-            var driver = vehicle.HasDriver ? vehicle.Driver : null;           
+
+            var driver = vehicle.HasDriver ? vehicle.Driver : null;
             ComputerPlusEntity owner = ComputerPedController.Instance.LookupPersona(ownerName);
-            if (owner == null)
+            if (owner == null && driver != null)
             {
-                Function.Log(String.Format("LookupVehicle owner was null.. driver may no longer exist", ownerName));
-                return null; //Driver no longer exists
+                owner = ComputerPedController.Instance.LookupPersona(driver);
+            } else
+            {
+                while (owner == null)
+                {
+                    //Last ditch effort to make C+ happy by just providing any ped as the owner and setting them as the owner
+                    Function.Log(String.Format("LookupVehicle owner was null.. driver may no longer exist", ownerName));
+                    var ped = FindRandomPed();
+                    owner = new ComputerPlusEntity(ped, Functions.GetPersonaForPed(ped));
+                }
             }
-            else if(!owner.Validate())
+
+            if (!owner.Validate())
             {
                 Function.Log(String.Format("LookupVehicle owner was null, performing fixup on {0}", ownerName));
 
@@ -186,16 +145,10 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 Functions.SetVehicleOwnerName(vehicle, String.Format("{0} {1}", parts[0], parts[1]));
                 //Work some magic to fix the fact that the ped hasn't been spawned in game
                 //@TODO parse ped model name for age group and randomize other props
-                var rnd = new Random(DateTime.Now.Millisecond);
-                
-                var peds = World.GetAllPeds();
-                Ped ped = null;
-                while (ped == null || !ped.Exists())
-                {
-                    Function.Log("Selecting a new random ped for fixup");
-                    int position = rnd.Next(0, peds.Count() - 1);
-                    ped = peds.ElementAt(position);
-                }
+
+                var ped = FindRandomPed();
+
+
                 Function.Log("Found a new ped for fixup");
                 var persona = new Persona(
                     ped,
@@ -216,7 +169,20 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
            
           
             return new ComputerPlusEntity(owner.Ped, owner.PedPersona, vehicle, vehiclePersona);
-        }        
+        } 
+        
+        private static Ped FindRandomPed()
+        {
+            var rnd = new Random(DateTime.Now.Millisecond);
+            var peds = World.EnumeratePeds().Take(50).ToArray();
+            Ped ped = null;
+            while (!ped.Exists())
+            {
+                int position = rnd.Next(0, peds.Count() - 1);
+                ped = peds.ElementAt(position);
+            }
+            return ped;
+        }       
 
         internal static void Cleanup()
         {
@@ -287,9 +253,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         }
 
         public static void AddAlprScan(ALPR_Arguments args)
-        {
-            lock(_ALPR_Detected)
-                _ALPR_Detected.Add(args);
+        {            
+          ALPR_Detected.Add(args);
         }
 
         private static void  VanillaALPR()
@@ -371,75 +336,17 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             }
         }
         
-        private static void ShowVehicleSearch()
+        internal static void ShowVehicleSearch()
         {
-            while (true)
-            {
-                var form = new ComputerVehicleSearch();
-               Function.LogDebug("Init new ComputerVehicleSearch");
-                form.Show();
-                while (form.IsOpen())
-                    GameFiber.Yield();
-               Function.LogDebug("Close ComputerVehicleSearch");
-                form.Close();
-               Function.LogDebug("ShowVehicleSearch Hibernating");
-                GameFiber.Hibernate();
-            }
+            Globals.Navigation.Push(new ComputerVehicleSearch());
         }
 
-        private static void ShowVehicleDetails()
+        internal static void ShowVehicleDetails()
         {
-            
-            while (true)
+            if (LastSelected != null && LastSelected.Validate())
             {
-                if (LastSelected != null && LastSelected.Validate())
-                {
-                    var form = new ComputerVehicleDetails(LastSelected);
-                   Function.LogDebug("Init new ComputerVehicleDetails");
-                    form.Show();
-                    while (form.IsOpen())
-                        GameFiber.Yield();
-                   Function.LogDebug("Close ComputerVehicleDetails");
-                    form.Close();
-                }
-               Function.LogDebug("ShowVehicleDetails Hibernating");
-                GameFiber.Hibernate();
+                Globals.Navigation.Push(new ComputerVehicleDetails(LastSelected));
             }
-        }
-    }
-
-    public static class EqualityComparerFactory<T>
-    {
-        private class MyComparer : IEqualityComparer<T>
-        {
-            private readonly Func<T, int> _getHashCodeFunc;
-            private readonly Func<T, T, bool> _equalsFunc;
-
-            public MyComparer(Func<T, int> getHashCodeFunc, Func<T, T, bool> equalsFunc)
-            {
-                _getHashCodeFunc = getHashCodeFunc;
-                _equalsFunc = equalsFunc;
-            }
-
-            public bool Equals(T x, T y)
-            {
-                return _equalsFunc(x, y);
-            }
-
-            public int GetHashCode(T obj)
-            {
-                return _getHashCodeFunc(obj);
-            }
-        }
-
-        public static IEqualityComparer<T> CreateComparer(Func<T, int> getHashCodeFunc, Func<T, T, bool> equalsFunc)
-        {
-            if (getHashCodeFunc == null)
-                throw new ArgumentNullException("getHashCodeFunc");
-            if (equalsFunc == null)
-                throw new ArgumentNullException("equalsFunc");
-
-            return new MyComparer(getHashCodeFunc, equalsFunc);
         }
     }
 }
