@@ -30,19 +30,19 @@
         {
             this.lbl_alert = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.text_dob = new System.Windows.Forms.TextBox();
+            this.text_arrest_time = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.text_age = new System.Windows.Forms.TextBox();
-            this.text_home_address = new System.Windows.Forms.TextBox();
-            this.text_last_name = new System.Windows.Forms.TextBox();
-            this.text_first_name = new System.Windows.Forms.TextBox();
+            this.text_arrestee_dob = new System.Windows.Forms.TextBox();
+            this.text_arrestee_home_address = new System.Windows.Forms.TextBox();
+            this.text_arrestee_last_name = new System.Windows.Forms.TextBox();
+            this.text_arrestee_first_name = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.text_arrest_street = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.test_arrest_city = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -66,13 +66,13 @@
             this.label9.TabIndex = 30;
             this.label9.Text = "Time";
             // 
-            // text_dob
+            // text_arrest_time
             // 
-            this.text_dob.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.text_dob.Location = new System.Drawing.Point(513, 273);
-            this.text_dob.Name = "text_dob";
-            this.text_dob.Size = new System.Drawing.Size(67, 21);
-            this.text_dob.TabIndex = 29;
+            this.text_arrest_time.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.text_arrest_time.Location = new System.Drawing.Point(513, 273);
+            this.text_arrest_time.Name = "text_arrest_time";
+            this.text_arrest_time.Size = new System.Drawing.Size(67, 21);
+            this.text_arrest_time.TabIndex = 29;
             // 
             // label4
             // 
@@ -90,9 +90,9 @@
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label3.Location = new System.Drawing.Point(405, 47);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(28, 15);
+            this.label3.Size = new System.Drawing.Size(33, 15);
             this.label3.TabIndex = 27;
-            this.label3.Text = "Age";
+            this.label3.Text = "DOB";
             // 
             // label2
             // 
@@ -114,37 +114,37 @@
             this.label1.TabIndex = 25;
             this.label1.Text = "First Name";
             // 
-            // text_age
+            // text_arrestee_dob
             // 
-            this.text_age.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.text_age.Location = new System.Drawing.Point(405, 65);
-            this.text_age.Name = "text_age";
-            this.text_age.Size = new System.Drawing.Size(67, 21);
-            this.text_age.TabIndex = 24;
+            this.text_arrestee_dob.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.text_arrestee_dob.Location = new System.Drawing.Point(405, 65);
+            this.text_arrestee_dob.Name = "text_arrestee_dob";
+            this.text_arrestee_dob.Size = new System.Drawing.Size(100, 21);
+            this.text_arrestee_dob.TabIndex = 24;
             // 
-            // text_home_address
+            // text_arrestee_home_address
             // 
-            this.text_home_address.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.text_home_address.Location = new System.Drawing.Point(25, 150);
-            this.text_home_address.Name = "text_home_address";
-            this.text_home_address.Size = new System.Drawing.Size(355, 21);
-            this.text_home_address.TabIndex = 23;
+            this.text_arrestee_home_address.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.text_arrestee_home_address.Location = new System.Drawing.Point(25, 150);
+            this.text_arrestee_home_address.Name = "text_arrestee_home_address";
+            this.text_arrestee_home_address.Size = new System.Drawing.Size(355, 21);
+            this.text_arrestee_home_address.TabIndex = 23;
             // 
-            // text_last_name
+            // text_arrestee_last_name
             // 
-            this.text_last_name.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.text_last_name.Location = new System.Drawing.Point(215, 65);
-            this.text_last_name.Name = "text_last_name";
-            this.text_last_name.Size = new System.Drawing.Size(166, 21);
-            this.text_last_name.TabIndex = 22;
+            this.text_arrestee_last_name.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.text_arrestee_last_name.Location = new System.Drawing.Point(215, 65);
+            this.text_arrestee_last_name.Name = "text_arrestee_last_name";
+            this.text_arrestee_last_name.Size = new System.Drawing.Size(166, 21);
+            this.text_arrestee_last_name.TabIndex = 22;
             // 
-            // text_first_name
+            // text_arrestee_first_name
             // 
-            this.text_first_name.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.text_first_name.Location = new System.Drawing.Point(25, 65);
-            this.text_first_name.Name = "text_first_name";
-            this.text_first_name.Size = new System.Drawing.Size(166, 21);
-            this.text_first_name.TabIndex = 21;
+            this.text_arrestee_first_name.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.text_arrestee_first_name.Location = new System.Drawing.Point(25, 65);
+            this.text_arrestee_first_name.Name = "text_arrestee_first_name";
+            this.text_arrestee_first_name.Size = new System.Drawing.Size(166, 21);
+            this.text_arrestee_first_name.TabIndex = 21;
             // 
             // label5
             // 
@@ -156,13 +156,13 @@
             this.label5.TabIndex = 33;
             this.label5.Text = "Street Address";
             // 
-            // textBox1
+            // text_arrest_street
             // 
-            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.textBox1.Location = new System.Drawing.Point(22, 273);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(355, 21);
-            this.textBox1.TabIndex = 32;
+            this.text_arrest_street.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.text_arrest_street.Location = new System.Drawing.Point(22, 273);
+            this.text_arrest_street.Name = "text_arrest_street";
+            this.text_arrest_street.Size = new System.Drawing.Size(355, 21);
+            this.text_arrest_street.TabIndex = 32;
             // 
             // label6
             // 
@@ -174,13 +174,13 @@
             this.label6.TabIndex = 35;
             this.label6.Text = "City";
             // 
-            // textBox2
+            // test_arrest_city
             // 
-            this.textBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.textBox2.Location = new System.Drawing.Point(25, 340);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(166, 21);
-            this.textBox2.TabIndex = 34;
+            this.test_arrest_city.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.test_arrest_city.Location = new System.Drawing.Point(25, 340);
+            this.test_arrest_city.Name = "test_arrest_city";
+            this.test_arrest_city.Size = new System.Drawing.Size(166, 21);
+            this.test_arrest_city.TabIndex = 34;
             // 
             // label7
             // 
@@ -211,20 +211,20 @@
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.test_arrest_city);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.text_arrest_street);
             this.Controls.Add(this.lbl_alert);
             this.Controls.Add(this.label9);
-            this.Controls.Add(this.text_dob);
+            this.Controls.Add(this.text_arrest_time);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.text_age);
-            this.Controls.Add(this.text_home_address);
-            this.Controls.Add(this.text_last_name);
-            this.Controls.Add(this.text_first_name);
+            this.Controls.Add(this.text_arrestee_dob);
+            this.Controls.Add(this.text_arrestee_home_address);
+            this.Controls.Add(this.text_arrestee_last_name);
+            this.Controls.Add(this.text_arrestee_first_name);
             this.Name = "ArrestReportPedDetailsTemplate";
             this.ShowIcon = false;
             this.Text = "Arrestee Details";
@@ -237,19 +237,19 @@
 
         private System.Windows.Forms.Label lbl_alert;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.TextBox text_dob;
+        private System.Windows.Forms.TextBox text_arrest_time;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox text_age;
-        private System.Windows.Forms.TextBox text_home_address;
-        private System.Windows.Forms.TextBox text_last_name;
-        private System.Windows.Forms.TextBox text_first_name;
+        private System.Windows.Forms.TextBox text_arrestee_dob;
+        private System.Windows.Forms.TextBox text_arrestee_home_address;
+        private System.Windows.Forms.TextBox text_arrestee_last_name;
+        private System.Windows.Forms.TextBox text_arrestee_first_name;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox text_arrest_street;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox test_arrest_city;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
     }
