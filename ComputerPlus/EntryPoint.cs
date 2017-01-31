@@ -18,6 +18,8 @@ using System.Linq;
 using ComputerPlus.Extensions.Gwen;
 using System.Windows.Forms;
 using ComputerPlus.Interfaces.SimpleNotepad;
+using ComputerPlus.Interfaces.Reports.Models;
+using System.Threading;
 
 namespace ComputerPlus
 {
@@ -48,6 +50,8 @@ namespace ComputerPlus
         private KeyBinder OpenSimpleNotepad;
         private static KeyBinder OpenCloseComputerPlusBinder;
 
+        
+
 
         public override void Initialize()
         {
@@ -69,7 +73,7 @@ namespace ComputerPlus
             OpenCloseComputerPlusBinder = new KeyBinder(GameControl.Context);
             OpenSimpleNotepad = new KeyBinder(Keys.End);
             Function.checkForRageVersionClass.checkForRageVersion(0.41f);
-            XmlConfigs.ReadChargeCategories();
+            Globals.ChargeCategoryList = XmlConfigs.ReadChargeCategories();
            
         }
 
@@ -118,14 +122,13 @@ namespace ComputerPlus
         {
             try
             {
-                var storage = Storage.ReadOrInit();
                 var plan = new SchemaVersion() { Plans = new List<string>() { "initial" } };
-                var result = storage.Upgrade(plan);
+                var result = Globals.Store.Upgrade(plan);
                 if (result == UpgradeStatus.COMPLETED)
                 {
                     var entry = SchemaVersion.Create("1.0.0");
                     Function.Log("DutyStateChangedHandler table");
-                    var table = new SchemaTable(storage.Connection());
+                    var table = new SchemaTable(Globals.Store.Connection());
                     Function.Log("DutyStateChangedHandler table after");
                     table.Insert(entry);
                 }
@@ -310,20 +313,27 @@ namespace ComputerPlus
             {
                 GameFiber.StartNew(() =>
                 {
-                    entry.form.Show();
-                    do
-                    {
-                        GameFiber.Yield();
+                    try {
+                        entry.form.Show();
+                        do
+                        {
+                            GameFiber.Yield();
+                        }
+                        while (!Globals.CloseRequested && entry.form.IsOpen());
+
+                        Globals.Navigation.RemoveEntry(entry, false);
                     }
-                    while (!Globals.CloseRequested && entry.form.IsOpen());
-           
-                    Globals.Navigation.RemoveEntry(entry, false);
+                    catch (Exception e)
+                    {
+                        Function.Log(e.ToString());
+                    }
                     //NavOnFormRemoved(sender, entry);
                 });
             }
             catch (Exception e)
             {
-                Function.Log(e.ToString());
+                if (!(e is ThreadAbortException))
+                    Function.Log(e.ToString());
             }
         }
 
@@ -339,7 +349,8 @@ namespace ComputerPlus
             }
             catch (Exception e)
             {
-                Function.Log(e.ToString());
+                if (!(e is ThreadAbortException))
+                    Function.Log(e.ToString());
             }
         }
 
@@ -420,7 +431,7 @@ namespace ComputerPlus
             {
                 try {
                     GameFiber.Yield();
-                    if (!IsMainComputerOpen && OpenSimpleNotepad.IsPressed)
+                    if (!IsMainComputerOpen && (Game.IsControlKeyDownRightNow && OpenSimpleNotepad.IsPressed))
                     {
                         EntryPoint.PauseGame(Globals.PauseGameWhenOpen, true);
                         ShowNotepad();
@@ -434,7 +445,7 @@ namespace ComputerPlus
                 }
                 catch(Exception e)
                 {
-                    Function.Log(e.ToString());
+                   // Function.Log(e.ToString());
                 }
             }
         }

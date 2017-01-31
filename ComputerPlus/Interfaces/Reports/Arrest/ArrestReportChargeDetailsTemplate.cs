@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace ComputerPlus.Interfaces.Reports.ArrestReport
+namespace ComputerPlus.Interfaces.Reports.Arrest
 {
-    public partial class ArrestReportContainerTemplate : Form
+    public partial class ArrestReportChargeDetailsTemplate : Form
     {
-        public ArrestReportContainerTemplate()
+        public ArrestReportChargeDetailsTemplate()
         {
             InitializeComponent();
         }

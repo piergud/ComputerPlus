@@ -44,6 +44,7 @@
             this.cb_toggle_background = new System.Windows.Forms.CheckBox();
             this.btn_arrest_report = new System.Windows.Forms.Button();
             this.btn_notepad = new System.Windows.Forms.Button();
+            this.btn_browse_report = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btn_ped_db
@@ -171,18 +172,6 @@
             this.cb_toggle_background.Text = "Toggle Background";
             this.cb_toggle_background.UseVisualStyleBackColor = true;
             // 
-            // btn_notepad
-            // 
-            this.btn_notepad.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_notepad.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.btn_notepad.Location = new System.Drawing.Point(451, 5);
-            this.btn_notepad.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
-            this.btn_notepad.Name = "btn_notepad";
-            this.btn_notepad.Size = new System.Drawing.Size(59, 22);
-            this.btn_notepad.TabIndex = 11;
-            this.btn_notepad.Text = "Notepad";
-            this.btn_notepad.UseVisualStyleBackColor = true;
-            // 
             // btn_arrest_report
             // 
             this.btn_arrest_report.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -195,12 +184,37 @@
             this.btn_arrest_report.Text = "Report";
             this.btn_arrest_report.UseVisualStyleBackColor = true;
             // 
+            // btn_notepad
+            // 
+            this.btn_notepad.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_notepad.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.btn_notepad.Location = new System.Drawing.Point(451, 5);
+            this.btn_notepad.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.btn_notepad.Name = "btn_notepad";
+            this.btn_notepad.Size = new System.Drawing.Size(59, 22);
+            this.btn_notepad.TabIndex = 11;
+            this.btn_notepad.Text = "Notepad";
+            this.btn_notepad.UseVisualStyleBackColor = true;
+            // 
+            // btn_browse_report
+            // 
+            this.btn_browse_report.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btn_browse_report.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.btn_browse_report.Location = new System.Drawing.Point(390, 234);
+            this.btn_browse_report.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.btn_browse_report.Name = "btn_browse_report";
+            this.btn_browse_report.Size = new System.Drawing.Size(125, 30);
+            this.btn_browse_report.TabIndex = 12;
+            this.btn_browse_report.Text = "Browse Report";
+            this.btn_browse_report.UseVisualStyleBackColor = true;
+            // 
             // ComputerMainTemplate
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(645, 274);
+            this.Controls.Add(this.btn_browse_report);
             this.Controls.Add(this.btn_notepad);
             this.Controls.Add(this.btn_arrest_report);
             this.Controls.Add(this.cb_toggle_background);
@@ -243,5 +257,6 @@
         private CheckBox cb_toggle_background;
         private Button btn_notepad;
         private Button btn_arrest_report;
+        private Button btn_browse_report;
     }
 }

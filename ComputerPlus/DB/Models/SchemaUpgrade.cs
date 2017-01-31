@@ -16,14 +16,14 @@ namespace ComputerPlus.DB.Models
         public List<SchemaVersion> Versions;
     }
 
-    public class SchemaVersion : BaseModel
+    public class SchemaVersion : PersistedModel
     {
         [XmlAttribute(AttributeName = "plans")]
         public List<String> Plans;
 
         public static SchemaVersion Create(String id)
         {
-            return new SchemaVersion() { id = id };
+            return new SchemaVersion() { id = Guid.Parse(id) };
         }
     }
 

@@ -44,6 +44,7 @@ namespace ComputerPlus
             {
                if (e is InvalidOperationException)
                 {
+                    Function.Log(e.ToString());
                     Function.ShowWarning("Could not parse ChargeCategories XML. Please check or redownload");
                     return null;
                 }
