@@ -1,4 +1,4 @@
-﻿namespace ComputerPlus.Interfaces.Reports.ArrestReport
+﻿namespace ComputerPlus.Interfaces.Reports.Arrest
 {
     partial class ArrestReportChargeDetailsTemplate
     {
@@ -30,19 +30,18 @@
         {
             this.lb_charges = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.text_first_name = new System.Windows.Forms.TextBox();
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.tb_notes = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnAddCharge = new System.Windows.Forms.Button();
+            this.btnRemoveSelectedCharge = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lb_charges
             // 
-            this.lb_charges.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.lb_charges.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.lb_charges.FormattingEnabled = true;
-            this.lb_charges.ItemHeight = 9;
+            this.lb_charges.ItemHeight = 15;
             this.lb_charges.Location = new System.Drawing.Point(504, 72);
             this.lb_charges.Name = "lb_charges";
             this.lb_charges.Size = new System.Drawing.Size(165, 274);
@@ -51,62 +50,56 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label1.Location = new System.Drawing.Point(339, 40);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(39, 15);
             this.label1.TabIndex = 6;
             this.label1.Text = "Notes";
             // 
-            // text_first_name
+            // tb_notes
             // 
-            this.text_first_name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.text_first_name.Location = new System.Drawing.Point(329, 72);
-            this.text_first_name.Multiline = true;
-            this.text_first_name.Name = "text_first_name";
-            this.text_first_name.Size = new System.Drawing.Size(165, 100);
-            this.text_first_name.TabIndex = 1;
-            // 
-            // treeView1
-            // 
-            this.treeView1.Location = new System.Drawing.Point(12, 72);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(314, 307);
-            this.treeView1.TabIndex = 0;
+            this.tb_notes.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.tb_notes.Location = new System.Drawing.Point(329, 72);
+            this.tb_notes.Multiline = true;
+            this.tb_notes.Name = "tb_notes";
+            this.tb_notes.Size = new System.Drawing.Size(165, 100);
+            this.tb_notes.TabIndex = 1;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label2.Location = new System.Drawing.Point(12, 40);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(105, 15);
             this.label2.TabIndex = 8;
             this.label2.Text = "Available Charges";
             // 
-            // button1
+            // btnAddCharge
             // 
-            this.button1.Location = new System.Drawing.Point(329, 204);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(169, 23);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "Add Charge";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btnAddCharge.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.btnAddCharge.Location = new System.Drawing.Point(329, 204);
+            this.btnAddCharge.Name = "btnAddCharge";
+            this.btnAddCharge.Size = new System.Drawing.Size(169, 23);
+            this.btnAddCharge.TabIndex = 2;
+            this.btnAddCharge.Text = "Add Charge";
+            this.btnAddCharge.UseVisualStyleBackColor = true;
             // 
-            // button2
+            // btnRemoveSelectedCharge
             // 
-            this.button2.Location = new System.Drawing.Point(504, 356);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(165, 23);
-            this.button2.TabIndex = 4;
-            this.button2.Text = "Remove Selected";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.btnRemoveSelectedCharge.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.btnRemoveSelectedCharge.Location = new System.Drawing.Point(504, 356);
+            this.btnRemoveSelectedCharge.Name = "btnRemoveSelectedCharge";
+            this.btnRemoveSelectedCharge.Size = new System.Drawing.Size(165, 23);
+            this.btnRemoveSelectedCharge.TabIndex = 4;
+            this.btnRemoveSelectedCharge.Text = "Remove Selected";
+            this.btnRemoveSelectedCharge.UseVisualStyleBackColor = true;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.label3.Location = new System.Drawing.Point(521, 40);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(91, 15);
@@ -120,12 +113,11 @@
             this.ClientSize = new System.Drawing.Size(676, 391);
             this.ControlBox = false;
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnRemoveSelectedCharge);
+            this.Controls.Add(this.btnAddCharge);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.treeView1);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.text_first_name);
+            this.Controls.Add(this.tb_notes);
             this.Controls.Add(this.lb_charges);
             this.Name = "ArrestReportChargeDetailsTemplate";
             this.ShowIcon = false;
@@ -139,11 +131,10 @@
 
         private System.Windows.Forms.ListBox lb_charges;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox text_first_name;
-        private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.TextBox tb_notes;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btnAddCharge;
+        private System.Windows.Forms.Button btnRemoveSelectedCharge;
         private System.Windows.Forms.Label label3;
     }
 }

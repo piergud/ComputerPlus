@@ -84,6 +84,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         static ComputerVehicleController()
         {
+           
         }        
 
         static DateTime RandomDay()

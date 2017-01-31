@@ -1,4 +1,4 @@
-﻿namespace ComputerPlus.Interfaces.Reports.ArrestReport
+﻿namespace ComputerPlus.Interfaces.Reports.Arrest
 {
     partial class ArrestAdditionalParties
     {

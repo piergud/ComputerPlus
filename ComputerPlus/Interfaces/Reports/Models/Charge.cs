@@ -10,6 +10,25 @@ namespace ComputerPlus.Interfaces.Reports.Models
     [Serializable]
     public class Charge
     {
+        public Charge()
+        {
+
+        }
+
+        public Charge(String name, bool isFelony)
+        {
+            this.Name = name;
+            this.IsFelony = IsFelony;
+        }
+
+      
+        [XmlAttribute("name")]
+        public String Name
+        {
+            get;
+            set;
+        }
+
         [XmlAttribute("felony")]
         public bool IsFelony
         {
@@ -17,13 +36,21 @@ namespace ComputerPlus.Interfaces.Reports.Models
             set;
         }
 
-        [XmlElement(ElementName = "Question")]
-        public List<ChargeQuestion> Questions
+        [XmlElement(ElementName = "Charge")]
+        public List<Charge> Children
         {
             get;
             set;
         }
 
 
+        public bool IsContainer
+        {
+            get
+            {
+                return Children != null && Children.Count > 0;
+            }
+        }
+       
     }
 }

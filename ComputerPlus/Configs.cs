@@ -67,6 +67,16 @@ namespace ComputerPlus
             get { return unit; }
         }
 
+        internal static int BaseFormWidth
+        {
+            get { return 700; }
+        }
+
+        internal static int BaseFormHeight
+        {
+            get { return 300; }
+        }
+
         /*public static Keys NotebookKey { get { return ini_file.ReadEnum<Keys>("General", "NotebookKey", Keys.D2); } }
         public static Keys NotebookKeyModifier { get { return ini_file.ReadEnum<Keys>("General", "NotebookKeyModifier", Keys.LControlKey); } }
 

@@ -5,6 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ComputerPlus.Controllers;
+using ComputerPlus.Interfaces.Reports.Models;
+using ComputerPlus.DB;
+
 namespace ComputerPlus
 {
     internal sealed class Globals
@@ -28,6 +31,18 @@ namespace ComputerPlus
         internal static String SimpleNotepadText = String.Empty;
         private static String Clipboard = String.Empty;
         internal static readonly String DefaultAssetPath = @"Plugins\LSPDFR\ComputerPlus\";
+        internal static readonly Storage Store = Storage.ReadOrInit();
+        static public ArrestReport PendingArrestReport
+        {
+            get;
+            internal set;
+        } = new ArrestReport();
+
+        public static ChargeCategories ChargeCategoryList
+        {
+            get;
+            internal set;
+        } = null;
 
         /// <summary>
         /// Returns the active callout from the queue.
