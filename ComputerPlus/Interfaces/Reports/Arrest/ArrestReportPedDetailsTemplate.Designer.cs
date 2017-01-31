@@ -1,4 +1,4 @@
-﻿namespace ComputerPlus.Interfaces.Reports.ArrestReport
+﻿namespace ComputerPlus.Interfaces.Reports.Arrest
 {
     partial class ArrestReportPedDetailsTemplate
     {
@@ -42,7 +42,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.text_arrest_street = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.test_arrest_city = new System.Windows.Forms.TextBox();
+            this.text_arrest_city = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -71,8 +71,8 @@
             this.text_arrest_time.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.text_arrest_time.Location = new System.Drawing.Point(513, 273);
             this.text_arrest_time.Name = "text_arrest_time";
-            this.text_arrest_time.Size = new System.Drawing.Size(67, 21);
-            this.text_arrest_time.TabIndex = 29;
+            this.text_arrest_time.Size = new System.Drawing.Size(101, 21);
+            this.text_arrest_time.TabIndex = 5;
             // 
             // label4
             // 
@@ -120,7 +120,7 @@
             this.text_arrestee_dob.Location = new System.Drawing.Point(405, 65);
             this.text_arrestee_dob.Name = "text_arrestee_dob";
             this.text_arrestee_dob.Size = new System.Drawing.Size(100, 21);
-            this.text_arrestee_dob.TabIndex = 24;
+            this.text_arrestee_dob.TabIndex = 2;
             // 
             // text_arrestee_home_address
             // 
@@ -128,7 +128,7 @@
             this.text_arrestee_home_address.Location = new System.Drawing.Point(25, 150);
             this.text_arrestee_home_address.Name = "text_arrestee_home_address";
             this.text_arrestee_home_address.Size = new System.Drawing.Size(355, 21);
-            this.text_arrestee_home_address.TabIndex = 23;
+            this.text_arrestee_home_address.TabIndex = 3;
             // 
             // text_arrestee_last_name
             // 
@@ -136,7 +136,7 @@
             this.text_arrestee_last_name.Location = new System.Drawing.Point(215, 65);
             this.text_arrestee_last_name.Name = "text_arrestee_last_name";
             this.text_arrestee_last_name.Size = new System.Drawing.Size(166, 21);
-            this.text_arrestee_last_name.TabIndex = 22;
+            this.text_arrestee_last_name.TabIndex = 1;
             // 
             // text_arrestee_first_name
             // 
@@ -144,7 +144,7 @@
             this.text_arrestee_first_name.Location = new System.Drawing.Point(25, 65);
             this.text_arrestee_first_name.Name = "text_arrestee_first_name";
             this.text_arrestee_first_name.Size = new System.Drawing.Size(166, 21);
-            this.text_arrestee_first_name.TabIndex = 21;
+            this.text_arrestee_first_name.TabIndex = 0;
             // 
             // label5
             // 
@@ -162,7 +162,7 @@
             this.text_arrest_street.Location = new System.Drawing.Point(22, 273);
             this.text_arrest_street.Name = "text_arrest_street";
             this.text_arrest_street.Size = new System.Drawing.Size(355, 21);
-            this.text_arrest_street.TabIndex = 32;
+            this.text_arrest_street.TabIndex = 4;
             // 
             // label6
             // 
@@ -174,13 +174,13 @@
             this.label6.TabIndex = 35;
             this.label6.Text = "City";
             // 
-            // test_arrest_city
+            // text_arrest_city
             // 
-            this.test_arrest_city.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.test_arrest_city.Location = new System.Drawing.Point(25, 340);
-            this.test_arrest_city.Name = "test_arrest_city";
-            this.test_arrest_city.Size = new System.Drawing.Size(166, 21);
-            this.test_arrest_city.TabIndex = 34;
+            this.text_arrest_city.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.text_arrest_city.Location = new System.Drawing.Point(25, 340);
+            this.text_arrest_city.Name = "text_arrest_city";
+            this.text_arrest_city.Size = new System.Drawing.Size(166, 21);
+            this.text_arrest_city.TabIndex = 6;
             // 
             // label7
             // 
@@ -211,7 +211,7 @@
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.test_arrest_city);
+            this.Controls.Add(this.text_arrest_city);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.text_arrest_street);
             this.Controls.Add(this.lbl_alert);
@@ -249,7 +249,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox text_arrest_street;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox test_arrest_city;
+        private System.Windows.Forms.TextBox text_arrest_city;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
     }

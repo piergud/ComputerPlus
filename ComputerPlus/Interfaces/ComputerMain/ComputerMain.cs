@@ -15,7 +15,7 @@ namespace ComputerPlus
 {
     internal class ComputerMain : GwenForm
     {
-        private Button btn_logout, btn_ped_db, btn_veh_db, btn_request, btn_activecalls, btn_notepad, btn_arrest_report;
+        private Button btn_logout, btn_ped_db, btn_veh_db, btn_request, btn_activecalls, btn_notepad, btn_arrest_report, btn_browse_report;
         internal ListBox list_recent;
         private Label label_external_ui;
         private ComboBox list_external_ui;
@@ -63,6 +63,7 @@ namespace ComputerPlus
             this.btn_request.Clicked += this.RequestBackupButtonClickedHandler;
             this.btn_notepad.Clicked += OpenNotepadHandler;
             this.btn_arrest_report.Clicked += this.ReportsClickedHandler;
+            this.btn_browse_report.Clicked += this.ReportsClickedHandler;
             this.cb_toggle_background.CheckChanged += checkbox_change;
             this.cb_toggle_pause.CheckChanged += checkbox_change;
             this.Window.KeyboardInputEnabled = false;
@@ -114,6 +115,9 @@ namespace ComputerPlus
 
         private void ReportsClickedHandler(Base sender, ClickedEventArgs e)
         {
+            if (sender == btn_browse_report)
+                ComputerReportsController.ShowArrestReportList();
+            else if(sender == btn_arrest_report)
             ComputerReportsController.ShowArrestReportCreate();
         }
 
