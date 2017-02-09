@@ -52,9 +52,11 @@
     <Reference Include="ALPRPlus, Version=0.2.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Dependencies\ALPRPlus.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="British Policing Script">
       <HintPath>Dependencies\British Policing Script.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="CodeEngine.Framework.QueryBuilder">
       <HintPath>Dependencies\CodeEngine.Framework.QueryBuilder.dll</HintPath>
@@ -142,6 +144,7 @@
     <Compile Include="Extensions\Rage\PedExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
+    <Compile Include="FriendlyKeys.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="Interfaces\Common\ActionDialog.cs" />
     <Compile Include="Interfaces\Common\DateInputBox.cs" />

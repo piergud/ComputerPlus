@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Rage;
+using ComputerPlus.Interfaces;
+using System.Windows.Forms;
 
 namespace ComputerPlus
 {
@@ -13,6 +15,9 @@ namespace ComputerPlus
         internal static Dictionary<uint,string> bgs = new Dictionary<uint,string>();
         static string user, pass, unit;
         static bool skip;
+        private static List<KeyBinder> OpenComputerPlusKeys = new List<KeyBinder>();
+        private static List<KeyBinder> OpenSimpleNotepadKeys = new List<KeyBinder>();
+        private static List<KeyBinder> CloseComputerPlusKeys = new List<KeyBinder>();
 
         internal static void RunConfigCheck()
         {
@@ -25,6 +30,7 @@ namespace ComputerPlus
             pass = ini_file.ReadString("SETTINGS", "LoginPass");
             skip = ini_file.ReadBoolean("SETTINGS", "SkipLogin");
             unit = ini_file.ReadString("SETTINGS", "UnitNumber");
+
             if (String.IsNullOrWhiteSpace(user))
                 user = "Officer";
             if (String.IsNullOrWhiteSpace(pass))
@@ -36,6 +42,46 @@ namespace ComputerPlus
             {
                 bgs.Add(Game.GetHashKey(key), ini_file.ReadString("VEHICLE BACKGROUNDS", key));
             }
+
+            ParseKeybindings();
+
+
+        }
+
+        private static void ParseKeybindings()
+        {
+            if (!ini_file.DoesSectionExist("KEYBINDINGS"))
+            {
+                Game.DisplayHelp("Your ComputerPlus.ini file is missing the KEYBINDINGS section. Please verify your config");
+                Function.Log("Your Computer+ config file is missing the KEYBINDINGS section. Please verify your config");
+                OpenComputerPlusKeys.Add(new KeyBinder(GameControl.Context));
+            }
+            else {
+                ParseKeybindings(OpenComputerPlusKeys, "OpenComputerPlus");
+                ParseKeybindings(CloseComputerPlusKeys, "CloseComputerPlus");
+                ParseKeybindings(OpenSimpleNotepadKeys, "OpenSimpleNotepad");
+                if (OpenComputerPlusKeys.Count == 0) //Fail safe for opening computer by holding the context secondary (E / DPadRight)
+                    OpenComputerPlusKeys.Add(new KeyBinder(GameControl.Context));
+            }
+        }
+
+        private static void ParseKeybindings(List<KeyBinder> toList, String forKey)
+        {
+            try
+            {
+                var key = ini_file.ReadEnum<Keys>("KEYBINDINGS", forKey + "Key", Keys.None);
+                var keyModifier = ini_file.ReadEnum<Keys>("KEYBINDINGS", forKey + "ModifierKey", Keys.None);
+                var controllerButton = ini_file.ReadEnum<ControllerButtons>("KEYBINDINGS", forKey + "ControllerButton", ControllerButtons.None);
+                var controllerButtonModifier = ini_file.ReadEnum<ControllerButtons>("KEYBINDINGS", forKey + "ControllerModifierButton", ControllerButtons.None);
+
+                if (key != Keys.None)
+                    toList.Add(new KeyBinder(key, keyModifier));
+                if (controllerButton != ControllerButtons.None)
+                    toList.Add(new KeyBinder(controllerButton, controllerButtonModifier));               
+            }
+            catch
+            {
+            }
         }
 
         internal static void CreateINIFile()
@@ -45,6 +91,21 @@ namespace ComputerPlus
             ini_file.Write("SETTINGS", "LoginPass", "DoNuTz");
             ini_file.Write("SETTINGS", "SkipLogin", "false");
             ini_file.Write("SETTINGS", "UnitNumber", "1-A-12");
+            ini_file.Write("KEYBINDINGS", "OpenComputerPlusKey", "None");
+            ini_file.Write("KEYBINDINGS", "OpenComputerPlusModifierKey", "None");
+            ini_file.Write("KEYBINDINGS", "OpenComputerPlusControllerButton", "None");
+            ini_file.Write("KEYBINDINGS", "OpenComputerPlusControllerModifierButton", "None");
+
+            ini_file.Write("KEYBINDINGS", "CloseComputerPlusKey", "None");
+            ini_file.Write("KEYBINDINGS", "CloseComputerPlusModifierKey", "None");
+            ini_file.Write("KEYBINDINGS", "OpenComputerPlusControllerModifierButton", "None");
+            ini_file.Write("KEYBINDINGS", "OpenComputerPlusControllerModifierButton", "None");
+
+            ini_file.Write("KEYBINDINGS", "OpenSimpleNotepadKey", "None");
+            ini_file.Write("KEYBINDINGS", "OpenSimpleNotepadModifierKey", "None");
+            ini_file.Write("KEYBINDINGS", "OpenComputerPlusControllerModifierButton", "None");
+            ini_file.Write("KEYBINDINGS", "OpenComputerPlusControllerModifierButton", "None");
+
         }
 
         internal static string Username
@@ -65,6 +126,30 @@ namespace ComputerPlus
         internal static string UnitNumber
         {
             get { return unit; }
+        }
+
+        internal static KeyBinder[] OpenComputerPlus
+        {
+            get
+            {
+                return OpenComputerPlusKeys.ToArray();
+            }
+        }
+
+        internal static KeyBinder[] CloseComputerPlus
+        {
+            get
+            {
+                return CloseComputerPlusKeys.ToArray();
+            }
+        }
+
+        internal static KeyBinder[] OpenSimpleNotepad
+        {
+            get
+            {
+                return OpenSimpleNotepadKeys.ToArray();
+            }
         }
 
         internal static int BaseFormWidth
