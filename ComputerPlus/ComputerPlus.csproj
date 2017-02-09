@@ -52,9 +52,11 @@
     <Reference Include="ALPRPlus, Version=0.2.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Dependencies\ALPRPlus.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="British Policing Script">
       <HintPath>Dependencies\British Policing Script.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Gwen, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -101,6 +103,7 @@
     <Compile Include="Extensions\Rage\PedExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
+    <Compile Include="FriendlyKeys.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="Interfaces\ComputerCurrentCallDetails\ComputerHelpDialog.cs" />
     <Compile Include="Interfaces\ComputerCurrentCallDetails\ComputerCurrentCallDetails.cs" />
