@@ -19,7 +19,7 @@ namespace ComputerPlus
         internal static List<ExternalUI> ExternalUI = new List<API.ExternalUI>();
         internal readonly static String EmptyImageVehicle = "no_vehicle_image.jpg";
         internal readonly static String EmptyImagePed = "no_ped_image.jpg";
-        internal readonly static String DefaultBackgroundImage = "lspd.jpg";
+        internal readonly static String DefaultBackgroundImage = "generic.jpg";
         internal static bool PauseGameWhenOpen = true;
         internal static bool ShowBackgroundWhenOpen = true;
         internal static bool CloseRequested = false;
