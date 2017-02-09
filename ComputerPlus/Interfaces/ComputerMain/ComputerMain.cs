@@ -10,6 +10,7 @@ using ComputerPlus.Interfaces.ComputerVehDB;
 using ComputerPlus.Extensions.Gwen;
 using ComputerPlus.Controllers;
 using ComputerPlus.Extensions.Gwen;
+using ComputerPlus.Interfaces.Common;
 
 namespace ComputerPlus
 {
@@ -55,6 +56,7 @@ namespace ComputerPlus
         public override void InitializeLayout()
         {
             base.InitializeLayout();
+            this.Window.Skin.DefaultFont.Size = 14;
             this.cb_toggle_background.IsChecked = Globals.ShowBackgroundWhenOpen;
             this.cb_toggle_pause.IsChecked = Globals.PauseGameWhenOpen;
             this.btn_logout.Clicked += this.LogoutButtonClickedHandler;
@@ -98,6 +100,12 @@ namespace ComputerPlus
         private void OpenNotepadHandler(Base sender, ClickedEventArgs arguments)
         {
             EntryPoint.ShowNotepad(false);
+            //var alert = new ActionDialog("Test title", String.Format("This is a test message{0}I wish I was a fish.{0}Annnnnnddddd immmmmmmmm suppppppepppppppppppppppppeeeeeeeeerrrrrrrrrrrrrrrrrrrrr looooooooooooooonnnng", Environment.NewLine), "Accept", null);
+            //alert.OnDialogAction += new DialogActionEvent((object sender1, DialogAction action) =>
+            //{
+            //    if (action == DialogAction.POSITIVE) LogoutButtonClickedHandler(null, null);
+            //});
+            //Globals.Navigation.Push(alert);
         }
 
         private void checkbox_change(Base sender, EventArgs arguments)

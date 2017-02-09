@@ -11,30 +11,14 @@ namespace ComputerPlus.DB.Tables
     class ArrestReportTable: BaseTable<ArrestReport>
     {
      
-        public static readonly String ARREST_TIME = "ArrestTime";
-        public static readonly String FIRST_NAME = "FirstName";
-        public static readonly String LAST_NAME = "LastName";
-        public static readonly String DOB = "DOB";
-        public static readonly String HOME_ADDRESS = "HomeAddress";
-        public static readonly String ARREST_STREET_ADDRESS = "ArrestStreetAddress";
-        public static readonly String ARREST_CITY = "ArrestCity";
+ 
 
         public ArrestReportTable(SQLiteConnection connection) : base(connection)
         {
 
         }
 
-        private static String[] mProjection = new String[]
-       {
-            ID_KEY,
-            ARREST_TIME,
-            FIRST_NAME,
-            LAST_NAME,
-            DOB,
-            HOME_ADDRESS,
-            ARREST_STREET_ADDRESS,
-            ARREST_CITY
-       };
+
         private static readonly String mTable = "ArrestReport";
         protected override string[] Projection()
         {

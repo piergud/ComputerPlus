@@ -28,16 +28,27 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.btn_clear = new System.Windows.Forms.Button();
             this.btn_save = new System.Windows.Forms.Button();
             this.SuspendLayout();
+            // 
+            // btn_clear
+            // 
+            this.btn_clear.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.btn_clear.Location = new System.Drawing.Point(630, 13);
+            this.btn_clear.Name = "btn_clear";
+            this.btn_clear.Size = new System.Drawing.Size(50, 23);
+            this.btn_clear.TabIndex = 0;
+            this.btn_clear.Text = "Clear";
+            this.btn_clear.UseVisualStyleBackColor = true;
             // 
             // btn_save
             // 
             this.btn_save.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.btn_save.Location = new System.Drawing.Point(630, 13);
+            this.btn_save.Location = new System.Drawing.Point(574, 12);
             this.btn_save.Name = "btn_save";
             this.btn_save.Size = new System.Drawing.Size(50, 23);
-            this.btn_save.TabIndex = 0;
+            this.btn_save.TabIndex = 1;
             this.btn_save.Text = "Save";
             this.btn_save.UseVisualStyleBackColor = true;
             // 
@@ -47,6 +58,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(717, 588);
             this.Controls.Add(this.btn_save);
+            this.Controls.Add(this.btn_clear);
             this.Name = "ArrestReportContainerTemplate";
             this.Text = "Arrest Report";
             this.ResumeLayout(false);
@@ -55,6 +67,7 @@
 
         #endregion
 
+        private System.Windows.Forms.Button btn_clear;
         private System.Windows.Forms.Button btn_save;
     }
 }
