@@ -19,6 +19,7 @@ using System.Windows.Forms;
 using ComputerPlus.Interfaces.SimpleNotepad;
 using ComputerPlus.Interfaces.Reports.Models;
 using System.Threading;
+using System.Text;
 
 namespace ComputerPlus
 {
@@ -45,11 +46,6 @@ namespace ComputerPlus
         private GameFiber RunComputerPlusFiber;
 
 
-        private static KeyBinder CloseComputerPlusWindow;
-        private KeyBinder OpenSimpleNotepad;
-        private static KeyBinder OpenCloseComputerPlusBinder;
-
-        
 
 
         public override void Initialize()
@@ -65,12 +61,6 @@ namespace ComputerPlus
             Globals.Navigation.OnFormRemoved += NavOnFormRemoved;
             AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(AssemblyResolve);
             Configs.RunConfigCheck();
-            if (Game.IsControllerConnected)
-                CloseComputerPlusWindow = new KeyBinder(ControllerButtons.X);
-            else
-                CloseComputerPlusWindow = new KeyBinder(Keys.PageDown);
-            OpenCloseComputerPlusBinder = new KeyBinder(GameControl.Context);
-            OpenSimpleNotepad = new KeyBinder(Keys.End);
             Function.checkForRageVersionClass.checkForRageVersion(0.41f);
             Globals.ChargeCategoryList = XmlConfigs.ReadChargeCategories();
             
@@ -83,15 +73,15 @@ namespace ComputerPlus
             Globals.Navigation.OnFormRemoved -= NavOnFormRemoved;
             if (RunComputerPlusFiber.IsRunning()) RunComputerPlusFiber.Abort();
             if (CheckIfCalloutActiveFiber.IsRunning()) CheckIfCalloutActiveFiber.Abort();
-                }
+        }
 
 
         private void DutyStateChangedHandler(bool on_duty)
         {
             Globals.IsPlayerOnDuty = on_duty;
 
-            if (on_duty) 
-            {
+            if (on_duty)
+            {                               
                 Function.MonitorAICalls();
                 Function.CheckForUpdates();
                 CheckIfCalloutActiveFiber.Resume();
@@ -101,7 +91,7 @@ namespace ComputerPlus
                 InitStorage();
                 if (Function.IsAlprPlusRunning())
                 {
-                    Function.LogDebug("C+: Registering for ALPR+ Events");                    
+                    Function.LogDebug("C+: Registering for ALPR+ Events");
                     ALPRPlusFunctions.OnAlprPlusMessage += ALPRPlusFunctions_OnAlprPlusMessage;
                     ALPRPlusFunctions.RegisterForEvents();
                 }
@@ -152,12 +142,20 @@ namespace ComputerPlus
 
         private static void VehicleStoppedHandler(object sender, Vehicle veh)
         {
-            if (veh && !_prompted) 
+            if (veh && !_prompted)
             {
-                if (Function.IsPoliceVehicle(veh)
-                    && LSPD_First_Response.Mod.API.Functions.GetCurrentPullover() != null)
+                if (Function.IsPoliceVehicle(veh))
+                    //&& LSPD_First_Response.Mod.API.Functions.GetCurrentPullover() != null)
                 {
-                    Game.DisplayHelp("Hold ~INPUT_CONTEXT~ to open ~b~LSPDFR Computer+~w~.");
+                    StringBuilder sb = new StringBuilder();
+                    foreach(var friendlyName in Configs.OpenComputerPlus.Select(x => x.FriendlyName))
+                    {
+                        if (sb.Length == 0) sb.Append(friendlyName);
+                        else sb.AppendFormat(" or {0}", friendlyName);
+                    }
+                    
+                    
+                    Game.DisplayHelp(String.Format("Hold {0} to open ~b~LSPDFR Computer+~w~.", sb.ToString()));
                     _prompted = true;
                 }
             }
@@ -176,28 +174,28 @@ namespace ComputerPlus
         }
 
 
-        private bool CheckOpenCloseDebouncedTrigger(KeyBinder binder)
+        private bool CheckOpenCloseDebouncedTrigger(KeyBinder[] binder)
+        {
+            if (binder.Any(x => x.IsPressed))
+            {
+                if (!sw.IsRunning)
                 {
-            if (binder.IsPressed)
-                    {
-                        if (!sw.IsRunning)
-                        {
-                            sw.Start();
-                        }
-                        else if (sw.ElapsedMilliseconds > 250)
-                        {
-                            sw.Stop();
-                            sw.Reset();
+                    sw.Start();
+                }
+                else if (sw.ElapsedMilliseconds > 250)
+                {
+                    sw.Stop();
+                    sw.Reset();
                     return true;
-                        }
-                    }
-                    else
-                    {
-                        if (sw.IsRunning)
-                        {
-                            sw.Stop();
-                            sw.Reset();
-                        }
+                }
+            }
+            else
+            {
+                if (sw.IsRunning)
+                {
+                    sw.Stop();
+                    sw.Reset();
+                }
             }
             return false;
         }
@@ -206,23 +204,22 @@ namespace ComputerPlus
 
         private void CheckForOpenTrigger()
         {
-            
-            if (CheckOpenCloseDebouncedTrigger(OpenCloseComputerPlusBinder))
+            if (CheckOpenCloseDebouncedTrigger(Configs.OpenComputerPlus))
             {
                 Vehicle curr_veh = Game.LocalPlayer.Character.Exists() ? Game.LocalPlayer.Character.LastVehicle : null;
                 if (curr_veh && curr_veh.Driver == Game.LocalPlayer.Character && curr_veh.Speed <= 1 && Function.IsPoliceVehicle(curr_veh))
                 {
                     OnVehicleStopped(null, curr_veh);
                     ShowPoliceComputer();
-                    }
                 }
-            }          
+            }
+        }
 
         private void CheckForCloseTrigger()
         {
-            if(!Globals.CloseRequested && CloseComputerPlusWindow.IsPressed)
+            if (!Globals.CloseRequested && Configs.CloseComputerPlus.Any(x => x.IsPressed))
             {
-                //if (!Globals.Navigation.Pop()) //@TODO one day we'll try this again.. for now we'll just let it close
+                Globals.Navigation.Clear();
                 ClosePoliceComputer();
             }
         }
@@ -233,15 +230,15 @@ namespace ComputerPlus
             do
             {
                 if (!Globals.CloseRequested && Globals.OpenRequested)
-        {
+                {
                     CheckForCloseTrigger();
                 }                                
                 else
-            {
+                {
                     CheckForOpenTrigger();
-            }
+                }
                 GameFiber.Yield();
-        }
+            }
             while (Globals.IsPlayerOnDuty);
             GameFiber.Hibernate();
         }
@@ -267,7 +264,7 @@ namespace ComputerPlus
             else if (!RunComputerPlusFiber.IsAlive) RunComputerPlusFiber.Start();
         }
         private void ClosePoliceComputer()
-            {
+        {
             Globals.CloseRequested = true;
             Globals.OpenRequested = false;
         }
@@ -292,10 +289,11 @@ namespace ComputerPlus
 
 
                 do
-                {
-                    GameFiber.Yield();
+                {                    
+                    EnsurePaused();
+                    GameFiber.Yield();                    
                 }
-                while (!CloseComputerPlusWindow.IsPressed && Globals.Navigation.Head != null);
+                while (Globals.Navigation.Head != null);
                 ClosePoliceComputer();
                 Globals.Navigation.Clear();
                 IsMainComputerOpen = false;
@@ -306,8 +304,8 @@ namespace ComputerPlus
 
             }
             while (Globals.IsPlayerOnDuty);
-                GameFiber.Hibernate();
-            }
+            GameFiber.Hibernate();
+        }
 
 
         private void NavOnFormAdded(object sender, NavigationController.NavigationEntry entry)
@@ -317,14 +315,14 @@ namespace ComputerPlus
                 GameFiber.StartNew(() =>
                 {
                     try {
-                        entry.form.Show();
-                        do
-                        {
-                            GameFiber.Yield();
-                        }
-                        while (!Globals.CloseRequested && entry.form.IsOpen());
+                    entry.form.Show();
+                    do
+                    {
+                        GameFiber.Yield();
+                    }
+                    while (!Globals.CloseRequested && entry.form.IsOpen());
 
-                        Globals.Navigation.RemoveEntry(entry, false);
+                    Globals.Navigation.RemoveEntry(entry, false);
                     }
                     catch (Exception e)
                     {
@@ -336,8 +334,7 @@ namespace ComputerPlus
             }
             catch (Exception e)
             {
-                if (e.GetType() != typeof(ThreadAbortException))
-                    Function.Log(e.ToString());
+                Function.Log(e.ToString());
             }
         }
 
@@ -356,6 +353,11 @@ namespace ComputerPlus
                 if (e.GetType() != typeof(ThreadAbortException))
                     Function.Log(e.ToString());
             }
+
+        private static void EnsurePaused()
+        {
+            if (Globals.PauseGameWhenOpen && !Game.IsPaused)
+                Game.IsPaused = true;
         }
 
         private static void PauseGame(bool pause, bool gameOnlyChange = false)
@@ -409,7 +411,7 @@ namespace ComputerPlus
 
                 do
                 {
-
+                    EnsurePaused();
                     if (showPauseButton)
                     {
                         notepad.ShowPause(showPauseButton);
@@ -418,11 +420,11 @@ namespace ComputerPlus
 
                     GameFiber.Yield();
 
-            }
-                while (!CloseComputerPlusWindow.IsPressed && (Globals.Navigation.Head == notepad || notepad.IsOpen()));
+                }
+                while ((Globals.Navigation.Head == notepad || notepad.IsOpen()));
                 notepad.Close();
 
-        }
+            }
             catch { }
         }
 
@@ -435,7 +437,7 @@ namespace ComputerPlus
             {
                 try {
                     GameFiber.Yield();
-                    if (!IsMainComputerOpen && (Game.IsControlKeyDownRightNow && OpenSimpleNotepad.IsPressed))
+                    if (!IsMainComputerOpen && Configs.OpenSimpleNotepad.Any(x => x.IsPressed))
                     {
                         EntryPoint.PauseGame(Globals.PauseGameWhenOpen, true);
                         ShowNotepad();
@@ -449,7 +451,7 @@ namespace ComputerPlus
                 }
                 catch(Exception e)
                 {
-                   // Function.Log(e.ToString());
+                    //Function.Log(e.ToString());
                 }
             }
         }

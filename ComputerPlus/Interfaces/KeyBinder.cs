@@ -18,11 +18,13 @@ namespace ComputerPlus.Interfaces
     enum KeyBinderInput { Controller, Keyboard, Game };
     internal class KeyBinder
     {
-        readonly ControllerButtons ControllerButton;
-        readonly Keys Key;
-        readonly GameControl GameControlArg;
+        internal readonly ControllerButtons ControllerButton;
+        internal readonly ControllerButtons ModifierControllerButton;
+        internal readonly Keys Key;
+        internal readonly Keys ModifierKey;
+        internal readonly GameControl GameControlArg;
         readonly bool UseRageKeyPressBuffers;
-        KeyBinderInput Input
+        internal KeyBinderInput Input
         {
             get
             {
@@ -30,20 +32,65 @@ namespace ComputerPlus.Interfaces
                     Key != Keys.None ? KeyBinderInput.Keyboard : KeyBinderInput.Controller;
             }
         }
+        internal bool HasModifier
+        {
+            get
+            {
+                var input = Input;
+                switch(input)
+                {
+                    case KeyBinderInput.Keyboard:
+                        return ModifierKey != Keys.None;
+                    case KeyBinderInput.Controller:
+                        return ModifierControllerButton != ControllerButtons.None;
+                    default: return false;
+                }
+             }
+        }
+
+        internal String FriendlyName
+        {
+            get
+            {
+                switch(Input)
+                {                    
+                    case KeyBinderInput.Game:
+                        return String.Format("~INPUT_{0}~", GameControlArg.ToString().ToUpper());
+                    case KeyBinderInput.Controller:
+                        return HasModifier ? String.Format("~r~~h~{0}~h~ ~s~+ ~r~~h~{1}~h~~s~", ControllerButton.ToString(), ModifierControllerButton.ToString()) : ControllerButton.ToString();
+                    case KeyBinderInput.Keyboard:
+                        return HasModifier ? String.Format("{0} + {1}", FriendlyKeys.GetFriendlyName(Key), FriendlyKeys.GetFriendlyName(ModifierKey)) : FriendlyKeys.GetFriendlyName(Key);
+                    default:
+                        return String.Empty;
+                }
+            }
+        }
+        
         internal bool WasTriggeredOnce;
         internal bool IsPressed
         {
             get
             {
                 bool result;
+                bool hasModifier = HasModifier;
                 if (Input == KeyBinderInput.Game)
+                {
                     result = UseRageKeyPressBuffers ? Game.IsControlPressed(0, GameControlArg) : Game.IsControlJustPressed(0, GameControlArg);
-                //else if (Input == KeyBinderInput.Controller && !Game.IsControllerConnected)
-                //    result = false;
+                }
                 else if (UseRageKeyPressBuffers)
+                {
+                    if (hasModifier)
+                        result = Input == KeyBinderInput.Keyboard ? Game.IsKeyDownRightNow(ModifierKey) && Game.IsKeyDownRightNow(Key) : Game.IsControllerButtonDownRightNow(ModifierControllerButton) && Game.IsControllerButtonDownRightNow(ControllerButton);
+                    else
                     result = Input == KeyBinderInput.Keyboard ? Game.IsKeyDown(Key) : Game.IsControllerButtonDown(ControllerButton);
+                }
                 else
+                {
+                    if (hasModifier)
+                        result = Input == KeyBinderInput.Keyboard ? Game.IsKeyDownRightNow(ModifierKey) && Game.IsKeyDownRightNow(Key) : Game.IsControllerButtonDownRightNow(ModifierControllerButton) && Game.IsControllerButtonDownRightNow(ControllerButton);
+                    else
                     result = Input == KeyBinderInput.Keyboard ? Game.IsKeyDownRightNow(Key) : Game.IsControllerButtonDownRightNow(ControllerButton);
+                }
                 if (!WasTriggeredOnce && result) WasTriggeredOnce = true;
                 return result;
             }
@@ -53,14 +100,16 @@ namespace ComputerPlus.Interfaces
             UseRageKeyPressBuffers = useRageKeyPressBuffers;
             GameControlArg = gameControl;
         }
-        internal KeyBinder(Keys key, bool useRageKeyPressBuffers = true) : this(useRageKeyPressBuffers)
+        internal KeyBinder(Keys key, Keys modifierKey = Keys.None, bool useRageKeyPressBuffers = true) : this(useRageKeyPressBuffers)
         {
             ControllerButton = ControllerButtons.None;
+            ModifierKey = modifierKey;
             Key = key;
         }
-        internal KeyBinder(ControllerButtons controllerButton, bool useRageKeyPressBuffers = true) : this(useRageKeyPressBuffers)
+        internal KeyBinder(ControllerButtons controllerButton, ControllerButtons modifierButton = ControllerButtons.None, bool useRageKeyPressBuffers = true) : this(useRageKeyPressBuffers)
         {
             Key = Keys.None;
+            ModifierControllerButton = modifierButton;
             ControllerButton = controllerButton;
         }
         internal KeyBinder(GameControl control, bool useRageKeyPressBuffers = true) : this(useRageKeyPressBuffers, control)
@@ -138,15 +187,30 @@ namespace ComputerPlus.Interfaces
                 StopEventMonitoring();   
             }
         }
+
+        public void AddMonitorBoundKey(KeyBinder binder)
+        {
+            BoundKeys.Add(binder);
+        }
       
         public void AddMonitorKeyBinding(Keys key)
         {
-            BoundKeys.Add(new KeyBinder(key));
+            AddMonitorKeyBinding(key, Keys.None);
         }
 
         public void AddMonitorControllerBinding(ControllerButtons button)
         {
-            BoundKeys.Add(new KeyBinder(button));
+            AddMonitorControllerBinding(button, ControllerButtons.None);
+        }
+
+        public void AddMonitorKeyBinding(Keys key, Keys modifier = Keys.None)
+        {
+            BoundKeys.Add(new KeyBinder(key, modifier));
+        }
+
+        public void AddMonitorControllerBinding(ControllerButtons button, ControllerButtons modifier = ControllerButtons.None)
+        {
+            BoundKeys.Add(new KeyBinder(button, modifier));
         }
 
         internal static GameFiber MonitorForBinderListFactory(List<KeyBinder> binders, OnInputPressed callback, int? maxEvents)
