@@ -251,5 +251,5 @@ paket-files/
 .idea/
 *.sln.iml
 
-Resources/
+Resources/*.psd
 API Examples/
