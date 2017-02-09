@@ -11,7 +11,6 @@ using ComputerPlus.Interfaces.ComputerVehDB;
 using ComputerPlus.Controllers.Models;
 using ComputerPlus.DB;
 using ComputerPlus.DB.Models;
-using ComputerPlus.DB.Tables;
 using ComputerPlus.Controllers;
 using ComputerPlus.Extensions.Rage;
 using System.Linq;
@@ -74,6 +73,7 @@ namespace ComputerPlus
             OpenSimpleNotepad = new KeyBinder(Keys.End);
             Function.checkForRageVersionClass.checkForRageVersion(0.41f);
             Globals.ChargeCategoryList = XmlConfigs.ReadChargeCategories();
+            
            
         }
 
@@ -118,23 +118,26 @@ namespace ComputerPlus
             }
         }
 
-        private void InitStorage()
+        private async void InitStorage()
         {
             try
             {
-                var plan = new SchemaVersion() { Plans = new List<string>() { "initial" } };
-                var result = Globals.Store.Upgrade(plan);
-                if (result == UpgradeStatus.COMPLETED)
+                if (Globals.Store != null)
                 {
-                    var entry = SchemaVersion.Create("1.0.0");
-                    Function.Log("DutyStateChangedHandler table");
-                    var table = new SchemaTable(Globals.Store.Connection());
-                    Function.Log("DutyStateChangedHandler table after");
-                    table.Insert(entry);
+                    var plan = new SchemaVersion() { Plans = new List<string>() { "initial" } };
+                    var result = await Globals.Store.Upgrade(plan);
+                    if (result == UpgradeStatus.COMPLETED)
+                    {
+                        Function.Log("SQL is ready");
+                    }
+                    else if (result == UpgradeStatus.MISSING_SCHEMAS)
+                    {
+                        Function.Log("Missing schema");
+                    }
                 }
-                else if (result == UpgradeStatus.MISSING_SCHEMAS)
+                else
                 {
-                    Function.Log("Missing schema");
+                    Function.Log("Store was not opened");
                 }
             }
             catch (Exception e)
@@ -325,14 +328,15 @@ namespace ComputerPlus
                     }
                     catch (Exception e)
                     {
-                        Function.Log(e.ToString());
+                        if (e.GetType() != typeof(ThreadAbortException))
+                            Function.Log(e.ToString());
                     }
                     //NavOnFormRemoved(sender, entry);
                 });
             }
             catch (Exception e)
             {
-                if (!(e is ThreadAbortException))
+                if (e.GetType() != typeof(ThreadAbortException))
                     Function.Log(e.ToString());
             }
         }
@@ -349,7 +353,7 @@ namespace ComputerPlus
             }
             catch (Exception e)
             {
-                if (!(e is ThreadAbortException))
+                if (e.GetType() != typeof(ThreadAbortException))
                     Function.Log(e.ToString());
             }
         }

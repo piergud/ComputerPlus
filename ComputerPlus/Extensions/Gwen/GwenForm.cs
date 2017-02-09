@@ -37,5 +37,17 @@ namespace ComputerPlus.Extensions.Gwen
                 return false;
             }
         }
+
+        internal static bool Exists(this GwenForm form)
+        {
+            try
+            {
+                return form.Window != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

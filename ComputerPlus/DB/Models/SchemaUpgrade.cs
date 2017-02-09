@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using System.Data.SQLite;
+using SQLite.Net.Attributes;
 
 namespace ComputerPlus.DB.Models
 {
@@ -18,6 +19,13 @@ namespace ComputerPlus.DB.Models
 
     public class SchemaVersion : PersistedModel
     {
+        [PrimaryKey]
+        public Guid id
+        {
+            get;
+            protected set;
+        }
+
         [XmlAttribute(AttributeName = "plans")]
         public List<String> Plans;
 

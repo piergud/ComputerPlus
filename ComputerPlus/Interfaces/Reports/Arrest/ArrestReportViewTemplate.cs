@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace ComputerPlus.Interfaces.Reports.Arrest
 {
-    public partial class ArrestAdditionalParties : Form
+    public partial class ArrestReportViewTemplate : Form
     {
-        public ArrestAdditionalParties()
+        public ArrestReportViewTemplate()
         {
             InitializeComponent();
         }

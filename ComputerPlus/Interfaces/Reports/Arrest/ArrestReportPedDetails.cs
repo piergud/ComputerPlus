@@ -1,58 +1,172 @@
 ﻿using ComputerPlus.Interfaces.Reports.Models;
+using ComputerPlus.Extensions.Gwen;
 using Gwen.Control;
 using Rage.Forms;
 using System;
+using ComputerPlus.Interfaces.Common;
+using System.Collections.Generic;
 
 namespace ComputerPlus.Interfaces.Reports.Arrest
 {
     internal class ArrestReportPedDetails : GwenForm
     {
-        TextBox text_arrestee_dob;
-        TextBox text_arrestee_home_address;
-        TextBox text_arrestee_last_name;
-        TextBox text_arrestee_first_name;
-        TextBox text_arrest_street;
-        TextBox text_arrest_city;
-        TextBox text_arrest_time;
+        StateControlledTextbox text_arrestee_dob;
+        StateControlledTextbox text_arrestee_home_address;
+        StateControlledTextbox text_arrestee_last_name;
+        StateControlledTextbox text_arrestee_first_name;
+        StateControlledTextbox text_arrest_street;
+        StateControlledTextbox text_arrest_city;
+        StateControlledTextbox text_arrest_time;
+        StateControlledTextbox text_arrest_date;
+
+        Label lbl_first_name;
+        Label lbl_last_name;
+        Label lbl_dob;
+
+        Label[] labelsWithState;
+        StateControlledTextbox[] textboxesWithState;
+
         internal ArrestReport Report;
+        private IErrorNotifier ErrorNotifier;
 
         internal ArrestReportPedDetails(ArrestReport report) : base(typeof(ArrestReportPedDetailsTemplate))
         {
-            Report = report;
+            Report = report;            
+        }
+
+        ~ ArrestReportPedDetails()
+        {
+            if (ErrorNotifier != null)
+            ErrorNotifier.UnsubscribeToErrorEvents(OnValidationError);
+        }
+
+        private void OnValidationError(object sender, Dictionary<String, String> errors)
+        {
+            ClearErrorState();
+            if (errors != null && errors.Count > 0) {
+                foreach (KeyValuePair<String, String> kvp in errors)
+                {
+                    if (!String.IsNullOrEmpty(kvp.Key))
+                    {
+                        switch (kvp.Key)
+                        {
+                            case "First Name":
+                                {
+                                    text_arrestee_first_name.Error(kvp.Value);
+                                    lbl_first_name.Error(kvp.Value);
+                                    break;
+                                }
+                            case "Last Name":
+                                {
+                                    text_arrestee_last_name.Error(kvp.Value);
+                                    lbl_last_name.Error(kvp.Value);
+                                    break;
+                                }
+                            case "DOB":
+                                {
+                                    text_arrestee_dob.Error(kvp.Value);
+                                    lbl_dob.Error(kvp.Value);
+                                    break;
+                                }
+                        }
+                    }
+                }
+            }
+        }
+
+        public void SetErrorSubscription(IErrorNotifier notifier)
+        {
+            if (ErrorNotifier != null) notifier.UnsubscribeToErrorEvents(OnValidationError);
+            ErrorNotifier = notifier;
+            ErrorNotifier.SubscribeToErrorEvents(OnValidationError);
         }
 
         internal void ChangeReport(ArrestReport report)
         {
             Report = report;
-            PopulateInputs(Report);
+            if (this.Exists())
+            {
+                PopulateInputs(Report);
+            }
         }
 
         public override void InitializeLayout()
         {
             base.InitializeLayout();
             this.Window.IsClosable = false;
-
-            text_arrest_time.TextChanged += TextInputChanged;
-            text_arrestee_dob.TextChanged += TextInputChanged;
+            
+            text_arrestee_first_name = new StateControlledTextbox(this);
+            text_arrestee_first_name.SetSize(166, 21);
+            text_arrestee_first_name.SetPosition(25, 65);
             text_arrestee_first_name.TextChanged += TextInputChanged;
+
+            text_arrestee_last_name = new StateControlledTextbox(this);
+            text_arrestee_last_name.SetSize(166, 21);
+            text_arrestee_last_name.SetPosition(215, 65);
             text_arrestee_last_name.TextChanged += TextInputChanged;
+
+            text_arrestee_dob = new StateControlledTextbox(this);
+            text_arrestee_dob.SetSize(100, 21);
+            text_arrestee_dob.SetPosition(405, 65);
+            text_arrestee_dob.TextChanged += TextInputChanged;
+
+            text_arrestee_home_address = new StateControlledTextbox(this);
+            text_arrestee_home_address.SetSize(355, 21);
+            text_arrestee_home_address.SetPosition(25, 150);
             text_arrestee_home_address.TextChanged += TextInputChanged;
+
+           
+
+            
+
+            text_arrest_street = new StateControlledTextbox(this);
+            text_arrest_street.SetSize(355, 21);
+            text_arrest_street.SetPosition(22, 273);
             text_arrest_street.TextChanged += TextInputChanged;
+
+            text_arrest_city = new StateControlledTextbox(this);
+            text_arrest_city.SetSize(166, 21);
+            text_arrest_city.SetPosition(25, 325);
             text_arrest_city.TextChanged += TextInputChanged;
+
+            text_arrest_time = new StateControlledTextbox(this);
+            text_arrest_time.SetSize(100, 21);
+            text_arrest_time.SetPosition(405, 316);
+            text_arrest_time.TextChanged += TextInputChanged;
+
+            text_arrest_date = new StateControlledTextbox(this);
+            text_arrest_date.SetSize(100, 21);
+            text_arrest_date.SetPosition(405, 274);
+            text_arrest_date.TextChanged += TextInputChanged;
+
+            labelsWithState = new Label[] { lbl_dob, lbl_first_name, lbl_last_name };
+            textboxesWithState = new StateControlledTextbox[] { text_arrestee_dob, text_arrestee_first_name, text_arrestee_last_name };
+
+            //lbl_error = new RichLabel(this);
+            //lbl_error.SetPosition(text_arrestee_dob.X + text_arrestee_dob.Width + 10f, text_arrestee_dob.Y);
+            //lbl_error.SetSize(((this.Window.Width - (text_arrestee_dob.X + text_arrestee_dob.Width)) / 2) + 50, ((this.Window.Height - (text_arrestee_dob.Y + text_arrestee_dob.Height)) / 2) + 50);
+
             PopulateInputs(Report);            
             LockControls();
+        }
+
+        private void ClearErrorState()
+        {
+            foreach (var label in labelsWithState) label.ClearError();
+            foreach (var textbox in textboxesWithState) textbox.ClearError();
         }
 
         private void PopulateInputs(ArrestReport report)
         {
             if (report == null) return;
-            text_arrest_time.Text = Report.ArrestTime;
-            text_arrestee_dob.Text = Report.DOB;
-            text_arrestee_home_address.Text = Report.HomeAddress;
-            text_arrestee_first_name.Text = Report.FirstName;
-            text_arrestee_last_name.Text = Report.LastName;
-            text_arrest_street.Text = Report.ArrestStreetAddress;
-            text_arrest_city.Text = Report.HomeAddress;
+            text_arrest_time.LocalDateTime(report.ArrestTimeDate, TextBoxExtensions.DateOutputPart.TIME);
+            text_arrest_date.LocalDateTime(report.ArrestTimeDate, TextBoxExtensions.DateOutputPart.DATE);
+            text_arrestee_dob.LocalDateTime(report.DOB, TextBoxExtensions.DateOutputPart.DATE);
+            text_arrestee_home_address.Text = report.HomeAddress;
+            text_arrestee_first_name.Text = report.FirstName;
+            text_arrestee_last_name.Text = report.LastName;
+            text_arrest_street.Text = (!report.IsNew && String.IsNullOrWhiteSpace(report.ArrestStreetAddress)) ? Function.GetPedCurrentStreetName() : report.ArrestStreetAddress;
+            text_arrest_city.Text = (!report.IsNew && String.IsNullOrWhiteSpace(report.ArrestCity)) ? Function.GetPedCurrentZoneName() : report.ArrestCity;
         }
 
         private void TextInputChanged(Base sender, System.EventArgs arguments)
@@ -61,8 +175,6 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
 
             if (sender == text_arrestee_home_address)
                 Report.HomeAddress = text_arrestee_home_address.Text;
-            //else if (sender == text_arrest_time)
-                //Report.ChangeArrestTime(= text_arrest_time.Text;
             else if (sender == text_arrestee_dob)
                 Report.DOB = text_arrestee_dob.Text;
             else if (sender == text_arrestee_first_name)
@@ -78,9 +190,24 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         private void LockControls()
         {
             if (Report == null) return;
-            text_arrest_time.IsDisabled = true;
-            if (!String.IsNullOrWhiteSpace(Report.DOB))
-                text_arrestee_dob.IsDisabled = true;
+            text_arrest_time.Disable();
+            text_arrest_date.Disable();
+            Function.Log(String.Format("Report id is {0}", Report.Id()));
+            if (!Report.IsNew)
+            {                
+                text_arrestee_dob.Disable();
+                text_arrestee_home_address.Disable();
+                text_arrestee_last_name.Disable();
+                text_arrestee_first_name.Disable();
+                text_arrest_street.Disable();
+                text_arrest_city.Disable();
+                text_arrest_time.Disable();
+                text_arrest_date.Disable();
+            }
+            else
+            {
+                Function.Log("Report is not new");
+            }
         }
     }
 }

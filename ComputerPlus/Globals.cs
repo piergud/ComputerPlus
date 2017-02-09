@@ -10,7 +10,7 @@ using ComputerPlus.DB;
 
 namespace ComputerPlus
 {
-    internal sealed class Globals
+    internal static class Globals
     {
         internal static Random Random = new Random();
         internal static bool IsPlayerOnDuty = false;
@@ -31,7 +31,9 @@ namespace ComputerPlus
         internal static String SimpleNotepadText = String.Empty;
         private static String Clipboard = String.Empty;
         internal static readonly String DefaultAssetPath = @"Plugins\LSPDFR\ComputerPlus\";
-        internal static readonly Storage Store = Storage.ReadOrInit();
+        internal static readonly Storage Store = Storage.Open();
+        internal static readonly String SchemaVersion = "1.0.0";
+
         static public ArrestReport PendingArrestReport
         {
             get;
