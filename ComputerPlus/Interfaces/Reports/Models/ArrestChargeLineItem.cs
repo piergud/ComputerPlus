@@ -1,5 +1,6 @@
 ﻿using ComputerPlus.DB.Models;
-using ComputerPlus.DB.Tables;
+using SQLite.Net.Attributes;
+using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,21 +9,49 @@ using System.Threading.Tasks;
 
 namespace ComputerPlus.Interfaces.Reports.Models
 {
+    [Table("ArrestReportLineItem")]
     public class ArrestChargeLineItem : PersistedModel
     {
-    
-        public Charge Charge
+
+        [PrimaryKey]
+        public Guid id
+        {
+            get;
+            set;
+        }
+
+        public String Charge
         {
             get;
             internal set;
-        }
+        } = String.Empty;
+
+        [Column("FelonyLevel")]
+        public bool IsFelony
+        {
+            get;
+            internal set;
+        } = false;
+
         public String Note
         {
             get;
             internal set;
         } = String.Empty;
 
-        public ArrestReport ContainingReport;
+
+        [ForeignKey(typeof(ArrestReport), Name = "arrestReportId")]
+        [Column("arrestReportId")]
+        public Guid ReportId
+        {
+            get;
+            set;
+        }
+
+        public String Id()
+        {
+            return this.id.ToString();
+        }
 
         public ArrestChargeLineItem() : this(null, String.Empty)
         {
@@ -30,35 +59,15 @@ namespace ComputerPlus.Interfaces.Reports.Models
         }
         public ArrestChargeLineItem(Charge charge, String note) : this(Guid.NewGuid(), charge, note)
         {
-
         }
 
-        public ArrestChargeLineItem(Guid id, Charge charge, String note) : base(id)
+        public ArrestChargeLineItem(Guid id, Charge charge, String note)
         {
-            Charge = charge;
+            this.id = id;
+            Charge = charge != null ? charge.Name : String.Empty;
             Note = note != null ? note : String.Empty;
+            IsFelony = charge != null ? charge.IsFelony : false;
         }
-
-        protected override internal void FromMap(Dictionary<String, dynamic> map)
-        {
-            base.FromMap(map);
-            if (map.ContainsKey(ArrestReportLineItemTable.CHARGE) && map.ContainsKey(ArrestReportLineItemTable.FELONY_LEVEL))
-                this.Charge = new Charge(map[ArrestReportLineItemTable.CHARGE], map[ArrestReportLineItemTable.FELONY_LEVEL] == "true");
-            if (map.ContainsKey(ArrestReportLineItemTable.NOTE))
-                this.Note = map[ArrestReportLineItemTable.NOTE];
-        }
-        protected override internal Dictionary<String, dynamic> ToMap()
-        {
-            var map = base.ToMap();
-            map.Add(ArrestReportLineItemTable.CHARGE, this.Charge.Name);
-            map.Add(ArrestReportLineItemTable.FELONY_LEVEL, this.Charge.IsFelony);
-            map.Add(ArrestReportLineItemTable.NOTE, this.Note);
-            if (ContainingReport != null)
-            {
-                map.Add(ArrestReportLineItemTable.REPORT_ID, ContainingReport.Id());
-            }
-            return map;
-        }
-
+        
     }
 }

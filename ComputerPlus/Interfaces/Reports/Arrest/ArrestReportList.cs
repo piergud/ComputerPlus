@@ -13,26 +13,40 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
     class ArrestReportList : GwenForm
     {
         ListBox list;
-        internal ArrestReportList() : base("Arrest Reports", Configs.BaseFormWidth, Configs.BaseFormHeight)
+        List<ArrestReport> reports = new List<ArrestReport>();
+        internal ArrestReportList(List<ArrestReport> reports) : base("Arrest Reports", Configs.BaseFormWidth, Configs.BaseFormHeight)
         {
+            this.reports.AddRange(reports);
         }
-        private List<ArrestReport> FetchData(int skip = 0, int limit = 10)
-        {
-            return ComputerReportsController.GetAllArrestReports(skip, limit);
-        }
+
+
+        
+
         public override void InitializeLayout()
         {
             base.InitializeLayout();
-            var data = FetchData();
-            list = new ListBox(this);
+            this.Position = this.GetLaunchPosition();            
+            list = new ListBox(this);           
             list.Dock = Gwen.Pos.Fill;
-            foreach (var report in data)
+            foreach (var report in reports)
             {
-                var row = list.AddRow(String.Format("{0} {1} | {2} {3}", report.ArrestDate, report.ArrestTime, report.FullName, report.DOB), report.Id(), report);
-                row.DoubleClicked += RowDoubleClicked;
+                try
+                {
+                    String label = String.Format("{0}| {1} {2} {3}", report.Id().Substring(30), report.ArrestDate, report.ArrestTime, report.FullName);
+                    var row = list.AddRow(label, report.Id(), report);
+                    row.DoubleClicked += RowDoubleClicked;
+                    
+                }
+                catch (Exception e)
+                {
+                    Function.Log("Lower caught");
+                    Function.Log(e.ToString());
+                    throw e;
+                }
             }
+            
             //list.RowSelected += ReportRowClicked;
-            this.Position = this.GetLaunchPosition();
+
         }
 
         private void RowDoubleClicked(Base sender, ClickedEventArgs arguments)
@@ -43,9 +57,10 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 OpenReport(report);
         }
 
-        private void OpenReport(ArrestReport report)
+        private async void OpenReport(ArrestReport report)
         {
-            ComputerReportsController.ShowArrestReportView(report);
+            if (report != null)
+                await ComputerReportsController.ShowArrestReportView(report);
         }
 
         private void ReportRowClicked(Base sender, ItemSelectedEventArgs arguments)
@@ -53,7 +68,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             var report = arguments.SelectedItem.UserData as ArrestReport;
             if (report != null)
                 OpenReport(report);
-            list.SelectedRow = null;
+            //list.SelectedRow = null;
         }
     }
     

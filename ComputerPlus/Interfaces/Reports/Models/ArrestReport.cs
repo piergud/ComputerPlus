@@ -1,57 +1,90 @@
 ﻿using ComputerPlus.Controllers;
 using ComputerPlus.Controllers.Models;
 using ComputerPlus.DB.Models;
-using ComputerPlus.DB.Tables;
+using ComputerPlus.Interfaces.Common;
 using LSPD_First_Response.Engine.Scripting.Entities;
 using Rage;
+using SQLite.Net.Attributes;
+using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ComputerPlus.Interfaces.Reports.Models
 {
-    public class ArrestReport : PersistedModel
+    public class ArrestReport : IModelValidable
     {
 
-        private readonly Dictionary<String, Boolean> Fetched = new Dictionary<string, bool>();
-        private readonly List<ArrestChargeLineItem> _Charges = new List<ArrestChargeLineItem>();
-        public List<ArrestChargeLineItem> Charges
+        [PrimaryKey]
+        [Column("id")]
+        public Guid id
+        {
+            get;
+            set;
+        }
+
+        [Ignore]
+        public bool IsNew
         {
             get
-            {
-                if (Fetched.ContainsKey("Charges") && Fetched["Charges"]) return _Charges;
-                Fetched.Add("Charges", true);
-                ComputerReportsController.PopulateArrestLineItems(this);
-                return _Charges;
+            {                
+                return id == null || id == Guid.Empty;
             }
         }
+
+        [OneToMany(CascadeOperations = CascadeOperation.All)]
+        public List<ArrestChargeLineItem> Charges
+        {
+            get;
+            set;
+        } = new List<ArrestChargeLineItem>();
+
+        [OneToMany(CascadeOperations = CascadeOperation.All)]
+        public List<ArrestReportAdditionalParty> AdditionalParties
+        {
+            get;
+            set;
+        } = new List<ArrestReportAdditionalParty>();
+
+        [Column("ArrestTime")]
         public DateTime ArrestTimeDate
         {
             get;
-            internal set;
+            set;
         }
+
+        [Ignore]
         public String ArrestTime
         {
             get { return ArrestTimeDate.ToShortTimeString();  }
         }
+
+        [Ignore]
         public String ArrestDate
         {
             get { return ArrestTimeDate.ToShortDateString(); }
         }
+
+        [Column("FirstName")]
+        [Indexed(Name ="arrest_report_ped")]
         public String FirstName
         {
             get;
             internal set;
         } = String.Empty;
 
+        [Column("LastName")]
+        [Indexed(Name = "arrest_report_ped")]
         public String LastName
         {
             get;
             internal set;
         } = String.Empty;
 
+        [Ignore]
         public String FullName
         {
             get
@@ -60,77 +93,118 @@ namespace ComputerPlus.Interfaces.Reports.Models
             }
         }
 
+        [Column("DOB")]
+        [Indexed(Name = "arrest_report_ped")]
         public String DOB
         {
             get;
             internal set;
         } = String.Empty;
 
+        [Column("HomeAddress")]
         public String HomeAddress
         {
             get;
             internal set;
         } = String.Empty;
 
+        [Column("ArrestStreetAddress")]
         public String ArrestStreetAddress
         {
             get;
             internal set;
         } = String.Empty;
 
+        [Column("ArrestCity")]
         public String ArrestCity
         {
             get;
             internal set;
         } = String.Empty;
 
-        public ArrestReport(List<ArrestChargeLineItem> charges, DateTime arrestTime, String notes)
+        [Column("Details")]
+        public String Details
         {
-            Charges.AddRange(charges);
+            get;
+            internal set;
+        } = String.Empty;
+
+        public String Id()
+        {
+            return this.id.ToString(); ;
+        }
+
+        public ArrestReport(List<ArrestChargeLineItem> charges, List<ArrestReportAdditionalParty> parties, DateTime arrestTime, String notes) : this()
+        {
+            Function.Log("ArrestReport overload");
+            if (charges != null)
+            {
+                lock (charges)
+                    Charges.AddRange(charges);
+            }
+            if (parties != null)
+            {
+                lock (parties)
+                    AdditionalParties.AddRange(parties);
+            }
             ArrestTimeDate = arrestTime != null ? arrestTime : DateTime.Now;
         }
 
-        public ArrestReport () 
+        public ArrestReport(List<ArrestChargeLineItem> charges, DateTime arrestTime, String notes) : this(charges, null, arrestTime, notes)
         {
+        }
+
+        public ArrestReport () 
+        {            
             ArrestTimeDate = DateTime.Now;
         }
 
         public void ChangeArrestTime(DateTime time)
-        {
+        {            
             ArrestTimeDate = time;
         }
 
-        protected override internal void FromMap(Dictionary<String, dynamic> map)
+        public String ValidationFailureFormat(String prop, String message)
         {
-            base.FromMap(map);
-            if (map.ContainsKey(ArrestReportTable.ARREST_TIME))
-                this.ChangeArrestTime(DateTime.Parse(map[ArrestReportTable.ARREST_TIME]));
-            if (map.ContainsKey(ArrestReportTable.FIRST_NAME))
-                this.FirstName = map[ArrestReportTable.FIRST_NAME];
-            if (map.ContainsKey(ArrestReportTable.LAST_NAME))
-                this.LastName = map[ArrestReportTable.LAST_NAME];
-            if (map.ContainsKey(ArrestReportTable.DOB))
-                this.DOB = map[ArrestReportTable.DOB];
-            if (map.ContainsKey(ArrestReportTable.HOME_ADDRESS))
-                this.HomeAddress = map[ArrestReportTable.HOME_ADDRESS];
-            if (map.ContainsKey(ArrestReportTable.ARREST_STREET_ADDRESS))
-                this.ArrestStreetAddress = map[ArrestReportTable.ARREST_STREET_ADDRESS];
-            if (map.ContainsKey(ArrestReportTable.ARREST_CITY))
-                this.ArrestCity = map[ArrestReportTable.ARREST_CITY];
-        }
-        protected override internal Dictionary<String, dynamic> ToMap()
-        {
-            var map = base.ToMap();
-            map.Add("ArrestTime", this.ArrestTimeDate.ToString("s"));
-            map.Add("FirstName", this.FirstName);
-            map.Add("LastName", this.LastName);
-            map.Add("DOB", this.DOB);
-            map.Add("HomeAddress", this.HomeAddress);
-            map.Add("ArrestStreetAddress", this.ArrestStreetAddress);
-            map.Add("ArrestCity", this.ArrestCity);
-            return map;
+            return String.Format("{0}: {1}", prop, message);
         }
 
+        private Dictionary<String, String> Validate()
+        {
+            var failReasons = new Dictionary<String, String>();
+            var notAllowedEmpty = new Dictionary<String, String>() {
+               { "First Name", FirstName },
+               { "Last Name", LastName },
+               { "DOB", DOB }
+           };
+            foreach (var kvp in notAllowedEmpty)
+            {
+                if (String.IsNullOrWhiteSpace(kvp.Value))
+                {
+                    failReasons.Add(kvp.Key, ValidationFailureFormat(kvp.Key, "Cannot be empty"));
+                }
 
+            }
+            var dobPattern = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
+            DateTime parsedDob;
+            if (!failReasons.ContainsKey("DOB") && !DateTime.TryParseExact(DOB, dobPattern, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out parsedDob))
+            {
+                failReasons.Add("DOB", ValidationFailureFormat("DOB", String.Format("Needs to be in the format {0}", dobPattern)));
+            }
+            return failReasons;
+        }
+
+        public bool Validate(out Dictionary<String, String> failReasons)
+        {
+            failReasons = Validate();
+            return failReasons.Count == 0;
+        }
+
+        public bool Validate(out KeyValuePair<String, String> failReason)
+        {
+            var failReasons = Validate();
+            failReason = failReasons.DefaultIfEmpty(new KeyValuePair<string, string>(null, null)).FirstOrDefault();
+            return failReasons.Count == 0;
+        }
     }
 }
