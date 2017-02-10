@@ -99,5 +99,15 @@ namespace ComputerPlus.Extensions.Gwen
                 default: textbox.Text = local.ToString("f"); break;
             }
         }
+
+        internal static void AppendText(this MultilineTextBox textbox, String message, bool appendNewLine = true)
+        {
+            textbox.SetText(String.Format("{0}{1}{2}",
+                        textbox.Text,
+                        String.IsNullOrEmpty(textbox.Text) ? String.Empty : appendNewLine ? Environment.NewLine : " ",
+                        message
+                    )
+            );
+        }
     }
 }

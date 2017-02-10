@@ -206,11 +206,14 @@ namespace ComputerPlus
         {
             if (CheckOpenCloseDebouncedTrigger(Configs.OpenComputerPlus))
             {
+                ShowPoliceComputer();
+            }
+            else if (LSPD_First_Response.Mod.API.Functions.GetCurrentPullover() != null)
+            {
                 Vehicle curr_veh = Game.LocalPlayer.Character.Exists() ? Game.LocalPlayer.Character.LastVehicle : null;
                 if (curr_veh && curr_veh.Driver == Game.LocalPlayer.Character && curr_veh.Speed <= 1 && Function.IsPoliceVehicle(curr_veh))
                 {
                     OnVehicleStopped(null, curr_veh);
-                    ShowPoliceComputer();
                 }
             }
         }
@@ -353,6 +356,7 @@ namespace ComputerPlus
                 if (e.GetType() != typeof(ThreadAbortException))
                     Function.Log(e.ToString());
             }
+        }
 
         private static void EnsurePaused()
         {

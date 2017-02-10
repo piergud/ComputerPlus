@@ -99,13 +99,7 @@ namespace ComputerPlus
 
         private void OpenNotepadHandler(Base sender, ClickedEventArgs arguments)
         {
-            EntryPoint.ShowNotepad(false);
-            //var alert = new ActionDialog("Test title", String.Format("This is a test message{0}I wish I was a fish.{0}Annnnnnddddd immmmmmmmm suppppppepppppppppppppppppeeeeeeeeerrrrrrrrrrrrrrrrrrrrr looooooooooooooonnnng", Environment.NewLine), "Accept", null);
-            //alert.OnDialogAction += new DialogActionEvent((object sender1, DialogAction action) =>
-            //{
-            //    if (action == DialogAction.POSITIVE) LogoutButtonClickedHandler(null, null);
-            //});
-            //Globals.Navigation.Push(alert);
+            EntryPoint.ShowNotepad(false);            
         }
 
         private void checkbox_change(Base sender, EventArgs arguments)
