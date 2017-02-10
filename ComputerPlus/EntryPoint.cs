@@ -169,18 +169,19 @@ namespace ComputerPlus
 
         private void CheckForOpenTrigger()
         {
-            if (CheckOpenCloseDebouncedTrigger(Configs.OpenComputerPlus))
+            Vehicle curr_veh = Game.LocalPlayer.Character.Exists() ? Game.LocalPlayer.Character.LastVehicle : null;
+
+            if (curr_veh && curr_veh.Driver == Game.LocalPlayer.Character && curr_veh.Speed <= 1 && Function.IsPoliceVehicle(curr_veh))
             {
-                ShowPoliceComputer();
-            }
-            else if (LSPD_First_Response.Mod.API.Functions.GetCurrentPullover() != null)
-            {
-                Vehicle curr_veh = Game.LocalPlayer.Character.Exists() ? Game.LocalPlayer.Character.LastVehicle : null;
-                if (curr_veh && curr_veh.Driver == Game.LocalPlayer.Character && curr_veh.Speed <= 1 && Function.IsPoliceVehicle(curr_veh))
-                {
+                if (LSPD_First_Response.Mod.API.Functions.GetCurrentPullover() != null)
                     OnVehicleStopped(null, curr_veh);
+
+                if (CheckOpenCloseDebouncedTrigger(Configs.OpenComputerPlus))
+                {
+                    ShowPoliceComputer();
                 }
             }
+            
         }
 
         private void CheckForCloseTrigger()
