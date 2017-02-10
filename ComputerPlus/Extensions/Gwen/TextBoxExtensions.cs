@@ -100,14 +100,19 @@ namespace ComputerPlus.Extensions.Gwen
             }
         }
 
-        internal static void AppendText(this MultilineTextBox textbox, String message, bool appendNewLine = true)
+        internal static String GetAppendText(this MultilineTextBox textbox, String message, bool appendNewLine = true)
         {
-            textbox.SetText(String.Format("{0}{1}{2}",
-                        textbox.Text,
-                        String.IsNullOrEmpty(textbox.Text) ? String.Empty : appendNewLine ? Environment.NewLine : " ",
-                        message
-                    )
-            );
+            if (textbox.Text.Length == 0)
+            {
+                return message;
+            }
+            var hasText = !String.IsNullOrEmpty(textbox.Text);            
+            var prevText = hasText ? textbox.Text : String.Empty;
+            var lastString = hasText ? prevText.Substring(prevText.Length - 1) : null;
+            var prevTextEndsInSpace = !hasText || lastString == null ? false : lastString.Equals(" ");
+            var prevTextEndsInNewLine = !hasText ? false : lastString == null ? true : lastString == Environment.NewLine || lastString == "";
+            var newText = String.Format("{0}{1}", hasText ? String.Empty : appendNewLine ? Environment.NewLine : prevTextEndsInSpace ? "" : prevTextEndsInNewLine ? "" : " ", message);
+            return newText;
         }
     }
 }

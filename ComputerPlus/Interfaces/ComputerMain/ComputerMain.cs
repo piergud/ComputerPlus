@@ -68,7 +68,7 @@ namespace ComputerPlus
             this.btn_browse_report.Clicked += this.ReportsClickedHandler;
             this.cb_toggle_background.CheckChanged += checkbox_change;
             this.cb_toggle_pause.CheckChanged += checkbox_change;
-            this.Window.KeyboardInputEnabled = false;
+            this.Window.KeyboardInputEnabled = true;
             GameFiber.StartNew(() =>
             {
                 while(true)

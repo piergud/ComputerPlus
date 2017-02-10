@@ -149,6 +149,7 @@
     <Compile Include="Interfaces\Common\ActionDialog.cs" />
     <Compile Include="Interfaces\Common\DateInputBox.cs" />
     <Compile Include="Interfaces\Common\IModelValidable.cs" />
+    <Compile Include="Interfaces\Common\StateControlledMultilineTextbox.cs" />
     <Compile Include="Interfaces\Common\StateControlledTextbox.cs" />
     <Compile Include="Interfaces\Common\TabbableContainer.cs" />
     <Compile Include="Interfaces\ComputerCurrentCallDetails\ComputerHelpDialog.cs" />

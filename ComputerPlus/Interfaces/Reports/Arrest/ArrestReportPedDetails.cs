@@ -174,17 +174,17 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             if (Report == null) return;
 
             if (sender == text_arrestee_home_address)
-                Report.HomeAddress = text_arrestee_home_address.Text;
+                Report.HomeAddress = text_arrestee_home_address.Text.Trim();
             else if (sender == text_arrestee_dob)
-                Report.DOB = text_arrestee_dob.Text;
+                Report.DOB = text_arrestee_dob.Text.Trim();
             else if (sender == text_arrestee_first_name)
-                Report.FirstName = text_arrestee_first_name.Text;
+                Report.FirstName = text_arrestee_first_name.Text.Trim();
             else if (sender == text_arrestee_last_name)
-                Report.LastName = text_arrestee_last_name.Text;
+                Report.LastName = text_arrestee_last_name.Text.Trim();
             else if (sender == text_arrest_street)
-                Report.ArrestStreetAddress = text_arrest_street.Text;
+                Report.ArrestStreetAddress = text_arrest_street.Text.Trim();
             else if (sender == text_arrest_city)
-                Report.ArrestCity = text_arrest_city.Text;
+                Report.ArrestCity = text_arrest_city.Text.Trim();
         }
 
         private void LockControls()
