@@ -79,13 +79,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         {
             if (sender == transferTextFromSimpleNotepad)
             {
-                reportDetailsTextBox.SetText(
-                    String.Format("{0}{1}{1}{2}",
-                        reportDetailsTextBox.Text,
-                        String.IsNullOrEmpty(reportDetailsTextBox.Text) ? String.Empty : Environment.NewLine,
-                        Function.SimpleNotepadCut()
-                    )
-                );
+                reportDetailsTextBox.AppendText(Function.SimpleNotepadCut());
             }
         }
 
@@ -105,8 +99,20 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             var parties = filter == ArrestReportAdditionalParty.PartyTypes.UNKNOWN ? Report.AdditionalParties.ToArray() : Report.AdditionalParties.Where(x => x.PartyType == filter).ToArray();
             Function.Log("UpdatePedsInListBox filtered list");
             foreach (var party in parties)
-                lb_allParties.AddRow(party.FullName, party.Id(), party);
+                lb_allParties.AddRow(party.FullName, party.Id(), party).DoubleClicked += PartyListItemDoubleClicked; ;
             Function.Log("UpdatePedsInListBox done");
+        }
+
+        private void PartyListItemDoubleClicked(Base sender, ClickedEventArgs arguments)
+        {
+            if (sender == lb_allParties)
+            {
+                var party = lb_allParties.SelectedRow.UserData as ArrestReportAdditionalParty;
+                if (party != null)
+                {
+                    reportDetailsTextBox.AppendText(party.FullName, false);
+                }
+            }
         }
 
         private void BindDataFromReport()
