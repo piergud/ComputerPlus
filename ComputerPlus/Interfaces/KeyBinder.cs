@@ -57,9 +57,9 @@ namespace ComputerPlus.Interfaces
                     case KeyBinderInput.Game:
                         return String.Format("~INPUT_{0}~", GameControlArg.ToString().ToUpper());
                     case KeyBinderInput.Controller:
-                        return HasModifier ? String.Format("~r~~h~{0}~h~ ~s~+ ~r~~h~{1}~h~~s~", ControllerButton.ToString(), ModifierControllerButton.ToString()) : ControllerButton.ToString();
+                        return HasModifier ? String.Format("~r~~h~{0}~h~ ~s~+ ~r~~h~{1}~h~~s~", ModifierControllerButton.ToString(), ControllerButton.ToString()) : ControllerButton.ToString();
                     case KeyBinderInput.Keyboard:
-                        return HasModifier ? String.Format("{0} + {1}", FriendlyKeys.GetFriendlyName(Key), FriendlyKeys.GetFriendlyName(ModifierKey)) : FriendlyKeys.GetFriendlyName(Key);
+                        return HasModifier ? String.Format("{0} + {1}", FriendlyKeys.GetFriendlyName(ModifierKey), FriendlyKeys.GetFriendlyName(Key)) : FriendlyKeys.GetFriendlyName(Key);
                     default:
                         return String.Empty;
                 }
@@ -82,7 +82,7 @@ namespace ComputerPlus.Interfaces
                     if (hasModifier)
                         result = Input == KeyBinderInput.Keyboard ? Game.IsKeyDownRightNow(ModifierKey) && Game.IsKeyDownRightNow(Key) : Game.IsControllerButtonDownRightNow(ModifierControllerButton) && Game.IsControllerButtonDownRightNow(ControllerButton);
                     else
-                        result = Input == KeyBinderInput.Keyboard ? Game.IsKeyDown(Key) : Game.IsControllerButtonDown(ControllerButton);
+                        result = Input == KeyBinderInput.Keyboard ? Game.IsKeyDownRightNow(Key) : Game.IsControllerButtonDownRightNow(ControllerButton);
                 }
                 else
                 {
