@@ -88,7 +88,9 @@ namespace ComputerPlus.Controllers
         {
             try
             {
-
+                firstName = firstName.Trim();
+                lastName = lastName.Trim();
+                dob = dob.Trim();
                 var query = new SelectQueryBuilder();
                 query.SelectAllColumns();
                 query.SelectFromTable(DB.Storage.Tables.Names.ArrestReport);

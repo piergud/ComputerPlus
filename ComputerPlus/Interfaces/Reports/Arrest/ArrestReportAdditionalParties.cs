@@ -147,7 +147,12 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         {
             try {
                 
-                var party = new ArrestReportAdditionalParty(Report) { DOB = tb_dob.Text, FirstName = tb_firstName.Text, LastName = tb_lastName.Text, PartyType = (ArrestReportAdditionalParty.PartyTypes)cb_type.SelectedItem.UserData };
+                var party = new ArrestReportAdditionalParty(Report) {
+                    DOB = tb_dob.Text.Trim(),
+                    FirstName = tb_firstName.Text.Trim(),
+                    LastName = tb_lastName.Text.Trim(),
+                    PartyType = (ArrestReportAdditionalParty.PartyTypes)cb_type.SelectedItem.UserData
+                };
                 Dictionary<String, String> failReason;
                 ClearErrorState();
                 if (!party.Validate(out failReason))

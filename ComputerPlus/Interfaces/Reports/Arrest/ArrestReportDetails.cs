@@ -8,6 +8,7 @@ using GwenSkin = Gwen.Skin;
 using Gwen;
 using ComputerPlus.Interfaces.Reports.Models;
 using ComputerPlus.Extensions.Gwen;
+using ComputerPlus.Interfaces.Common;
 
 namespace ComputerPlus.Interfaces.Reports.Arrest
 {
@@ -15,24 +16,31 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
     {
         ArrestReport mReport;
         bool RebindNeeded = false;
+        int LastKnownPartiesCount = 0;
         ArrestReport Report
         {
             get
             {
+                if (mReport != null && LastKnownPartiesCount != mReport.AdditionalParties.Count) RebindNeeded = true;
                 return mReport;
             }
             set
             {
                 if (value != mReport)
                 {
+                    if (LastKnownPartiesCount != value.AdditionalParties.Count) RebindNeeded = true;
+                    LastKnownPartiesCount = value.AdditionalParties.Count;
                     RebindNeeded = true;
                     mReport = value;
                 }
             }
         }
         Button transferTextFromSimpleNotepad;
-        MultilineTextBox reportDetailsTextBox;
+        StateControlledMultilineTextbox reportDetailsTextBox;
         ListBox lb_allParties;
+        TabButton AllButton;
+        TabButton VictimButton;
+        TabButton WitnessButton;
 
         public ArrestReportDetails(Base parent) : base(parent)
         {
@@ -44,14 +52,14 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             RichLabel instructions = new RichLabel(instructionsContainer);
             instructions.AddText("Please enter in the details for the arrest report below.", System.Drawing.Color.Black);
             instructions.AddLineBreak();
-            instructions.AddText("Double click a party in the right pane to quickly insert their name into the report", System.Drawing.Color.Black);
+            instructions.AddText("Toggle the Party button. Double click a party in the right pane to quickly insert their name into the report", System.Drawing.Color.Black);
             instructions.SetSize(600, this.TopDock.Height);
             instructions.Position(Pos.Top, 25, 15);
             //this.TopDock.FitChildrenToSize();
            
             //Center/Fill
             
-            reportDetailsTextBox = new MultilineTextBox(this);            
+            reportDetailsTextBox = new StateControlledMultilineTextbox(this);            
             reportDetailsTextBox.Dock = Pos.Fill;
             reportDetailsTextBox.TextChanged += ReportDetailsTextChanged;
 
@@ -63,23 +71,44 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             transferTextFromSimpleNotepad = new Button(actionButtonContainer);            
             transferTextFromSimpleNotepad.SetToolTipText("Transfer from SimpleNotepad");
             transferTextFromSimpleNotepad.CopyContentIcon();
-            transferTextFromSimpleNotepad.Position(Pos.Top, 15, 15);
+            transferTextFromSimpleNotepad.Position(Pos.Top, 25, 15);
             transferTextFromSimpleNotepad.Clicked += ActionButtonClicked;
-
 
             //Right
             this.RightDock.Width = 200;
-            lb_allParties = new ListBox(this.RightDock);
-            this.RightDock.TabControl.AddPage("All", lb_allParties).UserData = ArrestReportAdditionalParty.PartyTypes.UNKNOWN;
-            this.RightDock.TabControl.AddPage("Witnesses", lb_allParties).UserData = ArrestReportAdditionalParty.PartyTypes.WITNESS;
-            //this.RightDock.FitChildrenToSize();
+            lb_allParties = new ListBox(this);
+            lb_allParties.IsTabable = true;
+            lb_allParties.RowSelected += PartyListItemClicked;
+
+            AllButton = this.RightDock.TabControl.AddPage("All", lb_allParties);
+            AllButton.UserData = ArrestReportAdditionalParty.PartyTypes.UNKNOWN;
+            WitnessButton = this.RightDock.TabControl.AddPage("Witnesses", lb_allParties);
+            WitnessButton.UserData = ArrestReportAdditionalParty.PartyTypes.WITNESS;
+            VictimButton = this.RightDock.TabControl.AddPage("Victims", lb_allParties);
+            VictimButton.UserData = ArrestReportAdditionalParty.PartyTypes.VICTIM;
+
+
+            //var accomplices = this.RightDock.TabControl.AddPage("Accomplices", lb_allParties);
+            //accomplices.UserData = ArrestReportAdditionalParty.PartyTypes.ACCOMPLICE;
+            //all.Press(); //Must trigger before we add the rest of the pressed handlers
+            AllButton.Pressed += FilteredPartiesButtonPressed;
+            WitnessButton.Pressed += FilteredPartiesButtonPressed;
+            VictimButton.Pressed += FilteredPartiesButtonPressed;
+            //accomplices.Pressed += FilteredPartiesButtonPressed;
+
+        }
+
+        private void FilteredPartiesButtonPressed(Base sender, EventArgs arguments)
+        {
+            ((Button)sender).Press(sender); //hack to update the list... without it the list would only update if you manually clicked twice
+            UpdatePedsInListBox();
         }
 
         private void ActionButtonClicked(Base sender, ClickedEventArgs arguments)
         {
             if (sender == transferTextFromSimpleNotepad)
             {
-                reportDetailsTextBox.AppendText(Function.SimpleNotepadCut());
+                reportDetailsTextBox.PasteAtCursor(Function.SimpleNotepadCut(), true);
             }
         }
 
@@ -93,26 +122,50 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         {
             lb_allParties.Clear();
             Function.Log("UpdatePedsInListBox called");
-            if (Report == null) return;            
+            if (Report == null) return;
+            
             var filter = (ArrestReportAdditionalParty.PartyTypes)this.RightDock.TabControl.CurrentButton.UserData;
-            Function.Log("UpdatePedsInListBox filter created");
-            var parties = filter == ArrestReportAdditionalParty.PartyTypes.UNKNOWN ? Report.AdditionalParties.ToArray() : Report.AdditionalParties.Where(x => x.PartyType == filter).ToArray();
+            Function.Log(String.Format("UpdatePedsInListBox filter created for {0} button {1}", filter, this.RightDock.TabControl.CurrentButton.Text));
+            var parties = filter == ArrestReportAdditionalParty.PartyTypes.UNKNOWN ? Report.AdditionalParties.ToArray() : Report.AdditionalParties.Where(x => { Function.Log(String.Format("Checking if {0} == {1}", x.PartyType, filter));  return x.PartyType == filter; } ).ToArray();
             Function.Log("UpdatePedsInListBox filtered list");
+            if (filter == ArrestReportAdditionalParty.PartyTypes.UNKNOWN)
+            {
+                //Add the Arrestee to the "All" list
+                if (!String.IsNullOrWhiteSpace(Report.FullName))
+                    lb_allParties.AddRow(Report.FullName, Report.Id(), Report);
+            }
             foreach (var party in parties)
-                lb_allParties.AddRow(party.FullName, party.Id(), party).DoubleClicked += PartyListItemDoubleClicked; ;
+                lb_allParties.AddRow(party.FullName, party.Id(), party);
             Function.Log("UpdatePedsInListBox done");
         }
 
-        private void PartyListItemDoubleClicked(Base sender, ClickedEventArgs arguments)
+        private void PartyListItemClicked(Base sender, ItemSelectedEventArgs arguments)
         {
-            if (sender == lb_allParties)
+            Function.Log("PartyListItemDoubleClicked");
+            
+            if (lb_allParties.SelectedRow.UserData is ArrestReportAdditionalParty)
             {
+                Function.Log("PartyListItemDoubleClicked ArrestReportAdditionalParty");
                 var party = lb_allParties.SelectedRow.UserData as ArrestReportAdditionalParty;
                 if (party != null)
                 {
-                    reportDetailsTextBox.AppendText(party.FullName, false);
+                    reportDetailsTextBox.PasteAtCursor(party.FullName);
+                    //reportDetailsTextBox.AppendText(party.FullName, false);
                 }
             }
+            else if (lb_allParties.SelectedRow.UserData is ArrestReport)
+            {
+                Function.Log("PartyListItemDoubleClicked Arrestee");
+                var party = lb_allParties.SelectedRow.UserData as ArrestReport;
+                if (party != null)
+                {
+                    reportDetailsTextBox.PasteAtCursor(party.FullName);
+                    // reportDetailsTextBox.AppendText(party.FullName, false);
+                }
+            }
+            reportDetailsTextBox.Focus();
+            lb_allParties.SelectedRow = null;
+            
         }
 
         private void BindDataFromReport()
@@ -143,12 +196,21 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             base.Layout(skin);
             if (RebindNeeded)
                 BindDataFromReport();
+            else
+                UpdatePedsInListBox();
         }
-
+        private bool DidQuickSwitchHack = false;
         protected override void PostLayout(GwenSkin.Base skin)
         {
             base.PostLayout(skin);
-            //Function.Log("Post layout called");
+            if (this.IsVisible && !DidQuickSwitchHack)
+            {
+                Function.Log("Quick switch hack");
+                WitnessButton.Press();
+                AllButton.Press();
+               // UpdatePedsInListBox();
+                DidQuickSwitchHack = true;
+            }
         }
 
         protected override void Render(GwenSkin.Base skin)
