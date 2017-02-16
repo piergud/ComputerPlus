@@ -162,6 +162,31 @@ namespace ComputerPlus
             get { return 300; }
         }
 
+        internal static int BaseFormControlSpacingHalf
+        {
+            get { return BaseFormControlSpacing / 2; }
+        }
+
+        internal static int BaseFormControlSpacing
+        {
+            get { return 15; }
+        }
+
+        internal static int BaseFormControlSpacingDouble
+        {
+            get { return BaseFormControlSpacing * 2; }
+        }
+
+        internal static int BaseFormControlSpacingTriple
+        {
+            get { return BaseFormControlSpacing * 3; }
+        }
+
+        internal static readonly String RegularFontName = "Microsoft Sans Serif";
+        internal static readonly int RegularFontSize = 16;
+        internal static readonly String RegularBoldFontName = "Microsoft Sans Serif, 20px, style=Bold";
+
+
         /*public static Keys NotebookKey { get { return ini_file.ReadEnum<Keys>("General", "NotebookKey", Keys.D2); } }
         public static Keys NotebookKeyModifier { get { return ini_file.ReadEnum<Keys>("General", "NotebookKeyModifier", Keys.LControlKey); } }
 

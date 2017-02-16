@@ -7,6 +7,7 @@ using Gwen.Control;
 using Rage.Forms;
 using ComputerPlus.Interfaces.Reports.Models;
 using ComputerPlus.Extensions.Gwen;
+using ComputerPlus.Interfaces.Common;
 
 namespace ComputerPlus.Interfaces.Reports.Arrest
 {
@@ -14,14 +15,13 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
     {
         TreeControl chargesTree;
         ListBox lb_charges;
-        MultilineTextBox tb_notes;
+        StateControlledMultilineTextbox tb_notes;
         Button btnAddCharge;
         Button btnRemoveSelectedCharge;
         Label lbl_addedCharges;
         Label lbl_availableCharges;
         Label lbl_notes;
-        bool AddChargeEnabled = false;
-        Charge SelectedCharge = null;
+        Charge SelectedAvailableCharge = null;
         ArrestReport Report;
         internal ArrestReportChargeDetails(ArrestReport arrestReport) : base(typeof(ArrestReportChargeDetailsTemplate))
         {
@@ -34,25 +34,32 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             {
                 ShowLabels();
                 ShowButtons();
+                tb_notes = new StateControlledMultilineTextbox(this);
+                tb_notes.ForceWordWrap = true;
+                tb_notes.SetSize(165, 130);
+                tb_notes.SetPosition(329, 42);
                 chargesTree = new TreeControl(this);
+                chargesTree.SelectionChanged += TreeNodeSelected;
                 chargesTree.SetSize(314, 307);
                 chargesTree.SetPosition(12, 72);
                 chargesTree.Dock = Gwen.Pos.Left;
                 chargesTree.Margin = new Gwen.Margin(0, 30, 0, 0);
                 lb_charges.Dock = Gwen.Pos.Right;
                 lb_charges.Margin = new Gwen.Margin(0, 30, 0, 100);
+                tb_notes.TextChanged += OnTextChanged;
+                
                 tb_notes.SetPosition(chargesTree.X + chargesTree.Width + 5, lb_charges.Y - 10);
                 tb_notes.SetSize((lb_charges.X - (chargesTree.X + chargesTree.Width)), tb_notes.Height);
                 lbl_notes.SetPosition(tb_notes.X, lbl_notes.Y);
                 lbl_notes.SetSize(tb_notes.Width, lbl_notes.Height);
 
                 lbl_addedCharges.SetPosition((lb_charges.X + 30), lbl_addedCharges.Y);
-
-                btnAddCharge.SetPosition(tb_notes.X, (tb_notes.Y + tb_notes.Height + 5));
-                btnAddCharge.SetSize(tb_notes.Width, btnAddCharge.Height);
+                btnAddCharge.AddIcon();
+                btnAddCharge.Disable();
+                btnRemoveSelectedCharge.Disable();
                 PopulateChargesTree(Globals.ChargeCategoryList);
-                btnAddCharge.Clicked += ChangeChargesClicked;
-                btnRemoveSelectedCharge.Clicked += ChangeChargesClicked;
+                btnAddCharge.Clicked += ButtonClicked;
+                btnRemoveSelectedCharge.Clicked += ButtonClicked;
                 btnRemoveSelectedCharge.DeleteIcon();
                 btnRemoveSelectedCharge.SetPosition(lb_charges.X + btnRemoveSelectedCharge.Width /  2 + 10, (lb_charges.Y + lb_charges.Height) + btnRemoveSelectedCharge.Height / 2  + 50);
             }
@@ -70,9 +77,27 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 }
             }
             
-            lb_charges.RowSelected += ChargeRowSelected;
             LockControls();
 
+        }
+
+        private void TreeNodeSelected(Base sender, EventArgs arguments)
+        {
+            if (chargesTree.SelectedChildren.All(x => x.UserData is Charge && !((Charge)x.UserData).IsContainer)) {
+                ToggleComponentState(ComponentSender.AVAILABLE_CHARGE);
+            }
+            else
+            {
+                SelectedAvailableCharge = null;
+                btnAddCharge.Disable();
+            }
+        }
+        private void OnTextChanged(Base sender, EventArgs arguments)
+        {
+            if (sender == tb_notes && lb_charges.SelectedRow != null)
+            {
+                ((ArrestChargeLineItem)lb_charges.SelectedRow.UserData).Note = tb_notes.Text;
+            }
         }
 
         internal void HideLabels()
@@ -119,8 +144,10 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             Report = report;
             if (this.Exists())
             {
+                lb_charges.UnselectAll();
                 lb_charges.Clear();
-                Function.Log(String.Format("ChangeReport adding charge {0}", Report.Charges.Count));
+                chargesTree.UnselectAll();
+                tb_notes.ClearText();
                 AddReportCharges();
             }
         }
@@ -131,9 +158,30 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             foreach(var charge in charges)
                 AddChargeToReportListbox(charge);
         }
+        enum ComponentSender { AVAILABLE_CHARGE, ADDED_CHARGE };
+        private void ToggleComponentState(ComponentSender t)
+        {
+            if (t == ComponentSender.ADDED_CHARGE)
+            {
+                //if (chargesTree.IsSelected)
+                chargesTree.UnselectAll();
+                btnAddCharge.Disable();
+                btnRemoveSelectedCharge.Enable();
+            }
+            else
+            {
+                if (lb_charges.SelectedRow != null)
+                {
+                    lb_charges.UnselectAll();
+                    tb_notes.ClearText();
+                }
+                btnAddCharge.Enable();
+                btnRemoveSelectedCharge.Disable();
+            }
+        }
 
 
-        private void ChargeRowSelected(Base sender, ItemSelectedEventArgs arguments)
+        private void ChargeRowSelected(Base sender, ClickedEventArgs arguments)
         {
             if (sender == null)
             {
@@ -141,8 +189,9 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             }            
             else
             {
-                var charge = arguments.SelectedItem.UserData as ArrestChargeLineItem;
+                var charge = sender.UserData as ArrestChargeLineItem;
                 SetNotesByCharge(charge);
+                ToggleComponentState(ComponentSender.ADDED_CHARGE);
             }
                 
         }
@@ -158,6 +207,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             if (charge.IsContainer)
             {
                 var container = parent.AddNode(charge.Name);
+                container.IsSelectable = false;
                 charge.Children.ForEach(childCharge =>
                 TransverseCharges(container, childCharge));
             }
@@ -182,23 +232,19 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         {
             if (sender == null)
             {
-                SelectedCharge = null;
+                SelectedAvailableCharge = null;
                 chargesTree.IsSelected = false;
             }
             else if (sender.UserData is Charge)
             {
-                SelectedCharge = sender.UserData as Charge;
-                lb_charges.SelectedRow = null;
-                AddChargeEnabled = true;
-                UpdateButtonState();
+                var selectedCharge = sender.UserData as Charge;
+                if (selectedCharge.IsContainer) return;
+                SelectedAvailableCharge = selectedCharge;
+                
             }
 
         }
 
-        private void UpdateButtonState()
-        {
-            btnAddCharge.IsDisabled = !AddChargeEnabled;
-        }
 
         private void AddChargeToReport(ArrestReport report, ArrestChargeLineItem lineItem)
         {
@@ -207,13 +253,14 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             AddChargeToReportListbox(lineItem);
         }
         private void AddChargeToReportListbox(ArrestChargeLineItem lineItem)
-        {            
+        {
             lb_charges.AddRow(
                     String.Format("({0}) {1}", lineItem.IsFelony ? "F" : "M", lineItem.Charge)
                     , lineItem.Charge,
                     lineItem
-              );
-        }
+              ).Clicked += ChargeRowSelected;
+        }      
+
         private void RemoveChargeFromReport(ArrestReport report, ArrestChargeLineItem lineItem)
         {
             if (report == null || lineItem == null) return;
@@ -221,26 +268,23 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             lb_charges.RemoveRow(lb_charges.SelectedRowIndex);
         }
 
-        private void ChangeChargesClicked(Base sender, ClickedEventArgs arguments)
+        private void ButtonClicked(Base sender, ClickedEventArgs arguments)
         {
             if (sender == btnAddCharge)
             {
-                if (SelectedCharge == null || !AddChargeEnabled) return;
-                var lineItem = new ArrestChargeLineItem(SelectedCharge, tb_notes.Text);
+                if (SelectedAvailableCharge == null || SelectedAvailableCharge.IsContainer) return;
+                var lineItem = new ArrestChargeLineItem(SelectedAvailableCharge, tb_notes.Text);
                 AddChargeToReport(Report, lineItem);
-                tb_notes.Text = String.Empty;
-                SelectedCharge = null;
-                AddChargeEnabled = false;
+                tb_notes.ClearText();
+                SelectedAvailableCharge = null;
             }
             else if (sender == btnRemoveSelectedCharge)
             {
                 if (lb_charges.SelectedRow == null) return;
                 RemoveChargeFromReport(Report, lb_charges.SelectedRow.UserData as ArrestChargeLineItem);
                 tb_notes.Text = String.Empty;
-                SelectedCharge = null;
-                AddChargeEnabled = false;               
+                SelectedAvailableCharge = null;
             }
-            UpdateButtonState();
         }    
     }
 }

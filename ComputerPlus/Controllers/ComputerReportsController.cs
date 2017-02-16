@@ -12,6 +12,8 @@ using SQLiteNetExtensionsAsync.Extensions;
 using ComputerPlus.DB;
 using CodeEngine.Framework.QueryBuilder;
 using QueryEnum = CodeEngine.Framework.QueryBuilder.Enums;
+using ComputerPlus.Controllers.Models;
+using ComputerPlus.Extensions;
 
 namespace ComputerPlus.Controllers
 {
@@ -20,21 +22,30 @@ namespace ComputerPlus.Controllers
         public static void ShowArrestReportCreate()
         {
             if (Globals.PendingArrestReport == null)
-                Globals.PendingArrestReport = new Interfaces.Reports.Models.ArrestReport();
+                Globals.PendingArrestReport = new ArrestReport();
             Globals.Navigation.Push(new ArrestReportContainer(Globals.PendingArrestReport));
+        }
+
+        public static void ShowArrestReportCreate(ComputerPlusEntity entity, ArrestReportContainer.ArrestReportActionEvent callbackDelegate)
+        {
+            ArrestReport report;
+            var container = ArrestReportContainer.CreateForPed(entity, out report);
+            if (callbackDelegate != null) container.OnArrestReportAction += callbackDelegate;
+            Globals.PendingArrestReport = report;
+            Globals.Navigation.Push(container);
         }
 
         public static async System.Threading.Tasks.Task ShowArrestReportView(ArrestReport report)
         {
             await PopulateArrestLineItems(report);
             //Globals.Navigation.Push(new ArrestReportContainer(report));
-            Globals.Navigation.Push(new ArrestReportView(report));
+            Globals.Navigation.Push(new ArrestReportViewContainer(report));
         }
 
         public static async void ShowArrestReportList()
         {
             var reports = await ComputerReportsController.GetAllArrestReportsAsync(0, 0);
-            Globals.Navigation.Push(new ArrestReportList(reports));
+            Globals.Navigation.Push(new ArrestReportListContainer(reports));
         }
 
 
@@ -45,12 +56,10 @@ namespace ComputerPlus.Controllers
                 if (report.IsNew)
                 {
                     report.id = Guid.NewGuid();
-                    Function.Log("Creating new arrest report");                    
                     await Globals.Store.Connection().InsertWithChildrenAsync(report, true);
                 }
                 else
                 {
-                    Function.Log(String.Format("Updating arrest report {0}", report.Id()));
                     await Globals.Store.Connection().InsertOrReplaceWithChildrenAsync(report, true);
                 }
                     
@@ -74,7 +83,6 @@ namespace ComputerPlus.Controllers
                 query.SelectAllColumns();
                 query.SelectFromTable(DB.Storage.Tables.Names.ArrestReport);
                 query.AddOrderBy(orderCol, QueryEnum.Sorting.Descending);
-                Function.Log("query is " + query.BuildQuery());
                 return await Globals.Store.Connection().QueryAsync<ArrestReport>(query.BuildQuery());
             }
             catch (Exception e)
@@ -84,6 +92,11 @@ namespace ComputerPlus.Controllers
             }
         }
 
+        public static async Task<List<ArrestReport>> GetArrestReportsForPedAsync(ComputerPlusEntity entity)
+        {
+            return await GetArrestReportsForPedAsync(entity.FirstName, entity.LastName, entity.PedPersona.BirthDay.ToLocalTimeString(TextBoxExtensions.DateOutputPart.DATE));
+        }
+
         public static async Task<List<ArrestReport>> GetArrestReportsForPedAsync(String firstName, String lastName, String dob)
         {
             try
@@ -91,13 +104,14 @@ namespace ComputerPlus.Controllers
                 firstName = firstName.Trim();
                 lastName = lastName.Trim();
                 dob = dob.Trim();
-                var query = new SelectQueryBuilder();
-                query.SelectAllColumns();
-                query.SelectFromTable(DB.Storage.Tables.Names.ArrestReport);
-                query.AddWhere(DB.Storage.Tables.ArrestReport.FIRST_NAME, QueryEnum.Comparison.Equals, firstName);
-                query.AddWhere(DB.Storage.Tables.ArrestReport.LAST_NAME, QueryEnum.Comparison.Equals, lastName);
-                query.AddWhere(DB.Storage.Tables.ArrestReport.DOB, QueryEnum.Comparison.Equals, dob);
-                return await Globals.Store.Connection().QueryAsync<ArrestReport>(query.BuildQuery());
+                //var query = new SelectQueryBuilder();
+                //query.SelectAllColumns();
+                //query.SelectFromTable(DB.Storage.Tables.Names.ArrestReport);
+                //query.AddWhere(DB.Storage.Tables.ArrestReport.FIRST_NAME, QueryEnum.Comparison.Equals, firstName);
+                //query.AddWhere(DB.Storage.Tables.ArrestReport.LAST_NAME, QueryEnum.Comparison.Equals, lastName);
+                //query.AddWhere(DB.Storage.Tables.ArrestReport.DOB, QueryEnum.Comparison.Equals, dob);
+                return await Globals.Store.Connection().GetAllWithChildrenAsync<ArrestReport>(report => report.FirstName == firstName && report.LastName == lastName && report.DOB == dob, true);
+                
             }
             catch (Exception e)
             {
@@ -110,11 +124,7 @@ namespace ComputerPlus.Controllers
         {
             try
             {
-                Function.Log(String.Format("PopulateArrestLineItems charges {0}", report.Charges.Count));
-                Function.Log(String.Format("PopulateArrestLineItems additional parties {0}", report.AdditionalParties.Count));
                 await Globals.Store.Connection().GetChildrenAsync(report, true);
-                Function.Log(String.Format("PopulateArrestLineItems after charges {0}", report.Charges.Count));
-                Function.Log(String.Format("PopulateArrestLineItems after additional parties {0}", report.AdditionalParties.Count));
 
                 return true;
             }

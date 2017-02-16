@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Gwen;
+using SystemDrawing = System.Drawing;
 
 namespace ComputerPlus.Extensions.Gwen
 {
@@ -74,6 +76,93 @@ namespace ComputerPlus.Extensions.Gwen
         {
             if (label == null) return;
             label.DeleteAllChildren();
+        }
+
+        internal static Label StyleHeader(this Label label)
+        {
+            if (Globals.Style.LabelHeaderFont == null)
+            {
+                Globals.Style.LabelHeaderFont = label.Font.Copy();
+                Globals.Style.LabelHeaderFont.FaceName = Configs.RegularFontName;
+                Globals.Style.LabelHeaderFont.Size = 20;
+            }
+            
+            label.Font = Globals.Style.LabelHeaderFont;
+            return label;
+        }
+
+        internal static Label StyleHeaderBold(this Label label)
+        {
+            if (Globals.Style.LabelHeaderFontBold == null)
+            {
+                Globals.Style.LabelHeaderFontBold = label.Font.Copy();
+                Globals.Style.LabelHeaderFontBold.FaceName = Configs.RegularBoldFontName;
+                Globals.Style.LabelHeaderFontBold.Size = 20;
+            }
+            label.Font = Globals.Style.LabelHeaderFontBold;
+            return label;
+        }
+
+        internal static Label StyleRegularBold(this Label label)
+        {
+            if (Globals.Style.BoldFont == null)
+            {
+                Globals.Style.BoldFont = label.Font.Copy();
+                Globals.Style.BoldFont.FaceName = Configs.RegularBoldFontName;
+                Globals.Style.BoldFont.Size = 16;
+            }
+            label.Font = Globals.Style.BoldFont;
+            return label;
+        }
+
+        internal static Label StyleRegular(this Label label)
+        {
+            if (Globals.Style.RegularFont == null)
+            {
+                Globals.Style.RegularFont = label.Font.Copy();
+                Globals.Style.RegularFont.FaceName = Configs.RegularFontName;
+                Globals.Style.RegularFont.Size = 16;
+            }
+
+            label.Font = Globals.Style.RegularFont;
+            return label;
+        }
+
+        internal static RichLabel Text(this RichLabel label, String text, SystemDrawing.Color color = default(SystemDrawing.Color), Font textFont = default(Font))
+        {
+            color = color == SystemDrawing.Color.Empty ? SystemDrawing.Color.Black : color;
+            label.AddText(text, color, textFont);
+            return label;
+        }
+
+        internal static RichLabel Text(this RichLabel label, String text, SystemDrawing.Color color = default(SystemDrawing.Color))
+        {
+            color = color == SystemDrawing.Color.Empty ? SystemDrawing.Color.Black : color;
+            if (Globals.Style.RegularFont == null)
+            {
+                Globals.Style.RegularFont = new Font(label.Skin.Renderer, Configs.RegularFontName, 16);
+            }
+            label.Text(text, color, Globals.Style.RegularFont);
+            return label;
+        }
+
+        internal static RichLabel TextBold(this RichLabel label, String text, SystemDrawing.Color color = default(SystemDrawing.Color))
+        {
+            color = color == SystemDrawing.Color.Empty ? SystemDrawing.Color.Black : color;
+            if (Globals.Style.BoldFont == null)
+            {
+                Globals.Style.BoldFont = new Font(label.Skin.Renderer, Configs.RegularBoldFontName, 16);                
+            }
+            var measure = label.Skin.Renderer.MeasureText(Globals.Style.BoldFont, text);
+            int? width = null, height = null;
+            if (measure.X > label.Width) width = label.Width + measure.X;
+            if (measure.Y > label.Height) height = label.Height + measure.Y;
+            if (width.HasValue || height.HasValue)
+            {
+                label.SetSize(width.HasValue ? width.Value : label.Width, height.HasValue ? height.Value : label.Height);
+            }
+            label.Text(text, color, Globals.Style.BoldFont);
+            return label;
         }
 
     }

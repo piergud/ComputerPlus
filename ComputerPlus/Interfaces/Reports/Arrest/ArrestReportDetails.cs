@@ -62,6 +62,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             reportDetailsTextBox = new StateControlledMultilineTextbox(this);            
             reportDetailsTextBox.Dock = Pos.Fill;
             reportDetailsTextBox.TextChanged += ReportDetailsTextChanged;
+            reportDetailsTextBox.ForceWordWrap = true;
 
             //Bottom
             this.BottomDock.Height = 60;
@@ -108,7 +109,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         {
             if (sender == transferTextFromSimpleNotepad)
             {
-                reportDetailsTextBox.PasteAtCursor(Function.SimpleNotepadCut(), true);
+                reportDetailsTextBox.InsertAtCursor(Function.SimpleNotepadCut(), true);
             }
         }
 
@@ -149,7 +150,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 var party = lb_allParties.SelectedRow.UserData as ArrestReportAdditionalParty;
                 if (party != null)
                 {
-                    reportDetailsTextBox.PasteAtCursor(party.FullName);
+                    reportDetailsTextBox.InsertAtCursor(party.FullName);
                     //reportDetailsTextBox.AppendText(party.FullName, false);
                 }
             }
@@ -159,7 +160,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 var party = lb_allParties.SelectedRow.UserData as ArrestReport;
                 if (party != null)
                 {
-                    reportDetailsTextBox.PasteAtCursor(party.FullName);
+                    reportDetailsTextBox.InsertAtCursor(party.FullName);
                     // reportDetailsTextBox.AppendText(party.FullName, false);
                 }
             }

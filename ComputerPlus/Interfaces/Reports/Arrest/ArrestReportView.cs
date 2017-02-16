@@ -8,86 +8,146 @@ using Gwen.Control.Layout;
 using Rage.Forms;
 using ComputerPlus.Interfaces.Reports.Models;
 using ComputerPlus.Extensions.Gwen;
+using GwenSkin = Gwen.Skin;
+using ComputerPlus.Interfaces.Common;
+using Gwen;
+using SystemDrawing = System.Drawing;
 
 namespace ComputerPlus.Interfaces.Reports.Arrest
 {
-    class ArrestReportView : GwenForm
+    class ArrestReportView : Base
     {
         ArrestReport Report;
-        Label value_arrest_report_id;
-        Label value_first_name;
-        Label value_last_name;
-        Label value_dob;
-        Label value_home_address;
-        Label value_arrest_street_address;
-        Label value_arrest_city;
-        Label value_arrest_time;
-        Label value_arrest_date;
-        Label lbl_arrest_report_id;
-        Label lbl_first_name;
-        Label lbl_last_name;
-        Label lbl_dob;
-        Label lbl_home_address;
-        Label lbl_arrest_street_address;
-        Label lbl_arrest_city;
-        Label lbl_arrest_time;
-        Label lbl_arrest_date;
 
-        ListBox lb_charges;
-        ListBox lb_additional_parties;
-        MultilineTextBox tb_report_details;
 
-        public ArrestReportView(ArrestReport report) : base(typeof(ArrestReportViewTemplate))
+        SystemDrawing.Color labelColor = SystemDrawing.Color.Black;
+
+        Font labelFont, valueFont;
+
+        ListBox lb_charges, lb_additional_parties;
+        LabeledComponent<RichLabel> tb_report_details;
+
+        LabeledComponent<Label> labeled_arrest_report_id, labeled_first_name, labeled_last_name,
+            labeled_dob, labeled_home_address, labeled_arrest_street_address,
+            labeled_arrest_city, labeled_arrest_time, labeled_arrest_date;
+
+        LabeledComponent<ListBox> labeledCharges, labeledAdditionalParties;
+
+        Base headerSection, arrestInformationContent, arrestLocationContent;
+        FormSection arresteeInformationSection, arrestLocationSection;
+
+        bool BindNeeded;
+
+        public ArrestReportView(Base parent, ArrestReport report) : base(parent)
         {
             Report = report;
+            InitializeLayout();            
         }
 
-        public override void InitializeLayout()
+        public void ChangeReport(ArrestReport report)
         {
-            base.InitializeLayout();
-            this.Position = this.GetLaunchPosition();
-            StyleLabels();
+            Report = report;
+            BindNeeded = true;
             BindDataFromReport();
-            
         }
 
-        private void StyleLabels()
+        public void InitializeLayout()
         {
-            var labelFont = lbl_arrest_city.Skin.DefaultFont.Copy();
-            labelFont.FaceName = "Times New Roman Bold";
-            Label[] labels = new Label[]
-            {
-                lbl_first_name,
-                lbl_last_name,
-                lbl_dob,
-                lbl_home_address,
-                lbl_arrest_street_address,
-                lbl_arrest_city,
-                lbl_arrest_time,
-                lbl_arrest_date
-            };
-            foreach(var label in labels)
-            {
-                label.MakeColorBright();
-                label.TextColorOverride = System.Drawing.Color.Gray;
-            }
+            labelFont = this.Skin.DefaultFont.Copy();
+            labelFont.Size = 14;
+            labelFont.Smooth = true;
+
+            headerSection = new Base(this);
+            labeled_arrest_report_id = LabeledComponent.Label(headerSection, "Arrest Report");
+
+            arresteeInformationSection = new FormSection(this, "Arrestee Information");
+            arrestInformationContent = (new Base(this) { });            
+
+            labeled_first_name = LabeledComponent.Label(arrestInformationContent, "First Name", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            labeled_last_name = LabeledComponent.Label(arrestInformationContent, "Last Name", new Label(arrestInformationContent), RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            labeled_dob = LabeledComponent.Label(arrestInformationContent, "DOB", new Label(arrestInformationContent), RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            labeled_home_address = LabeledComponent.Label(arrestInformationContent, "Home Address", new Label(arrestInformationContent), RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+
+            arrestLocationSection = new FormSection(this, "Arrest Location");
+            arrestLocationContent = (new Base(this) { });
+
+            labeled_arrest_street_address = LabeledComponent.Label(arrestLocationContent, "Street Address", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            labeled_arrest_city = LabeledComponent.Label(arrestLocationContent, "City", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            labeled_arrest_date = LabeledComponent.Label(arrestLocationContent, "Date", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            labeled_arrest_time = LabeledComponent.Label(arrestLocationContent, "Time", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+
+            lb_charges = new ListBox(this);
+            lb_charges.Height = 100;
+
+            labeledCharges = new LabeledComponent<ListBox>(this, "Charges", lb_charges, RelationalPosition.TOP, RelationalSize.NONE, Configs.BaseFormControlSpacingHalf, labelFont, labelColor);
+
+            lb_additional_parties = new ListBox(this);
+            lb_additional_parties.Height = 100;
+
+            labeledAdditionalParties = new LabeledComponent<ListBox>(this, "Additional Parties", lb_additional_parties, RelationalPosition.TOP, RelationalSize.NONE, Configs.BaseFormControlSpacingHalf, labelFont, labelColor);
+
+            tb_report_details = LabeledComponent.RichLabel(this, "Details", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            BindNeeded = true;
         }
+
+        protected override void Layout(GwenSkin.Base skin)
+        {
+            base.Layout(skin);
+            BindDataFromReport();
+            headerSection.SizeWidthWith().AlignTopWith().AlignLeftWith().SizeToChildrenBlock();
+
+            arresteeInformationSection
+             .AddContentChild(arrestInformationContent)
+             .PlaceBelowOf(headerSection)
+             .SizeWidthWith();
+            
+
+            labeled_last_name.PlaceRightOf(labeled_first_name);
+            labeled_dob.PlaceRightOf(labeled_last_name);
+            labeled_home_address.PlaceBelowOf(labeled_first_name);
+
+            arrestInformationContent.SizeToChildren(false, true);
+            arresteeInformationSection.SizeToChildren(false, true);
+
+            arrestLocationSection
+             .AddContentChild(arrestLocationContent)
+             .PlaceBelowOf(arresteeInformationSection)
+             .SizeWidthWith();
+
+            labeled_arrest_date.PlaceRightOf(labeled_arrest_street_address, Configs.BaseFormControlSpacingDouble);
+            labeled_arrest_city.PlaceBelowOf(labeled_arrest_street_address, Configs.BaseFormControlSpacingDouble);
+            labeled_arrest_time.Align(labeled_arrest_date, labeled_arrest_city);
+            
+
+            arrestLocationContent.SizeToChildren(false, true);
+            arrestLocationSection.SizeToChildren(false, true);
+
+            
+            labeledCharges.PlaceBelowOf(arrestLocationSection).SizeWidthWith().SizeChildrenWidth();
+            labeledAdditionalParties.PlaceBelowOf(labeledCharges).SizeWidthWith().SizeChildrenWidth();
+            tb_report_details.PlaceBelowOf(labeledAdditionalParties).SizeFull().SizeChildrenWidth().SizeChildrenHeight();
+            tb_report_details.SizeToChildrenBlock();
+        }      
 
         private void BindDataFromReport()
         {
             if (Report == null) return;
+            if (!BindNeeded) return;
+            BindNeeded = false;
             AddChargesFromReport();
             AddAdditionalPartiesFromReport();
-            value_arrest_report_id.SetText(Report.Id().Substring(30));
-            value_first_name.SetText(Report.FirstName);
-            value_last_name.SetText(Report.LastName);            
-            value_dob.LocalDateTime(Report.DOB, TextBoxExtensions.DateOutputPart.DATE);
-            value_home_address.SetText(Report.HomeAddress);
-            value_arrest_street_address.SetText(Report.ArrestStreetAddress);
-            value_arrest_city.SetText(Report.ArrestCity);
-            value_arrest_date.LocalDateTime(Report.ArrestTimeDate, TextBoxExtensions.DateOutputPart.DATE);
-            value_arrest_time.LocalDateTime(Report.ArrestTimeDate, TextBoxExtensions.DateOutputPart.TIME);
-            tb_report_details.SetText(Report.Details);
+            labeled_arrest_report_id.SetValueText(Report.ShortId());
+            labeled_first_name.SetValueText(Report.FirstName);
+            labeled_last_name.SetValueText(Report.LastName);
+            labeled_dob.SetValueText(Function.ToLocalDateString(Report.DOB, TextBoxExtensions.DateOutputPart.DATE, TextBoxExtensions.DateOutputPart.DATE));
+            labeled_home_address.SetValueText(Report.HomeAddress);
+
+            labeled_arrest_street_address.SetValueText(Report.ArrestStreetAddress);
+            labeled_arrest_city.SetValueText(Report.ArrestCity);
+            labeled_arrest_date.SetValueText(Function.ToLocalDateString(Report.ArrestDate, TextBoxExtensions.DateOutputPart.DATE, TextBoxExtensions.DateOutputPart.DATE));
+            labeled_arrest_time.SetValueText(Function.ToLocalDateString(Report.ArrestDate, TextBoxExtensions.DateOutputPart.TIME, TextBoxExtensions.DateOutputPart.TIME));
+
+            tb_report_details.SetValueText(Report.Details);
         }
 
         private void AddChargesFromReport()
@@ -102,7 +162,9 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
 
         private void AddChargeToListBox(ArrestChargeLineItem charge)
         {
+            Function.Log("AddChargeToListBox");
             if (charge == null || lb_charges == null) return;
+            Function.Log("AddChargeToListBox passed check");
             var row = lb_charges.AddRow(
                 String.Format("{0}. {1}", lb_charges.RowCount + 1, charge.Charge),
                 charge.id.ToString(),
@@ -129,6 +191,30 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 party
              );
 
+        }
+    }
+
+    class ArrestReportViewContainer : GwenForm
+    {
+        ArrestReportView arrestReportView;
+        ArrestReport Report;
+        internal ArrestReportViewContainer(ArrestReport report) : base("Arrest Report", 539, 946)
+        {
+            Report = report;
+        }
+
+        public override void InitializeLayout()
+        {
+            base.InitializeLayout();
+            this.Position = this.GetLaunchPosition();
+            arrestReportView = new ArrestReportView(this, Report);
+            arrestReportView.Dock = Gwen.Pos.Fill;
+        }
+
+        public void ChangeReport(ArrestReport report)
+        {
+            Report = report;
+            arrestReportView.ChangeReport(Report);
         }
     }
 }

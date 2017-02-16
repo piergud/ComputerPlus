@@ -56,7 +56,7 @@ namespace ComputerPlus
         public override void InitializeLayout()
         {
             base.InitializeLayout();
-            this.Window.Skin.DefaultFont.Size = 14;
+            this.Window.Skin.SetDefaultFont(Configs.RegularFontName, Configs.RegularFontSize);
             this.cb_toggle_background.IsChecked = Globals.ShowBackgroundWhenOpen;
             this.cb_toggle_pause.IsChecked = Globals.PauseGameWhenOpen;
             this.btn_logout.Clicked += this.LogoutButtonClickedHandler;
@@ -69,6 +69,7 @@ namespace ComputerPlus
             this.cb_toggle_background.CheckChanged += checkbox_change;
             this.cb_toggle_pause.CheckChanged += checkbox_change;
             this.Window.KeyboardInputEnabled = true;
+            
             GameFiber.StartNew(() =>
             {
                 while(true)

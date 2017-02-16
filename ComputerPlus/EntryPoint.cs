@@ -204,18 +204,19 @@ namespace ComputerPlus
 
         private void CheckForOpenTrigger()
         {
-            if (CheckOpenCloseDebouncedTrigger(Configs.OpenComputerPlus))
-            {
-                ShowPoliceComputer();
-            }
-            else if (LSPD_First_Response.Mod.API.Functions.GetCurrentPullover() != null)
-            {
                 Vehicle curr_veh = Game.LocalPlayer.Character.Exists() ? Game.LocalPlayer.Character.LastVehicle : null;
+
                 if (curr_veh && curr_veh.Driver == Game.LocalPlayer.Character && curr_veh.Speed <= 1 && Function.IsPoliceVehicle(curr_veh))
                 {
+                if (LSPD_First_Response.Mod.API.Functions.GetCurrentPullover() != null)
                     OnVehicleStopped(null, curr_veh);
+
+                if (CheckOpenCloseDebouncedTrigger(Configs.OpenComputerPlus))
+                {
+                    ShowPoliceComputer();
                 }
             }
+            
         }
 
         private void CheckForCloseTrigger()
@@ -292,7 +293,7 @@ namespace ComputerPlus
 
 
                 do
-                {                    
+                {
                     EnsurePaused();
                     GameFiber.Yield();                    
                 }
@@ -361,19 +362,21 @@ namespace ComputerPlus
         private static void EnsurePaused()
         {
             if (Globals.PauseGameWhenOpen && !Game.IsPaused)
-                Game.IsPaused = true;
+            {
+                Function.Log("EnsurePaused forced");
+                PauseGame(true, true);
+            }
+            BlockInputIfNeeded();
         }
 
         private static void PauseGame(bool pause, bool gameOnlyChange = false)
         {
+            Function.Log("Pause");
             if (!gameOnlyChange) Globals.PauseGameWhenOpen = pause;
             Game.IsPaused = pause;
-        }
-
-
-        internal static void TogglePause()
-        {
-            PauseGame(!Globals.PauseGameWhenOpen);
+            
+            //Game.AlwaysReceiveKeyEvents = !pause;
+            //Function.Log("Set AlwaysReceiveKeyEvents to " + Game.AlwaysReceiveKeyEvents.ToString());
         }
 
         private static void ShowBackground(bool visible, bool gameOnlyChange = false)
@@ -385,9 +388,22 @@ namespace ComputerPlus
                 Function.DisableBackground();
         }
 
+        internal static void TogglePause()
+        {
+            PauseGame(!Globals.PauseGameWhenOpen);
+        }
+
         internal static void ToggleBackground()
         {
             ShowBackground(!Globals.ShowBackgroundWhenOpen);
+        }
+
+        internal static void BlockInputIfNeeded()
+        {
+            if (Globals.PauseGameWhenOpen && Globals.ShowBackgroundWhenOpen && Game.AlwaysReceiveKeyEvents)
+                Game.AlwaysReceiveKeyEvents = false;
+            else if (!Globals.PauseGameWhenOpen && !Globals.ShowBackgroundWhenOpen && !Game.AlwaysReceiveKeyEvents)
+                Game.AlwaysReceiveKeyEvents = true;
         }
 
         private void CheckIfCalloutActive()
@@ -439,7 +455,7 @@ namespace ComputerPlus
             
             while (Globals.IsPlayerOnDuty)
             {
-                try {
+                try {                    
                     GameFiber.Yield();
                     if (!IsMainComputerOpen && Configs.OpenSimpleNotepad.Any(x => x.IsPressed))
                     {

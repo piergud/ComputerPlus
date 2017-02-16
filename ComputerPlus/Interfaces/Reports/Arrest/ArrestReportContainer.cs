@@ -9,7 +9,8 @@ using Gwen.Control;
 using ComputerPlus.Interfaces.Common;
 using ComputerPlus.Interfaces.Reports.Models;
 using ComputerPlus.Controllers;
-
+using ComputerPlus.Controllers.Models;
+using ComputerPlus.Extensions;
 namespace ComputerPlus.Interfaces.Reports.Arrest
 {
     internal interface IErrorNotifier
@@ -18,7 +19,13 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         void UnsubscribeToErrorEvents(ArrestReportContainer.ArrestReportValidationError subscriber);
     }
 
-    public class ArrestReportContainer : GwenForm, IErrorNotifier
+    internal interface IActionNotifier
+    {
+        void SubscribeToActionEvents(ArrestReportContainer.ArrestReportActionEvent subscriber);
+        void UnsubscribeToActionEvents(ArrestReportContainer.ArrestReportActionEvent subscriber);
+    }
+
+    public class ArrestReportContainer : GwenForm, IErrorNotifier, IActionNotifier
     {
         ArrestReport Report;
         TabbableContainer tabContainer;
@@ -30,20 +37,31 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         Button btn_save;
         Button btn_clear;
 
+        public bool LockArresteePedDetails
+        {
+            set
+            {
+                pedDetailsPage.ReadOnlyPedDetails = value;
+            }
+        }
+
         public delegate void ArrestReportValidationError(object sender, Dictionary<String, String> errors);
         internal event ArrestReportValidationError OnArrestReportValidationError;
-
+        public enum ArrestReportSaveResult { SAVE, SAVE_FAILED, SAVE_ERROR, CLEAR }
+        public delegate void ArrestReportActionEvent(object sender, ArrestReportSaveResult action, ArrestReport report);
+        internal event ArrestReportActionEvent OnArrestReportAction;
 
         internal ArrestReportContainer() : this(Globals.PendingArrestReport)
         {
 
-        }
+        }        
 
         internal ArrestReportContainer(ArrestReport arrestReport) : base(typeof(ArrestReportContainerTemplate)) {
             Report = arrestReport;            
-            pedDetailsPage.SetErrorSubscription(this);            
-            
+            pedDetailsPage.SetErrorSubscription(this);
+            pedDetailsPage.SetActionSubscription(this);
         }
+        
 
         private void UpdateReportForChildren()
         {
@@ -54,6 +72,11 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         }
 
         private async void SaveClicked(Base sender, ClickedEventArgs arguments)
+        {
+            await SaveReport();
+        }
+
+        private async Task<ArrestReportSaveResult> SaveReport()
         {
             try
             {
@@ -70,13 +93,28 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                     {
                         Function.Log("Saving report that isnt global pending");
                     }
+                    NotifyForEvent(ArrestReportSaveResult.SAVE);
+                    return ArrestReportSaveResult.SAVE;
                 }
-                if (OnArrestReportValidationError != null)
-                    OnArrestReportValidationError(this, validationErrors);
+                else
+                {
+                    if (OnArrestReportValidationError != null)
+                        OnArrestReportValidationError(this, validationErrors);
+                    return ArrestReportSaveResult.SAVE_ERROR;
+                }
             }
             catch (Exception e)
             {
                 Function.Log(e.ToString());
+                return ArrestReportSaveResult.SAVE_FAILED;
+            }
+        }
+
+        private void NotifyForEvent(ArrestReportSaveResult action)
+        {
+            if (OnArrestReportAction != null)
+            {
+                OnArrestReportAction(this, action, Report);
             }
         }
 
@@ -97,10 +135,10 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
 
                 tabContainer = new TabbableContainer(this);
                 tabContainer.Dock = Pos.Fill;
-                tabContainer.AddPage("Arrestee", pedDetailsPage);
-                tabContainer.AddPage("Charges", chargeDetailsPage);
-                tabContainer.AddPage("Additional Parties", additionalPartiesPage);
-                tabContainer.AddPage("Detailed Report", arrestDetails);
+                tabContainer.AddPage("Arrestee", pedDetailsPage).Clicked += ContainerTabButtonClicked;
+                tabContainer.AddPage("Charges", chargeDetailsPage).Clicked += ContainerTabButtonClicked;
+                tabContainer.AddPage("Additional Parties", additionalPartiesPage).Clicked += ContainerTabButtonClicked;
+                tabContainer.AddPage("Detailed Report", arrestDetails).Clicked += ContainerTabButtonClicked;
 
                 if (Report.IsNew)
                 {
@@ -126,6 +164,11 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             }
         }
 
+        private async void ContainerTabButtonClicked(Base sender, ClickedEventArgs arguments)
+        {
+            await SaveReport();
+        }
+
         private void ReportDetailsTextChanged(Base sender, EventArgs arguments)
         {
             if (Report == null) return;
@@ -136,6 +179,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         {
             Report = Globals.PendingArrestReport = new ArrestReport();
             UpdateReportForChildren();
+            NotifyForEvent(ArrestReportSaveResult.CLEAR);
         }
 
         public void SubscribeToErrorEvents(ArrestReportValidationError subscriber)
@@ -146,6 +190,22 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         public void UnsubscribeToErrorEvents(ArrestReportValidationError subscriber)
         {
             OnArrestReportValidationError -= subscriber;
+        }
+
+        public void SubscribeToActionEvents(ArrestReportActionEvent subscriber)
+        {
+            OnArrestReportAction += subscriber;
+        }
+
+        public void UnsubscribeToActionEvents(ArrestReportActionEvent subscriber)
+        {
+            OnArrestReportAction -= subscriber;
+        }
+
+        internal static ArrestReportContainer CreateForPed(ComputerPlusEntity entity, out ArrestReport report)
+        {
+            report = ArrestReport.CreateForPed(entity);
+            return new ArrestReportContainer(report) { LockArresteePedDetails = true };
         }
     }
 }
