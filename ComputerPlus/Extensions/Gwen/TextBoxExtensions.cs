@@ -44,23 +44,14 @@ namespace ComputerPlus.Extensions.Gwen
             textbox.UpdateColors();
         }
 
-        private static String DateFormatForPart(DateOutputPart part)
-        {
-            switch (part)
-            {
-                case DateOutputPart.DATE: return "d";
-                case DateOutputPart.TIME: return "t";
-                case DateOutputPart.ISO: return "o";
-                default: return "g";
-            }
-        }
+        
 
         internal static void LocalDateTime(this Label textbox, String dateTime, DateOutputPart part = DateOutputPart.ALL)
         {
             if (textbox == null) return;
             DateTime parsed;
             
-            if (DateTime.TryParseExact(dateTime, DateFormatForPart(part), CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out parsed))
+            if (DateTime.TryParseExact(dateTime, Function.DateFormatForPart(part), CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out parsed))
                 textbox.LocalDateTime(parsed, part);
             else
                 textbox.SetText(dateTime);
@@ -71,7 +62,7 @@ namespace ComputerPlus.Extensions.Gwen
             if (textbox == null) return;
             DateTime parsed;
 
-            if (DateTime.TryParseExact(dateTime, DateFormatForPart(input), CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out parsed))
+            if (DateTime.TryParseExact(dateTime, Function.DateFormatForPart(input), CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out parsed))
                 textbox.LocalDateTime(parsed, output);
             else
                 textbox.SetText(dateTime);
@@ -90,14 +81,7 @@ namespace ComputerPlus.Extensions.Gwen
         internal static void LocalDateTime(this Label textbox, DateTime date, DateOutputPart output = DateOutputPart.ALL)
         {
             if (textbox == null) return;
-            var local = date.ToLocalTime();
-            switch (output)
-            {                
-                case DateOutputPart.DATE: textbox.Text = local.ToShortDateString(); break;
-                case DateOutputPart.TIME: textbox.Text = local.ToShortTimeString(); break;
-                case DateOutputPart.ISO: textbox.Text = local.ToString("g"); break;
-                default: textbox.Text = local.ToString("f"); break;
-            }
+            textbox.Text = Function.ToLocalDateString(date, output);
         }
 
         internal static String GetAppendText(this MultilineTextBox textbox, String message, bool appendNewLine = true)
@@ -113,6 +97,21 @@ namespace ComputerPlus.Extensions.Gwen
             var prevTextEndsInNewLine = !hasText ? false : lastString == null ? true : lastString == Environment.NewLine || lastString == "";
             var newText = String.Format("{0}{1}", hasText ? String.Empty : appendNewLine ? Environment.NewLine : prevTextEndsInSpace ? "" : prevTextEndsInNewLine ? "" : " ", message);
             return newText;
+        }
+
+        internal static void NormalSize(this TextBox textbox)
+        {
+            textbox.SetSize(166, 21);
+        }
+
+        internal static void LongSize(this TextBox textbox)
+        {
+            textbox.SetSize(332, 21);
+        }
+
+        internal static void SmallSize(this TextBox textbox)
+        {
+            textbox.SetSize(84, 21);
         }
     }
 }

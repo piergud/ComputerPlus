@@ -1,6 +1,7 @@
 ﻿using ComputerPlus.Controllers;
 using ComputerPlus.Controllers.Models;
 using ComputerPlus.DB.Models;
+using ComputerPlus.Extensions;
 using ComputerPlus.Interfaces.Common;
 using LSPD_First_Response.Engine.Scripting.Entities;
 using Rage;
@@ -134,6 +135,11 @@ namespace ComputerPlus.Interfaces.Reports.Models
             return this.id.ToString(); ;
         }
 
+        public String ShortId()
+        {
+            return this.Id().Substring(30);
+        }
+
         public ArrestReport(List<ArrestChargeLineItem> charges, List<ArrestReportAdditionalParty> parties, DateTime arrestTime, String notes) : this()
         {
             Function.Log("ArrestReport overload");
@@ -205,6 +211,23 @@ namespace ComputerPlus.Interfaces.Reports.Models
             var failReasons = Validate();
             failReason = failReasons.DefaultIfEmpty(new KeyValuePair<string, string>(null, null)).FirstOrDefault();
             return failReasons.Count == 0;
+        }
+
+        public static implicit operator bool(ArrestReport report)
+        {
+            return report != null;
+        }
+
+        public static ArrestReport CreateForPed(ComputerPlusEntity entity)
+        {
+            return new ArrestReport()
+            {
+                FirstName = entity.FirstName,
+                LastName = entity.LastName,
+                DOB = entity.PedPersona.BirthDay.ToLocalTimeString(Extensions.Gwen.TextBoxExtensions.DateOutputPart.DATE),
+                HomeAddress = entity.Address,
+            };
+
         }
     }
 }

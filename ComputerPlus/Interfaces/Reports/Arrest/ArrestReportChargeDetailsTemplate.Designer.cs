@@ -30,7 +30,6 @@
         {
             this.lb_charges = new System.Windows.Forms.ListBox();
             this.lbl_notes = new System.Windows.Forms.Label();
-            this.tb_notes = new System.Windows.Forms.TextBox();
             this.lbl_availableCharges = new System.Windows.Forms.Label();
             this.btnAddCharge = new System.Windows.Forms.Button();
             this.btnRemoveSelectedCharge = new System.Windows.Forms.Button();
@@ -57,15 +56,6 @@
             this.lbl_notes.TabIndex = 6;
             this.lbl_notes.Text = "Notes for Charge";
             // 
-            // tb_notes
-            // 
-            this.tb_notes.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.tb_notes.Location = new System.Drawing.Point(329, 42);
-            this.tb_notes.Multiline = true;
-            this.tb_notes.Name = "tb_notes";
-            this.tb_notes.Size = new System.Drawing.Size(165, 130);
-            this.tb_notes.TabIndex = 1;
-            // 
             // lbl_availableCharges
             // 
             this.lbl_availableCharges.AutoSize = true;
@@ -81,7 +71,7 @@
             this.btnAddCharge.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.btnAddCharge.Location = new System.Drawing.Point(329, 204);
             this.btnAddCharge.Name = "btnAddCharge";
-            this.btnAddCharge.Size = new System.Drawing.Size(169, 23);
+            this.btnAddCharge.Size = new System.Drawing.Size(44, 35);
             this.btnAddCharge.TabIndex = 2;
             this.btnAddCharge.Text = "Add Charge";
             this.btnAddCharge.UseVisualStyleBackColor = true;
@@ -90,7 +80,7 @@
             // 
             this.btnRemoveSelectedCharge.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRemoveSelectedCharge.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.btnRemoveSelectedCharge.Location = new System.Drawing.Point(504, 352);
+            this.btnRemoveSelectedCharge.Location = new System.Drawing.Point(450, 204);
             this.btnRemoveSelectedCharge.Name = "btnRemoveSelectedCharge";
             this.btnRemoveSelectedCharge.Size = new System.Drawing.Size(44, 35);
             this.btnRemoveSelectedCharge.TabIndex = 4;
@@ -118,7 +108,6 @@
             this.Controls.Add(this.btnAddCharge);
             this.Controls.Add(this.lbl_availableCharges);
             this.Controls.Add(this.lbl_notes);
-            this.Controls.Add(this.tb_notes);
             this.Controls.Add(this.lb_charges);
             this.Name = "ArrestReportChargeDetailsTemplate";
             this.ShowIcon = false;
@@ -132,7 +121,6 @@
 
         private System.Windows.Forms.ListBox lb_charges;
         private System.Windows.Forms.Label lbl_notes;
-        private System.Windows.Forms.TextBox tb_notes;
         private System.Windows.Forms.Label lbl_availableCharges;
         private System.Windows.Forms.Button btnAddCharge;
         private System.Windows.Forms.Button btnRemoveSelectedCharge;

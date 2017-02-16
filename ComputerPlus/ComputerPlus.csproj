@@ -134,8 +134,11 @@
     <Compile Include="DB\Models\SchemaUpgrade.cs" />
     <Compile Include="DB\Storage.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="Extensions\DateTimeExtension.cs" />
+    <Compile Include="Extensions\Gwen\BaseExtension.cs" />
     <Compile Include="Extensions\Gwen\ButtonExtensions.cs" />
     <Compile Include="Extensions\Gwen\GwenForm.cs" />
+    <Compile Include="Extensions\Gwen\ImagePanelExtensions.cs" />
     <Compile Include="Extensions\Gwen\LabelExtension.cs" />
     <Compile Include="Extensions\Gwen\ListBoxExtensions.cs" />
     <Compile Include="Extensions\Gwen\TextBoxExtensions.cs" />
@@ -148,7 +151,9 @@
     <Compile Include="Globals.cs" />
     <Compile Include="Interfaces\Common\ActionDialog.cs" />
     <Compile Include="Interfaces\Common\DateInputBox.cs" />
+    <Compile Include="Interfaces\Common\FormSection.cs" />
     <Compile Include="Interfaces\Common\IModelValidable.cs" />
+    <Compile Include="Interfaces\Common\LabeledComponent.cs" />
     <Compile Include="Interfaces\Common\StateControlledMultilineTextbox.cs" />
     <Compile Include="Interfaces\Common\StateControlledTextbox.cs" />
     <Compile Include="Interfaces\Common\TabbableContainer.cs" />
@@ -181,6 +186,7 @@
       <DependentUpon>ComputerPedSearchTemplate.cs</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\ComputerPedDB\ComputerPedView.cs" />
+    <Compile Include="Interfaces\ComputerPedDB\ComputerPedViewExtended.cs" />
     <Compile Include="Interfaces\ComputerPedDB\ComputerPedViewTemplate.cs">
       <SubType>Form</SubType>
     </Compile>

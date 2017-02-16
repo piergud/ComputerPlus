@@ -46,6 +46,7 @@
             this.text_dob = new System.Windows.Forms.TextBox();
             this.btn_ped_image_holder = new System.Windows.Forms.Button();
             this.lbl_alert = new System.Windows.Forms.Label();
+            this.cb_action = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // text_first_name
@@ -188,7 +189,7 @@
             // 
             this.btn_ped_image_holder.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.btn_ped_image_holder.FlatAppearance.BorderSize = 0;
-            this.btn_ped_image_holder.Location = new System.Drawing.Point(535, 48);
+            this.btn_ped_image_holder.Location = new System.Drawing.Point(504, 48);
             this.btn_ped_image_holder.Name = "btn_ped_image_holder";
             this.btn_ped_image_holder.Size = new System.Drawing.Size(155, 217);
             this.btn_ped_image_holder.TabIndex = 18;
@@ -203,11 +204,21 @@
             this.lbl_alert.Size = new System.Drawing.Size(0, 15);
             this.lbl_alert.TabIndex = 20;
             // 
+            // cb_action
+            // 
+            this.cb_action.FormattingEnabled = true;
+            this.cb_action.Location = new System.Drawing.Point(504, 6);
+            this.cb_action.Name = "cb_action";
+            this.cb_action.Size = new System.Drawing.Size(153, 23);
+            this.cb_action.TabIndex = 50;
+            this.cb_action.Text = "Select One";
+            // 
             // ComputerPedViewTemplate
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(717, 302);
+            this.ClientSize = new System.Drawing.Size(674, 302);
+            this.Controls.Add(this.cb_action);
             this.Controls.Add(this.lbl_alert);
             this.Controls.Add(this.btn_ped_image_holder);
             this.Controls.Add(this.label9);
@@ -254,5 +265,6 @@
         private System.Windows.Forms.TextBox text_license_status;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label lbl_alert;
+        private System.Windows.Forms.ComboBox cb_action;
     }
 }

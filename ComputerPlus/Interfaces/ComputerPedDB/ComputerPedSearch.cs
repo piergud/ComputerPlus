@@ -39,8 +39,6 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             PopulateStoppedPedsList();
             list_manual_results.AllowMultiSelect = false;
             list_collected_ids.AllowMultiSelect = false;
-            list_manual_results.RowSelected += onListItemSelected;
-            list_collected_ids.RowSelected += onListItemSelected;
             text_manual_name.SubmitPressed += onSearchSubmit;
         }
 
@@ -78,7 +76,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             //@TODO choose if we want to remove null items from the list -- may cause user confusion
             if (results != null && results.Count > 0)
             {
-                results.ForEach(x => list_manual_results.AddPed(x));
+                results.ForEach(x => list_manual_results.AddPed(x).DoubleClicked += onListItemSelected);
             }
         }
 
@@ -89,22 +87,22 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             list_collected_ids.Clear();
             foreach(var persona in peds.Select(x => controller.LookupPersona(x)))
             {
-                list_collected_ids.AddPed(persona);
+                list_collected_ids.AddPed(persona).DoubleClicked += onListItemSelected;
             }           
         }
 
         private void ClearSelections()
-        {
+        {            
             list_collected_ids.UnselectAll();
             list_manual_results.UnselectAll();
         }
 
-        private void onListItemSelected(Base sender, ItemSelectedEventArgs arguments)
+        private void onListItemSelected(Base sender, EventArgs arguments)
         {
-            if (arguments.SelectedItem.UserData is ComputerPlusEntity)
+            if (sender.UserData is ComputerPlusEntity)
             {
-                ComputerPedController.LastSelected = arguments.SelectedItem.UserData as ComputerPlusEntity;                
                 ClearSelections();
+                ComputerPedController.LastSelected = sender.UserData as ComputerPlusEntity;                
                 ComputerPedController.ActivatePedView();
             }
             else

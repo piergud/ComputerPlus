@@ -11,6 +11,7 @@ using LSPD_First_Response.Mod.API;
 using Rage.Forms;
 using System.Globalization;
 using System.IO;
+using static ComputerPlus.Extensions.Gwen.TextBoxExtensions;
 
 namespace ComputerPlus
 {
@@ -262,20 +263,21 @@ namespace ComputerPlus
             try {
                 string time = CurrentTime;
                 Size gameResolution = Game.Resolution;
-                float length = Rage.Graphics.MeasureText(time, "Arial", 18).Width;
-                float taskbarHeight = gameResolution.Height / 25;
-                float textWidth = taskbar.Width / 150;
-                float textHeight = taskbar.Height / 4;
-                taskbar.Size = new SizeF(gameResolution.Width, taskbarHeight);
-                taskbar.Location = new PointF(1, 1 + gameResolution.Height - taskbarHeight);
-                e.Graphics.DrawTexture(_bg, 0f, 0f, gameResolution.Width, gameResolution.Height);
+               // e.Graphics.DrawTexture(_bg, 0f, 0f, gameResolution.Width, gameResolution.Height);
+                //float length = Rage.Graphics.MeasureText(time, "Arial", 18).Width;
+                //float taskbarHeight = gameResolution.Height / 25;
+                //float textWidth = taskbar.Width / 150;
+                //float textHeight = taskbar.Height / 4;
+                //taskbar.Size = new SizeF(gameResolution.Width, taskbarHeight);
+                //taskbar.Location = new PointF(1, 1 + gameResolution.Height - taskbarHeight);
 
-                e.Graphics.DrawText(update_text, "Arial", 18,
-                    new PointF(taskbar.X + textWidth, taskbar.Y + textHeight),
-                    Color.White);
-                e.Graphics.DrawText(time, "Arial", 18,
-                    new PointF(taskbar.Width - length - textWidth, taskbar.Y + textHeight),
-                    Color.White);
+
+                //e.Graphics.DrawText(update_text, "Arial", 18,
+                //    new PointF(taskbar.X + textWidth, taskbar.Y + textHeight),
+                //    Color.White);
+                //e.Graphics.DrawText(time, "Arial", 18,
+                //    new PointF(taskbar.Width - length - textWidth, taskbar.Y + textHeight),
+                //    Color.White);
             } catch(Exception err)
             {
                 Function.Log("Exception in OnRawFrameRender");
@@ -633,6 +635,64 @@ namespace ComputerPlus
         {
             var s = Globals.SimpleNotepadText;
             return s == null ? String.Empty : s;
+        }
+
+        internal static String DetermineImagePath(Ped ped)
+        {
+            try
+            {
+                if (ped == null || !ped.Exists()) return Function.DefaultPedImagePath;
+                String modelName = ped.Model.Name;
+                int headDrawableIndex, headDrawableTextureIndex;
+
+                ped.GetVariation(0, out headDrawableIndex, out headDrawableTextureIndex);
+
+                String _model = String.Format(@"{0}__0_{1}_{2}", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
+                var path = Function.GetPedImagePath(_model);
+                Function.LogDebug(String.Format("Loading image for model from  {0}", path));
+                return path;
+            }
+            catch
+            {
+                Function.LogDebug("DetermineImagePath Error");
+                return Function.DefaultPedImagePath;
+            }
+
+        }
+
+        internal static String DateFormatForPart(DateOutputPart part)
+        {
+            switch (part)
+            {
+                case DateOutputPart.DATE: return "d";
+                case DateOutputPart.TIME: return "t";
+                case DateOutputPart.ISO: return "o";
+                default: return "g";
+            }
+        }
+
+
+        internal static String ToLocalDateString(DateTime date, DateOutputPart output)
+        {
+            var local = date.ToLocalTime();
+            switch (output)
+            {
+                case DateOutputPart.DATE: return local.ToShortDateString();
+                case DateOutputPart.TIME: return local.ToShortTimeString();
+                case DateOutputPart.ISO: return local.ToString("g");
+                default: return local.ToString("f");
+            }
+        }
+
+    
+        internal static String ToLocalDateString(String date, DateOutputPart input = DateOutputPart.ALL, DateOutputPart output = DateOutputPart.ALL)
+        {
+            DateTime parsed;
+
+            if (DateTime.TryParseExact(date, DateFormatForPart(input), CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out parsed))
+                return ToLocalDateString(parsed, output);
+            else
+                return date;
         }
 
     }

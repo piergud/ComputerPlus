@@ -23,11 +23,34 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         Label lbl_last_name;
         Label lbl_dob;
 
+        Button btn_auto_location;
+
         Label[] labelsWithState;
         StateControlledTextbox[] textboxesWithState;
 
         internal ArrestReport Report;
         private IErrorNotifier ErrorNotifier;
+        private IActionNotifier ActionNotifier;
+        private bool mReadOnlyPedDetails = false;
+        internal bool ReadOnlyPedDetails
+        {
+            get
+            {
+                return mReadOnlyPedDetails;
+            }
+            set
+            {
+                try
+                {
+                    mReadOnlyPedDetails = value;
+                    LockPedDetails(mReadOnlyPedDetails);
+                }
+                catch
+                {
+                    mReadOnlyPedDetails = value;
+                }
+            }
+        }
 
         internal ArrestReportPedDetails(ArrestReport report) : base(typeof(ArrestReportPedDetailsTemplate))
         {
@@ -74,12 +97,26 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             }
         }
 
+        private void OnArrestReportSaveEvent(object sender, ArrestReportContainer.ArrestReportSaveResult result, ArrestReport report)
+        {
+            if (result == ArrestReportContainer.ArrestReportSaveResult.SAVE)
+                ClearErrorState();
+        }
+
         public void SetErrorSubscription(IErrorNotifier notifier)
         {
             if (ErrorNotifier != null) notifier.UnsubscribeToErrorEvents(OnValidationError);
             ErrorNotifier = notifier;
             ErrorNotifier.SubscribeToErrorEvents(OnValidationError);
         }
+
+        public void SetActionSubscription(IActionNotifier notifier)
+        {
+            if (ActionNotifier != null) notifier.UnsubscribeToActionEvents(OnArrestReportSaveEvent);
+            ActionNotifier = notifier;
+            ActionNotifier.SubscribeToActionEvents(OnArrestReportSaveEvent);
+        }
+
 
         internal void ChangeReport(ArrestReport report)
         {
@@ -142,12 +179,28 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             labelsWithState = new Label[] { lbl_dob, lbl_first_name, lbl_last_name };
             textboxesWithState = new StateControlledTextbox[] { text_arrestee_dob, text_arrestee_first_name, text_arrestee_last_name };
 
+            btn_auto_location.LocationIcon();
+            btn_auto_location.Clicked += ButtonClicked;
+
             //lbl_error = new RichLabel(this);
             //lbl_error.SetPosition(text_arrestee_dob.X + text_arrestee_dob.Width + 10f, text_arrestee_dob.Y);
             //lbl_error.SetSize(((this.Window.Width - (text_arrestee_dob.X + text_arrestee_dob.Width)) / 2) + 50, ((this.Window.Height - (text_arrestee_dob.Y + text_arrestee_dob.Height)) / 2) + 50);
 
             PopulateInputs(Report);            
             LockControls();
+            if (ReadOnlyPedDetails)
+            {
+                LockPedDetails(true);
+            }
+        }
+
+        private void ButtonClicked(Base sender, ClickedEventArgs arguments)
+        {
+            if(sender == btn_auto_location)
+            {
+                text_arrest_street.Text = Report.ArrestStreetAddress = Function.GetPedCurrentStreetName();
+                text_arrest_city.Text = Report.ArrestCity = Function.GetPedCurrentZoneName();
+            }
         }
 
         private void ClearErrorState()
@@ -165,8 +218,16 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             text_arrestee_home_address.Text = report.HomeAddress;
             text_arrestee_first_name.Text = report.FirstName;
             text_arrestee_last_name.Text = report.LastName;
-            text_arrest_street.Text = (!report.IsNew && String.IsNullOrWhiteSpace(report.ArrestStreetAddress)) ? Function.GetPedCurrentStreetName() : report.ArrestStreetAddress;
-            text_arrest_city.Text = (!report.IsNew && String.IsNullOrWhiteSpace(report.ArrestCity)) ? Function.GetPedCurrentZoneName() : report.ArrestCity;
+            if (report.IsNew)
+            {
+                text_arrest_street.Text = report.ArrestStreetAddress = Function.GetPedCurrentStreetName();
+                text_arrest_city.Text = report.ArrestCity = Function.GetPedCurrentZoneName();
+            }
+            else
+            {
+                text_arrest_street.Text = report.ArrestStreetAddress;
+                text_arrest_city.Text = report.ArrestCity;
+            }
         }
 
         private void TextInputChanged(Base sender, System.EventArgs arguments)
@@ -185,6 +246,24 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 Report.ArrestStreetAddress = text_arrest_street.Text.Trim();
             else if (sender == text_arrest_city)
                 Report.ArrestCity = text_arrest_city.Text.Trim();
+        }
+
+        public void LockPedDetails(bool disable)
+        {
+            if (disable)
+            {
+                text_arrestee_dob.Disable();
+                text_arrestee_home_address.Disable();
+                text_arrestee_last_name.Disable();
+                text_arrestee_first_name.Disable();
+            }
+            else
+            {
+                text_arrestee_dob.Enable();
+                text_arrestee_home_address.Enable();
+                text_arrestee_last_name.Enable();
+                text_arrestee_first_name.Enable();
+            }
         }
 
         private void LockControls()

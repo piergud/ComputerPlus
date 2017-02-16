@@ -39,6 +39,7 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.btn_auto_location = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lbl_alert
@@ -150,12 +151,24 @@
             this.label10.TabIndex = 39;
             this.label10.Text = "Date";
             // 
+            // btn_auto_location
+            // 
+            this.btn_auto_location.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_auto_location.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.btn_auto_location.Location = new System.Drawing.Point(185, 212);
+            this.btn_auto_location.Name = "btn_auto_location";
+            this.btn_auto_location.Size = new System.Drawing.Size(44, 35);
+            this.btn_auto_location.TabIndex = 40;
+            this.btn_auto_location.Text = "GPS";
+            this.btn_auto_location.UseVisualStyleBackColor = true;
+            // 
             // ArrestReportPedDetailsTemplate
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(676, 489);
             this.ControlBox = false;
+            this.Controls.Add(this.btn_auto_location);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
@@ -188,5 +201,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Button btn_auto_location;
     }
 }
