@@ -30,7 +30,7 @@
         {
             this.lbl_arrest_report_title = new System.Windows.Forms.Label();
             this.lbl_arrest_date = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
+            this.lbl_section_arrestee_information = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.lbl_arrest_city = new System.Windows.Forms.Label();
             this.lbl_arrest_street_address = new System.Windows.Forms.Label();
@@ -77,15 +77,15 @@
             this.lbl_arrest_date.TabIndex = 50;
             this.lbl_arrest_date.Text = "Date";
             // 
-            // label8
+            // lbl_section_arrestee_information
             // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(30, 75);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(187, 25);
-            this.label8.TabIndex = 49;
-            this.label8.Text = "Arrestee Information";
+            this.lbl_section_arrestee_information.AutoSize = true;
+            this.lbl_section_arrestee_information.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.lbl_section_arrestee_information.Location = new System.Drawing.Point(30, 75);
+            this.lbl_section_arrestee_information.Name = "lbl_section_arrestee_information";
+            this.lbl_section_arrestee_information.Size = new System.Drawing.Size(187, 25);
+            this.lbl_section_arrestee_information.TabIndex = 49;
+            this.lbl_section_arrestee_information.Text = "Arrestee Information";
             // 
             // label7
             // 
@@ -212,7 +212,7 @@
             this.lb_charges.ItemHeight = 15;
             this.lb_charges.Location = new System.Drawing.Point(40, 428);
             this.lb_charges.Name = "lb_charges";
-            this.lb_charges.Size = new System.Drawing.Size(440, 124);
+            this.lb_charges.Size = new System.Drawing.Size(440, 49);
             this.lb_charges.TabIndex = 54;
             // 
             // lb_additional_parties
@@ -343,7 +343,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.value_arrest_report_id);
             this.Controls.Add(this.lbl_arrest_date);
-            this.Controls.Add(this.label8);
+            this.Controls.Add(this.lbl_section_arrestee_information);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.lbl_arrest_city);
             this.Controls.Add(this.lbl_arrest_street_address);
@@ -366,7 +366,7 @@
 
         private System.Windows.Forms.Label lbl_arrest_report_title;
         private System.Windows.Forms.Label lbl_arrest_date;
-        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label lbl_section_arrestee_information;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label lbl_arrest_city;
         private System.Windows.Forms.Label lbl_arrest_street_address;

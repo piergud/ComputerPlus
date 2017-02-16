@@ -7,9 +7,17 @@ using System.Threading.Tasks;
 using ComputerPlus.Controllers;
 using ComputerPlus.Interfaces.Reports.Models;
 using ComputerPlus.DB;
+using Gwen;
 
 namespace ComputerPlus
 {
+    internal class Styles
+    {
+        internal Font RegularFont;
+        internal Font BoldFont;
+        internal Font LabelHeaderFont;
+        internal Font LabelHeaderFontBold;
+    }
     internal static class Globals
     {
         internal static Random Random = new Random();
@@ -33,6 +41,9 @@ namespace ComputerPlus
         internal static readonly String DefaultAssetPath = @"Plugins\LSPDFR\ComputerPlus\";
         internal static readonly Storage Store = Storage.Open();
         internal static readonly String SchemaVersion = "1.0.0";
+
+        internal static Styles Style = new Styles();
+        
 
         static public ArrestReport PendingArrestReport
         {
