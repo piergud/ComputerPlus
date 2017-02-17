@@ -86,13 +86,8 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                     await ComputerReportsController.SaveArrestRecordAsync(Report);
                     if (Report == Globals.PendingArrestReport)
                     {
-                        Function.Log("Resetting pending arrest report");
                         Globals.PendingArrestReport = new ArrestReport();
-                    }
-                    else
-                    {
-                        Function.Log("Saving report that isnt global pending");
-                    }
+                    }                
                     NotifyForEvent(ArrestReportSaveResult.SAVE);
                     return ArrestReportSaveResult.SAVE;
                 }
@@ -150,7 +145,6 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 }
                 else
                 {
-                    Function.Log("ArrestReportContainer view report");
                     btn_save.Disable();
                     btn_save.Hide();
                     btn_clear.Disable();
