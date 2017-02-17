@@ -62,7 +62,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             reportDetailsTextBox = new StateControlledMultilineTextbox(this);            
             reportDetailsTextBox.Dock = Pos.Fill;
             reportDetailsTextBox.TextChanged += ReportDetailsTextChanged;
-            reportDetailsTextBox.ForceWordWrap = true;
+            reportDetailsTextBox.ForceWordWrap = false;
 
             //Bottom
             this.BottomDock.Height = 60;
@@ -122,13 +122,10 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         private void UpdatePedsInListBox()
         {
             lb_allParties.Clear();
-            Function.Log("UpdatePedsInListBox called");
             if (Report == null) return;
             
             var filter = (ArrestReportAdditionalParty.PartyTypes)this.RightDock.TabControl.CurrentButton.UserData;
-            Function.Log(String.Format("UpdatePedsInListBox filter created for {0} button {1}", filter, this.RightDock.TabControl.CurrentButton.Text));
-            var parties = filter == ArrestReportAdditionalParty.PartyTypes.UNKNOWN ? Report.AdditionalParties.ToArray() : Report.AdditionalParties.Where(x => { Function.Log(String.Format("Checking if {0} == {1}", x.PartyType, filter));  return x.PartyType == filter; } ).ToArray();
-            Function.Log("UpdatePedsInListBox filtered list");
+            var parties = filter == ArrestReportAdditionalParty.PartyTypes.UNKNOWN ? Report.AdditionalParties.ToArray() : Report.AdditionalParties.Where(x => x.PartyType == filter).ToArray();
             if (filter == ArrestReportAdditionalParty.PartyTypes.UNKNOWN)
             {
                 //Add the Arrestee to the "All" list
@@ -137,16 +134,13 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             }
             foreach (var party in parties)
                 lb_allParties.AddRow(party.FullName, party.Id(), party);
-            Function.Log("UpdatePedsInListBox done");
         }
 
         private void PartyListItemClicked(Base sender, ItemSelectedEventArgs arguments)
         {
-            Function.Log("PartyListItemDoubleClicked");
             
             if (lb_allParties.SelectedRow.UserData is ArrestReportAdditionalParty)
             {
-                Function.Log("PartyListItemDoubleClicked ArrestReportAdditionalParty");
                 var party = lb_allParties.SelectedRow.UserData as ArrestReportAdditionalParty;
                 if (party != null)
                 {
@@ -156,7 +150,6 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             }
             else if (lb_allParties.SelectedRow.UserData is ArrestReport)
             {
-                Function.Log("PartyListItemDoubleClicked Arrestee");
                 var party = lb_allParties.SelectedRow.UserData as ArrestReport;
                 if (party != null)
                 {
@@ -206,7 +199,6 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             base.PostLayout(skin);
             if (this.IsVisible && !DidQuickSwitchHack)
             {
-                Function.Log("Quick switch hack");
                 WitnessButton.Press();
                 AllButton.Press();
                // UpdatePedsInListBox();

@@ -17,9 +17,10 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
 {
     class ArrestReportView : Base
     {
+        internal static int DefaultWidth = 539;
+        internal static int DefaultHeight = 946;
+
         ArrestReport Report;
-
-
         SystemDrawing.Color labelColor = SystemDrawing.Color.Black;
 
         Font labelFont, valueFont;
@@ -92,7 +93,11 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
 
         protected override void Layout(GwenSkin.Base skin)
         {
-            base.Layout(skin);
+            base.Layout(skin);            
+            if (this.Parent == null && headerSection == null)
+            {
+                return;
+            }
             BindDataFromReport();
             headerSection.SizeWidthWith().AlignTopWith().AlignLeftWith().SizeToChildrenBlock();
 
@@ -146,25 +151,27 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             labeled_arrest_city.SetValueText(Report.ArrestCity);
             labeled_arrest_date.SetValueText(Function.ToLocalDateString(Report.ArrestDate, TextBoxExtensions.DateOutputPart.DATE, TextBoxExtensions.DateOutputPart.DATE));
             labeled_arrest_time.SetValueText(Function.ToLocalDateString(Report.ArrestDate, TextBoxExtensions.DateOutputPart.TIME, TextBoxExtensions.DateOutputPart.TIME));
-
+            tb_report_details.DeleteAllChildren();
             tb_report_details.SetValueText(Report.Details);
         }
 
         private void AddChargesFromReport()
         {
+            if (lb_charges == null) return;
+            lb_charges.Clear();
             Report.Charges.ForEach(AddChargeToListBox);
         }
 
         private void AddAdditionalPartiesFromReport()
         {
+            if (lb_additional_parties == null) return;
+            lb_additional_parties.Clear();
             Report.AdditionalParties.ForEach(AddAdditionalPartyToListBox);
         }
 
         private void AddChargeToListBox(ArrestChargeLineItem charge)
         {
-            Function.Log("AddChargeToListBox");
             if (charge == null || lb_charges == null) return;
-            Function.Log("AddChargeToListBox passed check");
             var row = lb_charges.AddRow(
                 String.Format("{0}. {1}", lb_charges.RowCount + 1, charge.Charge),
                 charge.id.ToString(),
@@ -198,7 +205,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
     {
         ArrestReportView arrestReportView;
         ArrestReport Report;
-        internal ArrestReportViewContainer(ArrestReport report) : base("Arrest Report", 539, 946)
+        internal ArrestReportViewContainer(ArrestReport report) : base("Arrest Report", ArrestReportView.DefaultWidth, ArrestReportView.DefaultHeight)
         {
             Report = report;
         }

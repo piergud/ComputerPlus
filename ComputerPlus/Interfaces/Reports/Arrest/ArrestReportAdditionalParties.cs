@@ -71,7 +71,6 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             btn_addPartyToReport.Clicked += AddPartyToReportClicked;
             lb_additional_parties.Clicked += AdditionalPartyListItemClicked;
             PopulateListBoxFromReport();
-            Function.Log("Init layout");
 
         }
 
@@ -94,7 +93,6 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         {
             if (Report == null || Report.AdditionalParties == null)
             {
-                Function.Log("Report is null");
                 return;
             }
             else if (lb_additional_parties == null)

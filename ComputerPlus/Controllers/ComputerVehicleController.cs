@@ -43,18 +43,12 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         {
             get
             {
-                Function.Log("CurrentPulledOver get handle");
                 var handle = Functions.GetCurrentPullover();
-                Function.Log("CurrentPulledOver got handle");
                 if (handle != null)
                 {
-                    Function.Log("CurrentPulledOver get suspect handle");
                     Ped ped = Functions.GetPulloverSuspect(handle);                    
-                    Function.Log("CurrentPulledOver got suspect handle");
                     Vehicle vehicle = FindPedVehicle(ped);
-                    Function.Log("CurrentPulledOver found vehicle");
                     if (vehicle == null || !vehicle.Exists()) return null;
-                    Function.Log("CurrentPulledOver return LookupVehicle");
                     return LookupVehicle(vehicle);
                 }
                 return null;
@@ -128,7 +122,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 while (owner == null)
                 {
                     //Last ditch effort to make C+ happy by just providing any ped as the owner and setting them as the owner
-                    Function.Log(String.Format("LookupVehicle owner was null.. driver may no longer exist", ownerName));
                     var ped = FindRandomPed();
                     owner = new ComputerPlusEntity(ped, Functions.GetPersonaForPed(ped));
                 }
@@ -136,7 +129,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
             if (!owner.Validate())
             {
-                Function.Log(String.Format("LookupVehicle owner was null, performing fixup on {0}", ownerName));
 
                 var parts = ownerName.Split(' ');
                 while(parts.Length < 2)
@@ -150,7 +142,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 var ped = FindRandomPed();
 
 
-                Function.Log("Found a new ped for fixup");
                 var persona = new Persona(
                     ped,
                     Gender.Random,
