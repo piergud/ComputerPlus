@@ -13,6 +13,7 @@ using Rage.Forms;
 using ComputerPlus.Controllers;
 using ComputerPlus.Extensions;
 using DateOutputPart = ComputerPlus.Extensions.Gwen.TextBoxExtensions.DateOutputPart;
+using ComputerPlus.Extensions.Gwen;
 
 namespace ComputerPlus.Interfaces.ComputerPedDB
 {
@@ -24,8 +25,14 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
         ArrestReportList arrestReportList;
         ArrestReportView arrestReportView;
         TabControl tabcontrol_details;
+        DockBase arrestsContainer;
 
-        private ComputerPedViewExtended(ComputerPlusEntity entity) : base(entity.FullName, Configs.BaseFormWidth, Configs.BaseFormHeight * 2)
+        enum Page { PED_DETAILS, ARRESTS, TICKETS };
+
+        private static int DefaultWidth = Configs.BaseFormWidth;
+        private static int DefaultHeight = Configs.BaseFormHeight * 2;
+
+        private ComputerPedViewExtended(ComputerPlusEntity entity) : base(entity.FullName, DefaultWidth, DefaultHeight)
         {
             Entity = entity;
         }
@@ -39,48 +46,78 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
         {
             base.InitializeLayout();
             this.Position = this.GetLaunchPosition();
-            pedView = new ComputerPedView(this, Entity, PedViewQuickActionSelected);
+            pedView = new ComputerPedView(this, Entity, PedViewQuickActionSelected);            
             pedView.Dock = Pos.Fill;
             tabcontrol_details = new TabControl(this);
             tabcontrol_details.Dock = Pos.Fill;
-            
-            
-            tabcontrol_details.AddPage("Details", pedView);
+
+            arrestsContainer = new DockBase(this);
+            arrestsContainer.Hide();
+
+            var details = tabcontrol_details.AddPage("Details", pedView);
+            details.UserData = Page.PED_DETAILS;
+            details.Clicked += PageTabClicked;
+
+
             AddArrestReportsTab();
+        }
+
+        private void PageTabClicked(Base sender, ClickedEventArgs arguments)
+        {
+            var page = (Page)sender.UserData;
+            switch(page)
+            {
+                case Page.PED_DETAILS:
+                    this.Window.Height = DefaultHeight;
+                    break;
+                case Page.ARRESTS:
+                    this.Window.Height = ArrestReportView.DefaultHeight;
+                    break;
+            }
+            this.Position = this.GetLaunchPosition();
+            
         }
 
         private void AddArrestReportsTab()
         {
-            if (Arrests.Length > 0)
+            lock (Arrests)
             {
-                if (arrestReportList == null)
+                if (Arrests.Length > 0)
                 {
-                    //Function.Log("AddArrestReportsTab with " + Arrests.Length.ToString());
-                    var arrestsContainer = new DockBase(this);
-                    arrestsContainer.Dock = Pos.Fill;
-                    arrestsContainer.LeftDock.Width = 200;
-                    arrestsContainer.RightDock.Width = this.Window.Width - arrestsContainer.LeftDock.Width;
-                    arrestReportList = new ArrestReportList(arrestsContainer.LeftDock, Arrests, ChangeArrestReportDetailView, RenderArrestReportListBoxRow);
-                    arrestReportView = new ArrestReportView(arrestsContainer, Arrests[0]);
-                    arrestReportList.Dock = Pos.Fill;
-                    arrestReportView.Dock = Pos.Fill;
-                    tabcontrol_details.AddPage("Arrests", arrestsContainer);
-                }
-                else
-                {
-                    arrestReportList.ChangeReports(Arrests);
-                    arrestReportView.ChangeReport(Arrests[0]);
+                    if (arrestsContainer.Children.Count == 0)
+                    {
+                        //Function.Log("AddArrestReportsTab with " + Arrests.Length.ToString());
+                        
+                        arrestsContainer.Dock = Pos.Fill;
+                        arrestsContainer.LeftDock.Width = 200;
+                        arrestsContainer.RightDock.Width = arrestsContainer.Width - arrestsContainer.LeftDock.Width;
+                        arrestReportList = new ArrestReportList(arrestsContainer.LeftDock, Arrests, ChangeArrestReportDetailView, RenderArrestReportListBoxRow);
+                        arrestReportView = new ArrestReportView(arrestsContainer, Arrests[0]);
+                        arrestsContainer.Name = String.Empty;
+                        arrestReportList.Dock = Pos.Fill;
+                        arrestReportView.Dock = Pos.Fill;
+                        //arrestReportView.SizeFull();                        
+                        arrestsContainer.Show();
+                        var page = tabcontrol_details.AddPage("Arrests", arrestsContainer);
+                        page.UserData = Page.ARRESTS;
+                        page.Clicked += PageTabClicked;
+
+                    }
+                    else
+                    {
+                        arrestReportList.ChangeReports(Arrests);
+                        arrestReportView.ChangeReport(Arrests[0]);
+                    }
                 }
             }
         }
 
+     
 
         private void ChangeArrestReportDetailView(ArrestReport report)
         {
-            Function.Log("ChangeArrestReportDetailView start");
             if (arrestReportView != null && report != null)
             {
-                Function.Log("ChangeArrestReportDetailView valid");
                 arrestReportView.ChangeReport(report);
             }
         }
@@ -103,7 +140,6 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             {
                 if (!Arrests.Contains(report))
                 {
-                    Function.Log("PedCreateArrestReportActions with " + report.Charges.Count.ToString());
                     var nArrests = new ArrestReport[Arrests.Length + 1];
                     Arrests.CopyTo(nArrests, 0);
                     nArrests[Arrests.Length] = report;
@@ -111,7 +147,6 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 }
                 else
                 {
-                    Function.Log("Update PedCreateArrestReportActions with " + report.Charges.Count.ToString());
                     Arrests = Arrests.Select(x => x.id == report.id ? report : x).ToArray();
                 }
                 AddArrestReportsTab();

@@ -176,11 +176,10 @@ namespace ComputerPlus.Interfaces.Common
 
                 var measure = mLabel.Skin.Renderer.MeasureText(LabelFont, LabelText);
                 mLabel.SetSize(measure.X, measure.Y);
-                Function.Log(String.Format("WordWrap disabled {0} {1} {2} {3} {4} {5}", measure.X, measure.Y, LabelColor.HasValue ? LabelColor.Value.ToString() : "none", LabelFont.FaceName, LabelFont.Size, LabelText));
+                //Function.Log(String.Format("WordWrap disabled {0} {1} {2} {3} {4} {5}", measure.X, measure.Y, LabelColor.HasValue ? LabelColor.Value.ToString() : "none", LabelFont.FaceName, LabelFont.Size, LabelText));
             }
             else
             {
-                Function.Log("WordWrap enabled");
                 mLabel.SizeToChildren();
             }
             //if (WordWrapLabel)

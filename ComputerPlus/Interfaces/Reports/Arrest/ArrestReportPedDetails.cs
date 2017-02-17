@@ -271,7 +271,6 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             if (Report == null) return;
             text_arrest_time.Disable();
             text_arrest_date.Disable();
-            Function.Log(String.Format("Report id is {0}", Report.Id()));
             if (!Report.IsNew)
             {                
                 text_arrestee_dob.Disable();
@@ -282,10 +281,6 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 text_arrest_city.Disable();
                 text_arrest_time.Disable();
                 text_arrest_date.Disable();
-            }
-            else
-            {
-                Function.Log("Report is not new");
             }
         }
     }

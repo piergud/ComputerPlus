@@ -11,12 +11,22 @@ namespace ComputerPlus.Extensions.Gwen
 {
     static class BaseExtension
     {
-        internal static Base ReduceHeightOf(this Base control, Base anchor, bool adjustY = true)
+        internal static Base LessHeightOf(this Base control, Base anchor, bool adjustY = true)
         {
             if (anchor != null)
             {          
                 if (control.Height > 0) control.Height = control.Height - anchor.Height;
                 if (adjustY) control.Y = control.Y - anchor.Height;
+            }
+            return control;
+        }
+
+        internal static Base LessWidthOf(this Base control, Base anchor, bool adjustX = true)
+        {
+            if (anchor != null)
+            {
+                if (control.Width > 0) control.Width = control.Width - anchor.Width;
+                if (adjustX) control.X = control.X - anchor.Width;
             }
             return control;
         }

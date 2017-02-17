@@ -47,6 +47,12 @@ namespace ComputerPlus.DB
             //{
             //    dbConnection.Close();
             //}
+            try
+            {
+                mConnectionLock.Close();
+            }
+            catch { }
+
         }
 
         internal async Task<UpgradeStatus> UpgradeSchemaFactory(SchemaVersion toVersion)

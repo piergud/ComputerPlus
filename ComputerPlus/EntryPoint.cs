@@ -15,6 +15,7 @@ using ComputerPlus.Controllers;
 using ComputerPlus.Extensions.Rage;
 using System.Linq;
 using ComputerPlus.Extensions.Gwen;
+using ComputerPlus.Extensions;
 using System.Windows.Forms;
 using ComputerPlus.Interfaces.SimpleNotepad;
 using ComputerPlus.Interfaces.Reports.Models;
@@ -50,7 +51,6 @@ namespace ComputerPlus
 
         public override void Initialize()
         {
-            Function.Log("Computer+ is loading");
             DetectOpenCloseRequestedFiber = new GameFiber(CheckToggleComputer);
             RunComputerPlusFiber = new GameFiber(RunPoliceComputer);
             CheckIfCalloutActiveFiber = new GameFiber(CheckIfCalloutActive);
@@ -73,6 +73,7 @@ namespace ComputerPlus
             Globals.Navigation.OnFormRemoved -= NavOnFormRemoved;
             if (RunComputerPlusFiber.IsRunning()) RunComputerPlusFiber.Abort();
             if (CheckIfCalloutActiveFiber.IsRunning()) CheckIfCalloutActiveFiber.Abort();
+            Globals.Store.Close();
         }
 
 
@@ -241,6 +242,8 @@ namespace ComputerPlus
                 {
                     CheckForOpenTrigger();
                 }
+                //Function.Log(String.Format("{0} {1} {2}", Game.TimeScale, Game.GameTime, World.DateTime.ToString("hh:mm:ss.f")));
+                //World.TimeOfDay = DateTime.Now.TimeOfDay;
                 GameFiber.Yield();
             }
             while (Globals.IsPlayerOnDuty);

@@ -142,7 +142,6 @@ namespace ComputerPlus.Interfaces.Reports.Models
 
         public ArrestReport(List<ArrestChargeLineItem> charges, List<ArrestReportAdditionalParty> parties, DateTime arrestTime, String notes) : this()
         {
-            Function.Log("ArrestReport overload");
             if (charges != null)
             {
                 lock (charges)
