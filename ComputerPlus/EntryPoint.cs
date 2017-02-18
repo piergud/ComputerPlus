@@ -113,18 +113,10 @@ namespace ComputerPlus
         {
             try
             {
+                await Globals.OpenStore();
                 if (Globals.Store != null)
                 {
-                    var plan = new SchemaVersion() { Plans = new List<string>() { "initial" } };
-                    var result = await Globals.Store.Upgrade(plan);
-                    if (result == UpgradeStatus.COMPLETED)
-                    {
-                        Function.Log("SQL is ready");
-                    }
-                    else if (result == UpgradeStatus.MISSING_SCHEMAS)
-                    {
-                        Function.Log("Missing schema");
-                    }
+                    Function.Log("Store was opened");
                 }
                 else
                 {

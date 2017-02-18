@@ -19,19 +19,37 @@ namespace ComputerPlus.DB.Models
 
     public class SchemaVersion : PersistedModel
     {
+        String mId;
+
         [PrimaryKey]
-        public Guid id
+        public String id
+        {
+            get { return mId;  }
+            protected set
+            {
+                mId = value;
+                Version = new Version(mId);
+            }
+                    
+        }
+        [Ignore]
+        public Version Version
         {
             get;
-            protected set;
+            private set;
         }
 
         [XmlAttribute(AttributeName = "plans")]
         public List<String> Plans;
 
-        public static SchemaVersion Create(String id)
+        public static SchemaVersion Create(String id, List<String> plans)
         {
-            return new SchemaVersion() { id = Guid.Parse(id) };
+            return new SchemaVersion() { id = id, Plans = plans };
+        }
+
+        public static SchemaVersion Create()
+        {
+            return new SchemaVersion() { id = "1.0.0", Plans = new List<string>() { "initial" } };
         }
     }
 

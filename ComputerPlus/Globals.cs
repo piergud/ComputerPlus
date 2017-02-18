@@ -39,11 +39,16 @@ namespace ComputerPlus
         internal static String SimpleNotepadText = String.Empty;
         private static String Clipboard = String.Empty;
         internal static readonly String DefaultAssetPath = @"Plugins\LSPDFR\ComputerPlus\";
-        internal static readonly Storage Store = Storage.Open();
-        internal static readonly String SchemaVersion = "1.0.0";
+        internal static Storage Store;
+        internal static readonly Version SchemaVersion = new Version("1.0.0");
 
         internal static Styles Style = new Styles();
-        
+
+        internal async static Task OpenStore()
+        {
+            if (Store == null)
+                Store = await Storage.ReadOrInit();
+        }
 
         static public ArrestReport PendingArrestReport
         {
