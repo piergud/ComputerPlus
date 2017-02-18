@@ -45,6 +45,9 @@ namespace ComputerPlus.Controllers
         public static async void ShowArrestReportList()
         {
             var reports = await ComputerReportsController.GetAllArrestReportsAsync(0, 0);
+            if (reports == null) Function.Log("Reports is null");
+            else if (Globals.Navigation == null) Function.Log("Global nav is null");
+            else
             Globals.Navigation.Push(new ArrestReportListContainer(reports));
         }
 
@@ -83,7 +86,8 @@ namespace ComputerPlus.Controllers
                 query.SelectAllColumns();
                 query.SelectFromTable(DB.Storage.Tables.Names.ArrestReport);
                 query.AddOrderBy(orderCol, QueryEnum.Sorting.Descending);
-                return await Globals.Store.Connection().QueryAsync<ArrestReport>(query.BuildQuery());
+                var results = await Globals.Store.Connection().QueryAsync<ArrestReport>(query.BuildQuery());
+                return results != null ? results : new List<ArrestReport>();
             }
             catch (Exception e)
             {

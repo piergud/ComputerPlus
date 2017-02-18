@@ -597,8 +597,10 @@ namespace ComputerPlus
             if (!String.IsNullOrWhiteSpace(message)) Game.DisplaySubtitle(String.Format("~y~C+: ~w~{0}", message), duration);
         }
 
-        internal static String GetAssetPath(String fileName)
+        internal static String GetAssetPath(String fileName, bool fullPath = false)
         {
+            if (fullPath)
+                return String.Format(@"{0}\{1}{2}", Directory.GetCurrentDirectory(), Globals.DefaultAssetPath, fileName);
             return Globals.DefaultAssetPath + fileName;
         }
 
