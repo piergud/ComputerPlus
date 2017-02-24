@@ -118,10 +118,15 @@ namespace ComputerPlus
 
         private void ReportsClickedHandler(Base sender, ClickedEventArgs e)
         {
+            //if (sender == btn_browse_report)
+            //    ComputerReportsController.ShowTrafficCitationList();
+            //else if(sender == btn_arrest_report)
+            //ComputerReportsController.ShowTrafficCitationCreate(null);
+
             if (sender == btn_browse_report)
                 ComputerReportsController.ShowArrestReportList();
-            else if(sender == btn_arrest_report)
-            ComputerReportsController.ShowArrestReportCreate();
+            else if (sender == btn_arrest_report)
+                ComputerReportsController.ShowTrafficCitationCreate(null);
         }
 
 

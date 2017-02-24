@@ -227,6 +227,16 @@ namespace ComputerPlus.Interfaces.Common
             component.Component.ClearText();
             component.Component.Text(text, component.Skin.Colors.Label.Default);
         }
+
+        internal static void SetValueText(this LabeledComponent<StateControlledTextbox> component, String text)
+        {
+            component.Component.SetText(text);
+        }
+
+        internal static void SetValueText(this LabeledComponent<StateControlledMultilineTextbox> component, String text)
+        {
+            component.Component.SetText(text);
+        }
     }
     class LabeledComponent<T> : Base where T : Base
     {
@@ -419,6 +429,26 @@ namespace ComputerPlus.Interfaces.Common
         public static LabeledComponent<TextBox> TextBox(Base parent, String labelText, TextBox component, RelationalPosition position = RelationalPosition.LEFT, int? spaceBetweenComponents = null, SystemDrawing.Color labelColor = default(SystemDrawing.Color), Font labelFont = default(Font))
         {
             return new LabeledComponent<Gwen.Control.TextBox>(parent, labelText, component, position, RelationalSize.NONE, spaceBetweenComponents, labelFont, labelColor);
+        }
+
+        public static LabeledComponent<StateControlledTextbox> StatefulTextbox(Base parent, String labelText, StateControlledTextbox component, RelationalPosition position = RelationalPosition.LEFT, int? spaceBetweenComponents = null, SystemDrawing.Color labelColor = default(SystemDrawing.Color), Font labelFont = default(Font))
+        {
+            return new LabeledComponent<StateControlledTextbox>(parent, labelText, component, position, RelationalSize.NONE, spaceBetweenComponents, labelFont, labelColor);
+        }
+
+        public static LabeledComponent<StateControlledTextbox> StatefulTextbox(Base parent, String labelText, RelationalPosition position = RelationalPosition.LEFT, int? spaceBetweenComponents = null, SystemDrawing.Color labelColor = default(SystemDrawing.Color), Font labelFont = default(Font))
+        {
+            return new LabeledComponent<StateControlledTextbox>(parent, labelText, new StateControlledTextbox(parent), position, RelationalSize.NONE, spaceBetweenComponents, labelFont, labelColor);
+        }
+
+        public static LabeledComponent<Button> Button(Base parent, String labelText, Button button, RelationalPosition position = RelationalPosition.LEFT, int? spaceBetweenComponents = null, SystemDrawing.Color labelColor = default(SystemDrawing.Color), Font labelFont = default(Font))
+        {
+            return new LabeledComponent<Button>(parent, labelText, button, position, RelationalSize.NONE, spaceBetweenComponents, labelFont, labelColor);
+        }
+
+        public static LabeledComponent<Button> Button(Base parent, String labelText, RelationalPosition position = RelationalPosition.LEFT, int? spaceBetweenComponents = null, SystemDrawing.Color labelColor = default(SystemDrawing.Color), Font labelFont = default(Font))
+        {
+            return new LabeledComponent<Button>(parent, labelText, new Button(parent), position, RelationalSize.NONE, spaceBetweenComponents, labelFont, labelColor);
         }
     }
 }

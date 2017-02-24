@@ -63,5 +63,10 @@ namespace ComputerPlus.Extensions.Gwen
         {
             button.Icon("ic_content_copy_black_24dp_1x.png", clearText, "Copy Content");
         }
+
+        internal static void SaveIcon(this Button button, bool clearText = true)
+        {
+            button.Icon("ic_save_black_24dp_1x.png", clearText, "Save");
+        }
     }
 }

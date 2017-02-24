@@ -7,6 +7,7 @@ using Gwen.Control;
 using ComputerPlus.Controllers.Models;
 using ComputerPlus.Interfaces.Reports.Models;
 using ComputerPlus.Interfaces.Reports.Arrest;
+using ComputerPlus.Interfaces.Reports.Citation;
 using GwenSkin = Gwen.Skin;
 using Gwen;
 using Rage.Forms;
@@ -20,14 +21,17 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
     class ComputerPedViewExtended : GwenForm
     {
         ComputerPlusEntity Entity;
-        ArrestReport[] Arrests;
+        List<ArrestReport> Arrests;
+        List<TrafficCitation> TrafficCitations;
         ComputerPedView pedView;
         ArrestReportList arrestReportList;
         ArrestReportView arrestReportView;
+        TrafficCitationList trafficCitationList;
+        TrafficCitationView trafficCitationView;
         TabControl tabcontrol_details;
-        DockBase arrestsContainer;
+        DockBase arrestsContainer, trafficCitationContainer;
 
-        enum Page { PED_DETAILS, ARRESTS, TICKETS };
+        enum Page { PED_DETAILS, ARRESTS, TRAFFIC_CITATIONS };
 
         private static int DefaultWidth = Configs.BaseFormWidth;
         private static int DefaultHeight = Configs.BaseFormHeight * 2;
@@ -37,9 +41,10 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             Entity = entity;
         }
 
-        public ComputerPedViewExtended(ComputerPlusEntity entity, ArrestReport[] arrests) : this(entity)
+        public ComputerPedViewExtended(PedReport report) : this(report.Entity)
         {
-            this.Arrests = arrests;
+            this.Arrests = report.Arrests;
+            this.TrafficCitations = report.TrafficCitations;
         }
 
         public override void InitializeLayout()
@@ -54,12 +59,16 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             arrestsContainer = new DockBase(this);
             arrestsContainer.Hide();
 
+            trafficCitationContainer = new DockBase(this);
+            trafficCitationContainer.Hide();
+
             var details = tabcontrol_details.AddPage("Details", pedView);
             details.UserData = Page.PED_DETAILS;
             details.Clicked += PageTabClicked;
 
 
             AddArrestReportsTab();
+            AddTrafficCitationsTab();
         }
 
         private void PageTabClicked(Base sender, ClickedEventArgs arguments)
@@ -69,9 +78,15 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             {
                 case Page.PED_DETAILS:
                     this.Window.Height = DefaultHeight;
+                    this.Window.Width = DefaultWidth;
                     break;
                 case Page.ARRESTS:
                     this.Window.Height = ArrestReportView.DefaultHeight;
+                    this.Window.Width = DefaultWidth;
+                    break;
+                case Page.TRAFFIC_CITATIONS:
+                    this.Window.Height = TrafficCitationView.DefaultHeight;
+                    this.Window.Width = TrafficCitationView.DefaultWidth + 200; //200 is from  trafficCitationContainer.LeftDock.Width = 200; 
                     break;
             }
             this.Position = this.GetLaunchPosition();
@@ -82,7 +97,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
         {
             lock (Arrests)
             {
-                if (Arrests.Length > 0)
+                if (Arrests.Count > 0)
                 {
                     if (arrestsContainer.Children.Count == 0)
                     {
@@ -112,7 +127,40 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             }
         }
 
-     
+        private void AddTrafficCitationsTab()
+        {
+            lock (TrafficCitations)
+            {
+                if (TrafficCitations.Count > 0)
+                {
+                    if (trafficCitationContainer.Children.Count == 0)
+                    {
+                        //Function.Log("AddArrestReportsTab with " + Arrests.Length.ToString());
+
+                        trafficCitationContainer.Dock = Pos.Fill;
+                        trafficCitationContainer.LeftDock.Width = 200;
+                        trafficCitationList = new TrafficCitationList(trafficCitationContainer.LeftDock, TrafficCitations, ChangeTrafficCitationDetailView, RenderTrafficCitationListBoxRow) { ListClickStyle = TrafficCitationList.ListItemClickType.DOUBLE };
+                        trafficCitationView = new TrafficCitationView(trafficCitationContainer, TrafficCitations.FirstOrDefault(), TrafficCitationView.ViewTypes.VIEW);
+                        trafficCitationContainer.Name = String.Empty;
+                        trafficCitationList.Dock = Pos.Fill;
+                        trafficCitationView.Dock = Pos.Fill;
+                        trafficCitationContainer.Show();
+
+                        var page = tabcontrol_details.AddPage("Traffic Citations", trafficCitationContainer);
+                        page.UserData = Page.TRAFFIC_CITATIONS;
+                        page.Clicked += PageTabClicked;
+
+                    }
+                    else
+                    {
+                        trafficCitationList.ChangeCitations(TrafficCitations);
+                        trafficCitationView.ChangeCitation(TrafficCitations.FirstOrDefault());
+                    }
+                }
+            }
+        }
+
+
 
         private void ChangeArrestReportDetailView(ArrestReport report)
         {
@@ -121,6 +169,32 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 arrestReportView.ChangeReport(report);
             }
         }
+
+
+        private void RenderArrestReportListBoxRow(ArrestReport report, ListBoxRow row)
+        {
+            var dateString = report.ArrestTimeDate.ToLocalTimeString(DateOutputPart.DATE);
+            row.Text = String.Format("{0} Charges: {1}", dateString, report.Charges.Count);
+            row.SetToolTipText(String.Format("Arrested {0}, {1} charges with {2} felony", dateString, report.Charges.Count, report.Charges.Count(x => x.IsFelony)));
+        }
+
+        private void ChangeTrafficCitationDetailView(object sender, TrafficCitation citation)
+        {
+            if (trafficCitationView != null && citation != null)
+            {
+                trafficCitationView.ChangeCitation(citation);
+            }
+        }
+
+
+        private void RenderTrafficCitationListBoxRow(TrafficCitation citation, ListBoxRow row)
+        {
+            var dateString = citation.CitationTimeDate.ToLocalTimeString(DateOutputPart.DATE);
+            row.Text = String.Format("{0}: {1}", dateString, citation.CitationReason);
+            row.SetToolTipText(String.Format("Fine {0}", citation.CitationAmount));
+        }
+
+
 
         private void PedViewQuickActionSelected(object sender, ComputerPedView.QuickActions action)
         {
@@ -131,35 +205,27 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                         ComputerReportsController.ShowArrestReportCreate(Entity, PedCreateArrestReportActions);
                         return;
                     }
+                case ComputerPedView.QuickActions.CREATE_TRAFFIC_CITATION:
+                    {
+                        ComputerReportsController.ShowTrafficCitationCreate(null, Entity, PedCreateTrafficCitationActions);
+                        return;
+                    }
             }
         }
 
         private void PedCreateArrestReportActions(object sender, ArrestReportContainer.ArrestReportSaveResult action, ArrestReport report)
         {
-            if (action == ArrestReportContainer.ArrestReportSaveResult.SAVE)
-            {
-                if (!Arrests.Contains(report))
-                {
-                    var nArrests = new ArrestReport[Arrests.Length + 1];
-                    Arrests.CopyTo(nArrests, 0);
-                    nArrests[Arrests.Length] = report;
-                    Arrests = nArrests;
-                }
-                else
-                {
-                    Arrests = Arrests.Select(x => x.id == report.id ? report : x).ToArray();
-                }
-                AddArrestReportsTab();
-            }
+            Arrests.Add(report);
+            AddArrestReportsTab();
+
         }
 
-        private void RenderArrestReportListBoxRow(ArrestReport report, ListBoxRow row)
+        private void PedCreateTrafficCitationActions(object sender, TrafficCitationView.TrafficCitationSaveResult action, TrafficCitation citation)
         {
-            var dateString = report.ArrestTimeDate.ToLocalTimeString(DateOutputPart.DATE);
-            row.Text = String.Format("{0} Charges: {1}", dateString, report.Charges.Count);
-            row.SetToolTipText(String.Format("Arrested {0}, {1} charges with {2} felony", dateString, report.Charges.Count, report.Charges.Count(x => x.IsFelony)));
-        }
+            TrafficCitations.Add(citation);
+            AddTrafficCitationsTab();
 
+        }
 
     }
 }

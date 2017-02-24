@@ -1,0 +1,12 @@
+<VehicleDefinitions>
+	<VehicleCategories>
+		<VehicleCategory>Coupe</VehicleCategory>
+		<VehicleCategory>Sedan</VehicleCategory>
+		<VehicleCategory>Pickup</VehicleCategory>
+		<VehicleCategory>SUV</VehicleCategory>
+		<VehicleCategory>Van</VehicleCategory>
+		<VehicleCategory>Semi</VehicleCategory>
+		<VehicleCategory>Motorcycle</VehicleCategory>
+		<VehicleCategory>Moped</VehicleCategory>
+	</VehicleCategories>
+</VehicleDefinitions>

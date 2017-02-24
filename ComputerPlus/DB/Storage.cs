@@ -193,6 +193,7 @@ namespace ComputerPlus.DB
             {
                 public static readonly String ArrestReport = "ArrestReport";
                 public static readonly String ArrestReportCharges = "ArrestReportCharges";
+                public static readonly String TrafficCitation = "TrafficCitation";
                 public static readonly String SchemaVersion = "SchemaVersion";
             }
             public static readonly String ID_KEY = "id";
@@ -215,6 +216,40 @@ namespace ComputerPlus.DB
                     ARREST_STREET_ADDRESS,
                     ARREST_CITY
                };
+            }
+
+            public static class TrafficCitation
+            {
+                public static readonly String CITATION_TIME_DATE = "CitationTimeDate";
+                public static readonly String FIRST_NAME = "FirstName";
+                public static readonly String LAST_NAME = "LastName";
+                public static readonly String DOB = "DOB";
+                public static readonly String HOME_ADDRESS = "HomeAddress";
+                public static readonly String CITATION_STREET_ADDRESS = "CitationStreetAddress";
+                public static readonly String CITATION_CITY = "CitationCity";
+                public static readonly String VEHICLE_MODEL = "VehicleModel";
+                public static readonly String VEHICLE_TAG = "VehicleTag";
+                public static readonly String VEHICLE_COLOR = "VehicleColor";
+                public static readonly String CITATION = "CitationReason";
+                public static readonly String AMOUNT = "CitationAmount";
+                public static readonly String DETAILS = "Details";
+                public static readonly String IS_ARRESTABLE = "IsArrestable";
+                public static readonly String[] PROJECTION = {
+                    ID_KEY,
+                    FIRST_NAME,
+                    LAST_NAME,
+                    DOB,
+                    HOME_ADDRESS,
+                    CITATION_STREET_ADDRESS,
+                    CITATION_CITY,
+                    VEHICLE_MODEL,
+                    VEHICLE_TAG,
+                    VEHICLE_COLOR,
+                    CITATION,
+                    AMOUNT,
+                    DETAILS,
+                    IS_ARRESTABLE,
+                };
             }
         }
     }
