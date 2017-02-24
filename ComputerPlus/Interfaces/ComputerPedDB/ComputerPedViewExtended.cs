@@ -95,6 +95,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
         private void AddArrestReportsTab()
         {
+            if (Arrests == null) return;
             lock (Arrests)
             {
                 if (Arrests.Count > 0)
@@ -129,6 +130,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
         private void AddTrafficCitationsTab()
         {
+            if (TrafficCitations == null) return;
             lock (TrafficCitations)
             {
                 if (TrafficCitations.Count > 0)
