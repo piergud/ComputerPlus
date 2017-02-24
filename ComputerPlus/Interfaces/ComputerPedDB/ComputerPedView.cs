@@ -19,7 +19,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 {
     public class ComputerPedView : Base
     {
-        public enum QuickActions { PLACEHOLDER = 0, CREATE_ARREST_REPORT = 1 };
+        public enum QuickActions { PLACEHOLDER = 0, CREATE_ARREST_REPORT = 1, CREATE_TRAFFIC_CITATION = 2 };
         public delegate void QuickActionSelected(object sender, QuickActions action);
 
         QuickActionSelected OnQuickActionSelected;
@@ -138,6 +138,8 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             cb_action = new ComboBox(this);
             cb_action.AddItem("Select One", "PlaceHolder", QuickActions.PLACEHOLDER);
             cb_action.AddItem("Create Arrest Report", "ArrestReport", QuickActions.CREATE_ARREST_REPORT);
+            if (this.Entity.Ped.LastVehicle != null) //Not using the implicit bool operator for Vehicle because we dont care if it is "valid" any more, we only care that they "had" a vehicle
+                cb_action.AddItem("Create Traffic Citation", "TrafficCitation", QuickActions.CREATE_TRAFFIC_CITATION);
             cb_action.ItemSelected += ActionComboBoxItemSelected;
             cb_action.SetSize(ped_image_holder.Width, cb_action.Height);
             cb_action.SetPosition(ped_image_holder.X, text_last_name.Y);
@@ -201,6 +203,11 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 case QuickActions.CREATE_ARREST_REPORT:
                     {
                         ComputerReportsController.ShowArrestReportCreate(this.Entity, null);
+                        return;
+                    }
+                case QuickActions.CREATE_TRAFFIC_CITATION:
+                    {
+                        ComputerReportsController.ShowTrafficCitationCreate(null, this.Entity);
                         return;
                     }
             }

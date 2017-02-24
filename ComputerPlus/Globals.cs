@@ -40,7 +40,7 @@ namespace ComputerPlus
         private static String Clipboard = String.Empty;
         internal static readonly String DefaultAssetPath = @"Plugins\LSPDFR\ComputerPlus\";
         internal static Storage Store;
-        internal static readonly Version SchemaVersion = new Version("1.0.0");
+        internal static readonly Version SchemaVersion = new Version("1.0.1");
 
         internal static Styles Style = new Styles();
 
@@ -56,11 +56,76 @@ namespace ComputerPlus
             internal set;
         } = new ArrestReport();
 
-        public static ChargeCategories ChargeCategoryList
+        static public TrafficCitation PendingTrafficCitation
+        {
+            get;
+            internal set;
+        } = new TrafficCitation();
+
+        static private Dictionary<Rage.Ped, List<TrafficCitation>> TicketsInPosession = new Dictionary<Rage.Ped, List<TrafficCitation>>();
+
+        public static ChargeCategories ChargeDefinitions
         {
             get;
             internal set;
         } = null;
+
+        public static CitationCategories CitationDefinitions
+        {
+            get;
+            internal set;
+        } = null;
+
+        public static VehicleDefinitions VehicleDefinitions
+        {
+            get;
+            internal set;
+        } = null;
+
+
+        internal static bool HasTrafficTicketsInHand()
+        {
+            return TicketsInPosession.Any(x => x.Key && x.Value.Count > 0);
+        }
+
+        internal static List<TrafficCitation> GetTrafficCitationsInHandForPed(Rage.Ped ped)
+        {
+            if (!ped || !TicketsInPosession.ContainsKey(ped)) return null;
+            return TicketsInPosession[ped];
+        }
+
+
+        internal static void RemoveTrafficCitationsInHandForPed(Rage.Ped ped)
+        {
+            if (ped != null) //dont care about game validility of Ped
+            {
+                if (TicketsInPosession.ContainsKey(ped))
+                {
+                    TicketsInPosession.Remove(ped);
+                }                
+            }
+        }
+
+        internal static void ClearTrafficCitationsInHand()
+        {
+            TicketsInPosession.Clear();
+        }
+
+        internal static void AddTrafficCitationsInHandForPed(Rage.Ped ped, TrafficCitation citation)
+        {
+            if (ped)
+            {
+                if (TicketsInPosession.ContainsKey(ped))
+                {
+                    TicketsInPosession[ped].Add(citation);
+                }
+                else
+                {
+                    TicketsInPosession.Add(ped, new List<TrafficCitation>() { citation });
+                }
+            }
+        }
+
 
         /// <summary>
         /// Returns the active callout from the queue.

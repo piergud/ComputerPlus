@@ -17,6 +17,6 @@ namespace ComputerPlus.Controllers.Models
             HasInsurance = hasInsurance;
             IsRegistered = isRegistered;
             Alert = alert;
-        }
+        }       
     }
 }

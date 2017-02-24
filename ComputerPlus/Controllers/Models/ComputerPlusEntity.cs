@@ -156,5 +156,10 @@ namespace ComputerPlus.Controllers.Models
                 Function.LogDebug("ComputerPlusEntity caught exception during Dismiss");
             }
         }
+
+        public static implicit operator bool (ComputerPlusEntity entity)
+        {
+            return entity.Validate();
+        }
     }
 }
