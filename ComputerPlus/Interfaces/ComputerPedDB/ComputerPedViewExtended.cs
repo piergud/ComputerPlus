@@ -43,8 +43,8 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
         public ComputerPedViewExtended(PedReport report) : this(report.Entity)
         {
-            this.Arrests = report.Arrests;
-            this.TrafficCitations = report.TrafficCitations;
+            this.Arrests = report.Arrests != null ? report.Arrests : new List<ArrestReport>();
+            this.TrafficCitations = report.TrafficCitations != null ? report.TrafficCitations : new List<TrafficCitation>();
         }
 
         public override void InitializeLayout()
