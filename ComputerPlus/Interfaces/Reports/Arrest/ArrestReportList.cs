@@ -20,8 +20,8 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         private readonly ArrestReportSelected OnArrestReportSelected;
         private readonly ArrestReportRowRenderer OnRenderRowText;
         ListBox list;
-        ArrestReport[] Reports;
-        public ArrestReportList(Base parent, ArrestReport[] reports, ArrestReportSelected onSelected, ArrestReportRowRenderer rowRenderer) : base(parent)
+        List<ArrestReport> Reports;
+        public ArrestReportList(Base parent, List<ArrestReport> reports, ArrestReportSelected onSelected, ArrestReportRowRenderer rowRenderer) : base(parent)
         {
             Reports = reports;
             list = new ListBox(this);
@@ -33,7 +33,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             AddReportsToList(); 
         }
 
-        public void ChangeReports(ArrestReport[] reports)
+        public void ChangeReports(List<ArrestReport> reports)
         {
             lock(reports)
             {
@@ -92,8 +92,8 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
 
     class ArrestReportListContainer : GwenForm
     {
-       
-        ArrestReport[] reports;
+
+        List<ArrestReport> reports;
         private ArrestReportList list;
 
         internal ArrestReportList.ArrestReportSelected OnArrestReportSelected;
@@ -109,7 +109,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             }
         }
 
-        internal ArrestReportListContainer(ArrestReport[] reports) : this()
+        internal ArrestReportListContainer(List<ArrestReport> reports) : this()
         {
             this.reports = reports;
         }
@@ -117,10 +117,6 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         internal ArrestReportListContainer() : base("Arrest Reports", Configs.BaseFormWidth, Configs.BaseFormHeight)
         {
 
-        }
-
-        internal ArrestReportListContainer(List<ArrestReport> reports) : this(reports.ToArray())
-        {
         }
         
 

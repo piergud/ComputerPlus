@@ -113,7 +113,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data.SQLite">
       <HintPath>Dependencies\System.Data.SQLite.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -155,6 +155,7 @@
     <Compile Include="Extensions\Rage\BlipExtensions.cs" />
     <Compile Include="Extensions\Rage\GameFiberExtensions.cs" />
     <Compile Include="Extensions\Rage\PedExtensions.cs" />
+    <Compile Include="Extensions\Rage\PedScenarios.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="FriendlyKeys.cs" />
@@ -280,6 +281,8 @@
     <Compile Include="Interfaces\Reports\Arrest\ArrestReportViewTemplate.Designer.cs">
       <DependentUpon>ArrestReportViewTemplate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\Reports\Citation\TrafficCitationList.cs" />
+    <Compile Include="Interfaces\Reports\Citation\TrafficCitationView.cs" />
     <Compile Include="Interfaces\Reports\Models\ArrestReportAdditionalParty.cs" />
     <Compile Include="Interfaces\Reports\Models\ArrestChargeLineItem.cs" />
     <Compile Include="Interfaces\Reports\Models\ArrestReport.cs" />
@@ -287,6 +290,10 @@
     <Compile Include="Interfaces\Reports\Models\ChargeCategories.cs" />
     <Compile Include="Interfaces\Reports\Models\ChargeCategory.cs" />
     <Compile Include="Interfaces\Reports\Models\ChargeQuestion.cs" />
+    <Compile Include="Interfaces\Reports\Models\Citation.cs" />
+    <Compile Include="Interfaces\Reports\Models\PedReport.cs" />
+    <Compile Include="Interfaces\Reports\Models\TrafficCitation.cs" />
+    <Compile Include="Interfaces\Reports\Models\VehicleDefinitions.cs" />
     <Compile Include="Interfaces\SimpleNotepad\SimpleNotepad.cs" />
     <Compile Include="Interfaces\SimpleNotepad\SimpleNotepadTemplate.cs">
       <SubType>Form</SubType>
@@ -371,7 +378,8 @@
     <PostBuildEvent>xcopy /Y "$(TargetDir)ComputerPlus.dll" "$(TargetDir)Packaged\Plugins\LSPDFR\"
 
 xcopy /Y "$(ProjectDir)Resources\*.jpg" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\"
-
+xcopy /Y "$(ProjectDir)Resources\*.xml" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\"
+xcopy /Y "$(ProjectDir)Schemas\*.sql" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\Schemas\"
 copy /Y "$(ProjectDir)..\readme.md" "$(TargetDir)Packaged\readme.txt"
 
 xcopy /Y "$(ProjectDir)Resources\*.png" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\"

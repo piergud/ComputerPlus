@@ -15,7 +15,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
     {
         TreeControl chargesTree;
         ListBox lb_charges;
-        StateControlledMultilineTextbox tb_notes;
+        MultilineTextBox tb_notes;
         Button btnAddCharge;
         Button btnRemoveSelectedCharge;
         Label lbl_addedCharges;
@@ -34,8 +34,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             {
                 ShowLabels();
                 ShowButtons();
-                tb_notes = new StateControlledMultilineTextbox(this);
-                tb_notes.ForceWordWrap = true;
+                tb_notes = new MultilineTextBox(this);
                 tb_notes.SetSize(165, 130);
                 tb_notes.SetPosition(329, 42);
                 chargesTree = new TreeControl(this);
@@ -57,7 +56,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 btnAddCharge.AddIcon();
                 btnAddCharge.Disable();
                 btnRemoveSelectedCharge.Disable();
-                PopulateChargesTree(Globals.ChargeCategoryList);
+                PopulateChargesTree(Globals.ChargeDefinitions);
                 btnAddCharge.Clicked += ButtonClicked;
                 btnRemoveSelectedCharge.Clicked += ButtonClicked;
                 btnRemoveSelectedCharge.DeleteIcon();
@@ -147,7 +146,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 lb_charges.UnselectAll();
                 lb_charges.Clear();
                 chargesTree.UnselectAll();
-                tb_notes.ClearText();
+                tb_notes.DeleteAllChildren();
                 AddReportCharges();
             }
         }
@@ -173,7 +172,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 if (lb_charges.SelectedRow != null)
                 {
                     lb_charges.UnselectAll();
-                    tb_notes.ClearText();
+                    tb_notes.DeleteAllChildren();
                 }
                 btnAddCharge.Enable();
                 btnRemoveSelectedCharge.Disable();
@@ -275,7 +274,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 if (SelectedAvailableCharge == null || SelectedAvailableCharge.IsContainer) return;
                 var lineItem = new ArrestChargeLineItem(SelectedAvailableCharge, tb_notes.Text);
                 AddChargeToReport(Report, lineItem);
-                tb_notes.ClearText();
+                tb_notes.DeleteAllChildren();
                 SelectedAvailableCharge = null;
             }
             else if (sender == btnRemoveSelectedCharge)

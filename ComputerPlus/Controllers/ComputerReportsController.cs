@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ComputerPlus.Interfaces.Reports.Arrest;
+using ComputerPlus.Interfaces.Reports.Citation;
 using ComputerPlus.Extensions.Gwen;
 using ComputerPlus.Interfaces.Reports.Models;
 using SQLiteNetExtensions;
@@ -14,6 +15,7 @@ using CodeEngine.Framework.QueryBuilder;
 using QueryEnum = CodeEngine.Framework.QueryBuilder.Enums;
 using ComputerPlus.Controllers.Models;
 using ComputerPlus.Extensions;
+using SystemThreading = System.Threading.Tasks;
 
 namespace ComputerPlus.Controllers
 {
@@ -35,7 +37,7 @@ namespace ComputerPlus.Controllers
             Globals.Navigation.Push(container);
         }
 
-        public static async System.Threading.Tasks.Task ShowArrestReportView(ArrestReport report)
+        public static async SystemThreading.Task ShowArrestReportView(ArrestReport report)
         {
             await PopulateArrestLineItems(report);
             //Globals.Navigation.Push(new ArrestReportContainer(report));
@@ -139,6 +141,103 @@ namespace ComputerPlus.Controllers
             }
         }
 
+        /** Traffic Citations **/
 
+        public static async void ShowTrafficCitationList()
+        {
+            var citations = await ComputerReportsController.GetAllTrafficCitationsAsync(0, 0);
+            if (citations == null) Function.Log("Citations are null");
+            else if (Globals.Navigation == null) Function.Log("Global nav is null");
+            else
+                Globals.Navigation.Push(new TrafficCitationListContainer(citations));
+        }
+
+        public static void ShowTrafficCitationView(TrafficCitation citation)
+        {
+            Globals.Navigation.Push(new TrafficCitationCreateContainer(citation, TrafficCitationView.ViewTypes.VIEW)); //Switch to view
+        }
+
+        public static void ShowTrafficCitationCreate(TrafficCitation citation, ComputerPlusEntity entity = null, TrafficCitationView.TrafficCitationActionEvent callbackDelegate = null)
+        {
+            if (citation == null && entity == null) citation = Globals.PendingTrafficCitation != null ? Globals.PendingTrafficCitation : new TrafficCitation();
+            else citation = TrafficCitation.CreateForPedInVehicle(entity);
+            if(entity != null) Globals.AddTrafficCitationsInHandForPed(entity.Ped, citation);
+            Globals.Navigation.Push(new TrafficCitationCreateContainer(citation, TrafficCitationView.ViewTypes.CREATE, callbackDelegate));
+        }
+
+        public static async Task<TrafficCitation> SaveTrafficCitationAsync(TrafficCitation report)
+        {
+            try
+            {
+                if (report.IsNew)
+                {
+                    report.id = Guid.NewGuid();
+                    await Globals.Store.Connection().InsertWithChildrenAsync(report, true);
+
+                }
+                else
+                {
+                    await Globals.Store.Connection().UpdateWithChildrenAsync(report);
+                }
+
+                return report;
+            }
+            catch (Exception e)
+            {
+                Function.Log(e.ToString());
+                throw e;
+            }
+        }
+
+
+        public static async Task<List<TrafficCitation>> GetAllTrafficCitationsAsync(int skip = 0, int limit = 20, String orderCol = "", String orderDir = "ASC")
+        {
+            try
+            {
+                orderCol = String.IsNullOrWhiteSpace(orderCol) ? DB.Storage.Tables.TrafficCitation.CITATION_TIME_DATE : orderCol;
+                orderDir = String.IsNullOrWhiteSpace(orderDir) ? "ASC" : orderDir;
+                var query = new SelectQueryBuilder();
+                query.SelectAllColumns();
+                query.SelectFromTable(DB.Storage.Tables.Names.TrafficCitation);
+                query.AddOrderBy(orderCol, QueryEnum.Sorting.Descending);
+                var results = await Globals.Store.Connection().QueryAsync<TrafficCitation>(query.BuildQuery());
+                return results != null ? results : new List<TrafficCitation>();
+            }
+            catch (Exception e)
+            {
+                Function.Log(e.ToString());
+                return null;
+            }
+        }
+
+        public static async Task<List<TrafficCitation>> GetTrafficCitationsForPedAsync(ComputerPlusEntity entity)
+        {
+            return await GetTrafficCitationsForPedAsync(entity.FirstName, entity.LastName, entity.PedPersona.BirthDay.ToLocalTimeString(TextBoxExtensions.DateOutputPart.DATE));
+        }
+
+        public static async Task<List<TrafficCitation>> GetTrafficCitationsForPedAsync(String firstName, String lastName, String dob)
+        {
+            try
+            {
+                firstName = firstName.Trim();
+                lastName = lastName.Trim();
+                dob = dob.Trim();
+                return await Globals.Store.Connection().GetAllWithChildrenAsync<TrafficCitation>(report => report.FirstName == firstName && report.LastName == lastName && report.DOB == dob, true);
+
+            }
+            catch (Exception e)
+            {
+                Function.Log(e.ToString());
+                return null;
+            }
+        }
+       
+
+        public static async Task<PedReport> GetAllReportsForPedAsync(ComputerPlusEntity entity)
+        {
+            var arrests = await GetArrestReportsForPedAsync(entity);
+            var traffic = await GetTrafficCitationsForPedAsync(entity);
+            return new PedReport(entity, arrests, traffic);
+        }
     }
 }

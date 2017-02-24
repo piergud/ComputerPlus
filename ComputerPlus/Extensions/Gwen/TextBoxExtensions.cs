@@ -1,4 +1,5 @@
-﻿using Gwen.Control;
+﻿using ComputerPlus.Interfaces.Common;
+using Gwen.Control;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -109,9 +110,15 @@ namespace ComputerPlus.Extensions.Gwen
             textbox.SetSize(332, 21);
         }
 
+        internal static void MediumSize(this TextBox textbox)
+        {
+            textbox.SetSize(125, 21);
+        }
+
         internal static void SmallSize(this TextBox textbox)
         {
             textbox.SetSize(84, 21);
         }
+
     }
 }

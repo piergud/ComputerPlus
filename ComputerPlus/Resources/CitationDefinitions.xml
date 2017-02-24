@@ -1,0 +1,42 @@
+<CitationCategories>
+	<Citation name="Speeding">
+		<Citation name="Speeding (Under 10)" fine="100"/>
+		<Citation name="Speeding (Between 10-15)" fine="150"/>
+		<Citation name="Speeding (Between 16-30)" fine="270"/>
+		<Citation name="Speeding (Over 30+)" fine="500" arrestable="true"/>		
+	</Citation>
+	<Citation name="Operation">
+		<Citation name="Improper Lane Change" fine="100"/>
+		<Citation name="Improper Passing" fine="150"/>
+		<Citation name="Improper Turn" fine="150"/>
+		<Citation name="Violation of Right of Way" fine="150"/>
+		<Citation name="Careless Driving" fine="200"/>
+		<Citation name="Following too Closely" fine="300"/>
+		<Citation name="Failure to Signal" fine="300"/>
+		<Citation name="Failure to Yield" fine="300"/>
+		<Citation name="At Fault in an Accident" fine="300"/>
+		<Citation name="Failure to Stop at a Traffic Signal" fine="500"/>		
+	</Citation>
+	<Citation name="Operation (Arrestable)">
+		<Citation name="Driving Wrong Way" fine="400" arrestable="true"/>
+		<Citation name="Reckless Driving" fine="150" arrestable="true"/>
+		<Citation name="Leaving the Scene of an Accident" fine="300" arrestable="true"/>
+		<Citation name="Driving While License Suspended" fine="400" arrestable="true"/>
+		<Citation name="Driving While License Revoked" fine="400" arrestable="true"/>
+	</Citation>
+	<Citation name="Equipment">
+		<Citation name="Unworthy Road Vehicle" fine="100"/>
+		<Citation name="Improper Lighting" fine="100"/>
+		<Citation name="Safety Belt Violation" fine="100"/>
+	</Citation>
+	<Citation name="Documentation">
+		<Citation name="Failure to Present Insurance" fine="150"/>
+		<Citation name="Expired Insurance" fine="200"/>
+		<Citation name="Failure to Present Registration" fine="150"/>
+		<Citation name="Expired Registration" fine="200"/>
+		<Citation name="Expired Drivers License" fine="200"/>
+		<Citation name="Expired Drivers License (> 30 days)" fine="250"/>
+		<Citation name="Expired Vehicle Tag" fine="200"/>
+		<Citation name="Expired Vehicle Tag (> 30 days)" fine="250"/>
+	</Citation>
+</CitationCategories>

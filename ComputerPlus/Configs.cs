@@ -18,6 +18,7 @@ namespace ComputerPlus
         private static List<KeyBinder> OpenComputerPlusKeys = new List<KeyBinder>();
         private static List<KeyBinder> OpenSimpleNotepadKeys = new List<KeyBinder>();
         private static List<KeyBinder> CloseComputerPlusKeys = new List<KeyBinder>();
+        private static List<KeyBinder> GiveCitationsToPedKeys = new List<KeyBinder>();
 
         internal static void RunConfigCheck()
         {
@@ -25,7 +26,6 @@ namespace ComputerPlus
             {
                 CreateINIFile();
             }
-
             user = ini_file.ReadString("SETTINGS", "LoginName");
             pass = ini_file.ReadString("SETTINGS", "LoginPass");
             skip = ini_file.ReadBoolean("SETTINGS", "SkipLogin");
@@ -60,6 +60,8 @@ namespace ComputerPlus
                 ParseKeybindings(OpenComputerPlusKeys, "OpenComputerPlus");
                 ParseKeybindings(CloseComputerPlusKeys, "CloseComputerPlus");
                 ParseKeybindings(OpenSimpleNotepadKeys, "OpenSimpleNotepad");
+                ParseKeybindings(GiveCitationsToPedKeys, "GiveCitationsToPed");
+
                 if (OpenComputerPlusKeys.Count == 0) //Fail safe for opening computer by holding the context secondary (E / DPadRight)
                     OpenComputerPlusKeys.Add(new KeyBinder(GameControl.Context));
             }
@@ -84,6 +86,8 @@ namespace ComputerPlus
             }
         }
 
+      
+
         internal static void CreateINIFile()
         {
             ini_file.Create();
@@ -105,6 +109,11 @@ namespace ComputerPlus
             ini_file.Write("KEYBINDINGS", "OpenSimpleNotepadModifierKey", "None");
             ini_file.Write("KEYBINDINGS", "OpenComputerPlusControllerModifierButton", "None");
             ini_file.Write("KEYBINDINGS", "OpenComputerPlusControllerModifierButton", "None");
+
+            ini_file.Write("KEYBINDINGS", "GiveCitationsToPedKey", "None");
+            ini_file.Write("KEYBINDINGS", "GiveCitationsToPedModifierKey", "None");
+            ini_file.Write("KEYBINDINGS", "GiveCitationsToPedControllerButton", "None");
+            ini_file.Write("KEYBINDINGS", "GiveCitationsToPedControllerModifierButton", "None");
 
         }
 
@@ -149,6 +158,14 @@ namespace ComputerPlus
             get
             {
                 return OpenSimpleNotepadKeys.ToArray();
+            }
+        }
+
+        internal static KeyBinder[] GiveTicketsToPed
+        {
+            get
+            {
+                return GiveCitationsToPedKeys.ToArray();
             }
         }
 

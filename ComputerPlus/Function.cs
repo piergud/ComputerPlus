@@ -626,6 +626,12 @@ namespace ComputerPlus
             return Functions.GetZoneAtPosition(ped.Position).RealAreaName;
         }
 
+        internal static Vector3 GetPedCurrentPos(Ped ped = null)
+        {
+            ped = ped != null ? ped : Game.LocalPlayer.Character;
+            return ped.Position;
+        }
+
         internal static String SimpleNotepadCut()
         {
             var s = SimpleNotepadCopy();

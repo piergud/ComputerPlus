@@ -55,7 +55,7 @@ namespace ComputerPlus.Extensions.Gwen
         {
             anchor = anchor != null ? anchor : control.Parent;
             Spacing = Spacing.HasValue ? Spacing : Configs.BaseFormControlSpacing;
-            control.SetPosition(anchor.X + anchor.Width + control.Width + Spacing.Value, control.Y);
+            control.SetPosition(anchor.X + anchor.Width + Spacing.Value, control.Y);
             return control;
         }
 
@@ -94,6 +94,12 @@ namespace ComputerPlus.Extensions.Gwen
             anchor = anchor != null ? anchor : control.Parent;
             Spacing = Spacing.HasValue ? Spacing : fullHeight ? 0 : Configs.BaseFormControlSpacing;
             control.SetSize(control.Width, anchor.Height - Spacing.Value);
+            return control;
+        }
+
+        internal static Base SetHeight(this Base control, int height)
+        {
+            control.SetSize(control.Width, height);
             return control;
         }
 

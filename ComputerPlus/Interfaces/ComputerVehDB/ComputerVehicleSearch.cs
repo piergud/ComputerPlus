@@ -82,6 +82,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         private void ShowDetailsView()
         {
             ComputerVehicleController.ShowVehicleDetails();
+            this.Close();
         }
 
         private void onListItemSelected(Base sender, ItemSelectedEventArgs arguments)

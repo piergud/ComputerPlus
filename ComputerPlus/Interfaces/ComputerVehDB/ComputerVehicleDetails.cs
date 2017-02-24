@@ -12,6 +12,7 @@ using ComputerPlus.Controllers.Models;
 using System.IO;
 using ComputerPlus.Extensions.Gwen;
 using ComputerPlus.Extensions.Rage;
+using ComputerPlus.Controllers;
 
 namespace ComputerPlus.Interfaces.ComputerVehDB
 {
@@ -73,7 +74,9 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             this.Window.DisableResizing();
             this.Position = this.GetLaunchPosition();
             btn_ped_image_holder.SetImage(DetermineImagePath(Owner), true);
+            btn_ped_image_holder.ShouldCacheToTexture = true;
             btn_vehicle_image_holder.SetImage(DetermineImagePath(Vehicle), true);
+            btn_vehicle_image_holder.ShouldCacheToTexture = true;
             text_first_name.KeyboardInputEnabled = false;
             text_last_name.KeyboardInputEnabled = false;
             text_home_address.KeyboardInputEnabled = false;
@@ -100,6 +103,9 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 case "Blip":
                     Function.LogDebug("ActionSelected Blip Vehicle");
                     ComputerVehicleController.BlipVehicle(Vehicle, System.Drawing.Color.Yellow);
+                    break;
+                case "TrafficCitation":
+                    ComputerReportsController.ShowTrafficCitationCreate(null, CPEntity);
                     break;
             }
         }
@@ -186,6 +192,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
             cb_action.AddItem("Select One", "Placeholder");
             cb_action.AddItem("Blip (30 sec)", "Blip");
+            cb_action.AddItem("Create Traffic Citation", "TrafficCitation");
             
             var age = (DateTime.Today - OwnerPersona.BirthDay).Days / 365.25m;
             text_age.Text = ((int)age).ToString();
