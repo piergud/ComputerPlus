@@ -29,10 +29,10 @@ namespace ComputerPlus.Interfaces.Common
         private bool mWordWrapLabel;
 
 
-        private T Component
+        public T Component
         {
             get { return mComponent; }
-            set
+            private set
             {
                 if (value.Parent != null)
                 {
@@ -135,7 +135,7 @@ namespace ComputerPlus.Interfaces.Common
         private int? mSpaceBetweenLabelAndComponent;
         private bool mLayoutRequired;
 
-        public RichLabeledComponent(Base parent, String label, T component, RelationalPosition labelPosition = RelationalPosition.LEFT, RelationalSize labelScale = RelationalSize.NONE, int? Spacing = null) : base(parent)
+        public RichLabeledComponent(Base parent, String label, T component, Font labelFont, SystemDrawing.Color labelColor, RelationalPosition labelPosition = RelationalPosition.LEFT, RelationalSize labelScale = RelationalSize.NONE, int? Spacing = null) : base(parent)
         {
             if (component == null) throw new ArgumentNullException("LabelComponent cannot recieve a null component");
             mLabelText = label;
@@ -145,19 +145,19 @@ namespace ComputerPlus.Interfaces.Common
             mSpaceBetweenLabelAndComponent = Spacing;
 
             mLabel = new RichLabel(this);
-            LabelFont = this.Skin.DefaultFont;
-            LabelColor = this.Skin.Colors.Label.Default;
+            LabelFont = labelFont;
+            LabelColor = labelColor;
             mLayoutRequired = true;
 
         }
 
-        public RichLabeledComponent(Base parent, String label, T component, Font font, RelationalPosition labelPosition = RelationalPosition.LEFT, RelationalSize labelScale = RelationalSize.NONE, int? Spacing = null) : this(parent, label, component, labelPosition, labelScale, Spacing)
+        public RichLabeledComponent(Base parent, String label, T component, Font font, RelationalPosition labelPosition = RelationalPosition.LEFT, RelationalSize labelScale = RelationalSize.NONE, int? Spacing = null) : this(parent, label, component, font, SystemDrawing.Color.Black, labelPosition, labelScale, Spacing)
         {
             LabelFont = font == default(Font) || font == null ? this.Skin.DefaultFont : font;
 
         }
 
-        public RichLabeledComponent(Base parent, String label, T component, SystemDrawing.Color fontColor, RelationalPosition labelPosition = RelationalPosition.LEFT, RelationalSize labelScale = RelationalSize.NONE, int? Spacing = null) : this(parent, label, component, labelPosition, labelScale, Spacing)
+        public RichLabeledComponent(Base parent, String label, T component, SystemDrawing.Color fontColor, RelationalPosition labelPosition = RelationalPosition.LEFT, RelationalSize labelScale = RelationalSize.NONE, int? Spacing = null) : this(parent, label, component, default(Font), fontColor, labelPosition, labelScale, Spacing)
         {
             LabelColor = fontColor;
         }

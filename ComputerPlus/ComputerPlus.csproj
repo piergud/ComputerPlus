@@ -243,6 +243,7 @@
     <Compile Include="Interfaces\ComputerVehDB\ComputerVehicleSearchTemplate.Designer.cs">
       <DependentUpon>ComputerVehicleSearchTemplate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\ComputerVehDB\ComputerVehicleViewExtended.cs" />
     <Compile Include="Interfaces\KeyBinder.cs" />
     <Compile Include="Interfaces\Reports\Arrest\ArrestReportAdditionalParties.cs" />
     <Compile Include="Interfaces\Reports\Arrest\ArrestReportAdditionalPartiesTemplate.cs">

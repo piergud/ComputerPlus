@@ -233,11 +233,11 @@ namespace ComputerPlus.Controllers
         }
        
 
-        public static async Task<PedReport> GetAllReportsForPedAsync(ComputerPlusEntity entity)
+        public static async Task<DetailedEntity> GetAllReportsForPedAsync(ComputerPlusEntity entity)
         {
             var arrests = await GetArrestReportsForPedAsync(entity);
             var traffic = await GetTrafficCitationsForPedAsync(entity);
-            return new PedReport(entity, arrests, traffic);
+            return new DetailedEntity(entity, arrests, traffic);
         }
     }
 }

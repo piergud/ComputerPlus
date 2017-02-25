@@ -227,8 +227,15 @@ namespace ComputerPlus
 
             if (curr_veh && curr_veh.Driver == Game.LocalPlayer.Character && curr_veh.Speed <= 1 && Function.IsPoliceVehicle(curr_veh))
             {
-                if (LSPD_First_Response.Mod.API.Functions.GetCurrentPullover() != null)
-                    OnVehicleStopped(null, curr_veh);
+                var currPullover = Functions.GetCurrentPullover();
+                if (currPullover != null) {
+                    var ped = Functions.GetPulloverSuspect(currPullover);
+                    if (ped && ped.LastVehicle && ped.LastVehicle.Speed <= 1)
+                    {
+                        OnVehicleStopped(null, curr_veh);
+                    }
+                    
+                }
 
                 if (CheckOpenCloseDebouncedTrigger(Configs.OpenComputerPlus))
                 {

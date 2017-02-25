@@ -101,7 +101,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             var trafficCitations = await ComputerReportsController.GetTrafficCitationsForPedAsync(LastSelected);
             if (trafficCitations != null) Function.Log("Found citations for ped");
             else Function.Log("Citations for ped are null");
-            Globals.Navigation.Push(new ComputerPedViewExtended(new PedReport(LastSelected, reports, trafficCitations)));
+            Globals.Navigation.Push(new ComputerPedViewExtended(new DetailedEntity(LastSelected, reports, trafficCitations)));
         }
 
         protected internal static void ActivatePedView()
