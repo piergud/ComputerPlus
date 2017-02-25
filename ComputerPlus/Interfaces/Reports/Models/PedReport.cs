@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ComputerPlus.Interfaces.Reports.Models
 {
-    internal struct PedReport
+    internal struct DetailedEntity
     {
         public List<ArrestReport> Arrests;
         public List<TrafficCitation> TrafficCitations;
@@ -29,11 +29,11 @@ namespace ComputerPlus.Interfaces.Reports.Models
             }
         }
 
-        internal PedReport(ComputerPlusEntity entity, List<ArrestReport> arrests = null, List<TrafficCitation> citations = null)
+        internal DetailedEntity(ComputerPlusEntity entity, List<ArrestReport> arrests = null, List<TrafficCitation> citations = null)
         {
             Entity = entity;
-            Arrests = arrests;
-            TrafficCitations = citations;
+            Arrests = arrests != null ? arrests : new List<ArrestReport>();
+            TrafficCitations = citations != null ? citations : new List<TrafficCitation>();
         }
     }
 }

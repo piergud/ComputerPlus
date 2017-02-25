@@ -41,7 +41,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             Entity = entity;
         }
 
-        public ComputerPedViewExtended(PedReport report) : this(report.Entity)
+        public ComputerPedViewExtended(DetailedEntity report) : this(report.Entity)
         {
             this.Arrests = report.Arrests != null ? report.Arrests : new List<ArrestReport>();
             this.TrafficCitations = report.TrafficCitations != null ? report.TrafficCitations : new List<TrafficCitation>();
@@ -178,6 +178,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             var dateString = report.ArrestTimeDate.ToLocalTimeString(DateOutputPart.DATE);
             row.Text = String.Format("{0} Charges: {1}", dateString, report.Charges.Count);
             row.SetToolTipText(String.Format("Arrested {0}, {1} charges with {2} felony", dateString, report.Charges.Count, report.Charges.Count(x => x.IsFelony)));
+            row.UserData = report;
         }
 
         private void ChangeTrafficCitationDetailView(object sender, TrafficCitation citation)
@@ -194,6 +195,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             var dateString = citation.CitationTimeDate.ToLocalTimeString(DateOutputPart.DATE);
             row.Text = String.Format("{0}: {1}", dateString, citation.CitationReason);
             row.SetToolTipText(String.Format("Fine {0}", citation.CitationAmount));
+            row.UserData = citation;
         }
 
 
@@ -217,14 +219,16 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
         private void PedCreateArrestReportActions(object sender, ArrestReportContainer.ArrestReportSaveResult action, ArrestReport report)
         {
-            Arrests.Add(report);
+            if (action != ArrestReportContainer.ArrestReportSaveResult.SAVE) return;            
+            if (!Arrests.Contains(report)) Arrests.Add(report);
             AddArrestReportsTab();
 
         }
 
         private void PedCreateTrafficCitationActions(object sender, TrafficCitationView.TrafficCitationSaveResult action, TrafficCitation citation)
         {
-            TrafficCitations.Add(citation);
+            if (action != TrafficCitationView.TrafficCitationSaveResult.SAVE) return;
+            if (!TrafficCitations.Contains(citation)) TrafficCitations.Add(citation);
             AddTrafficCitationsTab();
 
         }

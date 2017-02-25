@@ -63,7 +63,7 @@ namespace ComputerPlus.Extensions.Gwen
         {
             anchor = anchor != null ? anchor : control.Parent;
             Spacing = Spacing.HasValue ? Spacing : Configs.BaseFormControlSpacing;
-            control.SetPosition(anchor.X - control.Width - Spacing.Value, control.Y);
+            control.SetPosition(anchor.X + anchor.Width - control.Width - Spacing.Value, control.Y);
             return control;
         }
 

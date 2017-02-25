@@ -260,7 +260,13 @@ namespace ComputerPlus.Interfaces.Reports.Citation
         {
             if (sender == btn_finish.Component)
             {
-                
+                if (labeled_vehicle_type.Component.SelectedItem.UserData is String && String.IsNullOrEmpty(labeled_vehicle_type.Component.SelectedItem.UserData as String))
+                {
+                    OnValidationError(sender, new Dictionary<string, string>() { { "Vehicle Type", "Cannot be Select One" } });
+                    NotifyForEvent(TrafficCitationSaveResult.SAVE_ERROR);
+                    return;
+                }
+
                 UpdateCitationFromFields();
 
                 Dictionary<String, String> failReasons;
@@ -269,6 +275,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
                     OnValidationError(sender, failReasons);
                     NotifyForEvent(TrafficCitationSaveResult.SAVE_ERROR);
                 }
+                
                 else
                 {
                     try
