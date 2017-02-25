@@ -14,6 +14,8 @@ using ComputerPlus.Controllers.Models;
 using ComputerPlus.Extensions.Rage;
 using System.Threading.Tasks;
 using ComputerPlus.Extensions.Gwen;
+using ComputerPlus.Controllers;
+using ComputerPlus.Interfaces.Reports.Models;
 
 namespace ComputerPlus.Interfaces.ComputerVehDB
 {
@@ -333,12 +335,13 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             Globals.Navigation.Push(new ComputerVehicleSearch());
         }
 
-        internal static void ShowVehicleDetails()
+        internal async static void ShowVehicleDetails()
         {
-            if (LastSelected != null && LastSelected.Validate())
-            {
-                Globals.Navigation.Push(new ComputerVehicleDetails(LastSelected));
-            }
+            if (!LastSelected.Validate()) return;
+            var reports = await ComputerReportsController.GetArrestReportsForPedAsync(LastSelected);
+            var trafficCitations = await ComputerReportsController.GetTrafficCitationsForPedAsync(LastSelected);
+
+            Globals.Navigation.Push(new ComputerVehicleViewExtendedContainer(new DetailedEntity(LastSelected, reports, trafficCitations)));
         }
     }
 }

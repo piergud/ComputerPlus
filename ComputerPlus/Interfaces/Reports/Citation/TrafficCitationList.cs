@@ -45,7 +45,9 @@ namespace ComputerPlus.Interfaces.Reports.Citation
 
         private void RowClicked(Base sender, ClickedEventArgs arguments)
         {
-            var citation = list.SelectedRow.UserData as TrafficCitation;
+            var row = sender as ListBoxRow;
+            if (row == null || row.UserData == null) return;
+            var citation = row.UserData as TrafficCitation;
             if (citation != null && OnTrafficCitationSelected != null)
                 OnTrafficCitationSelected(this, citation);
         }
