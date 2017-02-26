@@ -260,7 +260,7 @@ namespace ComputerPlus
             
             if (Functions.GetCurrentPullover() == null && Globals.HasTrafficTicketsInHand())
             {
-                //Globals.ClearTrafficCitationsInHand();
+                Globals.ClearTrafficCitationsInHand();
                 return;
             }
             else if (!Globals.HasTrafficTicketsInHand() && (ShouldEndPullover.HasValue && ShouldEndPullover.Value) && !Game.LocalPlayer.Character.HasScenario())
@@ -480,9 +480,6 @@ namespace ComputerPlus
             Function.Log("Pause");
             if (!gameOnlyChange) Globals.PauseGameWhenOpen = pause;
             Game.IsPaused = pause;
-
-            //Game.AlwaysReceiveKeyEvents = !pause;
-            //Function.Log("Set AlwaysReceiveKeyEvents to " + Game.AlwaysReceiveKeyEvents.ToString());
         }
 
         private static void ShowBackground(bool visible, bool gameOnlyChange = false)
@@ -504,17 +501,29 @@ namespace ComputerPlus
             ShowBackground(!Globals.ShowBackgroundWhenOpen);
         }
 
+        private static readonly List<GameControl> InputsToBlock = new List<GameControl> { GameControl.Context, GameControl.ContextSecondary, GameControl.Sprint, GameControl.FrontendPause, GameControl.FrontendPauseAlternate };
         internal static void BlockInputIfNeeded()
         {
-            if (Globals.PauseGameWhenOpen && Globals.ShowBackgroundWhenOpen && Game.AlwaysReceiveKeyEvents)
+
+            if (Globals.BlockInputNeeded.HasValue && Globals.BlockInputNeeded.Value)
             {
-                Function.Log("Disabling Game KeyEvents");
                 Game.AlwaysReceiveKeyEvents = false;
+                InputsToBlock.ForEach(x =>
+                {
+                    Game.DisableControlAction(0, x, true);
+                    Game.DisableControlAction(1, x, true);
+                });
+
             }
-            else if (!Globals.PauseGameWhenOpen && !Globals.ShowBackgroundWhenOpen && !Game.AlwaysReceiveKeyEvents)
+            else if (Globals.BlockInputNeeded.HasValue && !Globals.BlockInputNeeded.Value)
             {
-                Function.Log("Enabling Game KeyEvents");
                 Game.AlwaysReceiveKeyEvents = true;
+                Globals.BlockInputNeeded = null;
+                InputsToBlock.ForEach(x =>
+                {
+                    Game.DisableControlAction(0, x, false);
+                    Game.DisableControlAction(1, x, false);
+                });
             }
         }
 
