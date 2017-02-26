@@ -20,6 +20,12 @@ namespace ComputerPlus.Interfaces.Reports.Models
     [Table("TrafficCitation")]
     class TrafficCitation : IModelValidable
     {
+        private static TrafficCitation mEmpty = new TrafficCitation();
+        public static TrafficCitation Empty
+        {
+            get { return mEmpty; }
+        }
+
         [PrimaryKey]
         [Column("id")]
         public Guid id
@@ -313,6 +319,7 @@ namespace ComputerPlus.Interfaces.Reports.Models
         //    };
 
         //}
+
 
         public static TrafficCitation CreateForPedInVehicle(ComputerPlusEntity entity)
         {

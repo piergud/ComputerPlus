@@ -207,7 +207,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                     }
                 case ComputerVehicleDetails.QuickActions.CREATE_TRAFFIC_CITATION:
                     {
-                        ComputerReportsController.ShowTrafficCitationCreate(null, DetailedEntity.Entity, PedCreateTrafficCitationActions);
+                        ComputerReportsController.ShowTrafficCitationCreate(Globals.PendingTrafficCitation, DetailedEntity.Entity, PedCreateTrafficCitationActions);
                         return;
                     }
                 case ComputerVehicleDetails.QuickActions.CREATE_ARREST_REPORT_FOR_DRIVER:
@@ -230,6 +230,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         {
             if (action != TrafficCitationView.TrafficCitationSaveResult.SAVE) return;
             if (!DetailedEntity.TrafficCitations.Contains(citation)) DetailedEntity.TrafficCitations.Add(citation);
+            Globals.AddTrafficCitationsInHandForPed(DetailedEntity.Entity.Ped, citation);
             AddTrafficCitationsTab();
 
         }
