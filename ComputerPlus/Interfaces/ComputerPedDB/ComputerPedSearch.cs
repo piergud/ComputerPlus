@@ -99,13 +99,13 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             list_manual_results.UnselectAll();
         }
 
-        private void onListItemSelected(Base sender, EventArgs arguments)
+        private void onListItemSelected(Base sender, ItemSelectedEventArgs arguments)
         {
-            if (sender.UserData is ComputerPlusEntity)
-            {
-                ClearSelections();
-                ComputerPedController.LastSelected = sender.UserData as ComputerPlusEntity;                
+            if (arguments.SelectedItem.UserData is ComputerPlusEntity)
+            {                
+                ComputerPedController.LastSelected = arguments.SelectedItem.UserData as ComputerPlusEntity;                
                 ComputerPedController.ActivatePedView();
+                ClearSelections();
             }
             else
             {

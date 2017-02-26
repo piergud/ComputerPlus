@@ -58,7 +58,7 @@
             // btnAddCharge
             // 
             this.btnAddCharge.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.btnAddCharge.Location = new System.Drawing.Point(329, 204);
+            this.btnAddCharge.Location = new System.Drawing.Point(412, 289);
             this.btnAddCharge.Name = "btnAddCharge";
             this.btnAddCharge.Size = new System.Drawing.Size(44, 35);
             this.btnAddCharge.TabIndex = 2;
@@ -69,7 +69,7 @@
             // 
             this.btnRemoveSelectedCharge.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRemoveSelectedCharge.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.btnRemoveSelectedCharge.Location = new System.Drawing.Point(450, 204);
+            this.btnRemoveSelectedCharge.Location = new System.Drawing.Point(504, 352);
             this.btnRemoveSelectedCharge.Name = "btnRemoveSelectedCharge";
             this.btnRemoveSelectedCharge.Size = new System.Drawing.Size(44, 35);
             this.btnRemoveSelectedCharge.TabIndex = 4;

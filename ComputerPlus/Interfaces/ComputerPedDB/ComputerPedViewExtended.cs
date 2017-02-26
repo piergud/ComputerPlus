@@ -211,7 +211,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                     }
                 case ComputerPedView.QuickActions.CREATE_TRAFFIC_CITATION:
                     {
-                        ComputerReportsController.ShowTrafficCitationCreate(null, Entity, PedCreateTrafficCitationActions);
+                        ComputerReportsController.ShowTrafficCitationCreate(Globals.PendingTrafficCitation, Entity, PedCreateTrafficCitationActions);
                         return;
                     }
             }
@@ -219,7 +219,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
         private void PedCreateArrestReportActions(object sender, ArrestReportContainer.ArrestReportSaveResult action, ArrestReport report)
         {
-            if (action != ArrestReportContainer.ArrestReportSaveResult.SAVE) return;            
+            if (action != ArrestReportContainer.ArrestReportSaveResult.SAVE) return;
             if (!Arrests.Contains(report)) Arrests.Add(report);
             AddArrestReportsTab();
 
@@ -228,6 +228,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
         private void PedCreateTrafficCitationActions(object sender, TrafficCitationView.TrafficCitationSaveResult action, TrafficCitation citation)
         {
             if (action != TrafficCitationView.TrafficCitationSaveResult.SAVE) return;
+            Globals.AddTrafficCitationsInHandForPed(Entity.Ped, citation);
             if (!TrafficCitations.Contains(citation)) TrafficCitations.Add(citation);
             AddTrafficCitationsTab();
 
