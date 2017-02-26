@@ -15,12 +15,11 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
     {
         TreeControl chargesTree;
         ListBox lb_charges;
-        MultilineTextBox tb_notes;
+        LabeledComponent<MultilineTextBox> tb_notes;
         Button btnAddCharge;
         Button btnRemoveSelectedCharge;
         Label lbl_addedCharges;
         Label lbl_availableCharges;
-        Label lbl_notes;
         Charge SelectedAvailableCharge = null;
         ArrestReport Report;
         internal ArrestReportChargeDetails(ArrestReport arrestReport) : base(typeof(ArrestReportChargeDetailsTemplate))
@@ -34,9 +33,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             {
                 ShowLabels();
                 ShowButtons();
-                tb_notes = new MultilineTextBox(this);
-                tb_notes.SetSize(165, 130);
-                tb_notes.SetPosition(329, 42);
+                
                 chargesTree = new TreeControl(this);
                 chargesTree.SelectionChanged += TreeNodeSelected;
                 chargesTree.SetSize(314, 307);
@@ -45,12 +42,13 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 chargesTree.Margin = new Gwen.Margin(0, 30, 0, 0);
                 lb_charges.Dock = Gwen.Pos.Right;
                 lb_charges.Margin = new Gwen.Margin(0, 30, 0, 100);
-                tb_notes.TextChanged += OnTextChanged;
-                
-                tb_notes.SetPosition(chargesTree.X + chargesTree.Width + 5, lb_charges.Y - 10);
-                tb_notes.SetSize((lb_charges.X - (chargesTree.X + chargesTree.Width)), tb_notes.Height);
-                lbl_notes.SetPosition(tb_notes.X, lbl_notes.Y);
-                lbl_notes.SetSize(tb_notes.Width, lbl_notes.Height);
+
+                tb_notes = new LabeledComponent<MultilineTextBox>(this, "Notes for Charge", new MultilineTextBox(this), RelationalPosition.TOP, RelationalSize.NONE, Configs.BaseFormControlSpacingHalf, lbl_addedCharges.Font, lbl_addedCharges.TextColor);
+                tb_notes.Component.SetSize((lb_charges.X - chargesTree.Right), 250);
+                tb_notes.Component.AlignTopWith(lb_charges);
+                tb_notes.PlaceRightOf(chargesTree, 5).AlignTopWith(lbl_addedCharges);
+                tb_notes.Component.TextChanged += OnTextChanged;
+
 
                 lbl_addedCharges.SetPosition((lb_charges.X + 30), lbl_addedCharges.Y);
                 btnAddCharge.AddIcon();
@@ -67,7 +65,6 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 HideButtons();
                 HideLabels();
                 AddReportCharges();
-                tb_notes.Dock = Gwen.Pos.Fill;
                 lb_charges.Dock = Gwen.Pos.Right;
                 if (Report.Charges.Count > 0)
                 {
@@ -95,20 +92,20 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         {
             if (sender == tb_notes && lb_charges.SelectedRow != null)
             {
-                ((ArrestChargeLineItem)lb_charges.SelectedRow.UserData).Note = tb_notes.Text;
+                ((ArrestChargeLineItem)lb_charges.SelectedRow.UserData).Note = tb_notes.Component.Text;
             }
         }
 
         internal void HideLabels()
         {
-            var labels = new Label[] { lbl_addedCharges, lbl_availableCharges, lbl_notes };
+            var labels = new Label[] { lbl_addedCharges, lbl_availableCharges };
             foreach(var label in labels)
                 label.Hide();
         }
 
         internal void ShowLabels()
         {
-            var labels = new Label[] { lbl_addedCharges, lbl_availableCharges, lbl_notes };
+            var labels = new Label[] { lbl_addedCharges, lbl_availableCharges };
             foreach (var label in labels)
                 label.Show();
         }
@@ -146,7 +143,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 lb_charges.UnselectAll();
                 lb_charges.Clear();
                 chargesTree.UnselectAll();
-                tb_notes.DeleteAllChildren();
+                tb_notes.Component.SetText(String.Empty);
                 AddReportCharges();
             }
         }
@@ -172,7 +169,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 if (lb_charges.SelectedRow != null)
                 {
                     lb_charges.UnselectAll();
-                    tb_notes.DeleteAllChildren();
+                    tb_notes.Component.SetText(String.Empty);
                 }
                 btnAddCharge.Enable();
                 btnRemoveSelectedCharge.Disable();
@@ -184,7 +181,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         {
             if (sender == null)
             {
-                tb_notes.Text = String.Empty;                
+                tb_notes.Component.Text = String.Empty;                
             }            
             else
             {
@@ -198,7 +195,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         private void SetNotesByCharge(ArrestChargeLineItem item)
         {
             if (item != null)
-                tb_notes.Text = item.Note;
+                tb_notes.Component.Text = item.Note;
         }
 
         private void TransverseCharges(TreeNode parent, Charge charge)
@@ -272,16 +269,16 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             if (sender == btnAddCharge)
             {
                 if (SelectedAvailableCharge == null || SelectedAvailableCharge.IsContainer) return;
-                var lineItem = new ArrestChargeLineItem(SelectedAvailableCharge, tb_notes.Text);
+                var lineItem = new ArrestChargeLineItem(SelectedAvailableCharge, tb_notes.Component.Text);
                 AddChargeToReport(Report, lineItem);
-                tb_notes.DeleteAllChildren();
+                tb_notes.Component.DeleteAllChildren();
                 SelectedAvailableCharge = null;
             }
             else if (sender == btnRemoveSelectedCharge)
             {
                 if (lb_charges.SelectedRow == null) return;
                 RemoveChargeFromReport(Report, lb_charges.SelectedRow.UserData as ArrestChargeLineItem);
-                tb_notes.Text = String.Empty;
+                tb_notes.Component.Text = String.Empty;
                 SelectedAvailableCharge = null;
             }
         }    

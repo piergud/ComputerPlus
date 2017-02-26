@@ -263,21 +263,21 @@ namespace ComputerPlus
             try {
                 string time = CurrentTime;
                 Size gameResolution = Game.Resolution;
-               // e.Graphics.DrawTexture(_bg, 0f, 0f, gameResolution.Width, gameResolution.Height);
-                //float length = Rage.Graphics.MeasureText(time, "Arial", 18).Width;
-                //float taskbarHeight = gameResolution.Height / 25;
-                //float textWidth = taskbar.Width / 150;
-                //float textHeight = taskbar.Height / 4;
-                //taskbar.Size = new SizeF(gameResolution.Width, taskbarHeight);
-                //taskbar.Location = new PointF(1, 1 + gameResolution.Height - taskbarHeight);
+                e.Graphics.DrawTexture(_bg, 0f, 0f, gameResolution.Width, gameResolution.Height);
+                float length = Rage.Graphics.MeasureText(time, "Arial", 18).Width;
+                float taskbarHeight = gameResolution.Height / 25;
+                float textWidth = taskbar.Width / 150;
+                float textHeight = taskbar.Height / 4;
+                taskbar.Size = new SizeF(gameResolution.Width, taskbarHeight);
+                taskbar.Location = new PointF(1, 1 + gameResolution.Height - taskbarHeight);
 
 
-                //e.Graphics.DrawText(update_text, "Arial", 18,
-                //    new PointF(taskbar.X + textWidth, taskbar.Y + textHeight),
-                //    Color.White);
-                //e.Graphics.DrawText(time, "Arial", 18,
-                //    new PointF(taskbar.Width - length - textWidth, taskbar.Y + textHeight),
-                //    Color.White);
+                e.Graphics.DrawText(update_text, "Arial", 18,
+                    new PointF(taskbar.X + textWidth, taskbar.Y + textHeight),
+                    Color.White);
+                e.Graphics.DrawText(time, "Arial", 18,
+                    new PointF(taskbar.Width - length - textWidth, taskbar.Y + textHeight),
+                    Color.White);
             } catch(Exception err)
             {
                 Function.Log("Exception in OnRawFrameRender");

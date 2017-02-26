@@ -31,7 +31,16 @@ namespace ComputerPlus
         internal readonly static String EmptyImageVehicle = "no_vehicle_image.jpg";
         internal readonly static String EmptyImagePed = "no_ped_image.jpg";
         internal readonly static String DefaultBackgroundImage = "generic.jpg";
-        internal static bool PauseGameWhenOpen = true;
+        private static bool mPauseGameWhenOpen = true;
+        internal static bool PauseGameWhenOpen
+        {
+            get { return mPauseGameWhenOpen; }
+            set
+            {
+                mPauseGameWhenOpen = value;
+                BlockInputNeeded = value;
+            }
+        }
         internal static bool ShowBackgroundWhenOpen = true;
         internal static bool CloseRequested = false;
         internal static bool OpenRequested = false;
@@ -41,6 +50,7 @@ namespace ComputerPlus
         internal static readonly String DefaultAssetPath = @"Plugins\LSPDFR\ComputerPlus\";
         internal static Storage Store;
         internal static readonly Version SchemaVersion = new Version("1.0.1");
+        internal static bool? BlockInputNeeded;
 
         internal static Styles Style = new Styles();
 

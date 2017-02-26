@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.lb_charges = new System.Windows.Forms.ListBox();
-            this.lbl_notes = new System.Windows.Forms.Label();
             this.lbl_availableCharges = new System.Windows.Forms.Label();
             this.btnAddCharge = new System.Windows.Forms.Button();
             this.btnRemoveSelectedCharge = new System.Windows.Forms.Button();
@@ -45,16 +44,6 @@
             this.lb_charges.Name = "lb_charges";
             this.lb_charges.Size = new System.Drawing.Size(165, 304);
             this.lb_charges.TabIndex = 3;
-            // 
-            // lbl_notes
-            // 
-            this.lbl_notes.AutoSize = true;
-            this.lbl_notes.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.lbl_notes.Location = new System.Drawing.Point(326, 9);
-            this.lbl_notes.Name = "lbl_notes";
-            this.lbl_notes.Size = new System.Drawing.Size(99, 15);
-            this.lbl_notes.TabIndex = 6;
-            this.lbl_notes.Text = "Notes for Charge";
             // 
             // lbl_availableCharges
             // 
@@ -107,7 +96,6 @@
             this.Controls.Add(this.btnRemoveSelectedCharge);
             this.Controls.Add(this.btnAddCharge);
             this.Controls.Add(this.lbl_availableCharges);
-            this.Controls.Add(this.lbl_notes);
             this.Controls.Add(this.lb_charges);
             this.Name = "ArrestReportChargeDetailsTemplate";
             this.ShowIcon = false;
@@ -120,7 +108,6 @@
         #endregion
 
         private System.Windows.Forms.ListBox lb_charges;
-        private System.Windows.Forms.Label lbl_notes;
         private System.Windows.Forms.Label lbl_availableCharges;
         private System.Windows.Forms.Button btnAddCharge;
         private System.Windows.Forms.Button btnRemoveSelectedCharge;

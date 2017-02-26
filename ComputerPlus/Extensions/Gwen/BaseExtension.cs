@@ -67,6 +67,14 @@ namespace ComputerPlus.Extensions.Gwen
             return control;
         }
 
+        internal static Base PlaceInsideRightOf(this Base control, Base anchor = null, int? Spacing = null)
+        {
+            anchor = anchor != null ? anchor : control.Parent;
+            Spacing = Spacing.HasValue ? Spacing : Configs.BaseFormControlSpacing;
+            control.SetPosition(anchor.Right - control.Width - Spacing.Value, control.Y);
+            return control;
+        }
+
         internal static Base SizeWidthWith(this Base control, Base anchor = null, int? Spacing = null, bool fullWidth = true)
         {
             anchor = anchor != null ? anchor : control.Parent;

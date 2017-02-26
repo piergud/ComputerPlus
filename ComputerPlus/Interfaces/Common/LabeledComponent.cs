@@ -398,13 +398,12 @@ namespace ComputerPlus.Interfaces.Common
 
         }
 
-
     }
 
 
   
 
-    class LabeledComponent
+    static class LabeledComponent
     {
         public static LabeledComponent<Label> Label(Base parent, String labelText, RelationalPosition position = RelationalPosition.LEFT, int? spaceBetweenComponents = null, SystemDrawing.Color labelColor = default(SystemDrawing.Color), Font labelFont = default(Font))
         {

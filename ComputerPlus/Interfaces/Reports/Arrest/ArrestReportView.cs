@@ -26,7 +26,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         Font labelFont, valueFont;
 
         ListBox lb_charges, lb_additional_parties;
-        LabeledComponent<RichLabel> tb_report_details;
+        LabeledComponent<Label> tb_report_details;
 
         LabeledComponent<Label> labeled_arrest_report_id, labeled_first_name, labeled_last_name,
             labeled_dob, labeled_home_address, labeled_arrest_street_address,
@@ -87,7 +87,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
 
             labeledAdditionalParties = new LabeledComponent<ListBox>(this, "Additional Parties", lb_additional_parties, RelationalPosition.TOP, RelationalSize.NONE, Configs.BaseFormControlSpacingHalf, labelFont, labelColor);
 
-            tb_report_details = LabeledComponent.RichLabel(this, "Details", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            tb_report_details = LabeledComponent.Label(this, "Details", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
             BindNeeded = true;
         }
 
@@ -151,7 +151,6 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             labeled_arrest_city.SetValueText(Report.ArrestCity);
             labeled_arrest_date.SetValueText(Function.ToLocalDateString(Report.ArrestDate, TextBoxExtensions.DateOutputPart.DATE, TextBoxExtensions.DateOutputPart.DATE));
             labeled_arrest_time.SetValueText(Function.ToLocalDateString(Report.ArrestDate, TextBoxExtensions.DateOutputPart.TIME, TextBoxExtensions.DateOutputPart.TIME));
-            tb_report_details.Component.ClearText();
             tb_report_details.SetValueText(Report.Details);
         }
 
