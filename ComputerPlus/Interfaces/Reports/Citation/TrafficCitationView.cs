@@ -65,7 +65,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
 
         List<LabeledComponent<StateControlledTextbox>> LabeledInputs = new List<LabeledComponent<StateControlledTextbox>>();
 
-        bool BindNeeded;
+        bool BindNeeded, DataBound;
 
         ViewTypes ViewType;
 
@@ -77,11 +77,13 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             if (actionCallback != null) OnTrafficCitationAction += actionCallback;
             if (ViewType == ViewTypes.CREATE && (citation.CitationTimeDate == null || citation.CitationTimeDate == DateTime.MinValue)) citation.CitationTimeDate = DateTime.Now;
             else Function.Log(String.Format("Citation time is {0}", citation.CitationTimeDate.ToString()));
+            BindNeeded = true;
             InitializeLayout();
         }
 
         public void ChangeCitation(TrafficCitation citation, bool readOnly = false)
         {
+            Function.Log("ChangeCitation from " + Citation.FirstName + " to " + citation.FirstName);
             Citation = citation;
             BindNeeded = true;
             if (!citation.IsNew) PopulateCitationCategories(null);
@@ -150,7 +152,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
 
             labeled_citation_details = new LabeledComponent<StateControlledMultilineTextbox>(violationContent, "Details", new StateControlledMultilineTextbox(violationContent), RelationalPosition.TOP, RelationalSize.NONE, Configs.BaseFormControlSpacingHalf, labelFont, labelColor);
 
-            labeled_vehicle_type.Component.ItemSelected += ComponentItemSelected;
+            labeled_vehicle_type.Component.ItemSelected += ComponentPropChanged;
             labeled_available_citation_reasons.Component.SelectionChanged += ComponentPropChanged;
             LabeledInputs.ForEach(x => x.Component.TextChanged += ComponentPropChanged);
             labeled_citation_details.Component.TextChanged += ComponentPropChanged;
@@ -161,18 +163,12 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labeled_citation_date.Component.Disable();
             labeled_citation_time.Component.Disable();
 
-            BindNeeded = true;
-
         }
 
-        private void ComponentItemSelected(Base sender, ItemSelectedEventArgs arguments)
-        {
-            UpdateCitationFromFields();
-        }
 
         private void ComponentPropChanged(Base sender, EventArgs arguments)
         {
-            UpdateCitationFromFields();
+            if (DataBound) UpdateCitationFromFields();
         }
 
         private void OnValidationError(object sender, Dictionary<String, String> errors)
@@ -301,8 +297,10 @@ namespace ComputerPlus.Interfaces.Reports.Citation
                 {
                     try
                     {
-                        Citation = await ComputerReportsController.SaveTrafficCitationAsync(Citation);
+                        Citation = await ComputerReportsController.SaveTrafficCitationAsync(Citation);                        
+                        //if (Globals.PendingTrafficCitation == Citation) Globals.PendingTrafficCitation = null;
                         NotifyForEvent(TrafficCitationSaveResult.SAVE);
+                        BindNeeded = true;
                         BindDataFromCitation();
                     }
                     catch (Exception e)
@@ -531,9 +529,18 @@ namespace ComputerPlus.Interfaces.Reports.Citation
 
         private void BindDataFromCitation()
         {
-            if (Citation == null) return;
-            if (!BindNeeded) return;
+            if (Citation == null)
+            {
+                Function.Log("Citation is null");
+                return;
+            }
+            if (!BindNeeded)
+            {
+                Function.Log("Bind not needed " + Citation.FirstName);
+                return;
+            }
             BindNeeded = false;
+            
 
             labeled_citation_report_id.SetValueText(Citation.ShortId());
             labeled_first_name.SetValueText(Citation.FirstName);
@@ -551,6 +558,8 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labeled_citation_date.SetValueText(Function.ToLocalDateString(Citation.CitationDate, TextBoxExtensions.DateOutputPart.DATE, TextBoxExtensions.DateOutputPart.DATE));
             labeled_citation_time.SetValueText(Function.ToLocalDateString(Citation.CitationTime, TextBoxExtensions.DateOutputPart.TIME, TextBoxExtensions.DateOutputPart.TIME));
             labeled_citation_details.SetValueText(Citation.Details);
+
+            DataBound = true;
         }
      
     }

@@ -70,7 +70,7 @@ namespace ComputerPlus
         {
             get;
             internal set;
-        } = new TrafficCitation();
+        } = null;
 
         static private Dictionary<Rage.Ped, List<TrafficCitation>> TicketsInPosession = new Dictionary<Rage.Ped, List<TrafficCitation>>();
 

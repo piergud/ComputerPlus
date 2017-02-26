@@ -159,28 +159,41 @@ namespace ComputerPlus.Controllers
 
         public static void ShowTrafficCitationCreate(TrafficCitation citation, ComputerPlusEntity entity = null, TrafficCitationView.TrafficCitationActionEvent callbackDelegate = null)
         {
-            if (citation == null && entity == null) citation = Globals.PendingTrafficCitation != null ? Globals.PendingTrafficCitation : new TrafficCitation();
-            else citation = TrafficCitation.CreateForPedInVehicle(entity);
-            if(entity != null) Globals.AddTrafficCitationsInHandForPed(entity.Ped, citation);
-            Globals.Navigation.Push(new TrafficCitationCreateContainer(citation, TrafficCitationView.ViewTypes.CREATE, callbackDelegate));
+            TrafficCitation mCitation = null;
+            if (citation == null && entity == null)
+            {
+                mCitation = Globals.PendingTrafficCitation != null ? Globals.PendingTrafficCitation : new TrafficCitation();
+            }
+            else if (citation == null && entity.Validate())
+            {
+                Function.Log("Creating Traffic Citation for ped in vehicle");
+                mCitation = TrafficCitation.CreateForPedInVehicle(entity);
+                Globals.PendingTrafficCitation = mCitation;
+                Function.Log("Created Traffic Citation for ped  " + mCitation.FirstName);
+            }
+            else
+            {
+                mCitation = citation;
+            }
+            Globals.Navigation.Push(new TrafficCitationCreateContainer(mCitation, TrafficCitationView.ViewTypes.CREATE, callbackDelegate));
         }
 
-        public static async Task<TrafficCitation> SaveTrafficCitationAsync(TrafficCitation report)
+        public static async Task<TrafficCitation> SaveTrafficCitationAsync(TrafficCitation citation)
         {
             try
             {
-                if (report.IsNew)
+                if (citation.IsNew)
                 {
-                    report.id = Guid.NewGuid();
-                    await Globals.Store.Connection().InsertWithChildrenAsync(report, true);
+                    citation.id = Guid.NewGuid();
+                    await Globals.Store.Connection().InsertWithChildrenAsync(citation, true);                    
 
                 }
                 else
                 {
-                    await Globals.Store.Connection().UpdateWithChildrenAsync(report);
+                    await Globals.Store.Connection().UpdateWithChildrenAsync(citation);
                 }
-
-                return report;
+                if (Globals.PendingTrafficCitation != null && Globals.PendingTrafficCitation == citation) Globals.PendingTrafficCitation = null;
+                return citation;
             }
             catch (Exception e)
             {
