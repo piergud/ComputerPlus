@@ -46,7 +46,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         {
 
             //Top
-            this.TopDock.Height = 60;
+            this.TopDock.Height = 75;
             Base instructionsContainer = new Base(this.TopDock);
             instructionsContainer.Dock = Pos.Fill;
             RichLabel instructions = new RichLabel(instructionsContainer);

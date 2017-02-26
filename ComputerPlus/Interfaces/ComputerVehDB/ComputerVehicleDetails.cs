@@ -23,7 +23,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 {
     class ComputerVehicleDetails : Base
     {
-        public enum QuickActions { PLACEHOLDER = 0, BLIP_VEHICLE = 1, CREATE_TRAFFIC_CITATION = 2 };
+        public enum QuickActions { PLACEHOLDER = 0, BLIP_VEHICLE = 1, CREATE_TRAFFIC_CITATION = 2, CREATE_ARREST_REPORT_FOR_DRIVER = 3 };
 
         LabeledComponent<StateControlledTextbox> labeled_first_name, labeled_last_name,
             labeled_home_address, labeled_dob, labeled_license_status,
@@ -155,9 +155,9 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             base.Layout(skin);
             
             BindData();
-            cb_action.SetSize(image_vehicle_image_holder.Width / 2, cb_action.Height);
+            cb_action.SetSize(200, cb_action.Height);
             cb_action.PlaceLeftOf();
-            
+            cb_action.LogPositionAndSize();
 
             registrationInformation
              .AddContentChild(registrationContent)
@@ -269,6 +269,9 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 case QuickActions.CREATE_TRAFFIC_CITATION:
                     ComputerReportsController.ShowTrafficCitationCreate(null, DetailedEntity.Entity);
                     break;
+                case QuickActions.CREATE_ARREST_REPORT_FOR_DRIVER:
+                    ComputerReportsController.ShowArrestReportCreate(DetailedEntity.Entity, null);
+                    break;
             }
         }
 
@@ -358,7 +361,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             cb_action.AddItem("Select One", "Placeholder", QuickActions.PLACEHOLDER);
             cb_action.AddItem("Blip (30 sec)", "Blip", QuickActions.BLIP_VEHICLE);
             cb_action.AddItem("Create Traffic Citation", "TrafficCitation", QuickActions.CREATE_TRAFFIC_CITATION);
-            
+            cb_action.AddItem("Create Arrest Report", "ArrestReport", QuickActions.CREATE_ARREST_REPORT_FOR_DRIVER);
+
             var age = (DateTime.Today - OwnerPersona.BirthDay).Days / 365.25m;
             labeled_age.Component.Text = ((int)age).ToString();
             labeled_first_name.Component.Text = OwnerPersona.Forename;

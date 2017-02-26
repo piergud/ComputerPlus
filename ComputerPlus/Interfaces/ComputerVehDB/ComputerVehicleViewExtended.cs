@@ -210,6 +210,11 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                         ComputerReportsController.ShowTrafficCitationCreate(null, DetailedEntity.Entity, PedCreateTrafficCitationActions);
                         return;
                     }
+                case ComputerVehicleDetails.QuickActions.CREATE_ARREST_REPORT_FOR_DRIVER:
+                    {
+                        ComputerReportsController.ShowArrestReportCreate(DetailedEntity.Entity, PedCreateArrestReportActions);
+                        return;
+                    }
             }
         }
 

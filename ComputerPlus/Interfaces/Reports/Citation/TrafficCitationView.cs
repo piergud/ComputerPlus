@@ -63,6 +63,8 @@ namespace ComputerPlus.Interfaces.Reports.Citation
 
         LabeledComponent<Button> btn_finish;
 
+        List<LabeledComponent<StateControlledTextbox>> LabeledInputs = new List<LabeledComponent<StateControlledTextbox>>();
+
         bool BindNeeded;
 
         ViewTypes ViewType;
@@ -93,9 +95,9 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labelFont.Smooth = true;
 
             headerSection = new Base(this);
-            labeled_citation_report_id = LabeledComponent.StatefulTextbox(headerSection, "Traffic Citation", RelationalPosition.LEFT, Configs.BaseFormControlSpacingTriple * 2);            
+            labeled_citation_report_id = LabeledComponent.StatefulTextbox(headerSection, "Traffic Citation", RelationalPosition.LEFT, Configs.BaseFormControlSpacingTriple * 2);
+            LabeledInputs.Add(labeled_citation_report_id);
 
-           
 
             citationeeInformationSection = new FormSection(this, "Person Information");
             citationInformationContent = (new Base(this) { });
@@ -104,6 +106,8 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labeled_last_name = LabeledComponent.StatefulTextbox(citationInformationContent, "Last Name", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
             labeled_dob = LabeledComponent.StatefulTextbox(citationInformationContent, "DOB", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
             labeled_home_address = LabeledComponent.StatefulTextbox(citationInformationContent, "Home Address", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            LabeledInputs.AddRange(new LabeledComponent<StateControlledTextbox>[] { labeled_first_name, labeled_last_name, labeled_dob, labeled_home_address });
+
 
             vehicleInformationSection = new FormSection(this, "Vehicle Information");
             vehicleInformationContent = new Base(this);
@@ -117,6 +121,8 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labeled_vehicle_color = LabeledComponent.StatefulTextbox(vehicleInformationContent, "Color", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
             labeled_vehicle_tag = LabeledComponent.StatefulTextbox(vehicleInformationContent, "Tag", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
 
+            LabeledInputs.AddRange(new LabeledComponent<StateControlledTextbox>[] { labeled_vehicle_model, labeled_vehicle_color, labeled_vehicle_tag });
+
             citationLocationSection = new FormSection(this, "Violation Location");
             citationLocationContent = (new Base(this) { });
 
@@ -125,8 +131,8 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labeled_citation_date = LabeledComponent.StatefulTextbox(citationLocationContent, "Date", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
             labeled_citation_time = LabeledComponent.StatefulTextbox(citationLocationContent, "Time", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
 
-           
-            
+            LabeledInputs.AddRange(new LabeledComponent<StateControlledTextbox>[] { labeled_citation_street_address, labeled_citation_city, labeled_citation_date, labeled_citation_time });
+
 
             violationSection = new FormSection(this, "Violation");
             violationContent = new Base(this);
@@ -144,6 +150,11 @@ namespace ComputerPlus.Interfaces.Reports.Citation
 
             labeled_citation_details = new LabeledComponent<StateControlledMultilineTextbox>(violationContent, "Details", new StateControlledMultilineTextbox(violationContent), RelationalPosition.TOP, RelationalSize.NONE, Configs.BaseFormControlSpacingHalf, labelFont, labelColor);
 
+            labeled_vehicle_type.Component.ItemSelected += ComponentItemSelected;
+            labeled_available_citation_reasons.Component.SelectionChanged += ComponentPropChanged;
+            LabeledInputs.ForEach(x => x.Component.TextChanged += ComponentPropChanged);
+            labeled_citation_details.Component.TextChanged += ComponentPropChanged;
+
             LockControls(ReadOnly);
             //The below components should always be "read only"
             labeled_citation_report_id.Component.Disable();
@@ -152,6 +163,16 @@ namespace ComputerPlus.Interfaces.Reports.Citation
 
             BindNeeded = true;
 
+        }
+
+        private void ComponentItemSelected(Base sender, ItemSelectedEventArgs arguments)
+        {
+            UpdateCitationFromFields();
+        }
+
+        private void ComponentPropChanged(Base sender, EventArgs arguments)
+        {
+            UpdateCitationFromFields();
         }
 
         private void OnValidationError(object sender, Dictionary<String, String> errors)

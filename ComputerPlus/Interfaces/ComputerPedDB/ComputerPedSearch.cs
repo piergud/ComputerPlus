@@ -40,6 +40,8 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             list_manual_results.AllowMultiSelect = false;
             list_collected_ids.AllowMultiSelect = false;
             text_manual_name.SubmitPressed += onSearchSubmit;
+            list_collected_ids.RowSelected += onListItemSelected;
+            list_manual_results.RowSelected += onListItemSelected;
         }
 
         private void onSearchSubmit(Base sender, EventArgs arguments)
@@ -76,7 +78,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             //@TODO choose if we want to remove null items from the list -- may cause user confusion
             if (results != null && results.Count > 0)
             {
-                results.ForEach(x => list_manual_results.AddPed(x).DoubleClicked += onListItemSelected);
+                results.ForEach(x => list_manual_results.AddPed(x));
             }
         }
 
@@ -87,7 +89,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             list_collected_ids.Clear();
             foreach(var persona in peds.Select(x => controller.LookupPersona(x)))
             {
-                list_collected_ids.AddPed(persona).DoubleClicked += onListItemSelected;
+                list_collected_ids.AddPed(persona);
             }           
         }
 

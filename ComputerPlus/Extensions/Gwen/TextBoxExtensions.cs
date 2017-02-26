@@ -120,5 +120,25 @@ namespace ComputerPlus.Extensions.Gwen
             textbox.SetSize(84, 21);
         }
 
+        internal static void NormalSize(this StateControlledTextbox textbox)
+        {
+            textbox.SetSize(166, 21);
+        }
+
+        internal static void LongSize(this StateControlledTextbox textbox)
+        {
+            textbox.SetSize(332, 21);
+        }
+
+        internal static void MediumSize(this StateControlledTextbox textbox)
+        {
+            textbox.SetSize(125, 21);
+        }
+
+        internal static void SmallSize(this StateControlledTextbox textbox)
+        {
+            textbox.SetSize(84, 21);
+        }
+
     }
 }

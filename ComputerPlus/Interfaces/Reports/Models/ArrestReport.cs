@@ -190,6 +190,7 @@ namespace ComputerPlus.Interfaces.Reports.Models
                 }
 
             }
+            if (Charges.Count == 0) failReasons.Add("Charges", "There must be a charge");
             var dobPattern = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
             DateTime parsedDob;
             if (!failReasons.ContainsKey("DOB") && !DateTime.TryParseExact(DOB, dobPattern, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out parsedDob))
