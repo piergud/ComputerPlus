@@ -87,46 +87,61 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         private void onListItemSelected(Base sender, ItemSelectedEventArgs arguments)
         {
-            if (arguments.SelectedItem.UserData is ComputerPlusEntity)
-            {
-                ComputerVehicleController.LastSelected = arguments.SelectedItem.UserData as ComputerPlusEntity;
-                ClearSelections();
-                this.ShowDetailsView();
+            try
+            { 
+                if (arguments.SelectedItem.UserData is ComputerPlusEntity)
+                {
+                    ComputerVehicleController.LastSelected = arguments.SelectedItem.UserData as ComputerPlusEntity;
+                    ClearSelections();
+                    this.ShowDetailsView();
+                }
             }
-        }
+            catch(Exception e)
+            {
+                Function.Log(e.ToString());
+            }
+}
         
 
         private void PopulateAnprList()
         {
-            ComputerVehicleController.ALPR_Detected
-            //.GroupBy(x => x.Vehicle)
-            //.Select(x => x.Last())
-            .Where(x => x.Vehicle.Exists())
-            .Select(x =>
+            try { 
+                ComputerVehicleController.ALPR_Detected
+                //.GroupBy(x => x.Vehicle)
+                //.Select(x => x.Last())
+                .Where(x => x.Vehicle)
+                .GroupBy(x => x.Vehicle.LicensePlate)
+                .Select(x => x.FirstOrDefault())
+                .Select(x =>
+                {
+                    var data = ComputerVehicleController.LookupVehicle(x.Vehicle);
+                
+                    if (data == null)
+                    {
+                        Function.Log("ALPR integration issue.. data missing from LookupVehicle");
+                        return null;
+                    }
+                    VehiclePersona vehiclePersona = data.VehiclePersona;
+                    if (!String.IsNullOrWhiteSpace(x.Message))
+                    {
+                        vehiclePersona.Alert = x.Message;
+                        data.VehiclePersona = vehiclePersona;
+                    }
+                
+                    return data;
+                })
+                //.Where(x => x != null && x.Validate())
+                .ToList()
+                .ForEach(x =>
+                {                
+                    list_collected_tags.AddVehicle(x);
+                });
+            }
+            catch (Exception e)
             {
-                var data = ComputerVehicleController.LookupVehicle(x.Vehicle);
-                
-                if (data == null)
-                {
-                    Function.Log("ALPR integration issue.. data missing from LookupVehicle");
-                    return null;
-                }
-                VehiclePersona vehiclePersona = data.VehiclePersona;
-                if (!String.IsNullOrWhiteSpace(x.Message))
-                {
-                    vehiclePersona.Alert = x.Message;
-                    data.VehiclePersona = vehiclePersona;
-                }
-                
-                return data;
-            })
-            //.Where(x => x != null && x.Validate())
-            .ToList()
-            .ForEach(x =>
-            {                
-                list_collected_tags.AddVehicle(x);
-            });
-            
+                Function.Log(e.ToString());
+            }
+
         }
 
         private void OnAlprVanillaMessage(object sender, ALPR_Arguments e)

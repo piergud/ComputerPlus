@@ -341,7 +341,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             }
             else if (OwnerPersona.IsCop)
             {
-                labeled_owner_alert.Component.Warn("THIS IS A TEST");
+                labeled_owner_alert.Component.Warn("Individual is a police officer");
                 labeled_owner_alert.Show();
             }
             else

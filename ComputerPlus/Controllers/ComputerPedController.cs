@@ -97,11 +97,17 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
         internal async static void ShowPedView()
         {
             if (!LastSelected.Validate()) return;
-            var reports = await ComputerReportsController.GetArrestReportsForPedAsync(LastSelected);
-            var trafficCitations = await ComputerReportsController.GetTrafficCitationsForPedAsync(LastSelected);
-            if (trafficCitations != null) Function.Log("Found citations for ped");
-            else Function.Log("Citations for ped are null");
-            Globals.Navigation.Push(new ComputerPedViewExtended(new DetailedEntity(LastSelected, reports, trafficCitations)));
+            try
+            {
+                var reports = await ComputerReportsController.GetArrestReportsForPedAsync(LastSelected);
+                var trafficCitations = await ComputerReportsController.GetTrafficCitationsForPedAsync(LastSelected);
+                if (trafficCitations != null) Function.Log("Found citations for ped");
+                else Function.Log("Citations for ped are null");
+                Globals.Navigation.Push(new ComputerPedViewExtended(new DetailedEntity(LastSelected, reports, trafficCitations)));
+            } catch (Exception e)
+            {
+                Function.Log(e.ToString());
+            }
         }
 
         protected internal static void ActivatePedView()

@@ -9,6 +9,7 @@ using ComputerPlus.Controllers.Models;
 using ComputerPlus.DB.Models;
 using ComputerPlus.Extensions;
 using ComputerPlus.Interfaces.Common;
+using ComputerPlus.Extensions.Rage;
 using LSPD_First_Response.Engine.Scripting.Entities;
 using Rage;
 using SQLite.Net.Attributes;
@@ -335,6 +336,7 @@ namespace ComputerPlus.Interfaces.Reports.Models
             {
                 citation.VehicleModel = entity.Vehicle.Model.Name;
                 citation.VehicleTag = entity.VehicleTag;
+                citation.VehicleColor = entity.Vehicle.GetVehicleColorName();
             }
             else if(entity.Ped && entity.Ped.LastVehicle)
             {

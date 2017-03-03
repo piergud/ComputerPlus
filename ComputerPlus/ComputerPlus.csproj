@@ -49,6 +49,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ALPRPlus, Version=0.2.0.0, Culture=neutral, processorArchitecture=AMD64">
@@ -156,6 +157,7 @@
     <Compile Include="Extensions\Rage\GameFiberExtensions.cs" />
     <Compile Include="Extensions\Rage\PedExtensions.cs" />
     <Compile Include="Extensions\Rage\PedScenarios.cs" />
+    <Compile Include="Extensions\Rage\VehicleColor.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="FriendlyKeys.cs" />
