@@ -49,7 +49,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 if (handle != null)
                 {
                     Ped ped = Functions.GetPulloverSuspect(handle);                    
-                    Vehicle vehicle = FindPedVehicle(ped);
+                    Vehicle vehicle = FindPedVehicle(ped);                    
                     if (vehicle == null || !vehicle.Exists()) return null;
                     return LookupVehicle(vehicle);
                 }
