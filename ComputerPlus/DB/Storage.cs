@@ -122,9 +122,17 @@ namespace ComputerPlus.DB
         {
             if (File.Exists(DB_FILE_NAME))
             {
-
+                
                 var store = new Storage();
-                var latestStoredSchema = await store.Connection().Table<SchemaVersion>().OrderByDescending(x => x.id).FirstOrDefaultAsync();
+                SchemaVersion latestStoredSchema = null;
+                try {
+                    latestStoredSchema = await store.Connection().Table<SchemaVersion>().OrderByDescending(x => x.id).FirstOrDefaultAsync();
+                }
+                catch(Exception e)
+                {
+                    Function.Log("Error getting schema version, init new schema");
+                    return await InitNew();
+                }
                 Function.Log("Store schema version check");
                 if (latestStoredSchema != null)
                 {
@@ -141,10 +149,11 @@ namespace ComputerPlus.DB
                         var availableUpdates = DiscoverAvailableUpgrades(latestStoredSchema).ToList();
                         Function.Log("DiscoverAvailableUpgrades completed");
                         Function.Log(String.Format("Store has {0} updates available", availableUpdates.Count));
-                        availableUpdates.ForEach(async x => {
-                            Function.Log(String.Format("Upgrading to {0}", x.id));
-                            await store.UpgradeProcess(x);
-                        });
+                        foreach(var update in availableUpdates)
+                        {
+                            Function.Log(String.Format("Upgrading to {0}", update.id));
+                            await store.UpgradeProcess(update);
+                        }
                         
                         
                         return store;
@@ -166,9 +175,19 @@ namespace ComputerPlus.DB
         {
             
             var store = new Storage();
-            var result = await store.UpgradeProcess(SchemaVersion.Create());
-            Function.Log("InitStore performing version upgrade");
-          
+            var initialSchema = SchemaVersion.Create();
+            var result = await store.UpgradeProcess(initialSchema);
+            Function.Log("Applying initial store schema");
+
+            var availableUpdates = DiscoverAvailableUpgrades(initialSchema).ToList();
+            Function.Log("DiscoverAvailableUpgrades completed");
+            Function.Log(String.Format("Store has {0} updates available", availableUpdates.Count));
+            foreach (var update in availableUpdates)
+            {
+                Function.Log(String.Format("Upgrading to {0}", update.id));
+                await store.UpgradeProcess(update);
+            }
+
             if (result == UpgradeStatus.COMPLETED)
             {
                 Function.Log("SQL is ready");
