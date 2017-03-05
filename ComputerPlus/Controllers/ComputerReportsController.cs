@@ -218,8 +218,8 @@ namespace ComputerPlus.Controllers
             }
             catch (Exception e)
             {
-                Function.Log(e.ToString());
-                return null;
+                Function.Log("Non fatal catch: " + e.ToString());
+                return new List<TrafficCitation>();
             }
         }
 
@@ -240,8 +240,8 @@ namespace ComputerPlus.Controllers
             }
             catch (Exception e)
             {
-                Function.Log(e.ToString());
-                return null;
+                Function.Log("Non fatal catch: " + e.ToString());
+                return new List<TrafficCitation>();
             }
         }
        
