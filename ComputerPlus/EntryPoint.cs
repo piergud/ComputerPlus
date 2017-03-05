@@ -256,13 +256,14 @@ namespace ComputerPlus
 
         private bool? ShouldEndPullover;
         private void CheckForDeliverTicketTrigger()
-        {            
-            
+        {
+
             if (Functions.GetCurrentPullover() == null && Globals.HasTrafficTicketsInHand())
             {
                 Globals.ClearTrafficCitationsInHand();
                 return;
             }
+            
             else if (!Globals.HasTrafficTicketsInHand() && (ShouldEndPullover.HasValue && ShouldEndPullover.Value) && !Game.LocalPlayer.Character.HasScenario())
             {
                 ShouldEndPullover = null;
