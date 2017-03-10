@@ -83,7 +83,7 @@ namespace ComputerPlus.Extensions.Gwen
             if (Globals.Style.LabelHeaderFont == null)
             {
                 Globals.Style.LabelHeaderFont = label.Font.Copy();
-                Globals.Style.LabelHeaderFont.FaceName = Configs.RegularFontName;
+                Globals.Style.LabelHeaderFont.FaceName = Configs.FontName;
                 Globals.Style.LabelHeaderFont.Size = 20;
             }
             
@@ -120,7 +120,7 @@ namespace ComputerPlus.Extensions.Gwen
             if (Globals.Style.RegularFont == null)
             {
                 Globals.Style.RegularFont = label.Font.Copy();
-                Globals.Style.RegularFont.FaceName = Configs.RegularFontName;
+                Globals.Style.RegularFont.FaceName = Configs.FontName;
                 Globals.Style.RegularFont.Size = 16;
             }
 
@@ -140,7 +140,7 @@ namespace ComputerPlus.Extensions.Gwen
             color = color == SystemDrawing.Color.Empty ? SystemDrawing.Color.Black : color;
             if (Globals.Style.RegularFont == null)
             {
-                Globals.Style.RegularFont = new Font(label.Skin.Renderer, Configs.RegularFontName, 16);
+                Globals.Style.RegularFont = new Font(label.Skin.Renderer, Configs.FontName, 16);
             }
             label.Text(text, color, Globals.Style.RegularFont);
             return label;

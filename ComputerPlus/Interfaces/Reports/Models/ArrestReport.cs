@@ -36,6 +36,8 @@ namespace ComputerPlus.Interfaces.Reports.Models
             }
         }
 
+        public bool ReadOnly;
+
         [OneToMany(CascadeOperations = CascadeOperation.All)]
         public List<ArrestChargeLineItem> Charges
         {
@@ -140,7 +142,7 @@ namespace ComputerPlus.Interfaces.Reports.Models
             return this.Id().Substring(30);
         }
 
-        public ArrestReport(List<ArrestChargeLineItem> charges, List<ArrestReportAdditionalParty> parties, DateTime arrestTime, String notes) : this()
+        public ArrestReport(List<ArrestChargeLineItem> charges, List<ArrestReportAdditionalParty> parties, DateTime arrestTime, String notes, bool readOnly = false) : this(readOnly)
         {
             if (charges != null)
             {
@@ -157,11 +159,19 @@ namespace ComputerPlus.Interfaces.Reports.Models
 
         public ArrestReport(List<ArrestChargeLineItem> charges, DateTime arrestTime, String notes) : this(charges, null, arrestTime, notes)
         {
+
         }
 
-        public ArrestReport () 
+        public ArrestReport (bool readOnly = false) 
         {            
             ArrestTimeDate = DateTime.Now;
+            ReadOnly = readOnly;
+        }
+
+        public ArrestReport()
+        {
+            ArrestTimeDate = DateTime.Now;
+            ReadOnly = false;
         }
 
         public void ChangeArrestTime(DateTime time)
@@ -220,7 +230,7 @@ namespace ComputerPlus.Interfaces.Reports.Models
 
         public static ArrestReport CreateForPed(ComputerPlusEntity entity)
         {
-            return new ArrestReport()
+            return !entity ? new ArrestReport() : new ArrestReport()
             {
                 FirstName = entity.FirstName,
                 LastName = entity.LastName,

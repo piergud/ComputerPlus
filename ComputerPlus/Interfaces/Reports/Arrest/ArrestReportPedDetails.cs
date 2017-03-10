@@ -31,26 +31,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         internal ArrestReport Report;
         private IErrorNotifier ErrorNotifier;
         private IActionNotifier ActionNotifier;
-        private bool mReadOnlyPedDetails = false;
-        internal bool ReadOnlyPedDetails
-        {
-            get
-            {
-                return mReadOnlyPedDetails;
-            }
-            set
-            {
-                try
-                {
-                    mReadOnlyPedDetails = value;
-                    LockPedDetails(mReadOnlyPedDetails);
-                }
-                catch
-                {
-                    mReadOnlyPedDetails = value;
-                }
-            }
-        }
+       
 
         internal ArrestReportPedDetails(ArrestReport report) : base(typeof(ArrestReportPedDetailsTemplate))
         {
@@ -188,7 +169,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
 
             PopulateInputs(Report);            
             LockControls();
-            if (ReadOnlyPedDetails)
+            if (Report.ReadOnly)
             {
                 LockPedDetails(true);
             }
@@ -271,7 +252,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             if (Report == null) return;
             text_arrest_time.Disable();
             text_arrest_date.Disable();
-            if (!Report.IsNew)
+            if (Report.ReadOnly)
             {                
                 text_arrestee_dob.Disable();
                 text_arrestee_home_address.Disable();

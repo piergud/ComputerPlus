@@ -72,7 +72,7 @@ namespace ComputerPlus.Controllers
             }
             catch(Exception e)
             {
-                Function.Log(e.ToString());
+                Function.LogCatch(e.ToString());
                 return null;
             }
         }
@@ -93,7 +93,7 @@ namespace ComputerPlus.Controllers
             }
             catch (Exception e)
             {
-                Function.Log(e.ToString());
+                Function.LogCatch(e.ToString());
                 return null;
             }
         }
@@ -103,7 +103,7 @@ namespace ComputerPlus.Controllers
             return await GetArrestReportsForPedAsync(entity.FirstName, entity.LastName, entity.PedPersona.BirthDay.ToLocalTimeString(TextBoxExtensions.DateOutputPart.DATE));
         }
 
-        public static async Task<List<ArrestReport>> GetArrestReportsForPedAsync(String firstName, String lastName, String dob)
+        public static async Task<List<ArrestReport>> GetArrestReportsForPedAsync(String firstName = "", String lastName = "", String dob = "")
         {
             try
             {
@@ -121,7 +121,7 @@ namespace ComputerPlus.Controllers
             }
             catch (Exception e)
             {
-                Function.Log(e.ToString());
+                Function.LogCatch(e.ToString());
                 return null;
             }
         }
@@ -197,7 +197,7 @@ namespace ComputerPlus.Controllers
             }
             catch (Exception e)
             {
-                Function.Log(e.ToString());
+                Function.LogCatch(e.ToString());
                 throw e;
             }
         }
@@ -218,7 +218,7 @@ namespace ComputerPlus.Controllers
             }
             catch (Exception e)
             {
-                Function.Log("Non fatal catch: " + e.ToString());
+                Function.LogCatch(e.ToString());
                 return new List<TrafficCitation>();
             }
         }
@@ -240,7 +240,7 @@ namespace ComputerPlus.Controllers
             }
             catch (Exception e)
             {
-                Function.Log("Non fatal catch: " + e.ToString());
+                Function.LogCatch(e.ToString());
                 return new List<TrafficCitation>();
             }
         }

@@ -56,7 +56,7 @@ namespace ComputerPlus
         public override void InitializeLayout()
         {
             base.InitializeLayout();
-            this.Window.Skin.SetDefaultFont(Configs.RegularFontName, Configs.RegularFontSize);
+            this.Window.Skin.SetDefaultFont(Configs.FontName, Configs.FontSize);
             this.cb_toggle_background.IsChecked = Globals.ShowBackgroundWhenOpen;
             this.cb_toggle_pause.IsChecked = Globals.PauseGameWhenOpen;
             this.btn_logout.Clicked += this.LogoutButtonClickedHandler;
@@ -126,7 +126,7 @@ namespace ComputerPlus
             if (sender == btn_browse_report)
                 ComputerReportsController.ShowArrestReportList();
             else if (sender == btn_arrest_report)
-                ComputerReportsController.ShowTrafficCitationCreate(null);
+                ComputerReportsController.ShowArrestReportCreate(null, null);
         }
 
 

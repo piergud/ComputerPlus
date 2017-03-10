@@ -15,6 +15,17 @@ namespace ComputerPlus
         internal static Dictionary<uint,string> bgs = new Dictionary<uint,string>();
         static string user, pass, unit;
         static bool skip;
+        internal static int FontSize
+        {
+            get;
+            private set;
+        } = 16;
+        internal static String FontName
+        {
+            get;
+            private set;
+        } = "Microsoft Sans Serif";
+
         private static List<KeyBinder> OpenComputerPlusKeys = new List<KeyBinder>();
         private static List<KeyBinder> OpenSimpleNotepadKeys = new List<KeyBinder>();
         private static List<KeyBinder> CloseComputerPlusKeys = new List<KeyBinder>();
@@ -30,6 +41,8 @@ namespace ComputerPlus
             pass = ini_file.ReadString("SETTINGS", "LoginPass");
             skip = ini_file.ReadBoolean("SETTINGS", "SkipLogin");
             unit = ini_file.ReadString("SETTINGS", "UnitNumber");
+            FontSize = ini_file.ReadInt32("SETTINGS", "FontSize");
+            FontName = ini_file.ReadString("SETTINGS", "FontName");
 
             if (String.IsNullOrWhiteSpace(user))
                 user = "Officer";
@@ -37,6 +50,9 @@ namespace ComputerPlus
                 pass = "DoNuTz";
             if (String.IsNullOrWhiteSpace(unit))
                 unit = "1-A-12";
+
+            FontSize = FontSize > 0 ? FontSize : 16;
+            FontName = !String.IsNullOrWhiteSpace(FontName) ? FontName : "Microsoft Sans Serif";
 
             foreach (string key in ini_file.GetKeyNames("VEHICLE BACKGROUNDS"))
             {
@@ -95,6 +111,9 @@ namespace ComputerPlus
             ini_file.Write("SETTINGS", "LoginPass", "DoNuTz");
             ini_file.Write("SETTINGS", "SkipLogin", "false");
             ini_file.Write("SETTINGS", "UnitNumber", "1-A-12");
+            ini_file.Write("SETTINGS", "FontSize", 16);
+            ini_file.Write("SETTINGS", "FontName", "Microsoft Sans Serif");
+
             ini_file.Write("KEYBINDINGS", "OpenComputerPlusKey", "None");
             ini_file.Write("KEYBINDINGS", "OpenComputerPlusModifierKey", "None");
             ini_file.Write("KEYBINDINGS", "OpenComputerPlusControllerButton", "None");
@@ -199,9 +218,8 @@ namespace ComputerPlus
             get { return BaseFormControlSpacing * 3; }
         }
 
-        internal static readonly String RegularFontName = "Microsoft Sans Serif";
-        internal static readonly int RegularFontSize = 16;
-        internal static readonly String RegularBoldFontName = "Microsoft Sans Serif, 20px, style=Bold";
+        
+        internal static readonly String RegularBoldFontName = String.Format("Microsoft Sans Serif, {0}px, style=Bold", FontSize + 4);
 
 
         /*public static Keys NotebookKey { get { return ini_file.ReadEnum<Keys>("General", "NotebookKey", Keys.D2); } }

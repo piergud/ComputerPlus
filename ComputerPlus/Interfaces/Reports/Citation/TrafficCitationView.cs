@@ -38,10 +38,13 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             set
             {
                 mCitation = value;
-                if (mCitation.CitationTimeDate == DateTime.MinValue || mCitation.CitationTimeDate == null) mCitation.CitationTimeDate = DateTime.Now;
-                if (mCitation.CitationPos == Vector3.Zero) mCitation.CitationPos = Function.GetPedCurrentPos();
-                if (String.IsNullOrWhiteSpace(mCitation.CitationStreetAddress)) mCitation.CitationStreetAddress = Function.GetPedCurrentStreetName();
-                if (String.IsNullOrWhiteSpace(mCitation.CitationCity)) mCitation.CitationCity = Function.GetPedCurrentZoneName();
+                if (mCitation != null)
+                {
+                    if (mCitation.CitationTimeDate == DateTime.MinValue || mCitation.CitationTimeDate == null) mCitation.CitationTimeDate = DateTime.Now;
+                    if (mCitation.CitationPos == Vector3.Zero) mCitation.CitationPos = Function.GetPedCurrentPos();
+                    if (String.IsNullOrWhiteSpace(mCitation.CitationStreetAddress)) mCitation.CitationStreetAddress = Function.GetPedCurrentStreetName();
+                    if (String.IsNullOrWhiteSpace(mCitation.CitationCity)) mCitation.CitationCity = Function.GetPedCurrentZoneName();
+                }
             }
         }
         SystemDrawing.Color labelColor = SystemDrawing.Color.Black;
