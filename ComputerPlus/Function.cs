@@ -581,10 +581,15 @@ namespace ComputerPlus
             if (!String.IsNullOrWhiteSpace(message)) Game.LogTrivial(String.Format("C+: {0}", message));
         }
 
-        
+        internal static void LogCatch(String message)
+        {
+            if (!String.IsNullOrWhiteSpace(message)) Game.LogTrivial(String.Format("C+ Minor Exception: {0}", message));
+        }
+
+
         internal static void LogDebug(String message)
         {
-            if (!String.IsNullOrWhiteSpace(message)) Game.LogVerboseDebug(String.Format("C+ DEV: {0}", message));
+            if (!String.IsNullOrWhiteSpace(message)) Game.LogTrivial(String.Format("C+ DEV: {0}", message));
         }
 
         internal static void ShowError(String message, int duration = 5000)

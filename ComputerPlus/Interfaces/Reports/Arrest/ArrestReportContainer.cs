@@ -41,7 +41,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         {
             set
             {
-                pedDetailsPage.ReadOnlyPedDetails = value;
+                Report.ReadOnly = true;
             }
         }
 
