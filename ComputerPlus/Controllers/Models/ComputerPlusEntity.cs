@@ -159,7 +159,7 @@ namespace ComputerPlus.Controllers.Models
 
         public static implicit operator bool (ComputerPlusEntity entity)
         {
-            return entity.Validate();
+            return entity == null ? false : entity.Validate();
         }
     }
 }

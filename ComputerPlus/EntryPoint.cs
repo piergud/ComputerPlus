@@ -130,7 +130,7 @@ namespace ComputerPlus
             }
             catch (Exception e)
             {
-                Function.Log(e.Message);
+                Function.LogCatch(e.Message);
             }
         }
         private static void ALPRPlusFunctions_OnAlprPlusMessage(object sender, ALPR_Arguments e)
@@ -257,14 +257,8 @@ namespace ComputerPlus
         private bool? ShouldEndPullover;
         private void CheckForDeliverTicketTrigger()
         {
-
-            if (Functions.GetCurrentPullover() == null && Globals.HasTrafficTicketsInHand())
-            {
-                Globals.ClearTrafficCitationsInHand();
-                return;
-            }
-            
-            else if (!Globals.HasTrafficTicketsInHand() && (ShouldEndPullover.HasValue && ShouldEndPullover.Value) && !Game.LocalPlayer.Character.HasScenario())
+           
+          if (!Globals.HasTrafficTicketsInHand() && (ShouldEndPullover.HasValue && ShouldEndPullover.Value) && !Game.LocalPlayer.Character.HasScenario())
             {
                 ShouldEndPullover = null;
 
@@ -287,7 +281,7 @@ namespace ComputerPlus
                     }
                     catch (Exception e)
                     {
-                        Function.Log(e.Message);
+                        Function.LogCatch(e.Message);
                     }
 
                 });
@@ -326,6 +320,11 @@ namespace ComputerPlus
 
                     }
                 }                
+            }
+            else if (Functions.GetCurrentPullover() == null && Globals.HasTrafficTicketsInHand())
+            {
+                Globals.ClearTrafficCitationsInHand();
+                return;
             }
         }
 
@@ -438,14 +437,14 @@ namespace ComputerPlus
                     catch (Exception e)
                     {
                         if (e.GetType() != typeof(ThreadAbortException))
-                            Function.Log(e.ToString());
+                            Function.LogCatch(e.ToString());
                     }
                     //NavOnFormRemoved(sender, entry);
                 });
             }
             catch (Exception e)
             {
-                Function.Log(e.ToString());
+                Function.LogCatch(e.ToString());
             }
         }
 
@@ -462,7 +461,7 @@ namespace ComputerPlus
             catch (Exception e)
             {
                 if (e.GetType() != typeof(ThreadAbortException))
-                    Function.Log(e.ToString());
+                    Function.LogCatch(e.ToString());
             }
         }
 

@@ -181,7 +181,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         {
             if (sender == null)
             {
-                tb_notes.Component.Text = String.Empty;                
+                tb_notes.Component.SetText(String.Empty);
             }            
             else
             {
@@ -271,14 +271,14 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 if (SelectedAvailableCharge == null || SelectedAvailableCharge.IsContainer) return;
                 var lineItem = new ArrestChargeLineItem(SelectedAvailableCharge, tb_notes.Component.Text);
                 AddChargeToReport(Report, lineItem);
-                tb_notes.Component.DeleteAllChildren();
+                tb_notes.Component.SetText(String.Empty);
                 SelectedAvailableCharge = null;
             }
             else if (sender == btnRemoveSelectedCharge)
             {
                 if (lb_charges.SelectedRow == null) return;
                 RemoveChargeFromReport(Report, lb_charges.SelectedRow.UserData as ArrestChargeLineItem);
-                tb_notes.Component.Text = String.Empty;
+                tb_notes.Component.SetText(String.Empty);
                 SelectedAvailableCharge = null;
             }
         }    
