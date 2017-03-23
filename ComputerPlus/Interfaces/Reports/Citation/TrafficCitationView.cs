@@ -64,7 +64,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
 
         LabeledComponent<TreeControl> labeled_available_citation_reasons;
 
-        LabeledComponent<Button> btn_finish;
+        LabeledComponent<Button> btn_finish, btn_finish_new;
 
         List<LabeledComponent<StateControlledTextbox>> LabeledInputs = new List<LabeledComponent<StateControlledTextbox>>();
 
@@ -86,10 +86,11 @@ namespace ComputerPlus.Interfaces.Reports.Citation
 
         public void ChangeCitation(TrafficCitation citation, bool readOnly = false)
         {
-            Function.Log("ChangeCitation from " + Citation.FirstName + " to " + citation.FirstName);
+            Function.LogDebug("ChangeCitation from " + Citation.Id() + " to " + citation.Id());
             Citation = citation;
             BindNeeded = true;
             if (!citation.IsNew) PopulateCitationCategories(null);
+            labeled_available_citation_reasons.Component.UnselectAll();
             BindDataFromCitation();
         }
 
@@ -146,9 +147,14 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labeled_available_citation_reasons.Component.AllowMultiSelect = false;
             if (ViewType == ViewTypes.CREATE)
             {
-                btn_finish = LabeledComponent.Button(headerSection, "Finish", RelationalPosition.LEFT, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+                btn_finish = LabeledComponent.Button(headerSection, "Finish", RelationalPosition.BOTTOM, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
                 btn_finish.Component.SaveIcon();
                 btn_finish.Component.Clicked += ButtonClicked;
+
+                btn_finish_new = LabeledComponent.Button(headerSection, "Add New", RelationalPosition.BOTTOM, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+                btn_finish_new.Component.PlusOneIcon();
+                btn_finish_new.Component.Clicked += ButtonClicked;
+
                 PopulateCitationCategories(Globals.CitationDefinitions);
             }
             else PopulateCitationCategories(null);
@@ -179,6 +185,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             ClearErrorState();
             if (errors != null && errors.Count > 0)
             {
+                new MessageBox(this, "Citation is missing required information");
                 foreach (KeyValuePair<String, String> kvp in errors)
                 {
                     if (!String.IsNullOrEmpty(kvp.Key))
@@ -278,8 +285,9 @@ namespace ComputerPlus.Interfaces.Reports.Citation
 
         private async void ButtonClicked(Base sender, ClickedEventArgs arguments)
         {
-            if (sender == btn_finish.Component)
+            if (sender == btn_finish.Component || sender == btn_finish_new.Component)
             {
+                Function.LogDebug("ButtonClicked");
                 if (labeled_vehicle_type.Component.SelectedItem.UserData is String && String.IsNullOrEmpty(labeled_vehicle_type.Component.SelectedItem.UserData as String))
                 {
                     OnValidationError(sender, new Dictionary<string, string>() { { "Vehicle Type", "Cannot be Select One" } });
@@ -303,6 +311,14 @@ namespace ComputerPlus.Interfaces.Reports.Citation
                         Citation = await ComputerReportsController.SaveTrafficCitationAsync(Citation);                        
                         //if (Globals.PendingTrafficCitation == Citation) Globals.PendingTrafficCitation = null;
                         NotifyForEvent(TrafficCitationSaveResult.SAVE);
+                        
+                        if (sender == btn_finish_new.Component)
+                        {
+                            Globals.PendingTrafficCitation = TrafficCitation.CloneFromCitation(Citation);
+                            ChangeCitation(Globals.PendingTrafficCitation);
+                            new MessageBox(this, "Saved citation. Creating new");
+                            return;
+                        }
                         BindNeeded = true;
                         BindDataFromCitation();
                     }
@@ -335,6 +351,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
 
             labeled_citation_report_id.Component.SmallSize();
             if (btn_finish != null) btn_finish.AlignRightWith().AlignTopWith(labeled_citation_report_id);
+            if (btn_finish_new != null) btn_finish_new.PlaceLeftOf(btn_finish, Configs.BaseFormControlSpacingDouble * 2).AlignTopWith(btn_finish);
             headerSection.SizeWidthWith().AlignTopWith().AlignLeftWith().SizeToChildrenBlock();
 
             /* Persons Information */
