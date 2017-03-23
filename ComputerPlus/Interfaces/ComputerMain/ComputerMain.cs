@@ -23,7 +23,6 @@ namespace ComputerPlus
         private CheckBox cb_toggle_pause, cb_toggle_background;
         MenuItem external_ui_default;
         internal static GameFiber external_ui_fiber = null;
-        //private Button btn_ReportMain; // Fiskey111 Edit
 
         private bool ShouldShowExtraUIControls
         {
@@ -64,8 +63,14 @@ namespace ComputerPlus
             this.btn_veh_db.Clicked += this.VehDBButtonClickedHandler;
             this.btn_request.Clicked += this.RequestBackupButtonClickedHandler;
             this.btn_notepad.Clicked += OpenNotepadHandler;
-            this.btn_arrest_report.Clicked += this.ReportsClickedHandler;
-            this.btn_browse_report.Clicked += this.ReportsClickedHandler;
+            //this.btn_arrest_report.Clicked += this.ReportsClickedHandler;
+            //this.btn_browse_report.Clicked += this.ReportsClickedHandler;
+
+            this.btn_browse_report.Disable();
+            this.btn_browse_report.Hide();
+            this.btn_arrest_report.Disable();
+            this.btn_arrest_report.Hide();
+
             this.cb_toggle_background.CheckChanged += checkbox_change;
             this.cb_toggle_pause.CheckChanged += checkbox_change;
             this.Window.KeyboardInputEnabled = true;
@@ -79,7 +84,6 @@ namespace ComputerPlus
                     GameFiber.Yield();
                 }
             });
-            //this.btn_ReportMain.Clicked += this.ReportMainClickedHandler;  // Fiskey111 Edit
             this.btn_activecalls.Clicked += this.ActiveCallsClickedHandler;
             this.Window.DisableResizing();
             foreach (string r in EntryPoint.recent_text)

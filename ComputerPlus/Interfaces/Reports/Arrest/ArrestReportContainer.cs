@@ -73,7 +73,12 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
 
         private async void SaveClicked(Base sender, ClickedEventArgs arguments)
         {
-            await SaveReport();
+            var result = await SaveReport();
+            if (result == ArrestReportSaveResult.SAVE_ERROR)
+            {
+                var message = (Report.Charges.Count == 0) ? "Report has no charges" : "The Report is missing required information";
+                new MessageBox(this, message);
+            }
         }
 
         private async Task<ArrestReportSaveResult> SaveReport()
@@ -93,8 +98,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 }
                 else
                 {
-                    if (OnArrestReportValidationError != null)
-                        OnArrestReportValidationError(this, validationErrors);
+                    if (OnArrestReportValidationError != null) OnArrestReportValidationError(this, validationErrors);                    
                     return ArrestReportSaveResult.SAVE_ERROR;
                 }
             }

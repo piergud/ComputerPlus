@@ -346,5 +346,22 @@ namespace ComputerPlus.Interfaces.Reports.Models
             return citation;
         }
 
+        public static TrafficCitation CloneFromCitation(TrafficCitation citation)
+        {
+            return new TrafficCitation()
+            {
+                FirstName = citation.FirstName,
+                LastName = citation.LastName,
+                DOB = citation.DOB,
+                HomeAddress = citation.HomeAddress,
+                CitationCity = citation.CitationCity,
+                CitationStreetAddress = citation.CitationStreetAddress,
+                VehicleColor = citation.VehicleColor,
+                VehicleTag = citation.VehicleTag,
+                VehicleModel = citation.VehicleModel,
+                VehicleType = citation.VehicleType,
+            };
+        }
+
     }
 }
