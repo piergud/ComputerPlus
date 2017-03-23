@@ -190,6 +190,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         internal static Blip BlipVehicle(Vehicle vehicle, Color color)
         {
+            if (_Blips.ContainsValue(vehicle)) return _Blips.Single(x => x.Value == vehicle).Key;
+            else if (vehicle.GetAttachedBlip()) return vehicle.GetAttachedBlip();
             var blip = vehicle.AddBlipSafe(color);
             if (blip != null && (vehicle != null && vehicle.IsValid())) _Blips.Add(blip, vehicle);
 

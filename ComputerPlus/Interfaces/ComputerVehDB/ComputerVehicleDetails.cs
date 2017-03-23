@@ -140,11 +140,16 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             labeled_vehicle_license.Component.Disable();
             labeled_vehicle_insurance_status.Component.Disable();
             labeled_vehicle_registration_status.Component.Disable();
-
-            image_ped_image_holder.ImageName = DetermineImagePath(Owner);
-            image_ped_image_holder.ShouldCacheToTexture = true;
-            image_vehicle_image_holder.ImageName = DetermineImagePath(Vehicle);
-            image_vehicle_image_holder.ShouldCacheToTexture = true;
+            if (Owner)
+            {
+                image_ped_image_holder.ImageName = DetermineImagePath(Owner);
+                image_ped_image_holder.ShouldCacheToTexture = true;
+            }
+            if (Vehicle)
+            {
+                image_vehicle_image_holder.ImageName = DetermineImagePath(Vehicle);
+                image_vehicle_image_holder.ShouldCacheToTexture = true;
+            }
 
             cb_action.ItemSelected += ActionSelected;
 
