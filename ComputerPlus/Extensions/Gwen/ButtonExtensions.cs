@@ -68,5 +68,10 @@ namespace ComputerPlus.Extensions.Gwen
         {
             button.Icon("ic_save_black_24dp_1x.png", clearText, "Save");
         }
+
+        internal static void PlusOneIcon(this Button button, bool clearText = true)
+        {
+            button.Icon("ic_plus_one_black_24dp_1x.png", clearText, "Save and Create");
+        }
     }
 }
