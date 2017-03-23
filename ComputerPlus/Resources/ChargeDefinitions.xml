@@ -21,6 +21,7 @@
 			<Charge name="Crack Cocaine" felony="true" />
 			<Charge name="Cocaine" felony="true"/>
 			<Charge name="Prescription Pills" felony="true"/>
+			<Charge name="Controlled Substance" felony="true"/>
 			<Charge name="Drug Paraphernalia" felony="true"/>
 		</Charge>
 		<Charge name="Possession of Burglary Tools" felony="true"/>		
@@ -78,13 +79,14 @@
 				<Charge name="Involuntarily Manslaughter" felony="true"/>
 				<Charge name="Vehicular Manslaughter" felony="true"/>
 				<Charge name="Manslaughter While Under the Influence" felony="true"/>
-				<Charge name="Gross Manslaughter While Under the Influence" felony="true"/>
+				<Charge name="Gross Manslaughter While Under the Influence" felony="true"/>				
 			</Charge>
 			<Charge name="Murder">
 				<Charge name="Capital Murder" felony="true"/>
 				<Charge name="Second Degree Murder" felony="true"/>
 				<Charge name="Felony Murder" felony="true"/>
 				<Charge name="Murder of Police Officer" felony="true"/>
+				<Charge name="Attempted Murder of Police Officer" felony="true"/>
 			</Charge>			
 		</Charge>		
 		<Charge name="Kidnapping">
@@ -109,10 +111,12 @@
 		</Charge>
 	</Category>
 	<Category name="Traffic">
-		<Charge name="Driving Wrong Way" fine="400" felony="true"/>
+		<Charge name="Driving Wrong Way" felony="true"/>
 		<Charge name="Reckless Driving"/>
 		<Charge name="Leaving the Scene of an Accident" felony="true"/>
+		<Charge name="Evading Arrest" felony="true"/>
 		<Charge name="Driving While License Suspended" />
 		<Charge name="Driving While License Revoked" felony="true"/>		
+		<Charge name="Driving Under the Influence" felony="true"/>		
 	</Category>
 </ChargeCategories>

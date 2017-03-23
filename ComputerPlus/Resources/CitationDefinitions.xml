@@ -23,6 +23,7 @@
 		<Citation name="Leaving the Scene of an Accident" fine="300" arrestable="true"/>
 		<Citation name="Driving While License Suspended" fine="400" arrestable="true"/>
 		<Citation name="Driving While License Revoked" fine="400" arrestable="true"/>
+		<Citation name="Driving Under the Influence" fine="1500" arrestable="true"/>
 	</Citation>
 	<Citation name="Equipment">
 		<Citation name="Unworthy Road Vehicle" fine="100"/>
