@@ -206,7 +206,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                         return;
                     }
                 case ComputerVehicleDetails.QuickActions.CREATE_TRAFFIC_CITATION:
-                    {
+                    {                        
                         ComputerReportsController.ShowTrafficCitationCreate(Globals.PendingTrafficCitation, DetailedEntity.Entity, PedCreateTrafficCitationActions);
                         return;
                     }

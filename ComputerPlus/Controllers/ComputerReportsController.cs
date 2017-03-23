@@ -171,6 +171,11 @@ namespace ComputerPlus.Controllers
                 Globals.PendingTrafficCitation = mCitation;
                 Function.Log("Created Traffic Citation for ped  " + mCitation.FirstName);
             }
+            else if (citation != null && citation == Globals.PendingTrafficCitation && !citation.FullName.Equals(entity.FullName))
+            {
+                mCitation = new TrafficCitation();
+                Globals.PendingTrafficCitation = mCitation;
+            }
             else
             {
                 mCitation = citation;
