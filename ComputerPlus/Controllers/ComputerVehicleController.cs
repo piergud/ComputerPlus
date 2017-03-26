@@ -339,7 +339,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         internal async static void ShowVehicleDetails()
         {
-            if (!LastSelected.Validate()) return;
+            if (!LastSelected || !LastSelected.Validate()) return;
             var reports = await ComputerReportsController.GetArrestReportsForPedAsync(LastSelected);
             var trafficCitations = await ComputerReportsController.GetTrafficCitationsForPedAsync(LastSelected);
 
