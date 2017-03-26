@@ -96,7 +96,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
         internal async static void ShowPedView()
         {
-            if (!LastSelected.Validate()) return;
+            if (!LastSelected || !LastSelected.Validate()) return;
             try
             {
                 var reports = await ComputerReportsController.GetArrestReportsForPedAsync(LastSelected);

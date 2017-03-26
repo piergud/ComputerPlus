@@ -116,7 +116,7 @@ namespace ComputerPlus.Controllers
                 //query.AddWhere(DB.Storage.Tables.ArrestReport.FIRST_NAME, QueryEnum.Comparison.Equals, firstName);
                 //query.AddWhere(DB.Storage.Tables.ArrestReport.LAST_NAME, QueryEnum.Comparison.Equals, lastName);
                 //query.AddWhere(DB.Storage.Tables.ArrestReport.DOB, QueryEnum.Comparison.Equals, dob);
-                return await Globals.Store.Connection().GetAllWithChildrenAsync<ArrestReport>(report => report.FirstName == firstName && report.LastName == lastName && report.DOB == dob, true);
+                return await Globals.Store.Connection().GetAllWithChildrenAsync<ArrestReport>(report => report && report.FirstName == firstName && report.LastName == lastName && report.DOB == dob, true);
                 
             }
             catch (Exception e)
@@ -240,19 +240,20 @@ namespace ComputerPlus.Controllers
                 firstName = firstName.Trim();
                 lastName = lastName.Trim();
                 dob = dob.Trim();
-                return await Globals.Store.Connection().GetAllWithChildrenAsync<TrafficCitation>(report => report.FirstName == firstName && report.LastName == lastName && report.DOB == dob, true);
+                return await Globals.Store.Connection()
+                    .GetAllWithChildrenAsync<TrafficCitation>(report => report && report.FirstName == firstName && report.LastName == lastName && report.DOB == dob, true);
 
             }
             catch (Exception e)
             {
-                Function.LogCatch(e.ToString());
+                //Function.LogCatch(e.ToString());
                 return new List<TrafficCitation>();
             }
         }
        
 
         public static async Task<DetailedEntity> GetAllReportsForPedAsync(ComputerPlusEntity entity)
-        {
+        {            
             var arrests = await GetArrestReportsForPedAsync(entity);
             var traffic = await GetTrafficCitationsForPedAsync(entity);
             return new DetailedEntity(entity, arrests, traffic);
