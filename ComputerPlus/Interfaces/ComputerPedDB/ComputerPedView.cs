@@ -10,113 +10,247 @@ using LSPD_First_Response.Engine.Scripting.Entities;
 using ComputerPlus.Controllers.Models;
 using ComputerPlus.Extensions.Gwen;
 using ComputerPlus.Extensions.Rage;
+using ComputerPlus.Controllers;
+using ComputerPlus.Interfaces.Reports.Models;
+using ComputerPlus.Interfaces.Reports.Arrest;
+using ComputerPlus.Interfaces.Common;
+using GwenSkin = Gwen.Skin;
 
 namespace ComputerPlus.Interfaces.ComputerPedDB
 {
-    sealed class ComputerPedView : GwenForm
+    public class ComputerPedView : Base
     {
-        TextBox text_first_name, text_last_name, 
-                text_home_address, text_dob, text_license_status, 
-                text_wanted_status,  text_times_stopped, text_age;
-        Label lbl_alert;
-        Button btn_ped_image_holder;
+        public enum QuickActions { PLACEHOLDER = 0, CREATE_ARREST_REPORT = 1, CREATE_TRAFFIC_CITATION = 2 };
+        public delegate void QuickActionSelected(object sender, QuickActions action);
 
-        Persona Persona;
-        Ped Ped;
-
-        internal ComputerPedView(Persona persona, Ped ped) : base(typeof(ComputerPedViewTemplate))
+        QuickActionSelected OnQuickActionSelected;
+        ComputerPlusEntity mEntity;
+        public ComputerPlusEntity Entity
         {
-            Persona = persona;
-            Ped = ped;
+            get { return mEntity; }
+            set
+            {
+
+                if (mEntity != value)
+                {
+                    mEntity = value;
+                    if (this.IsVisible)
+                        BindData();                    
+                }
+                else
+                    mEntity = value;
+            }
         }
 
-        internal ComputerPedView(ComputerPlusEntity entity) : base(typeof(ComputerPedViewTemplate))
+        StateControlledTextbox text_first_name, text_last_name,
+               text_home_address, text_dob, text_license_status,
+               text_wanted_status, text_times_stopped, text_age;
+
+        Label lbl_alert, lbl_first_name, lbl_last_name,
+               lbl_home_address, lbl_dob, lbl_license_status,
+               lbl_wanted_status, lbl_times_stopped, lbl_age;
+        ComboBox cb_action;
+        ImagePanel ped_image_holder;
+        //Button btn_ped_image_holder; //TODO try image panel
+
+        public ComputerPedView(Base parent, ComputerPlusEntity entity) : base (parent)
         {
-            this.Ped = entity.Ped;
-            this.Persona = entity.PedPersona;
+            Entity = entity;
+            InitializeLayout();
+            BindData();
+        }
+
+        public ComputerPedView(Base parent, ComputerPlusEntity entity, QuickActionSelected quickActionSelectedCallback) : this(parent, entity)
+        {
+            OnQuickActionSelected = quickActionSelectedCallback;
+        }
+
+        public void ChangeEntity(ComputerPlusEntity entity)
+        {
+            this.Entity = entity;
+            BindData();
+
+        }
+
+        private void InitializeLayout()
+        {
+            cb_action = new ComboBox(this);
+            cb_action.AddItem("Select One", "PlaceHolder", QuickActions.PLACEHOLDER);
+            cb_action.AddItem("Create Arrest Report", "ArrestReport", QuickActions.CREATE_ARREST_REPORT);
+            if (this.Entity.Ped.LastVehicle != null) //Not using the implicit bool operator for Vehicle because we dont care if it is "valid" any more, we only care that they "had" a vehicle
+                cb_action.AddItem("Create Traffic Citation", "TrafficCitation", QuickActions.CREATE_TRAFFIC_CITATION);
+            cb_action.ItemSelected += ActionComboBoxItemSelected;
+            cb_action.SetSize(200, cb_action.Height);
+           
+            lbl_first_name = new Label(this) { Text = "First Name" };            
+            text_first_name = new StateControlledTextbox(this) { IsDisabled = true };                       
+
+            lbl_last_name = new Label(this) { Text = "Last Name" };
+            text_last_name = new StateControlledTextbox(this) { IsDisabled = true };
+            
+            lbl_age = new Label(this) { Text = "Age" };
+            text_age = new StateControlledTextbox(this) { IsDisabled = true };           
+
+            lbl_home_address = new Label(this) { Text = "Home Address" };
+            text_home_address = new StateControlledTextbox(this) { IsDisabled = true };                        
+
+            lbl_dob = new Label(this) { Text = "DOB" };
+            text_dob = new StateControlledTextbox(this) { IsDisabled = true };
+            
+            //Gwen.Align.PlaceRightBottom(text_dob, text_home_address, Configs.BaseFormControlSpacing);
+            
+            lbl_license_status = new Label(this) { Text = "License Status" };
+            text_license_status = new StateControlledTextbox(this) { IsDisabled = true };
+            
+
+            lbl_wanted_status = new Label(this) { Text = "Wanted Status" };
+            text_wanted_status = new StateControlledTextbox(this) { IsDisabled = true };
+
+            lbl_times_stopped = new Label(this) { Text = "Times Stopped" };
+            text_times_stopped = new StateControlledTextbox(this) { IsDisabled = true };
+
+            ped_image_holder = new ImagePanel(this);
+            ped_image_holder.ImageName = Function.DetermineImagePath(Entity.Ped);
+            ped_image_holder.ShouldCacheToTexture = true;
+
+
+           
+        }
+
+        protected override void Layout(GwenSkin.Base skin)
+        {
+            base.Layout(skin);
+            cb_action.PlaceInsideRightOf(this, Configs.BaseFormControlSpacing);
+            lbl_first_name.PlaceBelowOf(cb_action, Configs.BaseFormControlSpacingHalf);
+            text_first_name.SetPosition(this.X + Configs.BaseFormControlSpacing, this.Y + Configs.BaseFormControlSpacing);
+            text_first_name.NormalSize();
+            Gwen.Align.PlaceDownLeft(lbl_first_name, text_first_name);
+            lbl_last_name.SizeToContents();
+            text_last_name.NormalSize();
+            Gwen.Align.PlaceRightBottom(text_last_name, text_first_name, Configs.BaseFormControlSpacing); //Place textbox last name to the right of first name
+            lbl_last_name.SetPosition(text_last_name.X, lbl_first_name.Y); //Line up last name label with the last name text box (x) and the first name label (y)
+            lbl_age.SizeToContents();
+            text_age.SmallSize();
+            Gwen.Align.PlaceRightBottom(text_age, text_last_name, Configs.BaseFormControlSpacing);
+            Gwen.Align.PlaceDownLeft(lbl_age, text_age);
+            //lbl_age.SetPosition(text_age.X, lbl_last_name.Y);
+            Gwen.Align.PlaceDownLeft(lbl_home_address, text_first_name, Configs.BaseFormControlSpacingDouble); //Place Home Address label below first name, align left with first name text
+            text_home_address.LongSize();
+            Gwen.Align.PlaceDownLeft(text_home_address, lbl_home_address);
+            lbl_dob.SizeToContents();
+            text_dob.SmallSize();
+            text_dob.SetPosition(text_age.X, text_home_address.Y);
+            lbl_dob.SetPosition(text_dob.X, lbl_home_address.Y);
+            Gwen.Align.PlaceDownLeft(lbl_license_status, text_home_address, Configs.BaseFormControlSpacingTriple);
+            text_license_status.SmallSize();
+            Gwen.Align.PlaceRightBottom(text_license_status, lbl_license_status, Configs.BaseFormControlSpacing);
+            Gwen.Align.PlaceDownLeft(lbl_wanted_status, lbl_license_status, Configs.BaseFormControlSpacing);
+            text_wanted_status.SmallSize();
+            Gwen.Align.PlaceRightBottom(text_wanted_status, lbl_wanted_status, Configs.BaseFormControlSpacing);
+            Gwen.Align.PlaceDownLeft(lbl_times_stopped, lbl_wanted_status, Configs.BaseFormControlSpacing);
+            text_times_stopped.SmallSize();
+            text_times_stopped.SetPosition(text_wanted_status.X, lbl_times_stopped.Y);
+            ped_image_holder.RegularSizeVertical();
+            ped_image_holder.SetPosition(text_age.Right + Configs.BaseFormControlSpacingDouble, text_age.Y + Configs.BaseFormControlSpacingDouble);
+
+        }
+
+        private void BindData()
+        {
+            if (Entity == null) return;
+            lock (Entity)
+            {
+                switch (Entity.PedPersona.LicenseState)
+                {
+                    case ELicenseState.Expired:
+                        text_license_status.Warn("Expired");
+                        break;
+                    case ELicenseState.None:
+                        text_license_status.Text = "None";
+                        break;
+                    case ELicenseState.Suspended:
+                        text_license_status.Warn("Suspended");
+                        break;
+                    case ELicenseState.Valid:
+                        text_license_status.Text = "Valid";
+                        break;
+                }
+
+                if (Entity.PedPersona.IsAgent)
+                {
+                    lbl_alert.SetText("Individual is a federal agent");
+                }
+                else if (Entity.PedPersona.IsCop)
+                {
+                    lbl_alert.SetText("Individual is a police officer");
+                }
+
+                var age = (DateTime.Today - Entity.PedPersona.BirthDay).Days / 365.25m;
+                text_age.Text = ((int)age).ToString();
+                text_first_name.Text = Entity.PedPersona.Forename;
+                text_last_name.Text = Entity.PedPersona.Surname;
+                text_home_address.Text = Entity.Ped.GetHomeAddress();
+                text_dob.Text = Entity.PedPersona.BirthDay.ToString("MM/dd/yyyy");
+                text_dob.SetToolTipText("MM/dd/yyyy");
+                if (Entity.PedPersona.Wanted) text_wanted_status.Warn("Wanted");
+                else text_wanted_status.SetText("None");
+                text_times_stopped.Text = Entity.PedPersona.TimesStopped.ToString();
+            }
+        }
+
+        private void ActionComboBoxItemSelected(Base sender, ItemSelectedEventArgs arguments)
+        {
+            var action = (QuickActions)arguments.SelectedItem.UserData;
+            if (OnQuickActionSelected != null)
+            {
+                OnQuickActionSelected(this, action);
+                return;
+            }
+            switch (action)
+            {
+                case QuickActions.CREATE_ARREST_REPORT:
+                    {
+                        ComputerReportsController.ShowArrestReportCreate(this.Entity, null);
+                        return;
+                    }
+                case QuickActions.CREATE_TRAFFIC_CITATION:
+                    {
+                        ComputerReportsController.ShowTrafficCitationCreate(null, this.Entity);
+                        return;
+                    }
+            }
+        }
+
+    }
+    sealed class ComputerPedViewContainer : GwenForm
+    {
+        ComputerPlusEntity Entity;
+        ComputerPedView pedView;
+
+        internal ComputerPedViewContainer(ComputerPlusEntity entity) : this()
+        {
+            this.Entity = entity;
+        }
+
+        internal ComputerPedViewContainer() : base(typeof(ComputerPedViewTemplate))
+        {
+
         }
 
         public override void InitializeLayout()
         {
             base.InitializeLayout();
             Function.LogDebug("ComputerPedView InitializeLayout");            
-            if (Persona == null || Ped == null) return;
+            
             this.Position = this.GetLaunchPosition();
             this.Window.DisableResizing();
-            btn_ped_image_holder.SetImage(DetermineImagePath(Ped), true);
-            text_first_name.KeyboardInputEnabled = false;
-            text_last_name.KeyboardInputEnabled = false;
-            text_home_address.KeyboardInputEnabled = false;
-            text_dob.KeyboardInputEnabled = false;
-            text_license_status.KeyboardInputEnabled = false;
-            text_wanted_status.KeyboardInputEnabled = false;
-            text_times_stopped.KeyboardInputEnabled = false;
+            pedView = new ComputerPedView(this, Entity);
             
-            BindData();
-
         }
 
-        private String DetermineImagePath(Ped ped)
+        public void ChangeEntity(ComputerPlusEntity entity)
         {
-            try
-            {
-                if (ped == null || !ped.Exists()) return Function.DefaultPedImagePath;
-                String modelName = ped.Model.Name;
-                int headDrawableIndex, headDrawableTextureIndex;
-
-                ped.GetVariation(0, out headDrawableIndex, out headDrawableTextureIndex);
-
-                String _model = String.Format(@"{0}__0_{1}_{2}", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
-                var path = Function.GetPedImagePath(_model);
-                Function.LogDebug(String.Format("Loading image for model from  {0}", path));
-                return path;
-            }
-            catch
-            {
-                Function.LogDebug("DetermineImagePath Error");
-                return Function.DefaultPedImagePath;
-            }
-        }
-
-        private void BindData()
-        {
-            
-            switch (Persona.LicenseState)
-            {
-                case ELicenseState.Expired:
-                    text_license_status.Warn("Expired");                    
-                    break;
-                case ELicenseState.None:
-                    text_license_status.Text = "None";                    
-                    break;
-                case ELicenseState.Suspended:
-                    text_license_status.Warn("Suspended");                    
-                    break;
-                case ELicenseState.Valid:
-                    text_license_status.Text = "Valid";
-                    break;
-            }
-
-            if(Persona.IsAgent)
-            {
-                lbl_alert.SetText("Individual is a federal agent");
-            }
-            else if (Persona.IsCop)
-            {
-                lbl_alert.SetText("Individual is a police officer");
-            }
-
-            var age = (DateTime.Today - Persona.BirthDay).Days / 365.25m;
-            text_age.Text = ((int)age).ToString();
-            text_first_name.Text = Persona.Forename;
-            text_last_name.Text = Persona.Surname;
-            text_home_address.Text = Ped.GetHomeAddress();
-            text_dob.Text = Persona.BirthDay.ToString("MM/dd/yyyy");
-            text_dob.SetToolTipText("MM/dd/yyyy");
-            if (Persona.Wanted) text_wanted_status.Warn("Wanted");
-            else text_wanted_status.SetText("None");
-            text_times_stopped.Text = Persona.TimesStopped.ToString();
-            
-        }
+            Entity = pedView.Entity = entity;
+        }       
     }
 }

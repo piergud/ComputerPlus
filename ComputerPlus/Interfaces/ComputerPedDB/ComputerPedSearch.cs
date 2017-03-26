@@ -39,9 +39,9 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             PopulateStoppedPedsList();
             list_manual_results.AllowMultiSelect = false;
             list_collected_ids.AllowMultiSelect = false;
-            list_manual_results.RowSelected += onListItemSelected;
-            list_collected_ids.RowSelected += onListItemSelected;
             text_manual_name.SubmitPressed += onSearchSubmit;
+            list_collected_ids.RowSelected += onListItemSelected;
+            list_manual_results.RowSelected += onListItemSelected;
         }
 
         private void onSearchSubmit(Base sender, EventArgs arguments)
@@ -71,46 +71,67 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
         public void PopulateManualSearchPedsList()
         {
-            ComputerPedController controller = ComputerPedController.Instance;
-            list_collected_ids.Clear();
-            var results = controller.GetRecentSearches()
-            .Where(x => x.Validate()).ToList(); 
-            //@TODO choose if we want to remove null items from the list -- may cause user confusion
-            if (results != null && results.Count > 0)
+            try
             {
-                results.ForEach(x => list_manual_results.AddPed(x));
+                ComputerPedController controller = ComputerPedController.Instance;
+                list_collected_ids.Clear();
+                var results = controller.GetRecentSearches()
+                .Where(x => x.Validate()).ToList();
+                //@TODO choose if we want to remove null items from the list -- may cause user confusion
+                if (results != null && results.Count > 0)
+                {
+                    results.ForEach(x => list_manual_results.AddPed(x));
+                }
+            }
+            catch(Exception e)
+            {
+                Function.Log(e.ToString());
             }
         }
 
         public void PopulateStoppedPedsList()
         {
-            ComputerPedController controller = ComputerPedController.Instance;
-            var peds = controller.PedsCurrentlyStoppedByPlayer;
-            list_collected_ids.Clear();
-            foreach(var persona in peds.Select(x => controller.LookupPersona(x)))
+            try
+            { 
+                ComputerPedController controller = ComputerPedController.Instance;
+                var peds = controller.PedsCurrentlyStoppedByPlayer;
+                list_collected_ids.Clear();
+                foreach(var persona in peds.Select(x => controller.LookupPersona(x)))
+                {
+                    list_collected_ids.AddPed(persona);
+                }
+            }
+            catch (Exception e)
             {
-                list_collected_ids.AddPed(persona);
-            }           
+                Function.Log(e.ToString());
+            }
         }
 
         private void ClearSelections()
-        {
+        {            
             list_collected_ids.UnselectAll();
             list_manual_results.UnselectAll();
         }
 
         private void onListItemSelected(Base sender, ItemSelectedEventArgs arguments)
         {
-            if (arguments.SelectedItem.UserData is ComputerPlusEntity)
-            {
-                ComputerPedController.LastSelected = arguments.SelectedItem.UserData as ComputerPlusEntity;                
-                ClearSelections();
-                ComputerPedController.ActivatePedView();
+            try
+            { 
+                if (arguments.SelectedItem.UserData is ComputerPlusEntity)
+                {                
+                    ComputerPedController.LastSelected = arguments.SelectedItem.UserData as ComputerPlusEntity;                
+                    ComputerPedController.ActivatePedView();
+                    ClearSelections();
+                }
+                else
+                {
+                    Function.Log("ComputerPedSearch.onListItemSelected arguments were not valid");
+                }
             }
-            else
+            catch (Exception e)
             {
-                Function.Log("ComputerPedSearch.onListItemSelected arguments were not valid");
-            }         
+                Function.Log(e.ToString());
+            }
         }      
     }
 }
