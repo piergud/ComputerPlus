@@ -11,7 +11,7 @@ namespace ComputerPlus.Extensions.Rage
     {
         internal static void Resume(this GameFiber fiber)
         {
-            if (fiber != null)
+            if (fiber != null && !fiber.IsAlive)
             {
                 if (fiber.IsHibernating) fiber.Wake();
                 else fiber.Start();

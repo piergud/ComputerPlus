@@ -12,94 +12,270 @@ using ComputerPlus.Controllers.Models;
 using System.IO;
 using ComputerPlus.Extensions.Gwen;
 using ComputerPlus.Extensions.Rage;
+using ComputerPlus.Controllers;
+using ComputerPlus.Interfaces.Common;
+using ComputerPlus.Interfaces.Reports.Models;
+using GwenSkin = Gwen.Skin;
+using SystemDrawing = System.Drawing;
+using ComputerPlus.Extensions;
 
 namespace ComputerPlus.Interfaces.ComputerVehDB
 {
-    class ComputerVehicleDetails : GwenForm
+    class ComputerVehicleDetails : Base
     {
-        TextBox text_first_name, text_last_name,
-                text_home_address, text_dob, text_license_status,
-                text_wanted_status, text_times_stopped, text_age,
-                text_vehicle_model, text_vehicle_license,
-                text_vehicle_insurance_status, text_vehicle_registration_status;
-        Label lbl_alert, lbl_vehicle_alert_label, lbl_vehicle_alert, lbl_insurance_status, lbl_registration_status;
-        Button btn_ped_image_holder, btn_vehicle_image_holder;
+        public enum QuickActions { PLACEHOLDER = 0, BLIP_VEHICLE = 1, CREATE_TRAFFIC_CITATION = 2, CREATE_ARREST_REPORT_FOR_DRIVER = 3 };
+
+        LabeledComponent<StateControlledTextbox> labeled_first_name, labeled_last_name,
+            labeled_home_address, labeled_dob, labeled_license_status,
+            labeled_wanted_status, labeled_times_stopped, labeled_age,
+            labeled_vehicle_model, labeled_vehicle_license,
+            labeled_vehicle_insurance_status, labeled_vehicle_registration_status;
+
+        LabeledComponent<Label> labeled_alpr, labeled_owner_alert;
+
+        ImagePanel image_ped_image_holder, image_vehicle_image_holder;
 
         ComboBox cb_action;
         
-        private ComputerPlusEntity CPEntity;
+        private DetailedEntity DetailedEntity;
         private Ped Owner
         {
             get
             {
-                return CPEntity.Ped;
+                return DetailedEntity.Entity.Ped;
             }
         }
         private Vehicle Vehicle
         {
             get
             {
-                return CPEntity.Vehicle;
+                return DetailedEntity.Entity.Vehicle;
             }
         }
         private Persona OwnerPersona
         {
             get
             {
-                return CPEntity.PedPersona;
+                return DetailedEntity.Entity.PedPersona;
             }
         }
         private VehiclePersona VehiclePersona
         {
             get
             {
-                return CPEntity.VehiclePersona;
+                return DetailedEntity.Entity.VehiclePersona;
             }
         }
 
-        internal ComputerVehicleDetails(Vehicle vehicle, Ped owner, Persona ownerPersona, VehiclePersona vehiclePersona) : base(typeof(ComputerVehicleDetailsTemplate))
+        internal static int DefaultHeight = 630;
+        internal static int DefaultWidth = 730;
+
+        FormSection registrationInformation, ownerInformation;
+        Base registrationContent, ownerContent;
+
+        SystemDrawing.Color labelColor = SystemDrawing.Color.Black;
+        Font labelFont;
+
+        bool BindNeeded;
+
+        internal event ComputerVehicleQuickActionSelected OnQuickActionSelected;
+        internal delegate void ComputerVehicleQuickActionSelected(object sender, QuickActions action);
+
+        internal ComputerVehicleDetails(Base parent, DetailedEntity pedReport, ComputerVehicleQuickActionSelected quickActionCallback = null) : base(parent)
         {
-            CPEntity = new ComputerPlusEntity(owner, ownerPersona, vehicle, vehiclePersona);
+            DetailedEntity = pedReport;
+            InitializeLayout();
+            BindNeeded = true;
+            if (quickActionCallback != null) OnQuickActionSelected += quickActionCallback;
+            else OnQuickActionSelected += OnQuickAction;
         }
-        internal ComputerVehicleDetails(ComputerPlusEntity entity) : base(typeof(ComputerVehicleDetailsTemplate))
+
+        public void InitializeLayout()
         {
-            CPEntity = entity;
-        }
-        public override void InitializeLayout()
-        {
-            base.InitializeLayout();
-            Function.LogDebug("ComputerPedView InitializeLayout");
-            if (Owner == null || !Owner.Exists() || Vehicle == null || !Vehicle.Exists()) return;
-            this.Window.DisableResizing();
-            this.Position = this.GetLaunchPosition();
-            btn_ped_image_holder.SetImage(DetermineImagePath(Owner), true);
-            btn_vehicle_image_holder.SetImage(DetermineImagePath(Vehicle), true);
-            text_first_name.KeyboardInputEnabled = false;
-            text_last_name.KeyboardInputEnabled = false;
-            text_home_address.KeyboardInputEnabled = false;
-            text_dob.KeyboardInputEnabled = false;
-            text_license_status.KeyboardInputEnabled = false;
-            text_wanted_status.KeyboardInputEnabled = false;
-            text_times_stopped.KeyboardInputEnabled = false;
-            text_vehicle_model.KeyboardInputEnabled = false;
-            text_vehicle_license.KeyboardInputEnabled = false;
-            text_vehicle_insurance_status.KeyboardInputEnabled = false;
-            text_vehicle_registration_status.KeyboardInputEnabled = false;
-            lbl_vehicle_alert_label.TextColor = System.Drawing.Color.Red;
-            lbl_vehicle_alert_label.TextColor = System.Drawing.Color.Red;
+            labelFont = this.Skin.DefaultFont.Copy();
+            labelFont.Size = 14;
+            labelFont.Smooth = true;
+
+            cb_action = new ComboBox(this);
+
+            registrationInformation = new FormSection(this, "Registration Information");
+            registrationContent = new Base(this);
+
+            labeled_vehicle_model = LabeledComponent.StatefulTextbox(registrationContent, "Model", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            labeled_vehicle_license = LabeledComponent.StatefulTextbox(registrationContent, "License Plate", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            labeled_vehicle_insurance_status = LabeledComponent.StatefulTextbox(registrationContent, "Insurance Status", RelationalPosition.LEFT, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            labeled_vehicle_registration_status = LabeledComponent.StatefulTextbox(registrationContent, "Registration Status", RelationalPosition.LEFT, Configs.BaseFormControlSpacingHalf, labelColor,labelFont);
+            image_vehicle_image_holder = new ImagePanel(registrationContent);
+            image_vehicle_image_holder.SetSize(400, 160);
+
+            labeled_alpr = new LabeledComponent<Label>(registrationContent, "ALPR", new Label(registrationContent), RelationalPosition.LEFT, RelationalSize.MEDIUM, Configs.BaseFormControlSpacingDouble, labelFont, System.Drawing.Color.Red);
+            labeled_owner_alert = new LabeledComponent<Label>(registrationContent, "Alert", new Label(registrationContent),  RelationalPosition.LEFT, RelationalSize.MEDIUM, Configs.BaseFormControlSpacingDouble, labelFont, System.Drawing.Color.Red);
+
+
+            ownerInformation = new FormSection(this, "Owner Information");
+            ownerContent = new Base(this);
+            labeled_first_name = LabeledComponent.StatefulTextbox(ownerContent, "First Name", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            labeled_last_name = LabeledComponent.StatefulTextbox(ownerContent, "Last Name", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            labeled_age = LabeledComponent.StatefulTextbox(ownerContent, "Age", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+
+            labeled_home_address = LabeledComponent.StatefulTextbox(ownerContent, "Home Address", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            labeled_dob = LabeledComponent.StatefulTextbox(ownerContent, "DOB", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+
+            labeled_license_status = LabeledComponent.StatefulTextbox(ownerContent, "License Status", RelationalPosition.LEFT, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            labeled_wanted_status = LabeledComponent.StatefulTextbox(ownerContent, "Wanted Status", RelationalPosition.LEFT, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            labeled_times_stopped = LabeledComponent.StatefulTextbox(ownerContent, "Times Stopped", RelationalPosition.LEFT, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+
+            image_ped_image_holder = new ImagePanel(ownerContent);
+            image_ped_image_holder.SetSize(155, 217);
+
+            labeled_first_name.Component.Disable();
+            labeled_last_name.Component.Disable();
+            labeled_age.Component.Disable();
+            labeled_home_address.Component.Disable();
+            labeled_dob.Component.Disable();
+            labeled_license_status.Component.Disable();
+            labeled_wanted_status.Component.Disable();
+            labeled_times_stopped.Component.Disable();
+            labeled_vehicle_model.Component.Disable();
+            labeled_vehicle_license.Component.Disable();
+            labeled_vehicle_insurance_status.Component.Disable();
+            labeled_vehicle_registration_status.Component.Disable();
+            if (Owner)
+            {
+                image_ped_image_holder.ImageName = DetermineImagePath(Owner);
+                image_ped_image_holder.ShouldCacheToTexture = true;
+            }
+            if (Vehicle)
+            {
+                image_vehicle_image_holder.ImageName = DetermineImagePath(Vehicle);
+                image_vehicle_image_holder.ShouldCacheToTexture = true;
+            }
 
             cb_action.ItemSelected += ActionSelected;
+
+        }
+
+        protected override void Layout(GwenSkin.Base skin)
+        {
+            base.Layout(skin);
+            
             BindData();
+            cb_action.SetSize(200, cb_action.Height);
+            cb_action.PlaceLeftOf();
+            cb_action.LogPositionAndSize();
+
+            registrationInformation
+             .AddContentChild(registrationContent)
+             .PlaceBelowOf(cb_action)
+             .AlignLeftWith()
+             .SizeWidthWith();
+
+            labeled_vehicle_license.Component.SmallSize();
+            labeled_vehicle_model.Component.SmallSize();
+            labeled_vehicle_insurance_status.Component.SmallSize();
+            labeled_vehicle_insurance_status.Component.SmallSize();
+            labeled_vehicle_registration_status.Component.SmallSize();
+
+            labeled_vehicle_license
+                .PlaceRightOf(labeled_vehicle_model, Configs.BaseFormControlSpacingTriple)
+                .AlignTopWith(labeled_vehicle_model);
+            
+            labeled_vehicle_insurance_status
+                .PlaceBelowOf(labeled_vehicle_model)
+                .AlignLeftWith(labeled_vehicle_model);
+
+            labeled_vehicle_registration_status
+                .PlaceBelowOf(labeled_vehicle_insurance_status)
+                .AlignLeftWith(labeled_vehicle_insurance_status);
+
+            labeled_vehicle_insurance_status.Component.AlignLeftWith(labeled_vehicle_license);
+            labeled_vehicle_registration_status.Component.AlignLeftWith(labeled_vehicle_insurance_status.Component);
+
+            //labeled_vehicle_registration_status.Component.AlignLeftWith(labeled_vehicle_insurance_status.Component);
+
+            image_vehicle_image_holder
+                .PlaceLeftOf();
+
+            labeled_alpr
+                .PlaceBelowOf(image_vehicle_image_holder)
+                .AlignLeftWith(image_vehicle_image_holder)
+                .SizeWidthWith(image_vehicle_image_holder);
+
+            labeled_owner_alert
+                .Align(labeled_vehicle_registration_status, labeled_alpr)
+                .SizeWidthWith(labeled_vehicle_registration_status);
+
+            registrationContent.SizeToChildrenBlock();
+            registrationInformation.SizeToChildrenBlock();
+
+
+            ownerInformation
+             .AddContentChild(ownerContent)
+             .PlaceBelowOf(registrationInformation)
+             .SizeWidthWith();
+
+            labeled_first_name.Component.MediumSize();
+            labeled_last_name.Component.MediumSize();
+            labeled_times_stopped.Component.SmallSize();
+            labeled_wanted_status.Component.SmallSize();
+            labeled_license_status.Component.SmallSize();
+            labeled_age.Component.SmallSize();
+            labeled_dob.Component.SmallSize();
+
+            labeled_last_name
+                .PlaceRightOf(labeled_first_name, Configs.BaseFormControlSpacingDouble)
+                .AlignTopWith(labeled_first_name);
+
+            labeled_age
+                .PlaceRightOf(labeled_last_name, Configs.BaseFormControlSpacingDouble)
+                .AlignTopWith(labeled_last_name);            
+
+            labeled_home_address
+                .PlaceBelowOf(labeled_first_name, Configs.BaseFormControlSpacingDouble)
+                .AlignLeftWith(labeled_first_name);
+
+            labeled_dob
+                .Align(labeled_age, labeled_home_address);            
+
+            labeled_license_status
+                .PlaceBelowOf(labeled_home_address, Configs.BaseFormControlSpacingDouble)
+                .AlignLeftWith(labeled_home_address);
+
+            labeled_times_stopped
+                .AlignRightWith(labeled_dob)
+                .AlignTopWith(labeled_license_status);
+            
+            labeled_wanted_status
+                .PlaceBelowOf(labeled_license_status)
+                .AlignLeftWith(labeled_license_status);
+
+            image_ped_image_holder
+               .PlaceLeftOf();
+
+            ownerInformation.SizeToChildrenBlock();
+            ownerContent.SizeToChildrenBlock();
         }
 
         private void ActionSelected(Base sender, ItemSelectedEventArgs arguments)
         {
-            if (arguments.SelectedItem == null || arguments.SelectedItem.Name.Equals("Placeholder")) return;
-            switch(arguments.SelectedItem.Name)
+            if (arguments.SelectedItem == null || (QuickActions)arguments.SelectedItem.UserData == QuickActions.PLACEHOLDER || arguments.SelectedItem.Name.Equals("Placeholder")) return;
+            OnQuickActionSelected(this, (QuickActions)arguments.SelectedItem.UserData);
+            cb_action.SelectByUserData(QuickActions.PLACEHOLDER);
+        }
+
+        private void OnQuickAction(object sender, QuickActions action)
+        {
+            switch (action)
             {
-                case "Blip":
+                case QuickActions.BLIP_VEHICLE:
                     Function.LogDebug("ActionSelected Blip Vehicle");
                     ComputerVehicleController.BlipVehicle(Vehicle, System.Drawing.Color.Yellow);
+                    break;
+                case QuickActions.CREATE_TRAFFIC_CITATION:
+                    ComputerReportsController.ShowTrafficCitationCreate(null, DetailedEntity.Entity);
+                    break;
+                case QuickActions.CREATE_ARREST_REPORT_FOR_DRIVER:
+                    ComputerReportsController.ShowArrestReportCreate(DetailedEntity.Entity, null);
                     break;
             }
         }
@@ -145,74 +321,76 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         private void BindData()
         {
-
+            if (!BindNeeded) return;
+            BindNeeded = false;
             switch (OwnerPersona.LicenseState)
             {
                 case ELicenseState.Expired:
-                    text_license_status.Warn("Expired");
+                    labeled_license_status.Component.Warn("Expired");
                     break;
                 case ELicenseState.None:
-                    text_license_status.Text = "None";
+                    labeled_license_status.Component.Text = "None";
                     break;
                 case ELicenseState.Suspended:
-                    text_license_status.Warn("Suspended");
+                    labeled_license_status.Component.Warn("Suspended");
                     break;
                 case ELicenseState.Valid:
-                    text_license_status.Text = "Valid";
+                    labeled_license_status.Component.Text = "Valid";
                     break;
             }
 
             if (OwnerPersona.IsAgent)
             {
-                text_license_status.Warn("Individual is a federal agent");
-                lbl_alert.Show();
+                labeled_owner_alert.Component.Warn("Individual is a federal agent");
+                labeled_owner_alert.Show();
             }
             else if (OwnerPersona.IsCop)
             {
-                text_license_status.Warn("Individual is a police officer");                
-                lbl_alert.Show();
+                labeled_owner_alert.Component.Warn("Individual is a police officer");
+                labeled_owner_alert.Show();
+            }
+            else
+            {
+                labeled_owner_alert.Hide();
             }
 
             if (!String.IsNullOrWhiteSpace(VehiclePersona.Alert))
             {                
-                lbl_vehicle_alert.Text = VehiclePersona.Alert;
-                lbl_vehicle_alert.Show();
-                lbl_vehicle_alert_label.Show();
+                labeled_alpr.Component.SetText(VehiclePersona.Alert);
+                labeled_alpr.Show();
             } else
             {
-                lbl_vehicle_alert_label.Hide();
-                lbl_vehicle_alert.Hide();
+                labeled_alpr.Hide();
             }
 
-            cb_action.AddItem("Select One", "Placeholder");
-            cb_action.AddItem("Blip (30 sec)", "Blip");
-            
-            var age = (DateTime.Today - OwnerPersona.BirthDay).Days / 365.25m;
-            text_age.Text = ((int)age).ToString();
-            text_first_name.Text = OwnerPersona.Forename;
-            text_last_name.Text = OwnerPersona.Surname;
-            text_home_address.Text = Owner.GetHomeAddress();
-            text_dob.Text = OwnerPersona.BirthDay.ToString("MM/dd/yyyy");
-            text_dob.SetToolTipText("MM/dd/yyyy");
-            if (OwnerPersona.Wanted) text_wanted_status.Warn("Wanted");
-            else text_wanted_status.SetText("None");
-            text_times_stopped.Text = OwnerPersona.TimesStopped.ToString();
+            cb_action.AddItem("Select One", "Placeholder", QuickActions.PLACEHOLDER);
+            cb_action.AddItem("Blip (30 sec)", "Blip", QuickActions.BLIP_VEHICLE);
+            cb_action.AddItem("Create Traffic Citation", "TrafficCitation", QuickActions.CREATE_TRAFFIC_CITATION);
+            cb_action.AddItem("Create Arrest Report", "ArrestReport", QuickActions.CREATE_ARREST_REPORT_FOR_DRIVER);
 
-            text_vehicle_model.Text = Vehicle.Model.Name;
-            text_vehicle_license.Text = Vehicle.LicensePlate;
+            var age = (DateTime.Today - OwnerPersona.BirthDay).Days / 365.25m;
+            labeled_age.Component.Text = ((int)age).ToString();
+            labeled_first_name.Component.Text = OwnerPersona.Forename;
+            labeled_last_name.Component.Text = OwnerPersona.Surname;
+            labeled_home_address.Component.Text = Owner.GetHomeAddress();
+            labeled_dob.Component.Text = OwnerPersona.BirthDay.ToLocalTimeString(TextBoxExtensions.DateOutputPart.DATE);
+            if (OwnerPersona.Wanted) labeled_wanted_status.Component.Warn("Wanted");
+            else labeled_wanted_status.Component.SetText("None");
+            labeled_times_stopped.Component.Text = OwnerPersona.TimesStopped.ToString();
+
+            labeled_vehicle_model.Component.Text = Vehicle.Model.Name;
+            labeled_vehicle_license.Component.Text = Vehicle.LicensePlate;
             if (Function.IsTrafficPolicerRunning())
             {
-                if (TrafficPolicerFunction.GetVehicleInsuranceStatus(Vehicle) == EVehicleStatus.Valid) text_vehicle_insurance_status.SetText("Valid");
-                else text_vehicle_insurance_status.Warn("Expired");
+                if (TrafficPolicerFunction.GetVehicleInsuranceStatus(Vehicle) == EVehicleStatus.Valid) labeled_vehicle_insurance_status.Component.SetText("Valid");
+                else labeled_vehicle_insurance_status.Component.Warn("Expired");
 
-                if (TrafficPolicerFunction.GetVehicleRegistrationStatus(Vehicle) == EVehicleStatus.Valid) text_vehicle_registration_status.SetText("Valid");
-                else text_vehicle_registration_status.Warn("Expired");
+                if (TrafficPolicerFunction.GetVehicleRegistrationStatus(Vehicle) == EVehicleStatus.Valid) labeled_vehicle_registration_status.Component.SetText("Valid");
+                else labeled_vehicle_registration_status.Component.Warn("Expired");
             } else
             {
-                text_vehicle_insurance_status.Hide();
-                text_vehicle_registration_status.Hide();
-                lbl_insurance_status.Hide();
-                lbl_registration_status.Hide();
+                labeled_vehicle_insurance_status.Hide();
+                labeled_vehicle_registration_status.Hide();
             }
                 
         }

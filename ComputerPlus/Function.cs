@@ -11,6 +11,7 @@ using LSPD_First_Response.Mod.API;
 using Rage.Forms;
 using System.Globalization;
 using System.IO;
+using static ComputerPlus.Extensions.Gwen.TextBoxExtensions;
 
 namespace ComputerPlus
 {
@@ -24,7 +25,28 @@ namespace ComputerPlus
     internal static class Function
     {
         private static Texture _bg;
-        private static bool _bg_enabled = false;
+        private static bool mDrawBackground = false;
+        private static bool DrawBackground {
+            get
+            {
+                return mDrawBackground;
+            }
+            set
+            {
+                if (value)
+                    Game.RawFrameRender += OnRawFrameRender;
+                else
+                    Game.RawFrameRender -= OnRawFrameRender;
+                mDrawBackground = value;
+            }
+        }
+        private static String CurrentTime
+        {
+            get
+            {
+                return DateTime.Now.ToString("HH:mm:ss");
+            }
+        }
         private static RectangleF taskbar = new RectangleF();
         private static Color taskbar_col = Color.FromArgb(160, 0, 0, 0);
         private static int width, height;
@@ -35,7 +57,7 @@ namespace ComputerPlus
         /// </summary>
         internal static bool IsBackgroundEnabled()
         {
-            return _bg_enabled;
+            return DrawBackground;
         }
 
         internal static async void CheckForUpdates()
@@ -219,14 +241,11 @@ namespace ComputerPlus
             {
                 Function.Log(@"Failed to load LSPDFR Computer+ background. Please ensure all backgrounds are present in Plugins\LSPDFR\ComputerPlus\backgrounds\.");
                 Function.Log(@"Ensure your ComputerPlus.ini contains entries for [VEHICLE BACKGROUNDS] in the format of vehicleModel=backgroundImage.jpg");
-                //Game.DisplayNotification("3dtextures", "mpgroundlogo_cops", "LSPDFR Computer+", "~r~Error", @"Failed to load background in Plugins\LSPDFR\ComputerPlus\backgrounds\.");
                 _bg = LoadBackground(Globals.DefaultBackgroundImage);
             }
             else 
             {
-                Game.RawFrameRender -= OnRawFrameRender;
-                Game.RawFrameRender += OnRawFrameRender;
-                _bg_enabled = true;
+                DrawBackground = true;
             }
         }
 
@@ -235,24 +254,35 @@ namespace ComputerPlus
         /// </summary>
         internal static void DisableBackground()
         {
-            Game.RawFrameRender -= OnRawFrameRender;
-            _bg_enabled = false;
+            DrawBackground = false;
         }
         private static void OnRawFrameRender(object sender, GraphicsEventArgs e) 
         {
-            if (!_bg_enabled) return;
-            string time = DateTime.Now.ToString("HH:mm:ss");
-            float length = Rage.Graphics.MeasureText(time, "Arial", 18).Width;
-            taskbar.Size = new SizeF(Game.Resolution.Width, Game.Resolution.Height / 25);
-            taskbar.Location = new PointF(1, 1 + Game.Resolution.Height - (Game.Resolution.Height / 25));
-            e.Graphics.DrawTexture(_bg, 0f, 0f, Game.Resolution.Width, Game.Resolution.Height);
+            
+            if (!DrawBackground) return;
+            try {
+                string time = CurrentTime;
+                Size gameResolution = Game.Resolution;
+                e.Graphics.DrawTexture(_bg, 0f, 0f, gameResolution.Width, gameResolution.Height);
+                float length = Rage.Graphics.MeasureText(time, "Arial", 18).Width;
+                float taskbarHeight = gameResolution.Height / 25;
+                float textWidth = taskbar.Width / 150;
+                float textHeight = taskbar.Height / 4;
+                taskbar.Size = new SizeF(gameResolution.Width, taskbarHeight);
+                taskbar.Location = new PointF(1, 1 + gameResolution.Height - taskbarHeight);
 
-            e.Graphics.DrawText(update_text, "Arial", 18,
-                new PointF(taskbar.X + (taskbar.Width / 150), taskbar.Y + (taskbar.Height / 4)), 
-                Color.White);
-            e.Graphics.DrawText(time, "Arial", 18,
-                new PointF(taskbar.Width - length - taskbar.Width / 150, taskbar.Y + (taskbar.Height / 4)),
-                Color.White);
+
+                e.Graphics.DrawText(update_text, "Arial", 18,
+                    new PointF(taskbar.X + textWidth, taskbar.Y + textHeight),
+                    Color.White);
+                e.Graphics.DrawText(time, "Arial", 18,
+                    new PointF(taskbar.Width - length - textWidth, taskbar.Y + textHeight),
+                    Color.White);
+            } catch(Exception err)
+            {
+                Function.Log("Exception in OnRawFrameRender");
+                throw err;
+            }
         }
 
         /// <summary>
@@ -551,10 +581,131 @@ namespace ComputerPlus
             if (!String.IsNullOrWhiteSpace(message)) Game.LogTrivial(String.Format("C+: {0}", message));
         }
 
-        
+        internal static void LogCatch(String message)
+        {
+            if (!String.IsNullOrWhiteSpace(message)) Game.LogTrivial(String.Format("C+ Minor Exception: {0}", message));
+        }
+
+
         internal static void LogDebug(String message)
         {
-            if (!String.IsNullOrWhiteSpace(message)) Game.LogVerboseDebug(String.Format("C+ DEV: {0}", message));
+            if (!String.IsNullOrWhiteSpace(message)) Game.LogTrivial(String.Format("C+ DEV: {0}", message));
+        }
+
+        internal static void ShowError(String message, int duration = 5000)
+        {
+            if (!String.IsNullOrWhiteSpace(message)) Game.DisplaySubtitle(String.Format("~r~C+: ~w~{0}", message), duration);
+        }
+
+        internal static void ShowWarning(String message, int duration = 5000)
+        {
+            if (!String.IsNullOrWhiteSpace(message)) Game.DisplaySubtitle(String.Format("~y~C+: ~w~{0}", message), duration);
+        }
+
+        internal static String GetAssetPath(String fileName, bool fullPath = false)
+        {
+            if (fullPath)
+                return String.Format(@"{0}\{1}{2}", Directory.GetCurrentDirectory(), Globals.DefaultAssetPath, fileName);
+            return Globals.DefaultAssetPath + fileName;
+        }
+
+        internal static String GetIconPath(String iconName)
+        {
+            return String.Format(@"{0}icons\{1}", Globals.DefaultAssetPath, iconName);
+        }
+
+        internal static int GetIconSize()
+        {
+            return 26;
+        }
+
+        internal static String GetPedCurrentStreetName(Ped ped = null)
+        {
+            ped = ped != null ? ped : Game.LocalPlayer.Character;            
+            return World.GetStreetName(ped.Position);
+        }
+
+        internal static String GetPedCurrentZoneName(Ped ped = null)
+        {
+            ped = ped != null ? ped : Game.LocalPlayer.Character;
+            return Functions.GetZoneAtPosition(ped.Position).RealAreaName;
+        }
+
+        internal static Vector3 GetPedCurrentPos(Ped ped = null)
+        {
+            ped = ped != null ? ped : Game.LocalPlayer.Character;
+            return ped.Position;
+        }
+
+        internal static String SimpleNotepadCut()
+        {
+            var s = SimpleNotepadCopy();
+            Globals.SimpleNotepadText = String.Empty;
+            return s;
+        }
+
+        internal static String SimpleNotepadCopy()
+        {
+            var s = Globals.SimpleNotepadText;
+            return s == null ? String.Empty : s;
+        }
+
+        internal static String DetermineImagePath(Ped ped)
+        {
+            try
+            {
+                if (ped == null || !ped.Exists()) return Function.DefaultPedImagePath;
+                String modelName = ped.Model.Name;
+                int headDrawableIndex, headDrawableTextureIndex;
+
+                ped.GetVariation(0, out headDrawableIndex, out headDrawableTextureIndex);
+
+                String _model = String.Format(@"{0}__0_{1}_{2}", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
+                var path = Function.GetPedImagePath(_model);
+                Function.LogDebug(String.Format("Loading image for model from  {0}", path));
+                return path;
+            }
+            catch
+            {
+                Function.LogDebug("DetermineImagePath Error");
+                return Function.DefaultPedImagePath;
+            }
+
+        }
+
+        internal static String DateFormatForPart(DateOutputPart part)
+        {
+            switch (part)
+            {
+                case DateOutputPart.DATE: return "d";
+                case DateOutputPart.TIME: return "t";
+                case DateOutputPart.ISO: return "o";
+                default: return "g";
+            }
+        }
+
+
+        internal static String ToLocalDateString(DateTime date, DateOutputPart output)
+        {
+            var local = date.ToLocalTime();
+            switch (output)
+            {
+                case DateOutputPart.DATE: return local.ToShortDateString();
+                case DateOutputPart.TIME: return local.ToShortTimeString();
+                case DateOutputPart.ISO: return local.ToString("g");
+                default: return local.ToString("f");
+            }
+        }
+
+    
+        internal static String ToLocalDateString(String date, DateOutputPart input = DateOutputPart.ALL, DateOutputPart output = DateOutputPart.ALL)
+        {
+            DateTime parsed;
+
+            if (DateTime.TryParseExact(date, DateFormatForPart(input), CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out parsed))
+                return ToLocalDateString(parsed, output);
+            else
+                return date;
         }
 
     }

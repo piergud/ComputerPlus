@@ -1,0 +1,122 @@
+<ChargeCategories>
+	<Category name="Property">
+		<Charge name="Arson" felony="true"/>
+		<Charge name="Burglary" felony="true"/>
+		<Charge name="Destruction">
+			<Charge name="Destruction of Public Property"/>
+			<Charge name="Destruction of Private Property"/>
+		</Charge>
+		<Charge name="Looting"/>
+		<Charge name="Shoplifting"/>
+		<Charge name="Theft">
+			<Charge name="Pety Theft"/>
+			<Charge name="Grand Theft" felony="true"/>			
+		</Charge>
+		<Charge name="Trespassing"/>
+		<Charge name="Vandalism"/>
+	</Category>
+	<Category name="Possession">
+		<Charge name="Drugs">
+			<Charge name="Marijuana" />
+			<Charge name="Crack Cocaine" felony="true" />
+			<Charge name="Cocaine" felony="true"/>
+			<Charge name="Prescription Pills" felony="true"/>
+			<Charge name="Controlled Substance" felony="true"/>
+			<Charge name="Drug Paraphernalia" felony="true"/>
+		</Charge>
+		<Charge name="Possession of Burglary Tools" felony="true"/>		
+		<Charge name="Possession of Destructive Devices" felony="true"/>
+		<Charge name="Possession of Fake Drivers License or ID" felony="true"/>
+		<Charge name="Possession of Stolen Drivers License or ID" felony="true"/>
+		<Charge name="Illegal Possession of a Firearm"/>
+		<Charge name="Illegal Possession of a Firearm by Felon" felony="true"/>
+		<Charge name="Possession of Stolen Property" felony="true"/>	
+		<Charge name="Possession of a Stolen Vehicle" felony="true"/>	
+	</Category>
+	<Category name="Non Violent Crimes">		
+		<Charge name="Accessory After the Fact"/>
+		<Charge name="Destroying / Concealing Evidence"/>
+		<Charge name="Disturbing the Peace"/>
+		<Charge name="Drunk in Public"/>
+		<Charge name="Failure to Disperse"/>
+		<Charge name="Hate Crime"/>
+		<Charge name="Impersonating a Peace Officer" felony="true"/>
+		<Charge name="Indecent Exposure" felony="true"/>
+		<Charge name="Obstruction of Justice"/>
+		<Charge name="Participating in Gang"/>
+		<Charge name="Participating in Gang During Felony" felony="true"/>
+		<Charge name="Planting / Tampering Evidence" felony="true"/>
+		<Charge name="Present During Riot"/>
+		<Charge name="Prostitution">
+			<Charge name="Engaging Prostitution"/>
+			<Charge name="Solicitation Prostitution"/>
+		</Charge>
+		<Charge name="Resisting Arrest" />
+		<Charge name="Unlawful Assembly"/>
+		<Charge name="Warrant For Arrest"/>
+	</Category>
+	<Category name="Violent Crimes">		
+		<Charge name="Assault">
+			<Charge name="Assault w/ Deadly Weapon" felony="true"/>
+			<Charge name="Assault w/ Firearm" felony="true"/>
+			<Charge name="Assault On Public Official" felony="true"/>
+			<Charge name="Simple Assault"/>
+		</Charge>
+		<Charge name="Battery">
+			<Charge name="Simple Battery" />
+			<Charge name="Aggravated Battery" felony="true"/>
+			<Charge name="Serious Bodily Injury" felony="true"/>
+			<Charge name="Domestic Battery"/>
+			<Charge name="Battery on Peace / Police Officer" felony="true"/>
+		</Charge>
+		<Charge name="Brandishing Firearm or Weapon" felony="true"/>
+		<Charge name="Discharge of a Firearm" felony="true"/>
+		<Charge name="Grand Theft Auto" felony="true"/>
+		<Charge name="Grand Theft Firearm" felony="true"/>
+		<Charge name="Homicide">
+			<Charge name="Manslaughter">
+				<Charge name="Voluntarily Manslaughter" felony="true"/>
+				<Charge name="Involuntarily Manslaughter" felony="true"/>
+				<Charge name="Vehicular Manslaughter" felony="true"/>
+				<Charge name="Manslaughter While Under the Influence" felony="true"/>
+				<Charge name="Gross Manslaughter While Under the Influence" felony="true"/>				
+			</Charge>
+			<Charge name="Murder">
+				<Charge name="Capital Murder" felony="true"/>
+				<Charge name="Second Degree Murder" felony="true"/>
+				<Charge name="Felony Murder" felony="true"/>
+				<Charge name="Murder of Police Officer" felony="true"/>
+				<Charge name="Attempted Murder of Police Officer" felony="true"/>
+			</Charge>			
+		</Charge>		
+		<Charge name="Kidnapping">
+			<Charge name="Aggravated Kidnapping" felony="true"/>
+			<Charge name="Kidnapping" felony="true"/>
+		</Charge>
+		<Charge name="Mayhem (w/ violence)" felony="true"/>
+		<Charge name="Rape">
+			<Charge name="Attempted Rape" felony="true"/>
+			<Charge name="Committed Rape" felony="true"/>
+		</Charge>
+		<Charge name="Resisting Arrest (w/ violence)" felony="true"/>
+		<Charge name="Robbery">
+			<Charge name="Armed" felony="true"/>
+			<Charge name="Strong Arm" felony="true"/>
+			<Charge name="Car Jacking" felony="true"/>
+		</Charge>
+		<Charge name="Rioting">
+			<Charge name="Inciting Riot" felony="true"/>
+			<Charge name="Failure to Leave" />
+			<Charge name="Participating in Riot" />
+		</Charge>
+	</Category>
+	<Category name="Traffic">
+		<Charge name="Driving Wrong Way" felony="true"/>
+		<Charge name="Reckless Driving"/>
+		<Charge name="Leaving the Scene of an Accident" felony="true"/>
+		<Charge name="Evading Arrest" felony="true"/>
+		<Charge name="Driving While License Suspended" />
+		<Charge name="Driving While License Revoked" felony="true"/>		
+		<Charge name="Driving Under the Influence" felony="true"/>		
+	</Category>
+</ChargeCategories>

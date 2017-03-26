@@ -8,19 +8,21 @@ using System;
 using ComputerPlus.Interfaces.ComputerPedDB;
 using ComputerPlus.Interfaces.ComputerVehDB;
 using ComputerPlus.Extensions.Gwen;
+using ComputerPlus.Controllers;
+using ComputerPlus.Extensions.Gwen;
+using ComputerPlus.Interfaces.Common;
 
 namespace ComputerPlus
 {
     internal class ComputerMain : GwenForm
     {
-        private Button btn_logout, btn_ped_db, btn_veh_db, btn_request, btn_activecalls, btn_notepad;
+        private Button btn_logout, btn_ped_db, btn_veh_db, btn_request, btn_activecalls, btn_notepad, btn_arrest_report, btn_browse_report;
         internal ListBox list_recent;
         private Label label_external_ui;
         private ComboBox list_external_ui;
         private CheckBox cb_toggle_pause, cb_toggle_background;
         MenuItem external_ui_default;
         internal static GameFiber external_ui_fiber = null;
-        //private Button btn_ReportMain; // Fiskey111 Edit
 
         private bool ShouldShowExtraUIControls
         {
@@ -53,6 +55,7 @@ namespace ComputerPlus
         public override void InitializeLayout()
         {
             base.InitializeLayout();
+            this.Window.Skin.SetDefaultFont(Configs.FontName, Configs.FontSize);
             this.cb_toggle_background.IsChecked = Globals.ShowBackgroundWhenOpen;
             this.cb_toggle_pause.IsChecked = Globals.PauseGameWhenOpen;
             this.btn_logout.Clicked += this.LogoutButtonClickedHandler;
@@ -60,9 +63,18 @@ namespace ComputerPlus
             this.btn_veh_db.Clicked += this.VehDBButtonClickedHandler;
             this.btn_request.Clicked += this.RequestBackupButtonClickedHandler;
             this.btn_notepad.Clicked += OpenNotepadHandler;
+            //this.btn_arrest_report.Clicked += this.ReportsClickedHandler;
+            //this.btn_browse_report.Clicked += this.ReportsClickedHandler;
+
+            this.btn_browse_report.Disable();
+            this.btn_browse_report.Hide();
+            this.btn_arrest_report.Disable();
+            this.btn_arrest_report.Hide();
+
             this.cb_toggle_background.CheckChanged += checkbox_change;
             this.cb_toggle_pause.CheckChanged += checkbox_change;
-            this.Window.KeyboardInputEnabled = false;
+            this.Window.KeyboardInputEnabled = true;
+            
             GameFiber.StartNew(() =>
             {
                 while(true)
@@ -72,7 +84,6 @@ namespace ComputerPlus
                     GameFiber.Yield();
                 }
             });
-            //this.btn_ReportMain.Clicked += this.ReportMainClickedHandler;  // Fiskey111 Edit
             this.btn_activecalls.Clicked += this.ActiveCallsClickedHandler;
             this.Window.DisableResizing();
             foreach (string r in EntryPoint.recent_text)
@@ -93,7 +104,7 @@ namespace ComputerPlus
 
         private void OpenNotepadHandler(Base sender, ClickedEventArgs arguments)
         {
-            EntryPoint.ShowNotepad(false);
+            EntryPoint.ShowNotepad(false);            
         }
 
         private void checkbox_change(Base sender, EventArgs arguments)
@@ -107,6 +118,19 @@ namespace ComputerPlus
         private void LogoutButtonClickedHandler(Base sender, ClickedEventArgs e)
         {
             Globals.Navigation.Clear();
+        }
+
+        private void ReportsClickedHandler(Base sender, ClickedEventArgs e)
+        {
+            //if (sender == btn_browse_report)
+            //    ComputerReportsController.ShowTrafficCitationList();
+            //else if(sender == btn_arrest_report)
+            //ComputerReportsController.ShowTrafficCitationCreate(null);
+
+            if (sender == btn_browse_report)
+                ComputerReportsController.ShowArrestReportList();
+            else if (sender == btn_arrest_report)
+                ComputerReportsController.ShowArrestReportCreate(null, null);
         }
 
 

@@ -81,7 +81,12 @@ namespace ComputerPlus.Controllers
 
         internal bool HasOpenForms
         {
-            get { return Stack.Any(x => x.form != null && x.form.IsOpen()); }
+            get {
+                lock (Stack)
+                {
+                    return Stack.Any(x => x.form != null && x.form.IsOpen());
+                }
+            }
         }
 
         internal NavigationEntry Push(GwenForm form, bool notify = true)

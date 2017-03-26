@@ -8,10 +8,12 @@ using LSPD_First_Response.Mod.API;
 using Rage.Forms;
 using ComputerPlus.Controllers.Models;
 using ComputerPlus.Extensions.Gwen;
+using ComputerPlus.Controllers;
+using ComputerPlus.Interfaces.Reports.Models;
 
 namespace ComputerPlus.Interfaces.ComputerPedDB
 {
-   
+
 
     class ComputerPedController
     {
@@ -92,9 +94,20 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             Globals.Navigation.Push(new ComputerPedSearch());
         }
 
-        internal static void ShowPedView()
+        internal async static void ShowPedView()
         {
-            Globals.Navigation.Push(new ComputerPedView(LastSelected));           
+            if (!LastSelected || !LastSelected.Validate()) return;
+            try
+            {
+                var reports = await ComputerReportsController.GetArrestReportsForPedAsync(LastSelected);
+                var trafficCitations = await ComputerReportsController.GetTrafficCitationsForPedAsync(LastSelected);
+                if (trafficCitations != null) Function.Log("Found citations for ped");
+                else Function.Log("Citations for ped are null");
+                Globals.Navigation.Push(new ComputerPedViewExtended(new DetailedEntity(LastSelected, reports, trafficCitations)));
+            } catch (Exception e)
+            {
+                Function.Log(e.ToString());
+            }
         }
 
         protected internal static void ActivatePedView()
