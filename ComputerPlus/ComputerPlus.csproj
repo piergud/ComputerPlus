@@ -379,6 +379,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y "$(TargetDir)ComputerPlus.dll" "$(TargetDir)Packaged\Plugins\LSPDFR\"
+xcopy /Y "$(TargetDir)ComputerPlus.pdb" "$(TargetDir)Packaged\Plugins\LSPDFR\"
 xcopy /Y "$(ProjectDir)Resources\*.dll" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\"
 xcopy /Y "$(ProjectDir)Resources\*.jpg" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\"
 xcopy /Y "$(ProjectDir)Resources\*.xml" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\"
