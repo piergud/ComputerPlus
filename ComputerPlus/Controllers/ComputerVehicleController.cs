@@ -14,6 +14,8 @@ using ComputerPlus.Controllers.Models;
 using ComputerPlus.Extensions.Rage;
 using System.Threading.Tasks;
 using ComputerPlus.Extensions.Gwen;
+using ComputerPlus.Controllers;
+using ComputerPlus.Interfaces.Reports.Models;
 
 namespace ComputerPlus.Interfaces.ComputerVehDB
 {
@@ -43,18 +45,12 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         {
             get
             {
-                Function.Log("CurrentPulledOver get handle");
                 var handle = Functions.GetCurrentPullover();
-                Function.Log("CurrentPulledOver got handle");
                 if (handle != null)
                 {
-                    Function.Log("CurrentPulledOver get suspect handle");
                     Ped ped = Functions.GetPulloverSuspect(handle);                    
-                    Function.Log("CurrentPulledOver got suspect handle");
-                    Vehicle vehicle = FindPedVehicle(ped);
-                    Function.Log("CurrentPulledOver found vehicle");
+                    Vehicle vehicle = FindPedVehicle(ped);                    
                     if (vehicle == null || !vehicle.Exists()) return null;
-                    Function.Log("CurrentPulledOver return LookupVehicle");
                     return LookupVehicle(vehicle);
                 }
                 return null;
@@ -84,6 +80,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         static ComputerVehicleController()
         {
+           
         }        
 
         static DateTime RandomDay()
@@ -127,7 +124,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 while (owner == null)
                 {
                     //Last ditch effort to make C+ happy by just providing any ped as the owner and setting them as the owner
-                    Function.Log(String.Format("LookupVehicle owner was null.. driver may no longer exist", ownerName));
                     var ped = FindRandomPed();
                     owner = new ComputerPlusEntity(ped, Functions.GetPersonaForPed(ped));
                 }
@@ -135,7 +131,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
             if (!owner.Validate())
             {
-                Function.Log(String.Format("LookupVehicle owner was null, performing fixup on {0}", ownerName));
 
                 var parts = ownerName.Split(' ');
                 while(parts.Length < 2)
@@ -149,7 +144,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 var ped = FindRandomPed();
 
 
-                Function.Log("Found a new ped for fixup");
                 var persona = new Persona(
                     ped,
                     Gender.Random,
@@ -196,6 +190,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         internal static Blip BlipVehicle(Vehicle vehicle, Color color)
         {
+            if (_Blips.ContainsValue(vehicle)) return _Blips.Single(x => x.Value == vehicle).Key;
+            else if (vehicle.GetAttachedBlip()) return vehicle.GetAttachedBlip();
             var blip = vehicle.AddBlipSafe(color);
             if (blip != null && (vehicle != null && vehicle.IsValid())) _Blips.Add(blip, vehicle);
 
@@ -341,12 +337,13 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             Globals.Navigation.Push(new ComputerVehicleSearch());
         }
 
-        internal static void ShowVehicleDetails()
+        internal async static void ShowVehicleDetails()
         {
-            if (LastSelected != null && LastSelected.Validate())
-            {
-                Globals.Navigation.Push(new ComputerVehicleDetails(LastSelected));
-            }
+            if (!LastSelected || !LastSelected.Validate()) return;
+            var reports = await ComputerReportsController.GetArrestReportsForPedAsync(LastSelected);
+            var trafficCitations = await ComputerReportsController.GetTrafficCitationsForPedAsync(LastSelected);
+
+            Globals.Navigation.Push(new ComputerVehicleViewExtendedContainer(new DetailedEntity(LastSelected, reports, trafficCitations)));
         }
     }
 }

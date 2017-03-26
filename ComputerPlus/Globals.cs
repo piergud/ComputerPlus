@@ -5,9 +5,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ComputerPlus.Controllers;
+using ComputerPlus.Interfaces.Reports.Models;
+using ComputerPlus.DB;
+using Gwen;
+
 namespace ComputerPlus
 {
-    internal sealed class Globals
+    internal class Styles
+    {
+        internal Font RegularFont;
+        internal Font BoldFont;
+        internal Font LabelHeaderFont;
+        internal Font LabelHeaderFontBold;
+    }
+    internal static class Globals
     {
         internal static Random Random = new Random();
         internal static bool IsPlayerOnDuty = false;
@@ -20,13 +31,111 @@ namespace ComputerPlus
         internal readonly static String EmptyImageVehicle = "no_vehicle_image.jpg";
         internal readonly static String EmptyImagePed = "no_ped_image.jpg";
         internal readonly static String DefaultBackgroundImage = "generic.jpg";
-        internal static bool PauseGameWhenOpen = true;
+        private static bool mPauseGameWhenOpen = true;
+        internal static bool PauseGameWhenOpen
+        {
+            get { return mPauseGameWhenOpen; }
+            set
+            {
+                mPauseGameWhenOpen = value;
+                BlockInputNeeded = value;
+            }
+        }
         internal static bool ShowBackgroundWhenOpen = true;
         internal static bool CloseRequested = false;
         internal static bool OpenRequested = false;
         internal static NavigationController Navigation = new NavigationController();
         internal static String SimpleNotepadText = String.Empty;
         private static String Clipboard = String.Empty;
+        internal static readonly String DefaultAssetPath = @"Plugins\LSPDFR\ComputerPlus\";
+        internal static Storage Store;
+        internal static readonly Version SchemaVersion = new Version("1.0.1");
+        internal static bool? BlockInputNeeded;
+
+        internal static Styles Style = new Styles();
+
+        internal async static Task OpenStore()
+        {
+            if (Store == null)
+                Store = await Storage.ReadOrInit();
+        }
+
+        static public ArrestReport PendingArrestReport
+        {
+            get;
+            internal set;
+        } = new ArrestReport();
+
+        static public TrafficCitation PendingTrafficCitation
+        {
+            get;
+            internal set;
+        } = null;
+
+        static private Dictionary<Rage.Ped, List<TrafficCitation>> TicketsInPosession = new Dictionary<Rage.Ped, List<TrafficCitation>>();
+
+        public static ChargeCategories ChargeDefinitions
+        {
+            get;
+            internal set;
+        } = null;
+
+        public static CitationCategories CitationDefinitions
+        {
+            get;
+            internal set;
+        } = null;
+
+        public static VehicleDefinitions VehicleDefinitions
+        {
+            get;
+            internal set;
+        } = null;
+
+
+        internal static bool HasTrafficTicketsInHand()
+        {
+            return TicketsInPosession.Any(x => x.Key && x.Value.Count > 0);
+        }
+
+        internal static List<TrafficCitation> GetTrafficCitationsInHandForPed(Rage.Ped ped)
+        {
+            if (!ped || !TicketsInPosession.ContainsKey(ped)) return null;
+            return TicketsInPosession[ped];
+        }
+
+
+        internal static void RemoveTrafficCitationsInHandForPed(Rage.Ped ped)
+        {
+            if (ped != null) //dont care about game validility of Ped
+            {
+                if (TicketsInPosession.ContainsKey(ped))
+                {
+                    TicketsInPosession.Remove(ped);
+                }                
+            }
+        }
+
+        internal static void ClearTrafficCitationsInHand()
+        {
+            TicketsInPosession.Clear();
+        }
+
+        internal static void AddTrafficCitationsInHandForPed(Rage.Ped ped, TrafficCitation citation)
+        {
+            if (ped)
+            {
+                if (TicketsInPosession.ContainsKey(ped))
+                {
+                    TicketsInPosession[ped].Add(citation);
+                }
+                else
+                {
+                    TicketsInPosession.Add(ped, new List<TrafficCitation>() { citation });
+                }
+            }
+        }
+
 
         /// <summary>
         /// Returns the active callout from the queue.

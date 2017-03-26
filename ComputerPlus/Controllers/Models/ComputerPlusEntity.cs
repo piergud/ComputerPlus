@@ -5,34 +5,77 @@ using System.Text;
 using System.Threading.Tasks;
 using Rage;
 using LSPD_First_Response.Engine.Scripting.Entities;
+using ComputerPlus.Extensions.Rage;
 
 namespace ComputerPlus.Controllers.Models
 {
     enum EntityTypes { Ped = 0, Vehicle = 1 }
-    class ComputerPlusEntity: IPersistable
+    public class ComputerPlusEntity: IPersistable
     {
-        internal Ped Ped
+        public Ped Ped
         {
             get;
             private set;
         }
-        internal Persona PedPersona
+        public Persona PedPersona
         {
             get;
-            set;
+            internal set;
         }
 
-        internal Vehicle Vehicle
+        public Vehicle Vehicle
         {
             get;
             private set;
         }
 
-        internal VehiclePersona VehiclePersona
+        public VehiclePersona VehiclePersona
         {
             get;
-            set;
+            internal set;
         }
+
+        public String FullName
+        {
+            get
+            {
+                return (!Ped) ? String.Empty : PedPersona.FullName;
+            }
+        }
+
+        public String FirstName
+        {
+            get
+            {
+                return (!Ped) ? String.Empty : PedPersona.Forename;
+            }
+        }
+
+        public String LastName
+        {
+            get
+            {
+                return (!Ped) ? String.Empty : PedPersona.Surname;
+            }
+        }
+
+
+        public String Address
+        {
+            get
+            {
+                return !Ped ? String.Empty : Ped.GetHomeAddress();
+            }
+        }
+
+        public String VehicleTag
+        {
+            get
+            {
+                return (!Vehicle) ? String.Empty : Vehicle.LicensePlate;
+            }
+        }
+
 
         private bool _IsPersistent;
         public bool IsPersistent
@@ -112,6 +155,11 @@ namespace ComputerPlus.Controllers.Models
             {
                 Function.LogDebug("ComputerPlusEntity caught exception during Dismiss");
             }
+        }
+
+        public static implicit operator bool (ComputerPlusEntity entity)
+        {
+            return entity == null ? false : entity.Validate();
         }
     }
 }

@@ -15,9 +15,21 @@ namespace ComputerPlus
         internal static Dictionary<uint,string> bgs = new Dictionary<uint,string>();
         static string user, pass, unit;
         static bool skip;
+        internal static int FontSize
+        {
+            get;
+            private set;
+        } = 16;
+        internal static String FontName
+        {
+            get;
+            private set;
+        } = "Microsoft Sans Serif";
+
         private static List<KeyBinder> OpenComputerPlusKeys = new List<KeyBinder>();
         private static List<KeyBinder> OpenSimpleNotepadKeys = new List<KeyBinder>();
         private static List<KeyBinder> CloseComputerPlusKeys = new List<KeyBinder>();
+        private static List<KeyBinder> GiveCitationsToPedKeys = new List<KeyBinder>();
 
         internal static void RunConfigCheck()
         {
@@ -25,11 +37,12 @@ namespace ComputerPlus
             {
                 CreateINIFile();
             }
-
             user = ini_file.ReadString("SETTINGS", "LoginName");
             pass = ini_file.ReadString("SETTINGS", "LoginPass");
             skip = ini_file.ReadBoolean("SETTINGS", "SkipLogin");
             unit = ini_file.ReadString("SETTINGS", "UnitNumber");
+            FontSize = ini_file.ReadInt32("SETTINGS", "FontSize");
+            FontName = ini_file.ReadString("SETTINGS", "FontName");
 
             if (String.IsNullOrWhiteSpace(user))
                 user = "Officer";
@@ -37,6 +50,9 @@ namespace ComputerPlus
                 pass = "DoNuTz";
             if (String.IsNullOrWhiteSpace(unit))
                 unit = "1-A-12";
+
+            FontSize = FontSize > 0 ? FontSize : 16;
+            FontName = !String.IsNullOrWhiteSpace(FontName) ? FontName : "Microsoft Sans Serif";
 
             foreach (string key in ini_file.GetKeyNames("VEHICLE BACKGROUNDS"))
             {
@@ -60,6 +76,8 @@ namespace ComputerPlus
                 ParseKeybindings(OpenComputerPlusKeys, "OpenComputerPlus");
                 ParseKeybindings(CloseComputerPlusKeys, "CloseComputerPlus");
                 ParseKeybindings(OpenSimpleNotepadKeys, "OpenSimpleNotepad");
+                ParseKeybindings(GiveCitationsToPedKeys, "GiveCitationsToPed");
+
                 if (OpenComputerPlusKeys.Count == 0) //Fail safe for opening computer by holding the context secondary (E / DPadRight)
                     OpenComputerPlusKeys.Add(new KeyBinder(GameControl.Context));
             }
@@ -84,6 +102,8 @@ namespace ComputerPlus
             }
         }
 
+      
+
         internal static void CreateINIFile()
         {
             ini_file.Create();
@@ -91,6 +111,9 @@ namespace ComputerPlus
             ini_file.Write("SETTINGS", "LoginPass", "DoNuTz");
             ini_file.Write("SETTINGS", "SkipLogin", "false");
             ini_file.Write("SETTINGS", "UnitNumber", "1-A-12");
+            ini_file.Write("SETTINGS", "FontSize", 16);
+            ini_file.Write("SETTINGS", "FontName", "Microsoft Sans Serif");
+
             ini_file.Write("KEYBINDINGS", "OpenComputerPlusKey", "None");
             ini_file.Write("KEYBINDINGS", "OpenComputerPlusModifierKey", "None");
             ini_file.Write("KEYBINDINGS", "OpenComputerPlusControllerButton", "None");
@@ -105,6 +128,11 @@ namespace ComputerPlus
             ini_file.Write("KEYBINDINGS", "OpenSimpleNotepadModifierKey", "None");
             ini_file.Write("KEYBINDINGS", "OpenComputerPlusControllerModifierButton", "None");
             ini_file.Write("KEYBINDINGS", "OpenComputerPlusControllerModifierButton", "None");
+
+            ini_file.Write("KEYBINDINGS", "GiveCitationsToPedKey", "None");
+            ini_file.Write("KEYBINDINGS", "GiveCitationsToPedModifierKey", "None");
+            ini_file.Write("KEYBINDINGS", "GiveCitationsToPedControllerButton", "None");
+            ini_file.Write("KEYBINDINGS", "GiveCitationsToPedControllerModifierButton", "None");
 
         }
 
@@ -151,6 +179,48 @@ namespace ComputerPlus
                 return OpenSimpleNotepadKeys.ToArray();
             }
         }
+
+        internal static KeyBinder[] GiveTicketsToPed
+        {
+            get
+            {
+                return GiveCitationsToPedKeys.ToArray();
+            }
+        }
+
+        internal static int BaseFormWidth
+        {
+            get { return 700; }
+        }
+
+        internal static int BaseFormHeight
+        {
+            get { return 300; }
+        }
+
+        internal static int BaseFormControlSpacingHalf
+        {
+            get { return BaseFormControlSpacing / 2; }
+        }
+
+        internal static int BaseFormControlSpacing
+        {
+            get { return 15; }
+        }
+
+        internal static int BaseFormControlSpacingDouble
+        {
+            get { return BaseFormControlSpacing * 2; }
+        }
+
+        internal static int BaseFormControlSpacingTriple
+        {
+            get { return BaseFormControlSpacing * 3; }
+        }
+
+        
+        internal static readonly String RegularBoldFontName = String.Format("Microsoft Sans Serif, {0}px, style=Bold", FontSize + 4);
+
 
         /*public static Keys NotebookKey { get { return ini_file.ReadEnum<Keys>("General", "NotebookKey", Keys.D2); } }
         public static Keys NotebookKeyModifier { get { return ini_file.ReadEnum<Keys>("General", "NotebookKeyModifier", Keys.LControlKey); } }

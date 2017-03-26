@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ComputerPlus.Controllers.Models
 {
-    struct VehiclePersona
+    public struct VehiclePersona
     {
         public bool? HasInsurance;
         public bool? IsRegistered;
@@ -17,6 +17,6 @@ namespace ComputerPlus.Controllers.Models
             HasInsurance = hasInsurance;
             IsRegistered = isRegistered;
             Alert = alert;
-        }
+        }       
     }
 }
