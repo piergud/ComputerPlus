@@ -15,7 +15,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
     {
         TreeControl chargesTree;
         ListBox lb_charges;
-        LabeledComponent<MultilineTextBox> tb_notes;
+        LabeledComponent<StateControlledMultilineTextbox> tb_notes;
         Button btnAddCharge;
         Button btnRemoveSelectedCharge;
         Label lbl_addedCharges;
@@ -43,7 +43,8 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 lb_charges.Dock = Gwen.Pos.Right;
                 lb_charges.Margin = new Gwen.Margin(0, 30, 0, 100);
 
-                tb_notes = new LabeledComponent<MultilineTextBox>(this, "Notes for Charge", new MultilineTextBox(this), RelationalPosition.TOP, RelationalSize.NONE, Configs.BaseFormControlSpacingHalf, lbl_addedCharges.Font, lbl_addedCharges.TextColor);
+                tb_notes = new LabeledComponent<StateControlledMultilineTextbox>(this, "Notes for Charge", new StateControlledMultilineTextbox(this), RelationalPosition.TOP, RelationalSize.NONE, Configs.BaseFormControlSpacingHalf, lbl_addedCharges.Font, lbl_addedCharges.TextColor);
+                tb_notes.Component.ForceWordWrap = false;
                 tb_notes.Component.SetSize((lb_charges.X - chargesTree.Right), 250);
                 tb_notes.Component.AlignTopWith(lb_charges);
                 tb_notes.PlaceRightOf(chargesTree, 5).AlignTopWith(lbl_addedCharges);
@@ -271,14 +272,16 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 if (SelectedAvailableCharge == null || SelectedAvailableCharge.IsContainer) return;
                 var lineItem = new ArrestChargeLineItem(SelectedAvailableCharge, tb_notes.Component.Text);
                 AddChargeToReport(Report, lineItem);
-                tb_notes.Component.SetText(String.Empty);
+                
+                tb_notes.Component.ClearText();
                 SelectedAvailableCharge = null;
             }
             else if (sender == btnRemoveSelectedCharge)
             {
                 if (lb_charges.SelectedRow == null) return;
                 RemoveChargeFromReport(Report, lb_charges.SelectedRow.UserData as ArrestChargeLineItem);
-                tb_notes.Component.SetText(String.Empty);
+                tb_notes.Component.CursorPosition = new System.Drawing.Point(0, 0);
+                tb_notes.Component.ClearText();
                 SelectedAvailableCharge = null;
             }
         }    
