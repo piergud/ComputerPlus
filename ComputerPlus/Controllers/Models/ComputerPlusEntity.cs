@@ -6,21 +6,24 @@ using System.Threading.Tasks;
 using Rage;
 using LSPD_First_Response.Engine.Scripting.Entities;
 using ComputerPlus.Extensions.Rage;
+using ComputerPlus.Extensions;
 
 namespace ComputerPlus.Controllers.Models
 {
     enum EntityTypes { Ped = 0, Vehicle = 1 }
+    public enum PersonaTypes {  Vanilla = 0, BPS = 1 }
     public class ComputerPlusEntity: IPersistable
     {
+        public static PersonaTypes PersonaType;
         public Ped Ped
         {
             get;
             private set;
         }
-        public Persona PedPersona
+        internal Persona PedPersona
         {
             get;
-            internal set;
+            set;
         }
 
         public Vehicle Vehicle
@@ -29,17 +32,39 @@ namespace ComputerPlus.Controllers.Models
             private set;
         }
 
-        public VehiclePersona VehiclePersona
+        private VehiclePersona VehiclePersona
         {
             get;
-            internal set;
+            set;
+        }
+
+        internal System.Object RawVehiclePersona
+        {
+            get
+            {
+                if (!CreatedWith.HasFlag(EntityTypes.Vehicle) || !Vehicle) return null;
+                return VehiclePersona.RawPersona;
+            }
+        }
+
+        internal System.Object RawPedPersona
+        {
+            get
+            {
+                return PedPersona;
+            }
         }
 
         public String FullName
         {
             get
             {
-                return (!Ped) ? String.Empty : PedPersona.FullName;
+                if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return String.Empty;
+                switch(PersonaType)
+                {
+                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).FullName;
+                    default: return PedPersona.FullName;
+                }
             }
         }
 
@@ -47,7 +72,12 @@ namespace ComputerPlus.Controllers.Models
         {
             get
             {
-                return (!Ped) ? String.Empty : PedPersona.Forename;
+                if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return String.Empty;
+                switch (PersonaType)
+                {
+                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).Forename;
+                    default: return PedPersona.Forename;
+                }
             }
         }
 
@@ -55,7 +85,12 @@ namespace ComputerPlus.Controllers.Models
         {
             get
             {
-                return (!Ped) ? String.Empty : PedPersona.Surname;
+                if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return String.Empty;
+                switch (PersonaType)
+                {
+                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).Surname;
+                    default: return PedPersona.Surname;
+                }
             }
         }
 
@@ -72,8 +107,239 @@ namespace ComputerPlus.Controllers.Models
         {
             get
             {
-                return (!Vehicle) ? String.Empty : Vehicle.LicensePlate;
+                if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Vehicle) return String.Empty;
+                switch (PersonaType)
+                {
+                    case PersonaTypes.BPS: return (VehiclePersona.RawPersona as British_Policing_Script.VehicleRecords).LicencePlate;
+                    default: return Vehicle.LicensePlate;
+                }
             }
+        }
+
+        public String DOBString
+        {
+            get
+            {
+                if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return String.Empty;
+                switch (PersonaType)
+                {
+                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).BirthDay.ToLocalTimeString(Extensions.Gwen.TextBoxExtensions.DateOutputPart.DATE);
+                    default: return PedPersona.BirthDay.ToLocalTimeString(Extensions.Gwen.TextBoxExtensions.DateOutputPart.DATE);
+                }
+            }
+
+        }
+
+        public int Age
+        {
+            get
+            {
+                if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return 0;
+                DateTime birthDate;
+                switch (PersonaType)
+                {
+                    case PersonaTypes.BPS: birthDate = (PedPersona as British_Policing_Script.BritishPersona).BirthDay; break;
+                    default: birthDate = PedPersona.BirthDay; break;
+                }
+
+                return  (int)((DateTime.Today - birthDate).Days / 365.25m);
+            }
+        }
+
+        public String AgeString
+        {
+            get
+            {
+                return Age.ToString();
+            }
+        }
+
+        public int TimesStopped
+        {
+            get
+            {
+                if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return 0;
+                switch (PersonaType)
+                {
+                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).TimesStopped;
+                    default: return PedPersona.TimesStopped;
+                }
+            }
+        }
+
+        public LSPD_First_Response.Gender Gender
+        {
+            get
+            {
+                if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return LSPD_First_Response.Gender.Random;
+                switch (PersonaType)
+                {
+                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).Gender;
+                    default: return PedPersona.Gender;
+                }
+            }
+        }
+
+        public String GenderString
+        {
+            get
+            {
+                return Gender.ToFriendlyString();
+            }
+        }
+
+        public char GenderId
+        {
+            get
+            {
+                return Gender.ToFriendlyString().First();
+            }
+        }
+
+        public bool IsWanted
+        {
+            get
+            {
+                if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return false;
+                switch (PersonaType)
+                {
+                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).Wanted;
+                    default: return PedPersona.Wanted;
+                }
+            }
+        }
+
+        public String WantedReason
+        {
+            get
+            {
+                if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return String.Empty;
+                switch (PersonaType)
+                {
+                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).WantedReason;
+                    default: return String.Empty; //@TODO random wanted reason generator will go here
+                }
+            }
+        }
+
+        public bool IsLicenseValid
+        {
+            get
+            {              
+                  
+                if (ComputerPlusEntity.PersonaType == PersonaTypes.BPS)
+                {
+                    var persona = PedPersona as British_Policing_Script.BritishPersona;
+                    switch (persona.LicenceStatus)
+                    {
+                        case British_Policing_Script.BritishPersona.LicenceStatuses.Disqualified:
+                        case British_Policing_Script.BritishPersona.LicenceStatuses.Expired:
+                        case British_Policing_Script.BritishPersona.LicenceStatuses.Revoked: return false;
+                        default: return true;
+                    }
+                }
+                else {
+                    switch (PedPersona.LicenseState)
+                    {
+                        case ELicenseState.Suspended:
+                        case ELicenseState.Expired: return false;
+                        default: return true;
+                    }
+                }
+            }
+        }
+
+        public String LicenseStateString
+        {
+            get
+            {
+                if (PersonaType == PersonaTypes.BPS)
+                {
+                    var persona = PedPersona as British_Policing_Script.BritishPersona;
+                    switch (persona.LicenceStatus)
+                    {
+                        case British_Policing_Script.BritishPersona.LicenceStatuses.Disqualified: return "Disqualified";
+                        case British_Policing_Script.BritishPersona.LicenceStatuses.Expired: return "Expired";
+                        case British_Policing_Script.BritishPersona.LicenceStatuses.Revoked: return "Revoked";
+                        default: return "Valid";
+                    }
+                }
+                else
+                {
+                    switch (PedPersona.LicenseState)
+                    {
+                        case ELicenseState.Expired: return "Expired";
+                        case ELicenseState.Suspended: return "Suspended";
+                        case ELicenseState.Valid: return "Valid";
+                        default: return "None";
+                    }
+                }
+            }
+        }
+
+        public bool IsAgent
+        {
+            get
+            {
+
+                if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return false;
+                switch (PersonaType)
+                {
+                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).IsAgent;
+                    default: return PedPersona.IsAgent;
+                }
+            }
+        }
+        public bool IsCop
+        {
+            get
+            {
+
+                if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return false;
+                switch (PersonaType)
+                {
+                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).IsCop;
+                    default: return PedPersona.IsCop;
+                }
+            }
+        }
+        
+        //Vehicle Persona
+
+        public bool HasInsurance
+        {
+            get
+            {
+                if (!CreatedWith.HasFlag(EntityTypes.Vehicle) || !Vehicle) return true;
+                return VehiclePersona.HasInsurance.HasValue ? VehiclePersona.HasInsurance.Value : true;
+                //switch (PersonaType)
+                //{
+                //    case PersonaTypes.BPS: return (RawVehiclePersona as British_Policing_Script.VehicleRecords).Insured;
+                //    default: return VehiclePersona.HasInsurance.HasValue ? VehiclePersona.HasInsurance.Value : true;
+                //}
+            }
+        }
+
+
+        public bool IsRegistered
+        {
+            get
+            {
+                if (!CreatedWith.HasFlag(EntityTypes.Vehicle) || !Vehicle) return true;
+                switch (PersonaType)
+                {
+                    case PersonaTypes.BPS: return (VehiclePersona.RawPersona as British_Policing_Script.VehicleRecords).IsTaxed;
+                    default: return VehiclePersona.IsRegistered.HasValue ? VehiclePersona.IsRegistered.Value : true;
+                }
+            }
+        }
+
+        public String VehicleAlert
+        {
+            get
+            {
+                return VehiclePersona.Alert;
+            }            
         }
 
 
@@ -104,15 +370,18 @@ namespace ComputerPlus.Controllers.Models
         }
 
         private readonly EntityTypes CreatedWith;
-
-        internal ComputerPlusEntity(Ped ped, Persona persona)
+        static ComputerPlusEntity()
+        {
+             PersonaType = PersonaTypes.Vanilla;
+        }
+        private ComputerPlusEntity(Ped ped, Persona persona)
         {
             this.CreatedWith = EntityTypes.Ped;
             this.Ped = ped;
             this.PedPersona = persona;
         }
 
-        internal ComputerPlusEntity(Vehicle vehicle, VehiclePersona persona)
+        private ComputerPlusEntity(Vehicle vehicle, VehiclePersona persona)
         {
             this.CreatedWith = EntityTypes.Vehicle;
             this.Vehicle = vehicle;
@@ -120,7 +389,7 @@ namespace ComputerPlus.Controllers.Models
         }
 
 
-        internal ComputerPlusEntity(Ped ped, Persona persona, Vehicle vehicle, VehiclePersona vehiclePersona)
+        private ComputerPlusEntity(Ped ped, Persona persona, Vehicle vehicle, VehiclePersona vehiclePersona)
         {
             this.CreatedWith = EntityTypes.Ped | EntityTypes.Vehicle;
             this.Ped = ped;
@@ -160,6 +429,60 @@ namespace ComputerPlus.Controllers.Models
         public static implicit operator bool (ComputerPlusEntity entity)
         {
             return entity == null ? false : entity.Validate();
+        }
+
+        public static ComputerPlusEntity CloneFrom(ComputerPlusEntity entity, Vehicle vehicle, VehiclePersona vehiclePersona)
+        {
+            return new ComputerPlusEntity(entity.Ped, entity.PedPersona, vehicle, vehiclePersona);
+        }
+
+        public static ComputerPlusEntity CreateFrom(Ped ped)
+        {
+            if (!ped) return null;
+            return new ComputerPlusEntity(ped, GetPersonaForPed(ped));
+        }
+
+        public static ComputerPlusEntity CreateFrom(Vehicle vehicle)
+        {
+            if (!vehicle) return null;
+            return new ComputerPlusEntity(vehicle, GetPersonaForVehicle(vehicle));
+        }
+
+        public static ComputerPlusEntity CreateFrom(Ped ped, Vehicle vehicle)
+        {
+            if (!ped || !vehicle) return null;
+            return new ComputerPlusEntity(ped, GetPersonaForPed(ped), vehicle, GetPersonaForVehicle(vehicle));
+        }
+
+        public static Persona GetPersonaForPed(Ped ped)
+        {
+            if (PersonaType == PersonaTypes.BPS)
+            {
+                return British_Policing_Script.API.Functions.GetBritishPersona(ped);
+            }
+            else
+            {
+                return LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(ped);
+            }
+        }
+
+        public static VehiclePersona GetPersonaForVehicle(Vehicle vehicle)
+        {
+            if (PersonaType == PersonaTypes.BPS)
+            {
+                var records = British_Policing_Script.API.Functions.GetVehicleRecords(vehicle);
+                return new VehiclePersona(records);
+            }
+            else
+            {
+                var vehiclePersona = new VehiclePersona();
+                if (Function.IsTrafficPolicerRunning())
+                {
+                    vehiclePersona.HasInsurance = TrafficPolicerFunction.GetVehicleInsuranceStatus(vehicle) == EVehicleStatus.Valid ? true : false;
+                    vehiclePersona.IsRegistered = TrafficPolicerFunction.GetVehicleRegistrationStatus(vehicle) == EVehicleStatus.Valid ? true : false;
+                }
+                return vehiclePersona;
+            }
         }
     }
 }

@@ -234,7 +234,7 @@ namespace ComputerPlus.Interfaces.Reports.Models
             {
                 FirstName = entity.FirstName,
                 LastName = entity.LastName,
-                DOB = entity.PedPersona.BirthDay.ToLocalTimeString(Extensions.Gwen.TextBoxExtensions.DateOutputPart.DATE),
+                DOB = entity.DOBString,
                 HomeAddress = entity.Address,
             };
 

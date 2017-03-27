@@ -25,7 +25,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         ~ComputerVehicleSearch()
         {
-            ComputerVehicleController.OnAlprVanillaMessage -= OnAlprVanillaMessage;
             list_manual_results.RowSelected -= onListItemSelected;
             list_collected_tags.RowSelected -= onListItemSelected;
             text_manual_name.SubmitPressed -= onSearchSubmit;
@@ -36,7 +35,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             base.InitializeLayout();
             this.Position = this.GetLaunchPosition();
             this.Window.DisableResizing();
-            ComputerVehicleController.OnAlprVanillaMessage += OnAlprVanillaMessage;
             Function.LogDebug("Populating ALPR list");
             PopulateAnprList();
             list_collected_tags.AllowMultiSelect = false;
@@ -121,11 +119,11 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                         Function.Log("ALPR integration issue.. data missing from LookupVehicle");
                         return null;
                     }
-                    VehiclePersona vehiclePersona = data.VehiclePersona;
                     if (!String.IsNullOrWhiteSpace(x.Message))
                     {
-                        vehiclePersona.Alert = x.Message;
-                        data.VehiclePersona = vehiclePersona;
+                        //@TODO may have to come back to this
+                        //vehiclePersona.Alert = x.Message;
+                      //  data.VehiclePersona = vehiclePersona;
                     }
                 
                     return data;
@@ -143,39 +141,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             }
 
         }
-
-        private void OnAlprVanillaMessage(object sender, ALPR_Arguments e)
-        {
-            if (e.Vehicle == null || !e.Vehicle.Exists())
-            {
-                return;
-            }
-            var data = ComputerVehicleController.LookupVehicle(e.Vehicle);
-            
-            if (data == null)
-            {
-                return;
-            }
-
-            if (!data.IsPersistent)
-            {
-                data.IsPersistent = true;
-            }
-            
-            var vehiclePersona = data.VehiclePersona;
-            vehiclePersona.Alert = e.Message;
-            data.VehiclePersona = vehiclePersona;
-            if (list_collected_tags.RowCount >= 6)
-            {
-                var entry = list_collected_tags[0];
-                var first = entry.UserData as ComputerPlusEntity;
-                if (first != null && first.Validate() && first.IsPersistent) {
-                    first.IsPersistent = false;
-                }
-                while(list_collected_tags.RowCount >= 6)
-                    list_collected_tags.RemoveRow(0);
-            }         
-            list_collected_tags.AddVehicle(data);
-        }
+       
     }
 }

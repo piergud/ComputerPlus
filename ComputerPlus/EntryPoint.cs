@@ -104,6 +104,11 @@ namespace ComputerPlus
                 else {
                     Function.LogDebug("C+: ALPR+ Not Detected");
                 }
+                if (Function.IsBPSRunning())
+                {
+                    ComputerPlusEntity.PersonaType = PersonaTypes.BPS;
+                }
+                
             }
             else
             {

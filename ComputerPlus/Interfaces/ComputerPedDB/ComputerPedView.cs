@@ -160,41 +160,34 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             if (Entity == null) return;
             lock (Entity)
             {
-                switch (Entity.PedPersona.LicenseState)
+                if (Entity.IsLicenseValid)
                 {
-                    case ELicenseState.Expired:
-                        text_license_status.Warn("Expired");
-                        break;
-                    case ELicenseState.None:
-                        text_license_status.Text = "None";
-                        break;
-                    case ELicenseState.Suspended:
-                        text_license_status.Warn("Suspended");
-                        break;
-                    case ELicenseState.Valid:
-                        text_license_status.Text = "Valid";
-                        break;
+                    text_license_status.Text = "Valid";
+                }
+                else
+                {
+                    text_license_status.Warn(Entity.LicenseStateString);
+                }
+                
+
+                if (Entity.IsAgent)
+                {
+                    lbl_alert.SetText("Federal agent");
+                }
+                else if (Entity.IsCop)
+                {
+                    lbl_alert.SetText("LEO");
                 }
 
-                if (Entity.PedPersona.IsAgent)
-                {
-                    lbl_alert.SetText("Individual is a federal agent");
-                }
-                else if (Entity.PedPersona.IsCop)
-                {
-                    lbl_alert.SetText("Individual is a police officer");
-                }
-
-                var age = (DateTime.Today - Entity.PedPersona.BirthDay).Days / 365.25m;
-                text_age.Text = ((int)age).ToString();
-                text_first_name.Text = Entity.PedPersona.Forename;
-                text_last_name.Text = Entity.PedPersona.Surname;
+                text_age.Text = Entity.AgeString;
+                text_first_name.Text = Entity.FirstName;
+                text_last_name.Text = Entity.LastName;
                 text_home_address.Text = Entity.Ped.GetHomeAddress();
-                text_dob.Text = Entity.PedPersona.BirthDay.ToString("MM/dd/yyyy");
-                text_dob.SetToolTipText("MM/dd/yyyy");
-                if (Entity.PedPersona.Wanted) text_wanted_status.Warn("Wanted");
+                text_dob.Text = Entity.DOBString;
+                //text_dob.SetToolTipText("MM/dd/yyyy");
+                if (Entity.IsWanted) text_wanted_status.Warn("Wanted");
                 else text_wanted_status.SetText("None");
-                text_times_stopped.Text = Entity.PedPersona.TimesStopped.ToString();
+                text_times_stopped.Text = Entity.TimesStopped.ToString();
             }
         }
 

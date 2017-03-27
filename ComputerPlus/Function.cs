@@ -441,6 +441,11 @@ namespace ComputerPlus
             return IsLSPDFRPluginRunning("ALPRPlus", new Version(1, 0, 0, 0));
         }
 
+        internal static bool IsBPSRunning()
+        {
+            return IsLSPDFRPluginRunning("British Policing Script", new Version(0, 9, 0, 0));
+        }
+
         internal static string GetFormattedDateTime(DateTime? date = null)
         {
             if (date == null || !date.HasValue)

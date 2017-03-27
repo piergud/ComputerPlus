@@ -60,17 +60,17 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             List<Ped> peds = World.GetAllPeds().ToList();
             peds.RemoveAll(p => !p || !p.Exists());
             peds.OrderBy(p => p.DistanceTo(Game.LocalPlayer.Character.Position));
-            var ped = peds.Where(p => p && Functions.GetPersonaForPed(p).FullName.ToLower().Equals(name, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            var ped = peds.Where(p => p 
+                && Functions.GetPersonaForPed(p).FullName.ToLower().Equals(name, StringComparison.CurrentCultureIgnoreCase))
+                .FirstOrDefault();
             if (ped == null) return null;
-            return LookupPersona(ped);
+            return ComputerPlusEntity.CreateFrom(ped);
         }
        
         internal ComputerPlusEntity LookupPersona(Ped ped)
         {
             if (ped == null) return null;
-            var persona = Functions.GetPersonaForPed(ped);
-            if (persona == null) return null;
-            var entity = new ComputerPlusEntity(ped, persona);            
+            var entity = ComputerPlusEntity.CreateFrom(ped);
             RecentSearches.Add(entity);
             return entity;
         }
