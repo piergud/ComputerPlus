@@ -35,7 +35,8 @@ namespace ComputerPlus.Controllers.Models
             IsRegistered = null;
             HasInsurance = records.Insured;
             Color = records.CarColour;
-            Alert = records.DetermineFlags();
+
+            Alert = new System.Text.RegularExpressions.Regex(@"~\w~").Replace(records.DetermineFlags(), String.Empty);
             HasValidEmissions = records.HasMOT;
             IsOffroadOnly = records.HasSORN;
             IsTaxed = records.IsTaxed;
