@@ -411,8 +411,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             if (ComputerPlusEntity.PersonaType == PersonaTypes.BPS)
             {
                 Function.LogDebug(String.Format("Null check is {0} is type {1}", DetailedEntity.Entity.RawPedPersona == null, DetailedEntity.Entity.RawPedPersona is British_Policing_Script.BritishPersona));
-                var driverPersona = (British_Policing_Script.BritishPersona)DetailedEntity.Entity.RawPedPersona;
-                var vehiclePersona = (British_Policing_Script.VehicleRecords)DetailedEntity.Entity.RawVehiclePersona;
+                var driverPersona = BPSFunctions.CastPersona(DetailedEntity.Entity.RawPedPersona);
+                var vehiclePersona = BPSFunctions.CastVehiclePersona(DetailedEntity.Entity.RawVehiclePersona);
                 Function.LogDebug("Got vehicle persona");
                 Function.LogDebug(String.Format("vehiclePersona null {0}| labeled_vehicle_registration_status null {1} | labeled_vehicle_registration_status.Component null {2}", vehiclePersona == null, labeled_vehicle_registration_status, labeled_vehicle_registration_status.Component));
                 if (vehiclePersona.IsTaxed) labeled_vehicle_registration_status.Component.SetText("No");
