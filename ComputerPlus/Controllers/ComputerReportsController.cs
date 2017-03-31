@@ -100,7 +100,7 @@ namespace ComputerPlus.Controllers
 
         public static async Task<List<ArrestReport>> GetArrestReportsForPedAsync(ComputerPlusEntity entity)
         {
-            return await GetArrestReportsForPedAsync(entity.FirstName, entity.LastName, entity.PedPersona.BirthDay.ToLocalTimeString(TextBoxExtensions.DateOutputPart.DATE));
+            return await GetArrestReportsForPedAsync(entity.FirstName, entity.LastName, entity.DOBString);
         }
 
         public static async Task<List<ArrestReport>> GetArrestReportsForPedAsync(String firstName = "", String lastName = "", String dob = "")
@@ -230,7 +230,7 @@ namespace ComputerPlus.Controllers
 
         public static async Task<List<TrafficCitation>> GetTrafficCitationsForPedAsync(ComputerPlusEntity entity)
         {
-            return await GetTrafficCitationsForPedAsync(entity.FirstName, entity.LastName, entity.PedPersona.BirthDay.ToLocalTimeString(TextBoxExtensions.DateOutputPart.DATE));
+            return await GetTrafficCitationsForPedAsync(entity.FirstName, entity.LastName, entity.DOBString);
         }
 
         public static async Task<List<TrafficCitation>> GetTrafficCitationsForPedAsync(String firstName, String lastName, String dob)

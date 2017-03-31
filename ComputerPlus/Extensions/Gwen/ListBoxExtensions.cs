@@ -34,17 +34,17 @@ namespace ComputerPlus.Extensions.Gwen
         internal static ListBoxRow AddPed(this ListBox listBox, ComputerPlusEntity entry)
         {
             if (listBox == null) return null;
-            String alert = entry.PedPersona.Wanted ? "(ALERT) " : String.Empty;
+            String alert = entry.IsWanted ? "(ALERT) " : String.Empty;
             String rowId = String.Format("{0}_{1}_{2}",
-               entry.PedPersona.FullName,
-               entry.PedPersona.Surname,
+               entry.FirstName,
+               entry.LastName,
                entry.Ped.Model.Name
                );
             var previousRow = listBox.FindChildByName(rowId);
             if (previousRow == null)
             {
                 var row = listBox.AddRow(
-                    String.Format("{0}({1}) | {2}", alert, entry.PedPersona.Gender.ToFriendlyString().First(), entry.PedPersona.FullName),
+                    String.Format("{0}({1}) | {2}", alert, entry.GenderId, entry.FullName),
                     rowId,
                     entry);
                 return row;
@@ -55,17 +55,17 @@ namespace ComputerPlus.Extensions.Gwen
         internal static ListBoxRow AddVehicle(this ListBox listBox, ComputerPlusEntity entry)
         {
             if (listBox == null) return null;
-            String alert = (entry.PedPersona.Wanted
-                || (entry.VehiclePersona.HasInsurance.HasValue && !entry.VehiclePersona.HasInsurance.Value)
-                || (entry.VehiclePersona.IsRegistered.HasValue && !entry.VehiclePersona.IsRegistered.Value)) ?
+            String alert = (entry.IsWanted
+                || (!entry.HasInsurance)
+                || (!entry.IsRegistered)) ?
                     "(ALERT) " : String.Empty;
             if (!String.IsNullOrWhiteSpace(alert))
             {
                 //alert = String.Format(alert, String.IsNullOrWhiteSpace(entry.Item4.Alert) ? String.Empty : entry.Item4.Alert);
             }
             String rowId = String.Format("{0}_{1}_{2}",
-                entry.PedPersona.FullName,
-                entry.PedPersona.Surname,
+                entry.FirstName,
+                entry.LastName,
                 entry.Ped.Model.Name
                 );
             var previousRow = listBox.FindChildByName(rowId);

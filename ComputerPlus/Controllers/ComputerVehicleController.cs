@@ -105,7 +105,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         internal static ComputerPlusEntity LookupVehicle(Vehicle vehicle)
         {
             if (!vehicle) return null;
-            var vehiclePersona = new VehiclePersona();
+            var vehiclePersona = ComputerPlusEntity.GetPersonaForVehicle(vehicle);
             if (Function.IsTrafficPolicerRunning())
             {
                 vehiclePersona.HasInsurance = TrafficPolicerFunction.GetVehicleInsuranceStatus(vehicle) == EVehicleStatus.Valid ? true : false;
@@ -125,7 +125,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 {
                     //Last ditch effort to make C+ happy by just providing any ped as the owner and setting them as the owner
                     var ped = FindRandomPed();
-                    owner = new ComputerPlusEntity(ped, Functions.GetPersonaForPed(ped));
+                    owner = ComputerPlusEntity.CreateFrom(ped);
                 }
             }
 
@@ -160,9 +160,9 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 Functions.SetPersonaForPed(ped, persona);
                 
             }
-           
-          
-            return new ComputerPlusEntity(owner.Ped, owner.PedPersona, vehicle, vehiclePersona);
+
+
+            return ComputerPlusEntity.CloneFrom(owner, vehicle, vehiclePersona);
         } 
         
         private static Ped FindRandomPed()
@@ -314,9 +314,9 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                                 {                                    
                                     AddAlprScan(entry);
                                     var data = LookupVehicle(entry.Vehicle);
-                                    if (data != null && data.PedPersona.Wanted)
+                                    if (data != null && data.IsWanted)
                                     {
-                                        var msg = String.Format("~r~Wanted Owner:~w~ {0} {1} {2}", data.Vehicle.Model.Name, data.Vehicle.LicensePlate, data.PedPersona.FullName);
+                                        var msg = String.Format("~r~Wanted Owner:~w~ {0} {1} {2}", data.Vehicle.Model.Name, data.Vehicle.LicensePlate, data.FullName);
                                         Game.DisplayNotification(msg);
                                        Function.Log(msg);
                                     }

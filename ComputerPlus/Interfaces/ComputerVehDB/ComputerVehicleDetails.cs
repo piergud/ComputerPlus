@@ -29,7 +29,9 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             labeled_home_address, labeled_dob, labeled_license_status,
             labeled_wanted_status, labeled_times_stopped, labeled_age,
             labeled_vehicle_model, labeled_vehicle_license,
-            labeled_vehicle_insurance_status, labeled_vehicle_registration_status;
+            labeled_vehicle_insurance_status, labeled_vehicle_registration_status,
+            labeled_vehicle_extra_1, labeled_vehicle_extra_2, labeled_vehicle_extra_3,
+            labeled_ped_extra_1;
 
         LabeledComponent<Label> labeled_alpr, labeled_owner_alert;
 
@@ -52,20 +54,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 return DetailedEntity.Entity.Vehicle;
             }
         }
-        private Persona OwnerPersona
-        {
-            get
-            {
-                return DetailedEntity.Entity.PedPersona;
-            }
-        }
-        private VehiclePersona VehiclePersona
-        {
-            get
-            {
-                return DetailedEntity.Entity.VehiclePersona;
-            }
-        }
+ 
 
         internal static int DefaultHeight = 630;
         internal static int DefaultWidth = 730;
@@ -104,7 +93,17 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             labeled_vehicle_model = LabeledComponent.StatefulTextbox(registrationContent, "Model", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
             labeled_vehicle_license = LabeledComponent.StatefulTextbox(registrationContent, "License Plate", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
             labeled_vehicle_insurance_status = LabeledComponent.StatefulTextbox(registrationContent, "Insurance Status", RelationalPosition.LEFT, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
-            labeled_vehicle_registration_status = LabeledComponent.StatefulTextbox(registrationContent, "Registration Status", RelationalPosition.LEFT, Configs.BaseFormControlSpacingHalf, labelColor,labelFont);
+            //BPS does not have registration
+            if (ComputerPlusEntity.PersonaType == PersonaTypes.BPS)
+            {
+                labeled_vehicle_registration_status = LabeledComponent.StatefulTextbox(registrationContent, "Taxed Status", RelationalPosition.LEFT, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+                labeled_vehicle_extra_1 = LabeledComponent.StatefulTextbox(registrationContent, "MOT Status", RelationalPosition.LEFT, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+                labeled_vehicle_extra_2 = LabeledComponent.StatefulTextbox(registrationContent, "SORN Status", RelationalPosition.LEFT, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            }
+            else labeled_vehicle_registration_status = LabeledComponent.StatefulTextbox(registrationContent, "Registration Status", RelationalPosition.LEFT, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+
+            
+
             image_vehicle_image_holder = new ImagePanel(registrationContent);
             image_vehicle_image_holder.SetSize(400, 160);
 
@@ -125,6 +124,11 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             labeled_wanted_status = LabeledComponent.StatefulTextbox(ownerContent, "Wanted Status", RelationalPosition.LEFT, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
             labeled_times_stopped = LabeledComponent.StatefulTextbox(ownerContent, "Times Stopped", RelationalPosition.LEFT, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
 
+            if (ComputerPlusEntity.PersonaType == PersonaTypes.BPS)
+            {
+                labeled_ped_extra_1 = LabeledComponent.StatefulTextbox(ownerContent, "Insured To Drive", RelationalPosition.LEFT, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            }
+
             image_ped_image_holder = new ImagePanel(ownerContent);
             image_ped_image_holder.SetSize(155, 217);
 
@@ -140,6 +144,12 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             labeled_vehicle_license.Component.Disable();
             labeled_vehicle_insurance_status.Component.Disable();
             labeled_vehicle_registration_status.Component.Disable();
+            if (ComputerPlusEntity.PersonaType == PersonaTypes.BPS)
+            {
+                labeled_vehicle_extra_1.Component.Disable();
+                labeled_vehicle_extra_2.Component.Disable();
+                labeled_ped_extra_1.Component.Disable();
+            }
             if (Owner)
             {
                 image_ped_image_holder.ImageName = DetermineImagePath(Owner);
@@ -176,6 +186,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             labeled_vehicle_insurance_status.Component.SmallSize();
             labeled_vehicle_registration_status.Component.SmallSize();
 
+          
+
             labeled_vehicle_license
                 .PlaceRightOf(labeled_vehicle_model, Configs.BaseFormControlSpacingTriple)
                 .AlignTopWith(labeled_vehicle_model);
@@ -190,6 +202,17 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
             labeled_vehicle_insurance_status.Component.AlignLeftWith(labeled_vehicle_license);
             labeled_vehicle_registration_status.Component.AlignLeftWith(labeled_vehicle_insurance_status.Component);
+
+            if (ComputerPlusEntity.PersonaType == PersonaTypes.BPS)
+            {
+                labeled_vehicle_extra_1.Component.SmallSize();
+                labeled_vehicle_extra_2.Component.SmallSize();
+                labeled_vehicle_extra_1.PlaceBelowOf(labeled_vehicle_registration_status);
+                labeled_vehicle_extra_1.Component.AlignLeftWith(labeled_vehicle_registration_status.Component);
+                labeled_vehicle_extra_2.PlaceBelowOf(labeled_vehicle_extra_1);
+                labeled_vehicle_extra_2.Component.AlignLeftWith(labeled_vehicle_extra_1.Component);
+                
+            }
 
             //labeled_vehicle_registration_status.Component.AlignLeftWith(labeled_vehicle_insurance_status.Component);
 
@@ -244,7 +267,18 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             labeled_times_stopped
                 .AlignRightWith(labeled_dob)
                 .AlignTopWith(labeled_license_status);
-            
+
+            if (ComputerPlusEntity.PersonaType == PersonaTypes.BPS)
+            {
+                labeled_ped_extra_1.Component.SmallSize();
+                labeled_ped_extra_1.PlaceBelowOf(labeled_times_stopped)
+                .AlignLeftWith(labeled_times_stopped);
+
+                //Adjust left for labeled_times_stopped
+                labeled_times_stopped.Component.AlignLeftWith(labeled_ped_extra_1.Component);
+            }
+
+
             labeled_wanted_status
                 .PlaceBelowOf(labeled_license_status)
                 .AlignLeftWith(labeled_license_status);
@@ -323,28 +357,22 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         {
             if (!BindNeeded) return;
             BindNeeded = false;
-            switch (OwnerPersona.LicenseState)
+            if (DetailedEntity.Entity.IsLicenseValid)
             {
-                case ELicenseState.Expired:
-                    labeled_license_status.Component.Warn("Expired");
-                    break;
-                case ELicenseState.None:
-                    labeled_license_status.Component.Text = "None";
-                    break;
-                case ELicenseState.Suspended:
-                    labeled_license_status.Component.Warn("Suspended");
-                    break;
-                case ELicenseState.Valid:
-                    labeled_license_status.Component.Text = "Valid";
-                    break;
+                labeled_license_status.Component.Text = "Valid";
             }
+            else
+            {
+                labeled_license_status.Component.Warn(DetailedEntity.Entity.LicenseStateString);
+            }
+           
 
-            if (OwnerPersona.IsAgent)
+            if (DetailedEntity.Entity.IsAgent)
             {
                 labeled_owner_alert.Component.Warn("Individual is a federal agent");
                 labeled_owner_alert.Show();
             }
-            else if (OwnerPersona.IsCop)
+            else if (DetailedEntity.Entity.IsCop)
             {
                 labeled_owner_alert.Component.Warn("Individual is a police officer");
                 labeled_owner_alert.Show();
@@ -354,9 +382,9 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 labeled_owner_alert.Hide();
             }
 
-            if (!String.IsNullOrWhiteSpace(VehiclePersona.Alert))
+            if (!String.IsNullOrWhiteSpace(DetailedEntity.Entity.VehicleAlert))
             {                
-                labeled_alpr.Component.SetText(VehiclePersona.Alert);
+                labeled_alpr.Component.SetText(DetailedEntity.Entity.VehicleAlert);
                 labeled_alpr.Show();
             } else
             {
@@ -368,19 +396,50 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             cb_action.AddItem("Create Traffic Citation", "TrafficCitation", QuickActions.CREATE_TRAFFIC_CITATION);
             cb_action.AddItem("Create Arrest Report", "ArrestReport", QuickActions.CREATE_ARREST_REPORT_FOR_DRIVER);
 
-            var age = (DateTime.Today - OwnerPersona.BirthDay).Days / 365.25m;
-            labeled_age.Component.Text = ((int)age).ToString();
-            labeled_first_name.Component.Text = OwnerPersona.Forename;
-            labeled_last_name.Component.Text = OwnerPersona.Surname;
+
+            labeled_age.Component.Text = DetailedEntity.Entity.AgeString;
+            labeled_first_name.Component.Text = DetailedEntity.Entity.FirstName;
+            labeled_last_name.Component.Text = DetailedEntity.Entity.LastName;
             labeled_home_address.Component.Text = Owner.GetHomeAddress();
-            labeled_dob.Component.Text = OwnerPersona.BirthDay.ToLocalTimeString(TextBoxExtensions.DateOutputPart.DATE);
-            if (OwnerPersona.Wanted) labeled_wanted_status.Component.Warn("Wanted");
+            labeled_dob.Component.Text = DetailedEntity.Entity.DOBString;
+            if (DetailedEntity.Entity.IsWanted) labeled_wanted_status.Component.Warn("Wanted");
             else labeled_wanted_status.Component.SetText("None");
-            labeled_times_stopped.Component.Text = OwnerPersona.TimesStopped.ToString();
+            labeled_times_stopped.Component.Text = DetailedEntity.Entity.TimesStopped.ToString();
 
             labeled_vehicle_model.Component.Text = Vehicle.Model.Name;
             labeled_vehicle_license.Component.Text = Vehicle.LicensePlate;
-            if (Function.IsTrafficPolicerRunning())
+            if (ComputerPlusEntity.PersonaType == PersonaTypes.BPS)
+            {
+                Function.LogDebug(String.Format("Null check is {0} is type {1}", DetailedEntity.Entity.RawPedPersona == null, DetailedEntity.Entity.RawPedPersona is British_Policing_Script.BritishPersona));
+                var driverPersona = (British_Policing_Script.BritishPersona)DetailedEntity.Entity.RawPedPersona;
+                var vehiclePersona = (British_Policing_Script.VehicleRecords)DetailedEntity.Entity.RawVehiclePersona;
+                Function.LogDebug("Got vehicle persona");
+                Function.LogDebug(String.Format("vehiclePersona null {0}| labeled_vehicle_registration_status null {1} | labeled_vehicle_registration_status.Component null {2}", vehiclePersona == null, labeled_vehicle_registration_status, labeled_vehicle_registration_status.Component));
+                if (vehiclePersona.IsTaxed) labeled_vehicle_registration_status.Component.SetText("No");
+                else labeled_vehicle_registration_status.Component.Warn("Yes");
+                Function.LogDebug("set labeled_vehicle_registration_status");
+
+
+                if (vehiclePersona.Insured) labeled_vehicle_insurance_status.Component.SetText("Yes");
+                else labeled_vehicle_insurance_status.Component.Warn("No");
+                Function.LogDebug("set labeled_vehicle_insurance_status");
+
+                if (vehiclePersona.HasMOT) labeled_vehicle_extra_1.Component.SetText("Yes");
+                else labeled_vehicle_extra_1.Component.Warn("No");
+                Function.LogDebug("set labeled_vehicle_extra_1");
+
+                if (vehiclePersona.HasSORN) labeled_vehicle_extra_2.Component.SetText("Yes");
+                else labeled_vehicle_extra_2.Component.Warn("No");
+                Function.LogDebug("set labeled_vehicle_extra_2");
+
+                if (driverPersona.IsInsuredToDriveVehicle(vehiclePersona))
+                    labeled_ped_extra_1.Component.SetText("Yes");
+                else
+                    labeled_ped_extra_1.Component.Warn("No");
+
+                Function.LogDebug("set labeled_ped_extra_1");
+            }
+            else if (Function.IsTrafficPolicerRunning())
             {
                 if (TrafficPolicerFunction.GetVehicleInsuranceStatus(Vehicle) == EVehicleStatus.Valid) labeled_vehicle_insurance_status.Component.SetText("Valid");
                 else labeled_vehicle_insurance_status.Component.Warn("Expired");

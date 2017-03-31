@@ -50,7 +50,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             if (String.IsNullOrWhiteSpace(name)) return;
             ComputerPedController controller = ComputerPedController.Instance;
             var ped = controller.LookupPersona(name);
-            if (ped != null)
+            if (ped)
             {
                 if (!ped.Ped)
                 {
