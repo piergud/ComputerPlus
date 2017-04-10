@@ -107,8 +107,8 @@ namespace ComputerPlus
                 if (Function.IsBPSRunning())
                 {
                     // @TODO put this back once Albo tests integration
-                   // ComputerPlusEntity.PersonaType = PersonaTypes.BPS;
-                }
+                    ComputerPlusEntity.PersonaType = PersonaTypes.BPS;
+                }                
                 
             }
             else

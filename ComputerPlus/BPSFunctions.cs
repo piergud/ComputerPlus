@@ -6,11 +6,16 @@ using System.Threading.Tasks;
 using British_Policing_Script.API;
 using British_Policing_Script;
 using Rage;
+using ComputerPlus.Controllers.Models;
 
 namespace ComputerPlus
 {
     static class BPSFunctions
     {
+        /*
+        Kept getting crashes about BPS's DLL not being present.. probably because we're returning a strong type..
+        Need to think of possibly returning a custom object?
+         */
         static internal BritishPersona GetBritishPedPersonaForPed(Ped ped)
         {
             return Functions.GetBritishPersona(ped);
@@ -19,11 +24,6 @@ namespace ComputerPlus
         static internal VehicleRecords GetBritishVehicleRecordsForVehicle(Vehicle vehicle)
         {
             return Functions.GetVehicleRecords(vehicle);
-        }
-
-        static internal bool IsInsuredPedForVehicle()
-        {
-
         }
 
         static internal BritishPersona CastPersona(LSPD_First_Response.Engine.Scripting.Entities.Persona PedPersona)
@@ -64,6 +64,21 @@ namespace ComputerPlus
             }
         }
 
+        static public VehiclePersona RecordsToVehiclePersona(VehicleRecords records)
+        {
+            return new VehiclePersona()
+            {
+                IsRegistered = null,
+                HasInsurance = records.Insured,
+                Color = records.CarColour,
+                Alert = new System.Text.RegularExpressions.Regex(@"~\w~").Replace(records.DetermineFlags(), String.Empty),
+                HasValidEmissions = records.HasMOT,
+                IsOffroadOnly = records.HasSORN,
+                IsTaxed = records.IsTaxed,
+                RawPersona = records,
+            };
+        }
+       
 
     }
 }
