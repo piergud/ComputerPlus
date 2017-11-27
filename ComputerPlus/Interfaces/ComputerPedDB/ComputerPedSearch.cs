@@ -8,6 +8,7 @@ using Rage;
 using LSPD_First_Response.Engine.Scripting.Entities;
 using ComputerPlus.Extensions.Gwen;
 using ComputerPlus.Controllers.Models;
+using System.Runtime.ExceptionServices;
 
 namespace ComputerPlus.Interfaces.ComputerPedDB
 {
@@ -74,9 +75,8 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             try
             {
                 ComputerPedController controller = ComputerPedController.Instance;
-                list_collected_ids.Clear();
-                var results = controller.GetRecentSearches()
-                .Where(x => x.Validate()).ToList();
+                list_manual_results.Clear();
+                var results = controller.GetRecentSearches().Where(x => x.Validate()).ToList();
                 //@TODO choose if we want to remove null items from the list -- may cause user confusion
                 if (results != null && results.Count > 0)
                 {
@@ -98,7 +98,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 list_collected_ids.Clear();
                 foreach(var persona in peds.Select(x => controller.LookupPersona(x)))
                 {
-                    list_collected_ids.AddPed(persona);
+                    if (persona != null) list_collected_ids.AddPed(persona);
                 }
             }
             catch (Exception e)
@@ -113,6 +113,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             list_manual_results.UnselectAll();
         }
 
+        [HandleProcessCorruptedStateExceptions]
         private void onListItemSelected(Base sender, ItemSelectedEventArgs arguments)
         {
             try
@@ -121,6 +122,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 {                
                     ComputerPedController.LastSelected = arguments.SelectedItem.UserData as ComputerPlusEntity;                
                     ComputerPedController.ActivatePedView();
+                    Function.AddPedToRecents(ComputerPedController.LastSelected.Ped);
                     ClearSelections();
                 }
                 else

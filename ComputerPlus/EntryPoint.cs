@@ -34,6 +34,9 @@ namespace ComputerPlus
         internal delegate void FacingPedWithPendingTicketsEvent(object sender, Ped ped, List<TrafficCitation> citations);
         internal static FacingPedWithPendingTicketsEvent OnFacingPedWithPendingTickets;
 
+        internal delegate void RecentTextAdded();
+        internal static event RecentTextAdded OnRecentTextAdded;
+
         static Stopwatch sw = new Stopwatch();
 
         private static bool _prompted;
@@ -50,9 +53,6 @@ namespace ComputerPlus
         private GameFiber DetectOpenCloseRequestedFiber;
         private GameFiber DetectOpenSimpleNotepadFiber;
         private GameFiber RunComputerPlusFiber;
-
-
-
 
         public override void Initialize()
         {
@@ -107,7 +107,7 @@ namespace ComputerPlus
                 if (Function.IsBPSRunning())
                 {
                     // @TODO put this back once Albo tests integration
-                   // ComputerPlusEntity.PersonaType = PersonaTypes.BPS;
+                   //ComputerPlusEntity.PersonaType = PersonaTypes.BPS;
                 }
                 
             }
@@ -120,11 +120,11 @@ namespace ComputerPlus
             }
         }
 
-        private async void InitStorage()
+        private void InitStorage()
         {
             try
             {
-                await Globals.OpenStore();
+                Globals.OpenStore();
                 if (Globals.Store != null)
                 {
                     Function.Log("Store was opened");
@@ -139,6 +139,7 @@ namespace ComputerPlus
                 Function.LogCatch(e.Message);
             }
         }
+
         private static void ALPRPlusFunctions_OnAlprPlusMessage(object sender, ALPR_Arguments e)
         {
             ComputerVehicleController.AddAlprScan(e);
@@ -309,9 +310,13 @@ namespace ComputerPlus
                             {
                                 var item = new Rage.Object(new Model("prop_cs_documents_01"), Game.LocalPlayer.Character.Position);
                                 item.AttachTo(Game.LocalPlayer.Character, Game.LocalPlayer.Character.GetBoneIndex(PedBoneId.RightThumb1), new Vector3(item.Model.Dimensions.Length() * 0.4f, 0, 0), Rotator.Zero);
+                                GameFiber.StartNew(delegate
+                                {
+                                    GameFiber.Sleep(1000);
+                                    item.Detach();
+                                    item.Delete();
+                                });
                                 Game.LocalPlayer.Character.Tasks.PlayAnimation("mp_common", "givetake1_b", 3f, AnimationFlags.None).WaitForCompletion();
-                                item.Detach();
-                                item.Delete();
                             });
                             ShouldEndPullover = true;
                             Globals.RemoveTrafficCitationsInHandForPed(sadPed);
@@ -319,11 +324,9 @@ namespace ComputerPlus
                         }
                         else
                         {
-                            
                             //Prompt the user that they can deliver the ticket
                             OnFacingPedWithPendingTickets(null, sadPed, Globals.GetTrafficCitationsInHandForPed(sadPed));
                         }
-
                     }
                 }                
             }
@@ -409,6 +412,8 @@ namespace ComputerPlus
                     GameFiber.Yield();
                 }
                 while (Globals.Navigation.Head != null);
+                EntryPoint.OnRecentTextAdded = null;
+                FreePersistedEntities();
                 ClosePoliceComputer();
                 Globals.Navigation.Clear();
                 IsMainComputerOpen = false;
@@ -422,6 +427,18 @@ namespace ComputerPlus
             GameFiber.Hibernate();
         }
 
+        private void FreePersistedEntities()
+        {
+            foreach (var ent in Globals.persistedRageEntities)
+            {
+                if (ent != null && ent.IsPersistent)
+                {
+                    Function.LogDebug("Freeing Persisted Entities: " + ent.Model.Name);
+                    ent.IsPersistent = false;
+                }
+            }
+            Globals.persistedRageEntities.Clear();
+        }
 
         private void NavOnFormAdded(object sender, NavigationController.NavigationEntry entry)
         {
@@ -602,6 +619,12 @@ namespace ComputerPlus
                     //Function.Log(e.ToString());
                 }
             }
+        }
+
+        public static void AddRecentText(String text)
+        {
+            recent_text.Add(text);
+            OnRecentTextAdded?.Invoke();
         }
 
     }

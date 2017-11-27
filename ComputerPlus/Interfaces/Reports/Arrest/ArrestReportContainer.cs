@@ -71,24 +71,28 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             arrestDetails.ChangeReport(Report);
         }
 
-        private async void SaveClicked(Base sender, ClickedEventArgs arguments)
+        private void SaveClicked(Base sender, ClickedEventArgs arguments)
         {
-            var result = await SaveReport();
+            var result = SaveReport();
             if (result == ArrestReportSaveResult.SAVE_ERROR)
             {
                 var message = (Report.Charges.Count == 0) ? "Report has no charges" : "The Report is missing required information";
                 new MessageBox(this, message);
             }
+            else
+            {
+                this.Window.Close();
+            }
         }
 
-        private async Task<ArrestReportSaveResult> SaveReport()
+        private ArrestReportSaveResult SaveReport()
         {
             try
             {
                 Dictionary<String, String> validationErrors;
                 if (Report.Validate(out validationErrors))
                 {
-                    await ComputerReportsController.SaveArrestRecordAsync(Report);
+                    ComputerReportsController.SaveArrestRecordAsync(Report);
                     if (Report == Globals.PendingArrestReport)
                     {
                         Globals.PendingArrestReport = new ArrestReport();
@@ -143,8 +147,8 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 {
                     btn_clear.Clicked += ClearClicked;
                     btn_save.Clicked += SaveClicked;
-                    btn_clear.SetPosition(tabContainer.Right - btn_save.Width - 10, tabContainer.Y - 10);
-                    btn_save.SetPosition(tabContainer.Right - btn_clear.Width - btn_save.Width - 10 - 10, tabContainer.Y - 10);
+                    btn_clear.SetPosition(tabContainer.Right - btn_save.Width - btn_clear.Width - 10 - 10, tabContainer.Y - 10);
+                    btn_save.SetPosition(tabContainer.Right - btn_save.Width - 10, tabContainer.Y - 10);
                     tabContainer.Margin = new Margin(0, 20, 0, 0);
                 }
                 else
@@ -162,9 +166,9 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             }
         }
 
-        private async void ContainerTabButtonClicked(Base sender, ClickedEventArgs arguments)
+        private void ContainerTabButtonClicked(Base sender, ClickedEventArgs arguments)
         {
-            await SaveReport();
+            SaveReport();
         }
 
         private void ReportDetailsTextChanged(Base sender, EventArgs arguments)

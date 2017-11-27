@@ -1,0 +1,1 @@
+CREATE INDEX citation_ped on TrafficCitation (FirstName, LastName, DOB);

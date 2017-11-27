@@ -46,6 +46,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         internal void InitializeLayout()
         {
+            Function.Log("inside ComputerVehicleViewExtended.InitializeLayout()");
+
             VehicleDetails = new ComputerVehicleDetails(this, DetailedEntity, VehicleViewQuickActionSelected);
             VehicleDetails.Dock = Pos.Fill;
             tabcontrol_details = new TabControl(this);
@@ -89,8 +91,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             this.SetSize(width, height);
             OnPageTabChanged(this, page);
         }
-
-      
 
         private void AddArrestReportsTab()
         {
@@ -149,7 +149,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                         var page = tabcontrol_details.AddPage("Traffic Citations", trafficCitationContainer);
                         page.UserData = Page.PED_TRAFFIC_CITATIONS;
                         page.Clicked += PageTabClicked;
-
                     }
                     else
                     {

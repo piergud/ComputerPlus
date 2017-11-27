@@ -49,7 +49,7 @@ namespace ComputerPlus
         }
         private static RectangleF taskbar = new RectangleF();
         private static Color taskbar_col = Color.FromArgb(160, 0, 0, 0);
-        private static int width, height;
+        // private static int width, height;
         private static string update_text = "";
 
         /// <summary>
@@ -374,7 +374,12 @@ namespace ComputerPlus
         {
             MakeSpaceForNewRecent();
             string name = Functions.GetPersonaForPed(ped).FullName;
-            EntryPoint.recent_text.Add(String.Format("Looked up person: {0}", name));
+            EntryPoint.AddRecentText(String.Format("Looked up person: {0}", name));
+            if (ped != null && !ped.IsPersistent)
+            {
+                ped.IsPersistent = true;
+                Globals.persistedRageEntities.Add(ped);
+            }
         }
 
         /// <summary>
@@ -385,7 +390,12 @@ namespace ComputerPlus
         {
             MakeSpaceForNewRecent();
             string lp = veh.LicensePlate;
-            EntryPoint.recent_text.Add(String.Format("Looked up vehicle: {0} ({1})", lp, GetVehicleDisplayName(veh)));
+            EntryPoint.AddRecentText(String.Format("Looked up vehicle: {0} ({1})", lp, GetVehicleDisplayName(veh)));
+            if (veh != null && !veh.IsPersistent)
+            {
+                veh.IsPersistent = true;
+                Globals.persistedRageEntities.Add(veh);
+            }
         }
 
         /// <summary>
@@ -396,7 +406,7 @@ namespace ComputerPlus
         internal static void AddBackupRequestToRecents(string response, string unit)
         {
             MakeSpaceForNewRecent();
-            EntryPoint.recent_text.Add(String.Format("Requested backup: {0} ({1})", unit, response));
+            EntryPoint.AddRecentText(String.Format("Requested backup: {0} ({1})", unit, response));
         }
 
         /// <summary>

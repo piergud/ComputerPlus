@@ -81,6 +81,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         public void InitializeLayout()
         {
+            Function.Log("inside ComputerVehicleDetails.InitializeLayout()");
+
             labelFont = this.Skin.DefaultFont.Copy();
             labelFont.Size = 14;
             labelFont.Smooth = true;
@@ -109,7 +111,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
             labeled_alpr = new LabeledComponent<Label>(registrationContent, "ALPR", new Label(registrationContent), RelationalPosition.LEFT, RelationalSize.MEDIUM, Configs.BaseFormControlSpacingDouble, labelFont, System.Drawing.Color.Red);
             labeled_owner_alert = new LabeledComponent<Label>(registrationContent, "Alert", new Label(registrationContent),  RelationalPosition.LEFT, RelationalSize.MEDIUM, Configs.BaseFormControlSpacingDouble, labelFont, System.Drawing.Color.Red);
-
 
             ownerInformation = new FormSection(this, "Owner Information");
             ownerContent = new Base(this);
@@ -395,44 +396,47 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             cb_action.AddItem("Blip (30 sec)", "Blip", QuickActions.BLIP_VEHICLE);
             cb_action.AddItem("Create Traffic Citation", "TrafficCitation", QuickActions.CREATE_TRAFFIC_CITATION);
             cb_action.AddItem("Create Arrest Report", "ArrestReport", QuickActions.CREATE_ARREST_REPORT_FOR_DRIVER);
-
-
+            
             labeled_age.Component.Text = DetailedEntity.Entity.AgeString;
             labeled_first_name.Component.Text = DetailedEntity.Entity.FirstName;
             labeled_last_name.Component.Text = DetailedEntity.Entity.LastName;
             labeled_home_address.Component.Text = Owner.GetHomeAddress();
             labeled_dob.Component.Text = DetailedEntity.Entity.DOBString;
-            if (DetailedEntity.Entity.IsWanted) labeled_wanted_status.Component.Warn("Wanted");
-            else labeled_wanted_status.Component.SetText("None");
+            if (DetailedEntity.Entity.IsWanted)
+                labeled_wanted_status.Component.Warn("Wanted");
+            else
+                labeled_wanted_status.Component.SetText("None");
             labeled_times_stopped.Component.Text = DetailedEntity.Entity.TimesStopped.ToString();
 
             labeled_vehicle_model.Component.Text = Vehicle.Model.Name;
             labeled_vehicle_license.Component.Text = Vehicle.LicensePlate;
             if (ComputerPlusEntity.PersonaType == PersonaTypes.BPS)
             {
-                Function.LogDebug(String.Format("Null check is {0} is type {1}", DetailedEntity.Entity.RawPedPersona == null, DetailedEntity.Entity.RawPedPersona is British_Policing_Script.BritishPersona));
-                var driverPersona = (British_Policing_Script.BritishPersona)DetailedEntity.Entity.RawPedPersona;
-                var vehiclePersona = (British_Policing_Script.VehicleRecords)DetailedEntity.Entity.RawVehiclePersona;
-                Function.LogDebug("Got vehicle persona");
-                Function.LogDebug(String.Format("vehiclePersona null {0}| labeled_vehicle_registration_status null {1} | labeled_vehicle_registration_status.Component null {2}", vehiclePersona == null, labeled_vehicle_registration_status, labeled_vehicle_registration_status.Component));
-                if (vehiclePersona.IsTaxed) labeled_vehicle_registration_status.Component.SetText("No");
-                else labeled_vehicle_registration_status.Component.Warn("Yes");
+                if (BritishPolicingFunctions.IsVehicleRegistered(DetailedEntity.Entity.RawVehiclePersona))
+                    labeled_vehicle_registration_status.Component.SetText("No");
+                else
+                    labeled_vehicle_registration_status.Component.Warn("Yes");
                 Function.LogDebug("set labeled_vehicle_registration_status");
 
-
-                if (vehiclePersona.Insured) labeled_vehicle_insurance_status.Component.SetText("Yes");
-                else labeled_vehicle_insurance_status.Component.Warn("No");
+                if (BritishPolicingFunctions.IsVehicleInsured(DetailedEntity.Entity.RawVehiclePersona))
+                    labeled_vehicle_insurance_status.Component.SetText("Yes");
+                else
+                    labeled_vehicle_insurance_status.Component.Warn("No");
                 Function.LogDebug("set labeled_vehicle_insurance_status");
 
-                if (vehiclePersona.HasMOT) labeled_vehicle_extra_1.Component.SetText("Yes");
-                else labeled_vehicle_extra_1.Component.Warn("No");
+                if (BritishPolicingFunctions.DoesVehicleHaveMOT(DetailedEntity.Entity.RawVehiclePersona))
+                    labeled_vehicle_extra_1.Component.SetText("Yes");
+                else
+                    labeled_vehicle_extra_1.Component.Warn("No");
                 Function.LogDebug("set labeled_vehicle_extra_1");
 
-                if (vehiclePersona.HasSORN) labeled_vehicle_extra_2.Component.SetText("Yes");
-                else labeled_vehicle_extra_2.Component.Warn("No");
+                if (BritishPolicingFunctions.DoesVehicleHaveSORN(DetailedEntity.Entity.RawVehiclePersona))
+                    labeled_vehicle_extra_2.Component.SetText("Yes");
+                else
+                    labeled_vehicle_extra_2.Component.Warn("No");
                 Function.LogDebug("set labeled_vehicle_extra_2");
 
-                if (driverPersona.IsInsuredToDriveVehicle(vehiclePersona))
+                if (BritishPolicingFunctions.IsPedInsuredToDriveVehicle(DetailedEntity.Entity.RawPedPersona, DetailedEntity.Entity.RawVehiclePersona))
                     labeled_ped_extra_1.Component.SetText("Yes");
                 else
                     labeled_ped_extra_1.Component.Warn("No");
@@ -446,7 +450,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
                 if (TrafficPolicerFunction.GetVehicleRegistrationStatus(Vehicle) == EVehicleStatus.Valid) labeled_vehicle_registration_status.Component.SetText("Valid");
                 else labeled_vehicle_registration_status.Component.Warn("Expired");
-            } else
+            }
+            else
             {
                 labeled_vehicle_insurance_status.Hide();
                 labeled_vehicle_registration_status.Hide();

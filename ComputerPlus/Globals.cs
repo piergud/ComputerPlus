@@ -8,6 +8,7 @@ using ComputerPlus.Controllers;
 using ComputerPlus.Interfaces.Reports.Models;
 using ComputerPlus.DB;
 using Gwen;
+using Rage;
 
 namespace ComputerPlus
 {
@@ -49,15 +50,16 @@ namespace ComputerPlus
         private static String Clipboard = String.Empty;
         internal static readonly String DefaultAssetPath = @"Plugins\LSPDFR\ComputerPlus\";
         internal static Storage Store;
-        internal static readonly Version SchemaVersion = new Version("1.0.1");
+        internal static readonly Version SchemaVersion = new Version("1.0.2");
         internal static bool? BlockInputNeeded;
+        internal static List<Rage.Entity> persistedRageEntities = new List<Rage.Entity>();
 
         internal static Styles Style = new Styles();
 
-        internal async static Task OpenStore()
+        internal static void OpenStore()
         {
             if (Store == null)
-                Store = await Storage.ReadOrInit();
+                Store = Storage.ReadOrInit();
         }
 
         static public ArrestReport PendingArrestReport
@@ -87,6 +89,12 @@ namespace ComputerPlus
         } = null;
 
         public static VehicleDefinitions VehicleDefinitions
+        {
+            get;
+            internal set;
+        } = null;
+
+        public static List<String> WantedReasons
         {
             get;
             internal set;

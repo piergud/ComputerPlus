@@ -44,7 +44,9 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
         StateControlledTextbox text_first_name, text_last_name,
                text_home_address, text_dob, text_license_status,
-               text_wanted_status, text_times_stopped, text_age;
+               text_wanted_status_false, text_times_stopped, text_age;
+
+        StateControlledMultilineTextbox text_wanted_status_true;
 
         Label lbl_alert, lbl_first_name, lbl_last_name,
                lbl_home_address, lbl_dob, lbl_license_status,
@@ -104,7 +106,8 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             
 
             lbl_wanted_status = new Label(this) { Text = "Wanted Status" };
-            text_wanted_status = new StateControlledTextbox(this) { IsDisabled = true };
+            text_wanted_status_true = new StateControlledMultilineTextbox(this) { IsDisabled = true, IsHidden = true };
+            text_wanted_status_false = new StateControlledTextbox(this) { IsDisabled = true, IsHidden = true };
 
             lbl_times_stopped = new Label(this) { Text = "Times Stopped" };
             text_times_stopped = new StateControlledTextbox(this) { IsDisabled = true };
@@ -113,8 +116,6 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             ped_image_holder.ImageName = Function.DetermineImagePath(Entity.Ped);
             ped_image_holder.ShouldCacheToTexture = true;
 
-
-           
         }
 
         protected override void Layout(GwenSkin.Base skin)
@@ -142,14 +143,19 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             text_dob.SetPosition(text_age.X, text_home_address.Y);
             lbl_dob.SetPosition(text_dob.X, lbl_home_address.Y);
             Gwen.Align.PlaceDownLeft(lbl_license_status, text_home_address, Configs.BaseFormControlSpacingTriple);
-            text_license_status.SmallSize();
+            text_license_status.SetSize(150, 21);
             Gwen.Align.PlaceRightBottom(text_license_status, lbl_license_status, Configs.BaseFormControlSpacing);
-            Gwen.Align.PlaceDownLeft(lbl_wanted_status, lbl_license_status, Configs.BaseFormControlSpacing);
-            text_wanted_status.SmallSize();
-            Gwen.Align.PlaceRightBottom(text_wanted_status, lbl_wanted_status, Configs.BaseFormControlSpacing);
-            Gwen.Align.PlaceDownLeft(lbl_times_stopped, lbl_wanted_status, Configs.BaseFormControlSpacing);
+            Gwen.Align.PlaceDownLeft(lbl_times_stopped, lbl_license_status, Configs.BaseFormControlSpacing);
             text_times_stopped.SmallSize();
-            text_times_stopped.SetPosition(text_wanted_status.X, lbl_times_stopped.Y);
+            Gwen.Align.PlaceRightBottom(text_times_stopped, lbl_times_stopped, Configs.BaseFormControlSpacing);
+
+            Gwen.Align.PlaceDownLeft(lbl_wanted_status, lbl_times_stopped, Configs.BaseFormControlSpacing);
+            text_wanted_status_false.SmallSize();
+
+            Gwen.Align.PlaceRightBottom(text_wanted_status_false, lbl_wanted_status, Configs.BaseFormControlSpacing);
+            text_wanted_status_true.SetSize(332, 90);
+            text_wanted_status_true.SetPosition(text_times_stopped.X, lbl_wanted_status.Y);
+
             ped_image_holder.RegularSizeVertical();
             ped_image_holder.SetPosition(text_age.Right + Configs.BaseFormControlSpacingDouble, text_age.Y + Configs.BaseFormControlSpacingDouble);
 
@@ -166,10 +172,13 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 }
                 else
                 {
-                    text_license_status.Warn(Entity.LicenseStateString);
+                    string licenseStateString = Entity.LicenseStateString;
+                    if (licenseStateString.Equals("Expired"))
+                        text_license_status.Warn(String.Format(@"Expired ({0} days)", Entity.Ped.GetDrivingLicenseExpirationDuration()));
+                    else
+                        text_license_status.Warn(licenseStateString);
                 }
                 
-
                 if (Entity.IsAgent)
                 {
                     lbl_alert.SetText("Federal agent");
@@ -185,8 +194,20 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 text_home_address.Text = Entity.Ped.GetHomeAddress();
                 text_dob.Text = Entity.DOBString;
                 //text_dob.SetToolTipText("MM/dd/yyyy");
-                if (Entity.IsWanted) text_wanted_status.Warn("Wanted");
-                else text_wanted_status.SetText("None");
+
+                if (Entity.IsWanted)
+                {
+                    text_wanted_status_true.IsHidden = false;
+                    text_wanted_status_false.IsHidden = true;
+                    text_wanted_status_true.Warn("Wanted for " + Entity.WantedReason);
+                }
+                else
+                {
+                    text_wanted_status_true.IsHidden = true;
+                    text_wanted_status_false.IsHidden = false;
+                    text_wanted_status_false.SetText("None");
+                }
+
                 text_times_stopped.Text = Entity.TimesStopped.ToString();
             }
         }

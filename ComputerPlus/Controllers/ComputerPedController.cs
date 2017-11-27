@@ -45,7 +45,8 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 
                 Ped pulledOverSuspect = (pulloverHandle != null) ? Functions.GetPulloverSuspect(pulloverHandle) : null;
                 return World.EnumeratePeds().Where(x => {
-                    return (Functions.IsPedArrested(x) || Functions.IsPedGettingArrested(x) || Functions.IsPedStoppedByPlayer(x) || (pulledOverSuspect != null && pulledOverSuspect == x));
+                    return (Functions.IsPedArrested(x) || Functions.IsPedGettingArrested(x) || Functions.IsPedStoppedByPlayer(x) 
+                    || (pulledOverSuspect != null && pulledOverSuspect.IsValid() && pulledOverSuspect == x));
                 }).ToList();
             }
         }
@@ -58,20 +59,27 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
         internal ComputerPlusEntity LookupPersona(String name)
         {
             List<Ped> peds = World.GetAllPeds().ToList();
-            peds.RemoveAll(p => !p || !p.Exists());
+            peds.RemoveAll(p => !p || !p.Exists() || (p != null && !p.IsValid()));
             peds.OrderBy(p => p.DistanceTo(Game.LocalPlayer.Character.Position));
-            var ped = peds.Where(p => p 
-                && Functions.GetPersonaForPed(p).FullName.ToLower().Equals(name, StringComparison.CurrentCultureIgnoreCase))
-                .FirstOrDefault();
+            var ped = peds.Where(p => p && Functions.GetPersonaForPed(p).FullName.ToLower().Equals(name)).FirstOrDefault();
             if (ped == null) return null;
             return ComputerPlusEntity.CreateFrom(ped);
         }
        
         internal ComputerPlusEntity LookupPersona(Ped ped)
         {
-            if (ped == null) return null;
+            if (ped == null || (ped != null && !ped.Exists())) return null;
             var entity = ComputerPlusEntity.CreateFrom(ped);
-            RecentSearches.Add(entity);
+            bool found = false;
+            foreach (var ent in RecentSearches)
+            {
+                if (ent.FullName.Equals(entity.FullName) && ent.DOBString.Equals(entity.DOBString))
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) RecentSearches.Add(entity);
             return entity;
         }
 
@@ -82,28 +90,43 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
         internal static String GetRandomStreetAddress()
         {
-            var rnd = new Random(DateTime.Now.Millisecond);
-            int streetNum = rnd.Next(0, 5000);
+            int streetNum = Globals.Random.Next(0, 5000);
             var street = World.GetStreetName(World.GetStreetHash(World.GetRandomPositionOnStreet()));
             return String.Format("{0} {1}", streetNum, street);
         }
 
-
+        internal static String GetRandomWantedReason()
+        {
+            int index = Globals.Random.Next(0, Globals.WantedReasons.Count);
+            return Globals.WantedReasons[index];
+        }
+        
         internal static void ShowPedSearch()
         {
             Globals.Navigation.Push(new ComputerPedSearch());
         }
 
-        internal async static void ShowPedView()
+        internal static void ShowPedView()
         {
             if (!LastSelected || !LastSelected.Validate()) return;
             try
             {
-                var reports = await ComputerReportsController.GetArrestReportsForPedAsync(LastSelected);
-                var trafficCitations = await ComputerReportsController.GetTrafficCitationsForPedAsync(LastSelected);
-                if (trafficCitations != null) Function.Log("Found citations for ped");
-                else Function.Log("Citations for ped are null");
-                Globals.Navigation.Push(new ComputerPedViewExtended(new DetailedEntity(LastSelected, reports, trafficCitations)));
+                var arrestReports = ComputerReportsController.GetArrestReportsForPedAsync(LastSelected);
+                if (arrestReports != null && arrestReports.Count > 0)
+                    Function.Log("Found arrest report for ped");
+                else
+                    Function.Log("Arrest report for ped are null");
+
+                var trafficCitations = ComputerReportsController.GetTrafficCitationsForPedAsync(LastSelected);
+                if (trafficCitations != null && trafficCitations.Count > 0)
+                    Function.Log("Found citations for ped");
+                else
+                    Function.Log("Citations for ped are null");
+
+                if (LastSelected != null && LastSelected.FullName != null)
+                {
+                    Globals.Navigation.Push(new ComputerPedViewExtended(new DetailedEntity(LastSelected, arrestReports, trafficCitations)));
+                }
             } catch (Exception e)
             {
                 Function.Log(e.ToString());

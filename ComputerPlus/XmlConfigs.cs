@@ -130,6 +130,32 @@ namespace ComputerPlus
             Globals.ChargeDefinitions = arrestChargeDefinitions;
             Globals.CitationDefinitions = citationDefinitions;
             Globals.VehicleDefinitions = vehicleDefinitions;
+            PopulateWarrantCharges(arrestChargeDefinitions);
+        }
+
+        private static void TransverseCharges(String parentName, Charge charge)
+        {
+            if (charge.IsContainer)
+            {
+                String chargeName = parentName + " => " + charge.Name + "\n";
+                charge.Children.ForEach(childCharge => TransverseCharges(chargeName, childCharge));
+            }
+            else
+            {
+                String chargeName = parentName + " => " + String.Format("{0}{1}", charge.Name, charge.IsFelony ? " (F)" : String.Empty);
+                Globals.WantedReasons.Add(chargeName);
+            }
+        }
+
+        private static void PopulateWarrantCharges(ChargeCategories categories)
+        {
+            if (categories == null) return;
+            if (Globals.WantedReasons == null) Globals.WantedReasons = new List<String>();
+            categories.Categories.ForEach(x =>
+            {
+                String categoryName = x.Name + ":\n";
+                x.Charges.ForEach(charge => TransverseCharges(categoryName, charge));
+            });
         }
 
 

@@ -24,7 +24,9 @@ namespace ComputerPlus.DB
 
         private static readonly String DB_FILE_NAME = Function.GetAssetPath("reports.sqlite", true);
         private static readonly String CONNECTION_STRING = String.Format("Data Source={0};Version=3;FKSupport=True;", DB_FILE_NAME);
-        private SQLiteConnectionWithLock mConnectionLock;
+        //private SQLiteConnectionWithLock mConnectionLock;
+        private SQLiteConnection mConnectionLock;
+
 
         Storage()
         {
@@ -43,9 +45,10 @@ namespace ComputerPlus.DB
         {
         }
        
-        public SQLiteAsyncConnection Connection()
+        public SQLiteConnection Connection()
         {
-            return new SQLiteAsyncConnection(() => mConnectionLock);
+            //return new SQLiteAsyncConnection(() => mConnectionLock);
+            return mConnectionLock;
         }
 
         public void Close()
@@ -62,10 +65,10 @@ namespace ComputerPlus.DB
 
         }
 
-        internal async Task<UpgradeStatus> UpgradeSchemaFactory(SchemaVersion toVersion)
+        internal UpgradeStatus UpgradeSchemaFactory(SchemaVersion toVersion)
         {
             try {
-                await Connection().RunInTransactionAsync(new Action<SQLiteConnection>((conn) =>
+                mConnectionLock.RunInTransaction(new Action(() =>
                 {
                     //conn.BeginTransaction();
                     foreach (var lines in toVersion.Plans.Select(x => File.ReadLines(Function.GetAssetPath(String.Format(@"Schemas\{0}.sql", x)))))
@@ -73,10 +76,10 @@ namespace ComputerPlus.DB
                         foreach (var exec in lines)
                         {
                             Function.Log(String.Format("q: {0}", exec));
-                            conn.Execute(exec);
+                            mConnectionLock.Execute(exec);
                         }
-                    }                   
-                    conn.Commit();                    
+                    }
+                    mConnectionLock.Commit();                    
                 }));
                 
                 return UpgradeStatus.COMPLETED;
@@ -88,16 +91,16 @@ namespace ComputerPlus.DB
 
         }
 
-        internal async Task<UpgradeStatus> Upgrade(SchemaVersion toVersion)
+        internal UpgradeStatus Upgrade(SchemaVersion toVersion)
         {
             var connection = this.Connection();
 
             if (!toVersion.Plans.All(x => File.Exists(Function.GetAssetPath(String.Format(@"Schemas\{0}.sql", x))))) return UpgradeStatus.MISSING_SCHEMAS;
-            var transactionProcess = await UpgradeSchemaFactory(toVersion);
+            var transactionProcess = UpgradeSchemaFactory(toVersion);
             if (transactionProcess == UpgradeStatus.COMPLETED)
             {
                 Function.Log(String.Format("Bumping schema version table to {0}", toVersion.id));
-                await connection.InsertAsync(toVersion);
+                connection.Insert(toVersion);
             }
             return transactionProcess;
             
@@ -118,7 +121,7 @@ namespace ComputerPlus.DB
                 .ToList();
         }
 
-        public async static Task<Storage> ReadOrInit()
+        public static Storage ReadOrInit()
         {
             if (File.Exists(DB_FILE_NAME))
             {
@@ -126,12 +129,12 @@ namespace ComputerPlus.DB
                 var store = new Storage();
                 SchemaVersion latestStoredSchema = null;
                 try {
-                    latestStoredSchema = await store.Connection().Table<SchemaVersion>().OrderByDescending(x => x.id).FirstOrDefaultAsync();
+                    latestStoredSchema = store.Connection().Table<SchemaVersion>().OrderByDescending(x => x.id).FirstOrDefault();
                 }
                 catch(Exception e)
                 {
                     Function.Log("Error getting schema version, init new schema");
-                    return await InitNew();
+                    return InitNew();
                 }
                 Function.Log("Store schema version check");
                 if (latestStoredSchema != null)
@@ -152,7 +155,7 @@ namespace ComputerPlus.DB
                         foreach(var update in availableUpdates)
                         {
                             Function.Log(String.Format("Upgrading to {0}", update.id));
-                            await store.UpgradeProcess(update);
+                            store.UpgradeProcess(update);
                         }
                         
                         
@@ -161,22 +164,22 @@ namespace ComputerPlus.DB
                 }
             }
             
-            return await Storage.InitNew();
+            return Storage.InitNew();
             
         }
 
-        private async Task<UpgradeStatus> UpgradeProcess(SchemaVersion schema)
+        private UpgradeStatus UpgradeProcess(SchemaVersion schema)
         {
-            return await Upgrade(schema);
+            return Upgrade(schema);
             
         }
 
-        private async static Task<Storage> InitNew()
+        private static Storage InitNew()
         {
             
             var store = new Storage();
             var initialSchema = SchemaVersion.Create();
-            var result = await store.UpgradeProcess(initialSchema);
+            var result = store.UpgradeProcess(initialSchema);
             Function.Log("Applying initial store schema");
 
             var availableUpdates = DiscoverAvailableUpgrades(initialSchema).ToList();
@@ -185,7 +188,7 @@ namespace ComputerPlus.DB
             foreach (var update in availableUpdates)
             {
                 Function.Log(String.Format("Upgrading to {0}", update.id));
-                await store.UpgradeProcess(update);
+                store.UpgradeProcess(update);
             }
 
             if (result == UpgradeStatus.COMPLETED)
