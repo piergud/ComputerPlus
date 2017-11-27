@@ -8,6 +8,7 @@ using Rage;
 using LSPD_First_Response.Engine.Scripting.Entities;
 using ComputerPlus.Controllers.Models;
 using ComputerPlus.Extensions.Gwen;
+using System.Runtime.ExceptionServices;
 
 namespace ComputerPlus.Interfaces.ComputerVehDB
 {
@@ -83,6 +84,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             this.Close();
         }
 
+        [HandleProcessCorruptedStateExceptions]
         private void onListItemSelected(Base sender, ItemSelectedEventArgs arguments)
         {
             try
@@ -90,6 +92,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 if (arguments.SelectedItem.UserData is ComputerPlusEntity)
                 {
                     ComputerVehicleController.LastSelected = arguments.SelectedItem.UserData as ComputerPlusEntity;
+                    Function.AddVehicleToRecents(ComputerVehicleController.LastSelected.Vehicle);
                     ClearSelections();
                     this.ShowDetailsView();
                 }
@@ -98,7 +101,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             {
                 Function.Log(e.ToString());
             }
-}
+        }
         
 
         private void PopulateAnprList()

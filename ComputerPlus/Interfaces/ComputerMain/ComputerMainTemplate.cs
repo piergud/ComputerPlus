@@ -46,5 +46,10 @@ namespace ComputerPlus
         {
 
         }
+
+        private void cb_toggle_pause_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
