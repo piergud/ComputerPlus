@@ -1,21 +1,12 @@
-﻿using Rage;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ComputerPlus.Interfaces.Reports.Arrest;
 using ComputerPlus.Interfaces.Reports.Citation;
-using ComputerPlus.Extensions.Gwen;
 using ComputerPlus.Interfaces.Reports.Models;
-using SQLiteNetExtensions;
-using SQLiteNetExtensionsAsync.Extensions;
-using ComputerPlus.DB;
 using CodeEngine.Framework.QueryBuilder;
 using QueryEnum = CodeEngine.Framework.QueryBuilder.Enums;
 using ComputerPlus.Controllers.Models;
-using ComputerPlus.Extensions;
-using SystemThreading = System.Threading.Tasks;
+using SQLiteNetExtensions.Extensions;
 
 namespace ComputerPlus.Controllers
 {
@@ -37,16 +28,16 @@ namespace ComputerPlus.Controllers
             Globals.Navigation.Push(container);
         }
 
-        public static async SystemThreading.Task ShowArrestReportView(ArrestReport report)
+        public static void ShowArrestReportView(ArrestReport report)
         {
-            await PopulateArrestLineItems(report);
+            PopulateArrestLineItems(report);
             //Globals.Navigation.Push(new ArrestReportContainer(report));
             Globals.Navigation.Push(new ArrestReportViewContainer(report));
         }
 
-        public static async void ShowArrestReportList()
+        public static void ShowArrestReportList()
         {
-            var reports = await ComputerReportsController.GetAllArrestReportsAsync(0, 0);
+            var reports = ComputerReportsController.GetAllArrestReportsAsync(0, 0);
             if (reports == null) Function.Log("Reports is null");
             else if (Globals.Navigation == null) Function.Log("Global nav is null");
             else
@@ -54,18 +45,18 @@ namespace ComputerPlus.Controllers
         }
 
 
-        public static async Task<ArrestReport> SaveArrestRecordAsync(ArrestReport report)
+        public static ArrestReport SaveArrestRecordAsync(ArrestReport report)
         {
             try
             {
                 if (report.IsNew)
                 {
                     report.id = Guid.NewGuid();
-                    await Globals.Store.Connection().InsertWithChildrenAsync(report, true);
+                    Globals.Store.Connection().InsertWithChildren(report, true);
                 }
                 else
                 {
-                    await Globals.Store.Connection().InsertOrReplaceWithChildrenAsync(report, true);
+                    Globals.Store.Connection().InsertOrReplaceWithChildren(report, true);
                 }
                     
                 return report;
@@ -78,7 +69,7 @@ namespace ComputerPlus.Controllers
         }
 
         
-        public static async Task<List<ArrestReport>> GetAllArrestReportsAsync(int skip = 0, int limit = 20, String orderCol = "", String orderDir = "ASC")
+        public static List<ArrestReport> GetAllArrestReportsAsync(int skip = 0, int limit = 20, String orderCol = "", String orderDir = "ASC")
         {
             try
             {
@@ -88,7 +79,7 @@ namespace ComputerPlus.Controllers
                 query.SelectAllColumns();
                 query.SelectFromTable(DB.Storage.Tables.Names.ArrestReport);
                 query.AddOrderBy(orderCol, QueryEnum.Sorting.Descending);
-                var results = await Globals.Store.Connection().QueryAsync<ArrestReport>(query.BuildQuery());
+                var results = Globals.Store.Connection().Query<ArrestReport>(query.BuildQuery());
                 return results != null ? results : new List<ArrestReport>();
             }
             catch (Exception e)
@@ -98,39 +89,34 @@ namespace ComputerPlus.Controllers
             }
         }
 
-        public static async Task<List<ArrestReport>> GetArrestReportsForPedAsync(ComputerPlusEntity entity)
+        public static List<ArrestReport> GetArrestReportsForPedAsync(ComputerPlusEntity entity)
         {
-            return await GetArrestReportsForPedAsync(entity.FirstName, entity.LastName, entity.DOBString);
+            return GetArrestReportsForPedAsync(entity.FirstName, entity.LastName, entity.DOBString);
         }
 
-        public static async Task<List<ArrestReport>> GetArrestReportsForPedAsync(String firstName = "", String lastName = "", String dob = "")
+        public static List<ArrestReport> GetArrestReportsForPedAsync(String firstName = "", String lastName = "", String dob = "")
         {
             try
             {
                 firstName = firstName.Trim();
                 lastName = lastName.Trim();
                 dob = dob.Trim();
-                //var query = new SelectQueryBuilder();
-                //query.SelectAllColumns();
-                //query.SelectFromTable(DB.Storage.Tables.Names.ArrestReport);
-                //query.AddWhere(DB.Storage.Tables.ArrestReport.FIRST_NAME, QueryEnum.Comparison.Equals, firstName);
-                //query.AddWhere(DB.Storage.Tables.ArrestReport.LAST_NAME, QueryEnum.Comparison.Equals, lastName);
-                //query.AddWhere(DB.Storage.Tables.ArrestReport.DOB, QueryEnum.Comparison.Equals, dob);
-                return await Globals.Store.Connection().GetAllWithChildrenAsync<ArrestReport>(report => report && report.FirstName == firstName && report.LastName == lastName && report.DOB == dob, true);
-                
+                return Globals.Store.Connection()
+                    .GetAllWithChildren<ArrestReport>(report => report.FirstName.Equals(firstName) 
+                        && report.LastName.Equals(lastName) && report.DOB.Equals(dob), true);
             }
             catch (Exception e)
             {
-                Function.LogCatch(e.ToString());
-                return null;
+                //Function.LogCatch(e.ToString());
+                return new List<ArrestReport>();
             }
         }
 
-        public static async Task<bool> PopulateArrestLineItems(ArrestReport report)
+        public static bool PopulateArrestLineItems(ArrestReport report)
         {
             try
             {
-                await Globals.Store.Connection().GetChildrenAsync(report, true);
+                Globals.Store.Connection().GetChildren(report, true);
 
                 return true;
             }
@@ -143,9 +129,9 @@ namespace ComputerPlus.Controllers
 
         /** Traffic Citations **/
 
-        public static async void ShowTrafficCitationList()
+        public static void ShowTrafficCitationList()
         {
-            var citations = await ComputerReportsController.GetAllTrafficCitationsAsync(0, 0);
+            var citations = GetAllTrafficCitationsAsync(0, 0);
             if (citations == null) Function.Log("Citations are null");
             else if (Globals.Navigation == null) Function.Log("Global nav is null");
             else
@@ -183,19 +169,19 @@ namespace ComputerPlus.Controllers
             Globals.Navigation.Push(new TrafficCitationCreateContainer(mCitation, TrafficCitationView.ViewTypes.CREATE, callbackDelegate));
         }
 
-        public static async Task<TrafficCitation> SaveTrafficCitationAsync(TrafficCitation citation)
+        public static TrafficCitation SaveTrafficCitationAsync(TrafficCitation citation)
         {
             try
             {
                 if (citation.IsNew)
                 {
                     citation.id = Guid.NewGuid();
-                    await Globals.Store.Connection().InsertWithChildrenAsync(citation, true);                    
+                    Globals.Store.Connection().InsertWithChildren(citation, true);                    
 
                 }
                 else
                 {
-                    await Globals.Store.Connection().UpdateWithChildrenAsync(citation);
+                    Globals.Store.Connection().UpdateWithChildren(citation);
                 }
                 if (Globals.PendingTrafficCitation != null && Globals.PendingTrafficCitation == citation) Globals.PendingTrafficCitation = null;
                 return citation;
@@ -208,7 +194,7 @@ namespace ComputerPlus.Controllers
         }
 
 
-        public static async Task<List<TrafficCitation>> GetAllTrafficCitationsAsync(int skip = 0, int limit = 20, String orderCol = "", String orderDir = "ASC")
+        public static List<TrafficCitation> GetAllTrafficCitationsAsync(int skip = 0, int limit = 20, String orderCol = "", String orderDir = "ASC")
         {
             try
             {
@@ -218,31 +204,31 @@ namespace ComputerPlus.Controllers
                 query.SelectAllColumns();
                 query.SelectFromTable(DB.Storage.Tables.Names.TrafficCitation);
                 query.AddOrderBy(orderCol, QueryEnum.Sorting.Descending);
-                var results = await Globals.Store.Connection().QueryAsync<TrafficCitation>(query.BuildQuery());
+                var results = Globals.Store.Connection().Query<TrafficCitation>(query.BuildQuery());
                 return results != null ? results : new List<TrafficCitation>();
             }
             catch (Exception e)
             {
-                Function.LogCatch(e.ToString());
+                //Function.LogCatch(e.ToString());
                 return new List<TrafficCitation>();
             }
         }
 
-        public static async Task<List<TrafficCitation>> GetTrafficCitationsForPedAsync(ComputerPlusEntity entity)
+        public static List<TrafficCitation> GetTrafficCitationsForPedAsync(ComputerPlusEntity entity)
         {
-            return await GetTrafficCitationsForPedAsync(entity.FirstName, entity.LastName, entity.DOBString);
+            return GetTrafficCitationsForPedAsync(entity.FirstName, entity.LastName, entity.DOBString);
         }
 
-        public static async Task<List<TrafficCitation>> GetTrafficCitationsForPedAsync(String firstName, String lastName, String dob)
+        public static List<TrafficCitation> GetTrafficCitationsForPedAsync(String firstName, String lastName, String dob)
         {
             try
             {
                 firstName = firstName.Trim();
                 lastName = lastName.Trim();
                 dob = dob.Trim();
-                return await Globals.Store.Connection()
-                    .GetAllWithChildrenAsync<TrafficCitation>(report => report && report.FirstName == firstName && report.LastName == lastName && report.DOB == dob, true);
-
+                return Globals.Store.Connection()
+                    .GetAllWithChildren<TrafficCitation>(citation => citation.FirstName.Equals(firstName)
+                        && citation.LastName.Equals(lastName) && citation.DOB.Equals(dob), true);
             }
             catch (Exception e)
             {
@@ -252,10 +238,10 @@ namespace ComputerPlus.Controllers
         }
        
 
-        public static async Task<DetailedEntity> GetAllReportsForPedAsync(ComputerPlusEntity entity)
+        public static DetailedEntity GetAllReportsForPedAsync(ComputerPlusEntity entity)
         {            
-            var arrests = await GetArrestReportsForPedAsync(entity);
-            var traffic = await GetTrafficCitationsForPedAsync(entity);
+            var arrests = GetArrestReportsForPedAsync(entity);
+            var traffic = GetTrafficCitationsForPedAsync(entity);
             return new DetailedEntity(entity, arrests, traffic);
         }
     }

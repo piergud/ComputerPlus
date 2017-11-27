@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -136,6 +137,7 @@
     <Compile Include="API\Functions.cs" />
     <Compile Include="API\ICalloutData.cs" />
     <Compile Include="API\MDTAPI.cs" />
+    <Compile Include="BritishPolicingFunctions.cs" />
     <Compile Include="Controllers\ComputerReportsController.cs" />
     <Compile Include="Controllers\Models\ALRP_Arguments.cs" />
     <Compile Include="Controllers\Models\ComputerPlusEntity.cs" />
@@ -394,9 +396,9 @@ xcopy /Y "$(ProjectDir)Resources\backgrounds\*.jpg" "$(TargetDir)Packaged\Plugin
 xcopy /Y "$(ProjectDir)Resources\ComputerPlus.ini" "$(TargetDir)Packaged\Plugins\LSPDFR\"
 
 
-xcopy /Y "$(TargetDir)ComputerPlus.dll" "F:\Rockstar Games\Plugins\LSPDFR"
+xcopy /Y "$(TargetDir)ComputerPlus.dll" "D:\Steam\steamapps\common\Grand Theft Auto V\plugins\LSPDFR"
 
-xcopy /Y "$(TargetDir)ComputerPlus.pdb" "F:\Rockstar Games\Plugins\LSPDFR"</PostBuildEvent>
+xcopy /Y "$(TargetDir)ComputerPlus.pdb" "D:\Steam\steamapps\common\Grand Theft Auto V\plugins\LSPDFR"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

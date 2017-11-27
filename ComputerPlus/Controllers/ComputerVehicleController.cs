@@ -48,10 +48,40 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 var handle = Functions.GetCurrentPullover();
                 if (handle != null)
                 {
-                    Ped ped = Functions.GetPulloverSuspect(handle);                    
+                    Ped ped = Functions.GetPulloverSuspect(handle);
                     Vehicle vehicle = FindPedVehicle(ped);                    
                     if (vehicle == null || !vehicle.Exists()) return null;
-                    return LookupVehicle(vehicle);
+
+                    ComputerPlusEntity vehEntity = null;
+                    bool isVehicleLookupSuccess = false;
+                    while (!isVehicleLookupSuccess)
+                    {
+                        try
+                        {
+                            if (vehicle != null && vehicle.IsValid())
+                            {
+                                vehEntity = LookupVehicle(vehicle);
+                                if (vehEntity.FirstName != null && vehEntity.LastName != null && vehEntity.DOBString != null)
+                                {
+                                    isVehicleLookupSuccess = true;
+                                } else
+                                {
+                                    GameFiber.Sleep(500);
+                                }
+                            }
+                            else
+                            {
+                                GameFiber.Sleep(500);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Function.Log("Error while getting vehicle persona");
+                            Function.LogCatch(e.ToString());
+                            GameFiber.Sleep(500);
+                        }
+                    }
+                    return vehEntity;
                 }
                 return null;
             }
@@ -106,12 +136,15 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         {
             if (!vehicle) return null;
             var vehiclePersona = ComputerPlusEntity.GetPersonaForVehicle(vehicle);
+
+            /* this is already called in GetPersonaForVehicle()
             if (Function.IsTrafficPolicerRunning())
             {
                 vehiclePersona.HasInsurance = TrafficPolicerFunction.GetVehicleInsuranceStatus(vehicle) == EVehicleStatus.Valid ? true : false;
                 vehiclePersona.IsRegistered = TrafficPolicerFunction.GetVehicleRegistrationStatus(vehicle) == EVehicleStatus.Valid ? true : false;
             }
-            
+            */
+
             var ownerName = Functions.GetVehicleOwnerName(vehicle);
 
             var driver = vehicle.HasDriver ? vehicle.Driver : null;
@@ -119,14 +152,16 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             if (owner == null && driver != null)
             {
                 owner = ComputerPedController.Instance.LookupPersona(driver);
-            } else
+            } else if (owner == null)
             {
-                while (owner == null)
+                Ped ped = null;
+                while (ped == null)
                 {
                     //Last ditch effort to make C+ happy by just providing any ped as the owner and setting them as the owner
-                    var ped = FindRandomPed();
-                    owner = ComputerPlusEntity.CreateFrom(ped);
+                    ped = FindRandomPed();
+                    if (ped != null && !ped.IsValid()) ped = null;
                 }
+                owner = ComputerPlusEntity.CreateFrom(ped);
             }
 
             if (!owner.Validate())
@@ -135,14 +170,19 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 var parts = ownerName.Split(' ');
                 while(parts.Length < 2)
                 {
-                    parts = LSPD_First_Response.Engine.Scripting.Entities.Persona.GetRandomFullName().Split(' ');
+                    parts = Persona.GetRandomFullName().Split(' ');
                 }
                 Functions.SetVehicleOwnerName(vehicle, String.Format("{0} {1}", parts[0], parts[1]));
                 //Work some magic to fix the fact that the ped hasn't been spawned in game
                 //@TODO parse ped model name for age group and randomize other props
 
-                var ped = FindRandomPed();
-
+                Ped ped = null;
+                while (ped == null)
+                {
+                    //Last ditch effort to make C+ happy by just providing any ped as the owner and setting them as the owner
+                    ped = FindRandomPed();
+                    if (ped != null && !ped.IsValid()) ped = null;
+                }
 
                 var persona = new Persona(
                     ped,
@@ -158,9 +198,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                     false
                     );
                 Functions.SetPersonaForPed(ped, persona);
-                
+                owner = ComputerPlusEntity.CreateFrom(ped);
             }
-
 
             return ComputerPlusEntity.CloneFrom(owner, vehicle, vehiclePersona);
         } 
@@ -337,13 +376,17 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             Globals.Navigation.Push(new ComputerVehicleSearch());
         }
 
-        internal async static void ShowVehicleDetails()
+        internal static void ShowVehicleDetails()
         {
             if (!LastSelected || !LastSelected.Validate()) return;
-            var reports = await ComputerReportsController.GetArrestReportsForPedAsync(LastSelected);
-            var trafficCitations = await ComputerReportsController.GetTrafficCitationsForPedAsync(LastSelected);
+            var reports = ComputerReportsController.GetArrestReportsForPedAsync(LastSelected);
+            var trafficCitations = ComputerReportsController.GetTrafficCitationsForPedAsync(LastSelected);
 
-            Globals.Navigation.Push(new ComputerVehicleViewExtendedContainer(new DetailedEntity(LastSelected, reports, trafficCitations)));
+            if (LastSelected != null && LastSelected.Vehicle != null && LastSelected.Vehicle.IsValid() 
+                && LastSelected.Ped != null && LastSelected.Ped.IsValid())
+            {
+                Globals.Navigation.Push(new ComputerVehicleViewExtendedContainer(new DetailedEntity(LastSelected, reports, trafficCitations)));
+            }
         }
     }
 }

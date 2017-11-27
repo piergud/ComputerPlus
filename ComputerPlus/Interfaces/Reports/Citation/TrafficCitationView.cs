@@ -72,8 +72,15 @@ namespace ComputerPlus.Interfaces.Reports.Citation
 
         ViewTypes ViewType;
 
-        public TrafficCitationView(Base parent, TrafficCitation citation, ViewTypes viewType = ViewTypes.CREATE, TrafficCitationActionEvent actionCallback = null) : base(parent)
+        TrafficCitationCreateContainer Container = null;
+
+        public TrafficCitationView(Base parent, TrafficCitation citation, ViewTypes viewType = ViewTypes.CREATE, TrafficCitationActionEvent actionCallback = null) : this(null, parent, citation, viewType, actionCallback)
         {
+        }
+
+        public TrafficCitationView(TrafficCitationCreateContainer container, Base parent, TrafficCitation citation, ViewTypes viewType = ViewTypes.CREATE, TrafficCitationActionEvent actionCallback = null) : base(parent)
+        {
+            Container = container;
             Citation = citation;
             ViewType = viewType;
             ReadOnly = ViewType != ViewTypes.CREATE;
@@ -283,7 +290,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
         }
 
 
-        private async void ButtonClicked(Base sender, ClickedEventArgs arguments)
+        private void ButtonClicked(Base sender, ClickedEventArgs arguments)
         {
             if (sender == btn_finish.Component || sender == btn_finish_new.Component)
             {
@@ -303,12 +310,11 @@ namespace ComputerPlus.Interfaces.Reports.Citation
                     OnValidationError(sender, failReasons);
                     NotifyForEvent(TrafficCitationSaveResult.SAVE_ERROR);
                 }
-                
                 else
                 {
                     try
                     {
-                        Citation = await ComputerReportsController.SaveTrafficCitationAsync(Citation);                        
+                        Citation = ComputerReportsController.SaveTrafficCitationAsync(Citation);                        
                         //if (Globals.PendingTrafficCitation == Citation) Globals.PendingTrafficCitation = null;
                         NotifyForEvent(TrafficCitationSaveResult.SAVE);
                         
@@ -317,10 +323,13 @@ namespace ComputerPlus.Interfaces.Reports.Citation
                             Globals.PendingTrafficCitation = TrafficCitation.CloneFromCitation(Citation);
                             ChangeCitation(Globals.PendingTrafficCitation);
                             new MessageBox(this, "Saved citation. Creating new");
-                            return;
+                            BindNeeded = true;
+                            BindDataFromCitation();
                         }
-                        BindNeeded = true;
-                        BindDataFromCitation();
+                        else
+                        {
+                            if (this.Container != null) this.Container.Close();
+                        }
                     }
                     catch (Exception e)
                     {
@@ -361,7 +370,6 @@ namespace ComputerPlus.Interfaces.Reports.Citation
              .PlaceBelowOf(headerSection)
              .SizeWidthWith();
 
-            
             labeled_last_name.PlaceRightOf(labeled_first_name, Configs.BaseFormControlSpacingHalf);
             labeled_dob.PlaceRightOf(labeled_last_name, Configs.BaseFormControlSpacingHalf);
             labeled_dob.Component.SmallSize();
@@ -395,7 +403,6 @@ namespace ComputerPlus.Interfaces.Reports.Citation
              .PlaceBelowOf(vehicleInformationSection)
              .SizeWidthWith();            
 
-
             labeled_citation_date.Component.SmallSize();
             labeled_citation_time.Component.SmallSize();
             labeled_citation_city.Component.MediumSize();
@@ -403,7 +410,6 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labeled_citation_date.PlaceRightOf(labeled_citation_street_address, Configs.BaseFormControlSpacingTriple * 2);
             labeled_citation_city.PlaceBelowOf(labeled_citation_street_address);
             labeled_citation_time.Align(labeled_citation_date, labeled_citation_city);
-
 
             citationLocationContent.SizeToChildren(false, true);
             citationLocationSection.SizeToChildren(false, true);
@@ -422,9 +428,6 @@ namespace ComputerPlus.Interfaces.Reports.Citation
                 .SizeChildrenWidth()
                 .SizeChildrenHeight(null, 30);
 
-
-
-
             labeled_citation_details
                 .PlaceBelowOf(labeled_available_citation_reasons)
                 .SizeWidthWith()
@@ -434,7 +437,6 @@ namespace ComputerPlus.Interfaces.Reports.Citation
 
             violationContent.SizeToChildren(false, true);
             violationSection.SizeToChildren(false, true);
-
             
         }
 
@@ -568,7 +570,10 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labeled_dob.SetValueText(Function.ToLocalDateString(Citation.DOB, TextBoxExtensions.DateOutputPart.DATE, TextBoxExtensions.DateOutputPart.DATE));
             labeled_home_address.SetValueText(Citation.HomeAddress);
 
+            labeled_vehicle_type.Component.Enable();
             labeled_vehicle_type.Component.SelectByText(Citation.VehicleType);
+            if (ReadOnly) labeled_vehicle_type.Component.Disable();
+
             labeled_vehicle_model.SetValueText(Citation.VehicleModel);
             labeled_vehicle_color.SetValueText(Citation.VehicleColor);
             labeled_vehicle_tag.SetValueText(Citation.VehicleTag);
@@ -602,7 +607,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
         {
             base.InitializeLayout();
             this.Position = this.GetLaunchPosition();
-            trafficCitationCreate = new TrafficCitationView(this, Citation, ViewType, Callback);
+            trafficCitationCreate = new TrafficCitationView(this, this, Citation, ViewType, Callback);
             trafficCitationCreate.Dock = Gwen.Pos.Fill;
         }
 

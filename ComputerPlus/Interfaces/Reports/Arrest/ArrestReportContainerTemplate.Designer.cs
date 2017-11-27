@@ -35,7 +35,7 @@
             // btn_clear
             // 
             this.btn_clear.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.btn_clear.Location = new System.Drawing.Point(630, 13);
+            this.btn_clear.Location = new System.Drawing.Point(525, 13);
             this.btn_clear.Name = "btn_clear";
             this.btn_clear.Size = new System.Drawing.Size(50, 23);
             this.btn_clear.TabIndex = 0;
@@ -45,11 +45,11 @@
             // btn_save
             // 
             this.btn_save.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.btn_save.Location = new System.Drawing.Point(574, 12);
+            this.btn_save.Location = new System.Drawing.Point(581, 13);
             this.btn_save.Name = "btn_save";
-            this.btn_save.Size = new System.Drawing.Size(50, 23);
+            this.btn_save.Size = new System.Drawing.Size(114, 23);
             this.btn_save.TabIndex = 1;
-            this.btn_save.Text = "Save";
+            this.btn_save.Text = "Save and Close";
             this.btn_save.UseVisualStyleBackColor = true;
             // 
             // ArrestReportContainerTemplate
