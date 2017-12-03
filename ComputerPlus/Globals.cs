@@ -100,6 +100,12 @@ namespace ComputerPlus
             internal set;
         } = null;
 
+        public static List<CitationDefinition> CitationList
+        {
+            get;
+            internal set;
+        } = null;
+
 
         internal static bool HasTrafficTicketsInHand()
         {

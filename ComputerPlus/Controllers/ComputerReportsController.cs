@@ -7,11 +7,16 @@ using CodeEngine.Framework.QueryBuilder;
 using QueryEnum = CodeEngine.Framework.QueryBuilder.Enums;
 using ComputerPlus.Controllers.Models;
 using SQLiteNetExtensions.Extensions;
+using LSPD_First_Response.Mod.API;
+using ComputerPlus.Interfaces.ComputerPedDB;
+using System.Linq;
 
 namespace ComputerPlus.Controllers
 {
     class ComputerReportsController
-    {     
+    {
+        private static int SECONDS_IN_A_DAY = 60 * 60 * 24;
+
         public static void ShowArrestReportCreate()
         {
             if (Globals.PendingArrestReport == null)
@@ -103,7 +108,8 @@ namespace ComputerPlus.Controllers
                 dob = dob.Trim();
                 return Globals.Store.Connection()
                     .GetAllWithChildren<ArrestReport>(report => report.FirstName.Equals(firstName) 
-                        && report.LastName.Equals(lastName) && report.DOB.Equals(dob), true);
+                        && report.LastName.Equals(lastName) && report.DOB.Equals(dob), true)
+                        .OrderByDescending(o => o.ArrestTimeDate).ToList(); ;
             }
             catch (Exception e)
             {
@@ -214,9 +220,31 @@ namespace ComputerPlus.Controllers
             }
         }
 
+        private static TrafficCitation generateRandomCitation(ComputerPlusEntity entity)
+        {
+            TrafficCitation newCitation = TrafficCitation.CreateForPedInVehicle(entity);
+            int randomSeconds = Globals.Random.Next(SECONDS_IN_A_DAY * 7, SECONDS_IN_A_DAY * 700) * -1;
+            newCitation.CitationTimeDate = DateTime.Now.AddSeconds(randomSeconds);
+            newCitation.CitationPos = Rage.World.GetRandomPositionOnStreet();
+            newCitation.CitationStreetAddress = Rage.World.GetStreetName(newCitation.CitationPos);
+            newCitation.CitationCity = Functions.GetZoneAtPosition(newCitation.CitationPos).RealAreaName;
+            newCitation.Citation = ComputerPedController.GetRandomCitation();
+            return SaveTrafficCitationAsync(newCitation);
+        }
+
         public static List<TrafficCitation> GetTrafficCitationsForPedAsync(ComputerPlusEntity entity)
         {
-            return GetTrafficCitationsForPedAsync(entity.FirstName, entity.LastName, entity.DOBString);
+            // check if ped has past citations
+            List<TrafficCitation> pastCitationFromDB = GetTrafficCitationsForPedAsync(entity.FirstName, entity.LastName, entity.DOBString);
+            if (entity.PedPersona.Citations > 0 && pastCitationFromDB.Count == 0)
+            {
+                // generate pastCitation
+                for (var i = 0; i < entity.PedPersona.Citations; i++)
+                {
+                    pastCitationFromDB.Add(generateRandomCitation(entity));
+                }
+            }
+            return pastCitationFromDB.OrderByDescending(o => o.CitationTimeDate).ToList();
         }
 
         public static List<TrafficCitation> GetTrafficCitationsForPedAsync(String firstName, String lastName, String dob)
@@ -237,7 +265,6 @@ namespace ComputerPlus.Controllers
             }
         }
        
-
         public static DetailedEntity GetAllReportsForPedAsync(ComputerPlusEntity entity)
         {            
             var arrests = GetArrestReportsForPedAsync(entity);

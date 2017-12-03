@@ -36,7 +36,6 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             }
         }
 
-
         internal List<Ped> PedsCurrentlyStoppedByPlayer
         {
             get
@@ -62,14 +61,17 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             peds.RemoveAll(p => !p || !p.Exists() || (p != null && !p.IsValid()));
             peds.OrderBy(p => p.DistanceTo(Game.LocalPlayer.Character.Position));
             var ped = peds.Where(p => p && Functions.GetPersonaForPed(p).FullName.ToLower().Equals(name)).FirstOrDefault();
-            if (ped == null) return null;
-            return ComputerPlusEntity.CreateFrom(ped);
+            return LookupPersona(ped);
         }
        
         internal ComputerPlusEntity LookupPersona(Ped ped)
         {
             if (ped == null || (ped != null && !ped.Exists())) return null;
-            var entity = ComputerPlusEntity.CreateFrom(ped);
+            return insertEntityToRecentSearches(ComputerPlusEntity.CreateFrom(ped));
+        }
+
+        internal static ComputerPlusEntity insertEntityToRecentSearches(ComputerPlusEntity entity)
+        {
             bool found = false;
             foreach (var ent in RecentSearches)
             {
@@ -100,7 +102,13 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             int index = Globals.Random.Next(0, Globals.WantedReasons.Count);
             return Globals.WantedReasons[index];
         }
-        
+
+        internal static CitationDefinition GetRandomCitation()
+        {
+            int index = Globals.Random.Next(0, Globals.CitationList.Count);
+            return Globals.CitationList[index];
+        }
+
         internal static void ShowPedSearch()
         {
             Globals.Navigation.Push(new ComputerPedSearch());
