@@ -57,7 +57,8 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 {
                     text_manual_name.Error("The ped no longer exists");
                 }
-                else {
+                else
+                {
                     text_manual_name.ClearError();
                     list_manual_results.AddPed(ped);
                     ComputerPedController.LastSelected = ped;
