@@ -27,7 +27,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
         public enum ViewTypes { CREATE = 0, VIEW = 1 };
 
         internal static int DefaultWidth = 539;
-        internal static int DefaultHeight = 946;
+        internal static int DefaultHeight = 700;
 
         bool ReadOnly;
 
@@ -108,7 +108,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labelFont.Smooth = true;
 
             headerSection = new Base(this);
-            labeled_citation_report_id = LabeledComponent.StatefulTextbox(headerSection, "Traffic Citation", RelationalPosition.LEFT, Configs.BaseFormControlSpacingTriple * 2);
+            labeled_citation_report_id = LabeledComponent.StatefulTextbox(headerSection, "Traffic Citation", RelationalPosition.LEFT, Configs.BaseFormControlSpacing);
             LabeledInputs.Add(labeled_citation_report_id);
 
 
@@ -314,7 +314,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
                 {
                     try
                     {
-                        Citation = ComputerReportsController.SaveTrafficCitationAsync(Citation);                        
+                        Citation = ComputerReportsController.SaveTrafficCitation(Citation);                        
                         //if (Globals.PendingTrafficCitation == Citation) Globals.PendingTrafficCitation = null;
                         NotifyForEvent(TrafficCitationSaveResult.SAVE);
                         

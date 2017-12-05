@@ -386,14 +386,14 @@ namespace ComputerPlus.Controllers.Models
         public bool Validate()
         {
             if (this.CreatedWith.HasFlag(EntityTypes.Ped) && this.CreatedWith.HasFlag(EntityTypes.Vehicle)) {
-                return this.Ped && this.Vehicle;
+                return this.Ped != null && this.Ped.IsValid() && this.Vehicle != null && this.Vehicle.IsValid();
             }
             else if (this.CreatedWith == EntityTypes.Ped){
-                return this.Ped;
+                return this.Ped != null && this.Ped.IsValid();
             }
             else if (this.CreatedWith == EntityTypes.Vehicle)
             {
-                return this.Vehicle;
+                return this.Vehicle != null && this.Vehicle.IsValid();
             }
             return false;
         }

@@ -18,7 +18,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
     class ArrestReportView : Base
     {
         internal static int DefaultWidth = 539;
-        internal static int DefaultHeight = 946;
+        internal static int DefaultHeight = 800;
 
         ArrestReport Report;
         SystemDrawing.Color labelColor = SystemDrawing.Color.Black;

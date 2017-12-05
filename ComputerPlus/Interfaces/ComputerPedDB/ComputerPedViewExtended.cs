@@ -34,7 +34,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
         enum Page { PED_DETAILS, ARRESTS, TRAFFIC_CITATIONS };
 
         private static int DefaultWidth = Configs.BaseFormWidth;
-        private static int DefaultHeight = Configs.BaseFormHeight * 2;
+        private static int DefaultHeight = Configs.BaseFormHeight + 100;
 
         private ComputerPedViewExtended(ComputerPlusEntity entity) : base(entity.FullName, DefaultWidth, DefaultHeight)
         {
@@ -82,11 +82,11 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                     break;
                 case Page.ARRESTS:
                     this.Window.Height = ArrestReportView.DefaultHeight;
-                    this.Window.Width = DefaultWidth;
+                    this.Window.Width = ArrestReportView.DefaultWidth + 300;
                     break;
                 case Page.TRAFFIC_CITATIONS:
                     this.Window.Height = TrafficCitationView.DefaultHeight;
-                    this.Window.Width = TrafficCitationView.DefaultWidth + 200; //200 is from  trafficCitationContainer.LeftDock.Width = 200; 
+                    this.Window.Width = TrafficCitationView.DefaultWidth + 300; //200 is from  trafficCitationContainer.LeftDock.Width = 200; 
                     break;
             }
             this.Position = this.GetLaunchPosition();
@@ -105,8 +105,8 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                         //Function.Log("AddArrestReportsTab with " + Arrests.Length.ToString());
                         
                         arrestsContainer.Dock = Pos.Fill;
-                        arrestsContainer.LeftDock.Width = 200;
-                        arrestsContainer.RightDock.Width = arrestsContainer.Width - arrestsContainer.LeftDock.Width;
+                        arrestsContainer.LeftDock.Width = 300;
+                        //arrestsContainer.RightDock.Width = arrestsContainer.Width - arrestsContainer.LeftDock.Width;
                         arrestReportList = new ArrestReportList(arrestsContainer.LeftDock, Arrests, ChangeArrestReportDetailView, RenderArrestReportListBoxRow);
                         arrestReportView = new ArrestReportView(arrestsContainer, Arrests[0]);
                         arrestsContainer.Name = String.Empty;
@@ -140,7 +140,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                         //Function.Log("AddArrestReportsTab with " + Arrests.Length.ToString());
 
                         trafficCitationContainer.Dock = Pos.Fill;
-                        trafficCitationContainer.LeftDock.Width = 200;
+                        trafficCitationContainer.LeftDock.Width = 300;
                         trafficCitationList = new TrafficCitationList(trafficCitationContainer.LeftDock, TrafficCitations, ChangeTrafficCitationDetailView, RenderTrafficCitationListBoxRow) { ListClickStyle = TrafficCitationList.ListItemClickType.DOUBLE };
                         trafficCitationView = new TrafficCitationView(trafficCitationContainer, TrafficCitations.FirstOrDefault(), TrafficCitationView.ViewTypes.VIEW);
                         trafficCitationContainer.Name = String.Empty;

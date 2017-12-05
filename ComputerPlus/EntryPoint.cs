@@ -77,7 +77,7 @@ namespace ComputerPlus
             Globals.Navigation.OnFormRemoved -= NavOnFormRemoved;
             if (RunComputerPlusFiber.IsRunning()) RunComputerPlusFiber.Abort();
             if (CheckIfCalloutActiveFiber.IsRunning()) CheckIfCalloutActiveFiber.Abort();
-            Globals.Store.Close();
+            //Globals.Store.Close();
         }
 
 
@@ -271,11 +271,13 @@ namespace ComputerPlus
 
                 GameFiber.StartNew(() =>
                 {
-                    if (Game.LocalPlayer.LastVehicle && !Game.LocalPlayer.LastVehicle.HasDriver) Game.DisplayNotification("The driver will wait until you are back in your vehicle before taking off");
-                    while (Game.LocalPlayer.LastVehicle && !Game.LocalPlayer.LastVehicle.HasDriver) GameFiber.Yield(); //Wait for the player to enter their vehicle
+                    if (Game.LocalPlayer.LastVehicle && !Game.LocalPlayer.LastVehicle.HasDriver)
+                        Game.DisplayNotification("The driver will wait until you are back in your vehicle before taking off");
+                    while (Game.LocalPlayer.LastVehicle && !Game.LocalPlayer.LastVehicle.HasDriver)
+                        GameFiber.Sleep(1000); //Wait for the player to enter their vehicle
                     Function.Log("Starting Ending pull over wait timer for ped to leave");
                     var stopAt = DateTime.Now.AddMilliseconds(5000); //have the sadPed drive off in 5 seconds if the traffic stop isnt over
-                    while (DateTime.Now < stopAt) GameFiber.Yield();
+                    while (DateTime.Now < stopAt) GameFiber.Sleep(500);
                     try
                     {
                         

@@ -119,13 +119,13 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             if (!LastSelected || !LastSelected.Validate()) return;
             try
             {
-                var arrestReports = ComputerReportsController.GetArrestReportsForPedAsync(LastSelected);
+                var arrestReports = ComputerReportsController.GetArrestReportsForPed(LastSelected);
                 if (arrestReports != null && arrestReports.Count > 0)
                     Function.Log("Found arrest report for ped");
                 else
                     Function.Log("Arrest report for ped are null");
 
-                var trafficCitations = ComputerReportsController.GetTrafficCitationsForPedAsync(LastSelected);
+                var trafficCitations = ComputerReportsController.GetTrafficCitationsForPed(LastSelected);
                 if (trafficCitations != null && trafficCitations.Count > 0)
                     Function.Log("Found citations for ped");
                 else

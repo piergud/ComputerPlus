@@ -379,8 +379,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         internal static void ShowVehicleDetails()
         {
             if (!LastSelected || !LastSelected.Validate()) return;
-            var reports = ComputerReportsController.GetArrestReportsForPedAsync(LastSelected);
-            var trafficCitations = ComputerReportsController.GetTrafficCitationsForPedAsync(LastSelected);
+            var reports = ComputerReportsController.GetArrestReportsForPed(LastSelected);
+            var trafficCitations = ComputerReportsController.GetTrafficCitationsForPed(LastSelected);
 
             if (LastSelected != null && LastSelected.Vehicle != null && LastSelected.Vehicle.IsValid() 
                 && LastSelected.Ped != null && LastSelected.Ped.IsValid())
