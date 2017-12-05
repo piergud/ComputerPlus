@@ -80,11 +80,11 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                     break;
                 case Page.PED_ARRESTS:
                     height = ArrestReportView.DefaultHeight;
-                    width = DefaultWidth;
+                    width = ArrestReportView.DefaultWidth + 300;
                     break;
                 case Page.PED_TRAFFIC_CITATIONS:
                     height =TrafficCitationView.DefaultHeight;
-                    width = (DefaultWidth - TrafficCitationView.DefaultWidth) + TrafficCitationView.DefaultWidth + 200; //200 is from  trafficCitationContainer.LeftDock.Width = 200; 
+                    width = TrafficCitationView.DefaultWidth + 300; //200 is from  trafficCitationContainer.LeftDock.Width = 200; 
                     break;
                 default: return;
             }
@@ -104,7 +104,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                         //Function.Log("AddArrestReportsTab with " + Arrests.Length.ToString());
 
                         arrestsContainer.Dock = Pos.Fill;
-                        arrestsContainer.LeftDock.Width = 200;
+                        arrestsContainer.LeftDock.Width = 300;
                         arrestReportList = new ArrestReportList(arrestsContainer.LeftDock, DetailedEntity.Arrests, ChangeArrestReportDetailView, RenderArrestReportListBoxRow) { ListClickStyle = ArrestReportList.ListItemClickType.SINGLE };
                         arrestReportView = new ArrestReportView(arrestsContainer, DetailedEntity.Arrests[0]);
                         arrestsContainer.Name = String.Empty;
@@ -138,7 +138,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                         //Function.Log("AddArrestReportsTab with " + Arrests.Length.ToString());
 
                         trafficCitationContainer.Dock = Pos.Fill;
-                        trafficCitationContainer.LeftDock.Width = 200;
+                        trafficCitationContainer.LeftDock.Width = 300;
                         trafficCitationList = new TrafficCitationList(trafficCitationContainer.LeftDock, DetailedEntity.TrafficCitations, ChangeTrafficCitationDetailView, RenderTrafficCitationListBoxRow) { ListClickStyle = TrafficCitationList.ListItemClickType.SINGLE };
                         trafficCitationView = new TrafficCitationView(trafficCitationContainer, DetailedEntity.TrafficCitations.FirstOrDefault(), TrafficCitationView.ViewTypes.VIEW);
                         trafficCitationContainer.Name = String.Empty;

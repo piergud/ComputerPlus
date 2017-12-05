@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-//using System.Data.SQLite;
+using System.Data.SQLite;
 using System.IO;
 using ComputerPlus.DB.Models;
-using SQLite.Net.Async;
-using SQLite.Net;
-using SQLite.Net.Interop;
-using SQLite.Net.Platform.Win32;
+//using SQLite.Net.Async;
+//using SQLite.Net;
+//using SQLite.Net.Interop;
+//using SQLite.Net.Platform.Win32;
 using System.Threading;
 
 using CodeEngine.Framework.QueryBuilder;
@@ -20,21 +20,13 @@ namespace ComputerPlus.DB
     public enum UpgradeStatus { MISSING_SCHEMAS, COMPLETED, BAD_CONNECTION, FAILED };
     class Storage
     {
-        
 
         private static readonly String DB_FILE_NAME = Function.GetAssetPath("reports.sqlite", true);
-        private static readonly String CONNECTION_STRING = String.Format("Data Source={0};Version=3;FKSupport=True;", DB_FILE_NAME);
-        //private SQLiteConnectionWithLock mConnectionLock;
-        private SQLiteConnection mConnectionLock;
-
+        public static readonly String CONNECTION_STRING = String.Format("Data Source={0};Version=3;Pooling=True;Max Pool Size=10;Cache Size=2000;Page Size=1024;", DB_FILE_NAME);
 
         Storage()
         {
-            var interopPath = Function.GetAssetPath(String.Empty, true);
-            Function.Log(String.Format("Attempting to load SQL interop from {0}", interopPath));
             Function.Log(String.Format("Attempting to load SQL db from {0}", DB_FILE_NAME));
-            
-            mConnectionLock = new SQLiteConnectionWithLock(new SQLitePlatformWin32(interopPath), new SQLiteConnectionString(DB_FILE_NAME, false));
         }
 
         private void SqlConnectionDisposed(object sender, EventArgs e)
@@ -44,13 +36,13 @@ namespace ComputerPlus.DB
         ~Storage()
         {
         }
-       
-        public SQLiteConnection Connection()
-        {
-            //return new SQLiteAsyncConnection(() => mConnectionLock);
-            return mConnectionLock;
-        }
 
+        /*        public SQLiteConnection Connection()
+                {
+                    return new SQLiteConnection(CONNECTION_STRING);
+                }
+        */
+        /*
         public void Close()
         {
             //if (m_dbOpened)
@@ -63,50 +55,53 @@ namespace ComputerPlus.DB
             }
             catch { }
 
+        }*/
+
+        public void ExecuteNonQuery(string queryString)
+        {
+            using (var conn = new SQLiteConnection(Storage.CONNECTION_STRING))
+            {
+                conn.Open();
+                using (var command = new SQLiteCommand(queryString, conn))
+                {
+                    command.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
         }
 
         internal UpgradeStatus UpgradeSchemaFactory(SchemaVersion toVersion)
         {
-            try {
-                mConnectionLock.RunInTransaction(new Action(() =>
+            try
+            {
+                foreach (var lines in toVersion.Plans.Select(x => File.ReadLines(Function.GetAssetPath(String.Format(@"Schemas\{0}.sql", x)))))
                 {
-                    //conn.BeginTransaction();
-                    foreach (var lines in toVersion.Plans.Select(x => File.ReadLines(Function.GetAssetPath(String.Format(@"Schemas\{0}.sql", x)))))
+                    foreach (var exec in lines)
                     {
-                        foreach (var exec in lines)
-                        {
-                            Function.Log(String.Format("q: {0}", exec));
-                            mConnectionLock.Execute(exec);
-                        }
+                        Function.Log(String.Format("q: {0}", exec));
+                        ExecuteNonQuery(exec);
                     }
-                    mConnectionLock.Commit();                    
-                }));
-                
+                }
                 return UpgradeStatus.COMPLETED;
             } catch(Exception e)
             {
                 Function.Log(e.ToString());
                 return UpgradeStatus.FAILED;
             }
-
         }
 
         internal UpgradeStatus Upgrade(SchemaVersion toVersion)
         {
-            var connection = this.Connection();
-
             if (!toVersion.Plans.All(x => File.Exists(Function.GetAssetPath(String.Format(@"Schemas\{0}.sql", x))))) return UpgradeStatus.MISSING_SCHEMAS;
             var transactionProcess = UpgradeSchemaFactory(toVersion);
             if (transactionProcess == UpgradeStatus.COMPLETED)
             {
                 Function.Log(String.Format("Bumping schema version table to {0}", toVersion.id));
-                connection.Insert(toVersion);
+                string sql = String.Format("insert into SchemaVersion (id) values ('{0}')", toVersion.id);
+                ExecuteNonQuery(sql);
             }
             return transactionProcess;
-            
         }
-
-        
 
         public static List<SchemaVersion> DiscoverAvailableUpgrades(SchemaVersion minSchema)
         {
@@ -129,13 +124,30 @@ namespace ComputerPlus.DB
                 var store = new Storage();
                 SchemaVersion latestStoredSchema = null;
                 try {
-                    latestStoredSchema = store.Connection().Table<SchemaVersion>().OrderByDescending(x => x.id).FirstOrDefault();
+                    string sql = "select id from SchemaVersion order by id desc";
+                    using (var conn = new SQLiteConnection(Storage.CONNECTION_STRING))
+                    {
+                        conn.Open();
+                        using (var cmd = new SQLiteCommand(sql, conn))
+                        {
+                            using (var reader = cmd.ExecuteReader()) {
+                                while (reader.Read())
+                                {
+                                    latestStoredSchema = new SchemaVersion();
+                                    latestStoredSchema.id = reader.GetString(0);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    //latestStoredSchema = conn.Table<SchemaVersion>().OrderByDescending(x => x.id).FirstOrDefault();
                 }
                 catch(Exception e)
                 {
                     Function.Log("Error getting schema version, init new schema");
                     return InitNew();
                 }
+
                 Function.Log("Store schema version check");
                 if (latestStoredSchema != null)
                 {

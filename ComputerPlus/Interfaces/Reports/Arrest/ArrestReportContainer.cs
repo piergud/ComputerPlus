@@ -92,7 +92,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 Dictionary<String, String> validationErrors;
                 if (Report.Validate(out validationErrors))
                 {
-                    ComputerReportsController.SaveArrestRecordAsync(Report);
+                    ComputerReportsController.SaveArrestRecord(Report);
                     if (Report == Globals.PendingArrestReport)
                     {
                         Globals.PendingArrestReport = new ArrestReport();

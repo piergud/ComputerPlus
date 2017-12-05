@@ -24,6 +24,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -380,20 +381,20 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y "$(TargetDir)ComputerPlus.dll" "$(TargetDir)Packaged\Plugins\LSPDFR\"
-xcopy /Y "$(TargetDir)ComputerPlus.pdb" "$(TargetDir)Packaged\Plugins\LSPDFR\"
-xcopy /Y "$(ProjectDir)Resources\*.dll" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\"
-xcopy /Y "$(ProjectDir)Resources\*.jpg" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\"
-xcopy /Y "$(ProjectDir)Resources\*.xml" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\"
-xcopy /Y "$(ProjectDir)Resources\Schemas\*.sql" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\Schemas\"
-xcopy /Y "$(ProjectDir)Resources\Schemas\*.sql" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\Schemas\"
+    <PostBuildEvent>xcopy /Y "$(TargetDir)ComputerPlus.dll" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\"
+xcopy /Y "$(TargetDir)ComputerPlus.pdb" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\"
+xcopy /Y "$(ProjectDir)Resources\*.dll" "$(TargetDir)Packaged\GTA V Main Folder\"
+xcopy /Y "$(ProjectDir)Resources\*.jpg" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\ComputerPlus\"
+xcopy /Y "$(ProjectDir)Resources\*.xml" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\ComputerPlus\"
+xcopy /Y "$(ProjectDir)Resources\Schemas\*.sql" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\ComputerPlus\Schemas\"
+xcopy /Y "$(ProjectDir)Resources\Schemas\*.sql" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\ComputerPlus\Schemas\"
 copy /Y "$(ProjectDir)..\readme.md" "$(TargetDir)Packaged\readme.txt"
 
-xcopy /Y "$(ProjectDir)Resources\*.png" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\"
-xcopy /Y "$(ProjectDir)Resources\icons\*.png" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\icons\"
-xcopy /Y "$(ProjectDir)Resources\backgrounds\*.jpg" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\backgrounds\"
+xcopy /Y "$(ProjectDir)Resources\*.png" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\ComputerPlus\"
+xcopy /Y "$(ProjectDir)Resources\icons\*.png" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\ComputerPlus\icons\"
+xcopy /Y "$(ProjectDir)Resources\backgrounds\*.jpg" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\ComputerPlus\backgrounds\"
 
-xcopy /Y "$(ProjectDir)Resources\ComputerPlus.ini" "$(TargetDir)Packaged\Plugins\LSPDFR\"
+xcopy /Y "$(ProjectDir)Resources\ComputerPlus.ini" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\"
 
 
 xcopy /Y "$(TargetDir)ComputerPlus.dll" "D:\Steam\steamapps\common\Grand Theft Auto V\plugins\LSPDFR"
