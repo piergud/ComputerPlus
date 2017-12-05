@@ -33,6 +33,7 @@
 
 **Installation**
 Place ComputerPlus.dll, ComputerPlus.ini and the ComputerPlus folder in Plugins\LSPDFR\.
+please make sure to put System.Data.SQLite.dll and SQLite.Interop.dll into your GTA V main folder.	
 LSPDFR will automatically load Computer+ when you go on duty.
 
 **Usage**

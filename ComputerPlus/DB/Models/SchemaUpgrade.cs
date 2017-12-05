@@ -25,7 +25,7 @@ namespace ComputerPlus.DB.Models
         public String id
         {
             get { return mId;  }
-            protected set
+            set
             {
                 mId = value;
                 Version = new Version(mId);
