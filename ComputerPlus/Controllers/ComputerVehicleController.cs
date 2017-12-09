@@ -100,13 +100,13 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         
         public readonly static GameFiber VehicleSearchGameFiber = new GameFiber(ShowVehicleSearch);
         public readonly static GameFiber VehicleDetailsGameFiber = new GameFiber(ShowVehicleDetails);
-        public readonly static GameFiber VanillaAlprGameFiber = new GameFiber(VanillaALPR);
+        //public readonly static GameFiber VanillaAlprGameFiber = new GameFiber(VanillaALPR);
 
-        public static event EventHandler<ALPR_Arguments> OnAlprVanillaMessage;
+        //public static event EventHandler<ALPR_Arguments> OnAlprVanillaMessage;
 
 
-        static event EventHandler OnStopAlprVanilla;
-        static readonly float ReadDistanceThreshold = 5f;
+        //static event EventHandler OnStopAlprVanilla;
+        //static readonly float ReadDistanceThreshold = 5f;
 
         static ComputerVehicleController()
         {
@@ -136,14 +136,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         {
             if (!vehicle) return null;
             var vehiclePersona = ComputerPlusEntity.GetPersonaForVehicle(vehicle);
-
-            /* this is already called in GetPersonaForVehicle()
-            if (Function.IsTrafficPolicerRunning())
-            {
-                vehiclePersona.HasInsurance = TrafficPolicerFunction.GetVehicleInsuranceStatus(vehicle) == EVehicleStatus.Valid ? true : false;
-                vehiclePersona.IsRegistered = TrafficPolicerFunction.GetVehicleRegistrationStatus(vehicle) == EVehicleStatus.Valid ? true : false;
-            }
-            */
 
             var ownerName = Functions.GetVehicleOwnerName(vehicle);
 
@@ -248,7 +240,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             });
             return blip;
         }
-
+/*
         public static void RunVanillaAlpr()
         {
            Function.LogDebug("RunVanillaAlpr");
@@ -269,6 +261,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 VanillaAlprGameFiber.Start();
             }
         }
+
         public static void StopVanillaAlpr()
         {
            Function.LogDebug("StopVanillaAlpr");
@@ -286,12 +279,13 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 }
             }
         }
-
+*/
         public static void AddAlprScan(ALPR_Arguments args)
         {            
           ALPR_Detected.Add(args);
         }
 
+        /*
         private static void  VanillaALPR()
         {
            Function.LogDebug("Executing VanillaALPR");
@@ -364,12 +358,13 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                                 }
                             }
                         }
-                      }
+                    }
                     GameFiber.Yield();
                 }
                 GameFiber.Hibernate();
             }
         }
+        */
         
         internal static void ShowVehicleSearch()
         {
