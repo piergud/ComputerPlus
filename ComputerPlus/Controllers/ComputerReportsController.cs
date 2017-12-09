@@ -318,7 +318,7 @@ namespace ComputerPlus.Controllers
             // check if ped has past arrest reports
             List<ArrestReport> pastArrestFromDB = GetArrestReportsForPed(entity.FirstName, entity.LastName, entity.DOBString);
             generatePastArrestNum(entity);
-            if (entity.Ped.Metadata.pastArrestNum > 0 && pastArrestFromDB.Count == 0)
+            if (Configs.RandomHistoryRecords && entity.Ped.Metadata.pastArrestNum > 0 && pastArrestFromDB.Count == 0)
             {
                 // generate past arrest history
                 for (var i = 0; i < entity.Ped.Metadata.pastArrestNum; i++)
@@ -541,7 +541,7 @@ namespace ComputerPlus.Controllers
         {
             // check if ped has past citations
             List<TrafficCitation> pastCitationFromDB = GetTrafficCitationsForPed(entity.FirstName, entity.LastName, entity.DOBString);
-            if (entity.PedPersona.Citations > 0 && pastCitationFromDB.Count == 0)
+            if (Configs.RandomHistoryRecords && entity.PedPersona.Citations > 0 && pastCitationFromDB.Count == 0)
             {
                 // generate pastCitation
                 for (var i = 0; i < entity.PedPersona.Citations; i++)
