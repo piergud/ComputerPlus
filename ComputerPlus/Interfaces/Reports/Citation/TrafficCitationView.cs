@@ -27,7 +27,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
         public enum ViewTypes { CREATE = 0, VIEW = 1 };
 
         internal static int DefaultWidth = 539;
-        internal static int DefaultHeight = 700;
+        internal static int DefaultHeight = 810;
 
         bool ReadOnly;
 
@@ -431,7 +431,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labeled_citation_details
                 .PlaceBelowOf(labeled_available_citation_reasons)
                 .SizeWidthWith()
-                .SetHeight(150)
+                .SetHeight(120)
                 .SizeChildrenWidth()
                 .SizeChildrenHeight(null, 30);
 
@@ -520,33 +520,35 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             {
                 foreach (var textbox in textboxes) textbox.Disable();
                 labeled_vehicle_type.Component.Disable();
-                labeled_available_citation_reasons.Disable();
-                labeled_citation_details.Disable();
+                labeled_available_citation_reasons.Component.Disable();
+                labeled_citation_details.Component.Disable();
             }
             else
             {
                 foreach (var textbox in textboxes) textbox.Enable();
                 labeled_vehicle_type.Component.Enable();
-                labeled_available_citation_reasons.Enable();
-                labeled_citation_details.Enable();
+                labeled_available_citation_reasons.Component.Enable();
+                labeled_citation_details.Component.Enable();
             }           
 
         }
 
         private void UpdateCitationFromFields()
         {
-            Citation.FirstName = labeled_first_name.Component.Text;
-            Citation.LastName = labeled_last_name.Component.Text;
-            Citation.DOB = labeled_dob.Component.Text;
-            Citation.HomeAddress = labeled_home_address.Component.Text;
-            Citation.VehicleType = labeled_vehicle_type.Component.SelectedItem.Name;
-            Citation.VehicleModel = labeled_vehicle_model.Component.Text;
-            Citation.VehicleColor = labeled_vehicle_color.Component.Text;
-            Citation.VehicleTag = labeled_vehicle_tag.Component.Text;
-            Citation.CitationStreetAddress = labeled_citation_street_address.Component.Text;
-            Citation.CitationCity = labeled_citation_city.Component.Text;
-            Citation.Details = labeled_citation_details.Component.Text;
-            
+            if (!ReadOnly)
+            {
+                Citation.FirstName = labeled_first_name.Component.Text;
+                Citation.LastName = labeled_last_name.Component.Text;
+                Citation.DOB = labeled_dob.Component.Text;
+                Citation.HomeAddress = labeled_home_address.Component.Text;
+                Citation.VehicleType = labeled_vehicle_type.Component.SelectedItem.Name;
+                Citation.VehicleModel = labeled_vehicle_model.Component.Text;
+                Citation.VehicleColor = labeled_vehicle_color.Component.Text;
+                Citation.VehicleTag = labeled_vehicle_tag.Component.Text;
+                Citation.CitationStreetAddress = labeled_citation_street_address.Component.Text;
+                Citation.CitationCity = labeled_citation_city.Component.Text;
+                Citation.Details = labeled_citation_details.Component.Text;
+            }
         }
 
         private void BindDataFromCitation()
@@ -582,6 +584,8 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labeled_citation_city.SetValueText(Citation.CitationCity);
             labeled_citation_date.SetValueText(Function.ToLocalDateString(Citation.CitationDate, TextBoxExtensions.DateOutputPart.DATE, TextBoxExtensions.DateOutputPart.DATE));
             labeled_citation_time.SetValueText(Function.ToLocalDateString(Citation.CitationTime, TextBoxExtensions.DateOutputPart.TIME, TextBoxExtensions.DateOutputPart.TIME));
+
+            labeled_citation_details.Component.ClearText();
             labeled_citation_details.SetValueText(Citation.Details);
 
             DataBound = true;

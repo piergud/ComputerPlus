@@ -46,8 +46,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         internal void InitializeLayout()
         {
-            Function.Log("inside ComputerVehicleViewExtended.InitializeLayout()");
-
             VehicleDetails = new ComputerVehicleDetails(this, DetailedEntity, VehicleViewQuickActionSelected);
             VehicleDetails.Dock = Pos.Fill;
             tabcontrol_details = new TabControl(this);
@@ -105,7 +103,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
                         arrestsContainer.Dock = Pos.Fill;
                         arrestsContainer.LeftDock.Width = 300;
-                        arrestReportList = new ArrestReportList(arrestsContainer.LeftDock, DetailedEntity.Arrests, ChangeArrestReportDetailView, RenderArrestReportListBoxRow) { ListClickStyle = ArrestReportList.ListItemClickType.SINGLE };
+                        arrestReportList = new ArrestReportList(arrestsContainer.LeftDock, DetailedEntity.Arrests, ChangeArrestReportDetailView, RenderArrestReportListBoxRow) { ListClickStyle = ArrestReportList.ListItemClickType.DOUBLE };
                         arrestReportView = new ArrestReportView(arrestsContainer, DetailedEntity.Arrests[0]);
                         arrestsContainer.Name = String.Empty;
                         arrestReportList.Dock = Pos.Fill;
@@ -139,7 +137,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
                         trafficCitationContainer.Dock = Pos.Fill;
                         trafficCitationContainer.LeftDock.Width = 300;
-                        trafficCitationList = new TrafficCitationList(trafficCitationContainer.LeftDock, DetailedEntity.TrafficCitations, ChangeTrafficCitationDetailView, RenderTrafficCitationListBoxRow) { ListClickStyle = TrafficCitationList.ListItemClickType.SINGLE };
+                        trafficCitationList = new TrafficCitationList(trafficCitationContainer.LeftDock, DetailedEntity.TrafficCitations, ChangeTrafficCitationDetailView, RenderTrafficCitationListBoxRow) { ListClickStyle = TrafficCitationList.ListItemClickType.DOUBLE };
                         trafficCitationView = new TrafficCitationView(trafficCitationContainer, DetailedEntity.TrafficCitations.FirstOrDefault(), TrafficCitationView.ViewTypes.VIEW);
                         trafficCitationContainer.Name = String.Empty;
                         trafficCitationList.Dock = Pos.Fill;
@@ -260,7 +258,5 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             this.Window.Height = VehicleView.Height;
             this.Position = this.GetLaunchPosition();
         }
-
-
     }
 }

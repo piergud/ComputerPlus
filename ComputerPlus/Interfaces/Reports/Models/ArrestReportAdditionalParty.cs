@@ -1,16 +1,13 @@
 ﻿using ComputerPlus.Interfaces.Common;
-using SQLite.Net.Attributes;
-using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ComputerPlus.Interfaces.Reports.Models
 {
-    [Table("ArrestReportAdditionalParty")]
+//    [Table("ArrestReportAdditionalParty")]
     public class ArrestReportAdditionalParty : IModelValidable
     {
         public enum PartyTypes { UNKNOWN = 0, ACCOMPLICE = 1, VICTIM = 2, WITNESS = 4 }
@@ -30,15 +27,15 @@ namespace ComputerPlus.Interfaces.Reports.Models
             ReportId = report.id;
         }
 
-        [PrimaryKey]
-        [Column("id")]
+//        [PrimaryKey]
+//        [Column("id")]
         public Guid id
         {
             get;
             set;
         }
 
-        [Ignore]
+//        [Ignore]
         public bool IsNew
         {
             get
@@ -47,30 +44,30 @@ namespace ComputerPlus.Interfaces.Reports.Models
             }
         }
 
-        [Column("PartyType")]
+//        [Column("PartyType")]
         public PartyTypes PartyType
         {
             get;
             internal set;
         } = PartyTypes.UNKNOWN;
 
-        [Column("FirstName")]
-        [Indexed(Name = "arrest_report_additional_party_name")]
+//        [Column("FirstName")]
+//        [Indexed(Name = "arrest_report_additional_party_name")]
         public String FirstName
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Column("LastName")]
-        [Indexed(Name = "arrest_report_additional_party_name")]
+//        [Column("LastName")]
+//        [Indexed(Name = "arrest_report_additional_party_name")]
         public String LastName
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Ignore]
+//        [Ignore]
         public String FullName
         {
             get
@@ -79,17 +76,17 @@ namespace ComputerPlus.Interfaces.Reports.Models
             }
         }
 
-        [Column("DOB")]
-        [Indexed(Name = "arrest_report_additional_party_name")]
+//        [Column("DOB")]
+//        [Indexed(Name = "arrest_report_additional_party_name")]
         public String DOB
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Indexed(Name = "arrest_report_additional_party_report_id")]
-        [ForeignKey(typeof(ArrestReport), Name = "arrestReportId")]
-        [Column("arrestReportId")]
+//        [Indexed(Name = "arrest_report_additional_party_report_id")]
+//        [ForeignKey(typeof(ArrestReport), Name = "arrestReportId")]
+//        [Column("arrestReportId")]
         public Guid ReportId
         {
             get;

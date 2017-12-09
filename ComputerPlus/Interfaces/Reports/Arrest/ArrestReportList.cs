@@ -37,7 +37,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         {
             lock(reports)
             {
-                this.Reports = reports;
+                this.Reports = reports.OrderByDescending(o => o.ArrestTimeDate).ToList();
                 AddReportsToList();
             }
         }
@@ -128,9 +128,6 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             list.Dock = Gwen.Pos.Fill;            
         }
 
-       
-
-   
 
         private void OpenReport(ArrestReport report)
         {
