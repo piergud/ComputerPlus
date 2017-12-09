@@ -131,20 +131,16 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 else
                     Function.Log("Citations for ped are null");
 
-                if (LastSelected != null && LastSelected.FullName != null)
+                if (LastSelected != null && LastSelected.FullName != null && LastSelected.Ped != null && LastSelected.Ped.IsValid())
                 {
-                    Globals.Navigation.Push(new ComputerPedViewExtended(new DetailedEntity(LastSelected, arrestReports, trafficCitations)));
+                    Function.LogDebug("Creating ComputerPedViewExtendedContainer");
+
+                    Globals.Navigation.Push(new ComputerPedViewExtendedContainer(new DetailedEntity(LastSelected, arrestReports, trafficCitations)));
                 }
             } catch (Exception e)
             {
                 Function.Log(e.ToString());
             }
-        }
-
-        protected internal static void ActivatePedView()
-        {
-            //@TODO This method may not be needed
-            ShowPedView();
         }
 
         public static ComputerPedController Instance

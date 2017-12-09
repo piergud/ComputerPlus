@@ -25,7 +25,7 @@ namespace ComputerPlus.Extensions.Rage
         internal static String GetDrivingLicenseExpirationDuration(this Ped ped)
         {
             if (ped.Metadata.DrivingLicenseExpirationDuration == null) {
-                ped.Metadata.DrivingLicenseExpirationDuration = Globals.Random.Next(2, 360).ToString();
+                ped.Metadata.DrivingLicenseExpirationDuration = Globals.Random.Next(2, 720).ToString();
             }
             return ped.Metadata.DrivingLicenseExpirationDuration;
         }

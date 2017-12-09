@@ -84,7 +84,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             this.Close();
         }
 
-        [HandleProcessCorruptedStateExceptions]
         private void onListItemSelected(Base sender, ItemSelectedEventArgs arguments)
         {
             try

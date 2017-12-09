@@ -440,6 +440,18 @@ namespace ComputerPlus.Interfaces.Common
             return new LabeledComponent<StateControlledTextbox>(parent, labelText, new StateControlledTextbox(parent), position, RelationalSize.NONE, spaceBetweenComponents, labelFont, labelColor);
         }
 
+        public static LabeledComponent<StateControlledMultilineTextbox> StatefulMultilineTextBox(Base parent, String labelText, StateControlledMultilineTextbox component, RelationalPosition position = RelationalPosition.LEFT, int? spaceBetweenComponents = null, SystemDrawing.Color labelColor = default(SystemDrawing.Color), Font labelFont = default(Font))
+        {
+            return new LabeledComponent<StateControlledMultilineTextbox>(parent, labelText, component, position, RelationalSize.NONE, spaceBetweenComponents, labelFont, labelColor);
+        }
+
+        public static LabeledComponent<StateControlledMultilineTextbox> StatefulMultilineTextBox(Base parent, String labelText, RelationalPosition position = RelationalPosition.LEFT, int? spaceBetweenComponents = null, SystemDrawing.Color labelColor = default(SystemDrawing.Color), Font labelFont = default(Font))
+        {
+            return new LabeledComponent<StateControlledMultilineTextbox>(parent, labelText, new StateControlledMultilineTextbox(parent), position, RelationalSize.NONE, spaceBetweenComponents, labelFont, labelColor);
+        }
+
+
+        
         public static LabeledComponent<Button> Button(Base parent, String labelText, Button button, RelationalPosition position = RelationalPosition.LEFT, int? spaceBetweenComponents = null, SystemDrawing.Color labelColor = default(SystemDrawing.Color), Font labelFont = default(Font))
         {
             return new LabeledComponent<Button>(parent, labelText, button, position, RelationalSize.NONE, spaceBetweenComponents, labelFont, labelColor);

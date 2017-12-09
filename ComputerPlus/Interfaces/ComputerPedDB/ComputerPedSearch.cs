@@ -62,7 +62,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                     text_manual_name.ClearError();
                     list_manual_results.AddPed(ped);
                     ComputerPedController.LastSelected = ped;
-                    ComputerPedController.ActivatePedView();
+                    this.ShowDetailsView();
                 }
             } else
             {
@@ -114,7 +114,12 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             list_manual_results.UnselectAll();
         }
 
-        [HandleProcessCorruptedStateExceptions]
+        private void ShowDetailsView()
+        {
+            ComputerPedController.ShowPedView();
+            this.Close();
+        }
+
         private void onListItemSelected(Base sender, ItemSelectedEventArgs arguments)
         {
             try
@@ -122,9 +127,9 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 if (arguments.SelectedItem.UserData is ComputerPlusEntity)
                 {                
                     ComputerPedController.LastSelected = arguments.SelectedItem.UserData as ComputerPlusEntity;                
-                    ComputerPedController.ActivatePedView();
                     Function.AddPedToRecents(ComputerPedController.LastSelected.Ped);
                     ClearSelections();
+                    this.ShowDetailsView();
                 }
                 else
                 {
@@ -135,6 +140,6 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             {
                 Function.Log(e.ToString());
             }
-        }      
+        }
     }
 }
