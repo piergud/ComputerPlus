@@ -7,18 +7,14 @@ using System.Threading.Tasks;
 using ComputerPlus.Controllers;
 using ComputerPlus.Controllers.Models;
 using ComputerPlus.DB.Models;
-using ComputerPlus.Extensions;
 using ComputerPlus.Interfaces.Common;
 using ComputerPlus.Extensions.Rage;
-using LSPD_First_Response.Engine.Scripting.Entities;
 using Rage;
-using SQLite.Net.Attributes;
-using SQLiteNetExtensions.Attributes;
 using System.Globalization;
 
 namespace ComputerPlus.Interfaces.Reports.Models
 {
-    [Table("TrafficCitation")]
+//    [Table("TrafficCitation")]
     class TrafficCitation : IModelValidable
     {
         private static TrafficCitation mEmpty = new TrafficCitation();
@@ -27,8 +23,8 @@ namespace ComputerPlus.Interfaces.Reports.Models
             get { return mEmpty; }
         }
 
-        [PrimaryKey]
-        [Column("id")]
+        //        [PrimaryKey]
+        //        [Column("id")]
         public Guid id
         {
             get;
@@ -36,7 +32,7 @@ namespace ComputerPlus.Interfaces.Reports.Models
         }
 
 
-        [Ignore]
+        //[Ignore]
         public bool IsNew
         {
             get
@@ -45,42 +41,42 @@ namespace ComputerPlus.Interfaces.Reports.Models
             }
         }
 
-        [Column("CitationTimeDate")]
+        //[Column("CitationTimeDate")]
         public DateTime CitationTimeDate
         {
             get;
             set;
         }
 
-        [Ignore]
+        //[Ignore]
         public String CitationTime
         {
             get { return CitationTimeDate.ToShortTimeString(); }
         }
 
-        [Ignore]
+        //[Ignore]
         public String CitationDate
         {
             get { return CitationTimeDate.ToShortDateString(); }
         }
 
-        [Column("FirstName")]
-        [Indexed(Name = "citation_ped")]
+        //[Column("FirstName")]
+        //[Indexed(Name = "citation_ped")]
         public String FirstName
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Column("LastName")]
-        [Indexed(Name = "citation_ped")]
+        //[Column("LastName")]
+        //[Indexed(Name = "citation_ped")]
         public String LastName
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Ignore]
+        //[Ignore]
         public String FullName
         {
             get
@@ -89,29 +85,29 @@ namespace ComputerPlus.Interfaces.Reports.Models
             }
         }
 
-        [Column("DOB")]
-        [Indexed(Name = "citation_ped")]
+        //[Column("DOB")]
+        //[Indexed(Name = "citation_ped")]
         public String DOB
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Column("HomeAddress")]
+        //[Column("HomeAddress")]
         public String HomeAddress
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Column("CitationStreetAddress")]
+        //[Column("CitationStreetAddress")]
         public String CitationStreetAddress
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Column("CitationCity")]
+        //[Column("CitationCity")]
         public String CitationCity
         {
             get;
@@ -120,7 +116,7 @@ namespace ComputerPlus.Interfaces.Reports.Models
 
 
 
-        [Ignore]
+        //[Ignore]
         public Vector3 CitationPos
         {
             get
@@ -133,7 +129,7 @@ namespace ComputerPlus.Interfaces.Reports.Models
             {
                 if (value != Vector3.Zero)
                 {
-                    Function.Log("Setting CitationPOS");
+                    //Function.Log("Setting CitationPOS");
                     CitationPosX = value.X;
                     CitationPosY = value.Y;
                     CitationPosZ = value.Z;
@@ -141,77 +137,77 @@ namespace ComputerPlus.Interfaces.Reports.Models
             }
         }
 
-        [Column("CitationPosX")]
+        //[Column("CitationPosX")]
         public float? CitationPosX
         {
             get;
             private set;
         }
 
-        [Column("CitationPosY")]
+        //[Column("CitationPosY")]
         public float? CitationPosY
         {
             get;
             private set;
         }
 
-        [Column("CitationPosZ")]
+        //[Column("CitationPosZ")]
         public float? CitationPosZ
         {
             get;
             private set;
         }
 
-        [Column("VehicleType")]
+        //[Column("VehicleType")]
         public String VehicleType
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Column("VehicleModel")]
+        //[Column("VehicleModel")]
         public String VehicleModel
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Column("VehicleTag")]
+        // [Column("VehicleTag")]
         public String VehicleTag
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Column("VehicleColor")]
+        //[Column("VehicleColor")]
         public String VehicleColor
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Column("CitationReason")]
+        // [Column("CitationReason")]
         public String CitationReason
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Column("CitationAmount")]
+        //[Column("CitationAmount")]
         public double CitationAmount
         {
             get;
             internal set;
         } = 0;
 
-        [Column("Details")]
+        //[Column("Details")]
         public String Details
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Column("IsArrestable")]
+        // [Column("IsArrestable")]
         public bool IsArrestable
         {
             get;
@@ -220,7 +216,7 @@ namespace ComputerPlus.Interfaces.Reports.Models
 
 
         private CitationDefinition mCitation;
-        [Ignore]
+        // [Ignore]
         public CitationDefinition Citation
         {
             get

@@ -7,10 +7,10 @@ using ComputerPlus.Controllers.Models;
 using LSPD_First_Response.Mod.API;
 using ComputerPlus.Interfaces.ComputerPedDB;
 using System.Linq;
-using System.Data.SQLite;
 using Rage;
 using ComputerPlus.DB;
 using static ComputerPlus.Interfaces.Reports.Models.ArrestReportAdditionalParty;
+using LiteDB;
 
 namespace ComputerPlus.Controllers
 {
@@ -37,13 +37,14 @@ namespace ComputerPlus.Controllers
         public static void ShowArrestReportView(ArrestReport report)
         {
             PopulateArrestLineItems(report);
+            PopulateArrestParties(report);
             //Globals.Navigation.Push(new ArrestReportContainer(report));
             Globals.Navigation.Push(new ArrestReportViewContainer(report));
         }
 
         public static void ShowArrestReportList()
         {
-            var reports = GetAllArrestReports(0, 100);
+            var reports = GetAllArrestReports(0, 256);
             if (reports == null) Function.Log("Reports is null");
             else if (Globals.Navigation == null) Function.Log("Global nav is null");
             else
@@ -52,55 +53,75 @@ namespace ComputerPlus.Controllers
 
         private static void insertArrestReport(ArrestReport report)
         {
-            string sql = String.Format("insert into ArrestReport ("
-                + "id, ArrestTime, FirstName, LastName, DOB, HomeAddress, ArrestStreetAddress, ArrestCity, Details)"
-                + " values ('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}')",
-                report.id, report.ArrestTimeDate.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff'Z'"),
-                report.FirstName, report.LastName, report.DOB, report.HomeAddress,
-                report.ArrestStreetAddress, report.ArrestCity, report.Details);
-            Globals.Store.ExecuteNonQuery(sql);
+            var arrestReportCol = Globals.Store.getDB().GetCollection<ArrestReportDoc>("arrestreports");
+            var arrestReportDoc = new ArrestReportDoc
+            {
+                Id = report.id,
+                ArrestTimeDate = report.ArrestTimeDate.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff'Z'"),
+                FirstName = report.FirstName,
+                LastName = report.LastName,
+                DOB = report.DOB,
+                HomeAddress = report.HomeAddress,
+                ArrestStreetAddress = report.ArrestStreetAddress,
+                ArrestCity = report.ArrestCity,
+                Details = report.Details
+            };
+            arrestReportCol.Insert(arrestReportDoc);
         }
 
         private static void updateArrestReport(ArrestReport report)
         {
-            string sql = String.Format("update ArrestReport set "
-                + "ArrestTime='{0}', FirstName='{1}', LastName='{2}', DOB='{3}', "
-                + "HomeAddress='{4}', ArrestStreetAddress='{5}', ArrestCity='{6}', Details='{7}' "
-                + "where id='{8}'",
-                report.ArrestTimeDate.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff'Z'"),
-                report.FirstName, report.LastName, report.DOB, report.HomeAddress,
-                report.ArrestStreetAddress, report.ArrestCity, report.Details, report.id);
-            Globals.Store.ExecuteNonQuery(sql);
+            var arrestReportCol = Globals.Store.getDB().GetCollection<ArrestReportDoc>("arrestreports");
+            var arrestReportDoc = arrestReportCol.FindById(report.id);
+            arrestReportDoc.ArrestTimeDate = report.ArrestTimeDate.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff'Z'");
+            arrestReportDoc.FirstName = report.FirstName;
+            arrestReportDoc.LastName = report.LastName;
+            arrestReportDoc.DOB = report.DOB;
+            arrestReportDoc.HomeAddress = report.HomeAddress;
+            arrestReportDoc.ArrestStreetAddress = report.ArrestStreetAddress;
+            arrestReportDoc.ArrestCity = report.ArrestCity;
+            arrestReportDoc.Details = report.Details;
+
+            arrestReportCol.Update(arrestReportDoc); ;
         }
 
-        private static void insertArrestReportLineItem(ArrestChargeLineItem charge, string arrestReportId)
+        private static void insertArrestReportLineItem(ArrestChargeLineItem charge, Guid arrestReportId)
         {
-            string sql = String.Format("insert into ArrestReportLineItem ("
-                + "id, Charge, FelonyLevel, Note, arrestReportId)"
-                + " values ('{0}','{1}','{2}','{3}','{4}')",
-                charge.id, charge.Charge, (charge.IsFelony ? '1' : '0'), charge.Note, arrestReportId);
-            Globals.Store.ExecuteNonQuery(sql);
+            var arrestReportChargeCol = Globals.Store.getDB().GetCollection<ArrestReportChargeDoc>("arrestreportcharges");
+            var arrestReportChargeDoc = new ArrestReportChargeDoc
+            {
+                Charge = charge.Charge,
+                IsFelony = charge.IsFelony,
+                Note = charge.Note,
+                ArrestReportId = arrestReportId
+            };
+            arrestReportChargeCol.Insert(arrestReportChargeDoc);
         }
 
-        private static void insertArrestReportParties(ArrestReportAdditionalParty party, string arrestReportId)
+        private static void insertArrestReportParties(ArrestReportAdditionalParty party, Guid arrestReportId)
         {
-            string sql = String.Format("insert into ArrestReportAdditionalParty ("
-                + "id, PartyType, FirstName, LastName, DOB, arrestReportId)"
-                + " values ('{0}',{1},'{2}','{3}','{4}','{5}')",
-                party.id, (int)party.PartyType, party.FirstName, party.LastName, party.DOB, arrestReportId);
-            Globals.Store.ExecuteNonQuery(sql);
+            var arrestReportPartyCol = Globals.Store.getDB().GetCollection<ArrestReportPartyDoc>("arrestreportparties");
+            var arrestReportPartyDoc = new ArrestReportPartyDoc
+            {
+                PartyType = (int)party.PartyType,
+                FirstName = party.FirstName,
+                LastName = party.LastName,
+                DOB = party.DOB,
+                ArrestReportId = arrestReportId
+            };
+            arrestReportPartyCol.Insert(arrestReportPartyDoc);
         }
 
-        private static void clearArrestReportLineItem(string arrestReportId)
+        private static void clearArrestReportLineItem(Guid arrestReportId)
         {
-            string sql = String.Format("delete from ArrestReportLineItem where arrestReportId='{0}'", arrestReportId);
-            Globals.Store.ExecuteNonQuery(sql);
+            var arrestReportChargeCol = Globals.Store.getDB().GetCollection<ArrestReportChargeDoc>("arrestreportcharges");
+            arrestReportChargeCol.Delete(x => x.ArrestReportId == arrestReportId);
         }
 
-        private static void clearArrestReportParties(string arrestReportId)
+        private static void clearArrestReportParties(Guid arrestReportId)
         {
-            string sql = String.Format("delete from ArrestReportAdditionalParty where arrestReportId='{0}'", arrestReportId);
-            Globals.Store.ExecuteNonQuery(sql);
+            var arrestReportPartyCol = Globals.Store.getDB().GetCollection<ArrestReportPartyDoc>("arrestreportparties");
+            arrestReportPartyCol.Delete(x => x.ArrestReportId == arrestReportId);
         }
 
         public static ArrestReport SaveArrestRecord(ArrestReport report)
@@ -116,14 +137,14 @@ namespace ComputerPlus.Controllers
                     {
                         foreach (var charge in report.Charges)
                         {
-                            insertArrestReportLineItem(charge, report.id.ToString());
+                            insertArrestReportLineItem(charge, report.id);
                         }
                     }
                     if (report.AdditionalParties != null && report.AdditionalParties.Count > 0)
                     {
                         foreach (var party in report.AdditionalParties)
                         {
-                            insertArrestReportParties(party, report.id.ToString());
+                            insertArrestReportParties(party, report.id);
                         }
                     }
                 }
@@ -132,18 +153,18 @@ namespace ComputerPlus.Controllers
                     updateArrestReport(report);
                     if (report.Charges != null && report.Charges.Count > 0)
                     {
-                        clearArrestReportLineItem(report.id.ToString());
+                        clearArrestReportLineItem(report.id);
                         foreach (var charge in report.Charges)
                         {
-                            insertArrestReportLineItem(charge, report.id.ToString());
+                            insertArrestReportLineItem(charge, report.id);
                         }
                     }
                     if (report.AdditionalParties != null && report.AdditionalParties.Count > 0)
                     {
-                        clearArrestReportParties(report.id.ToString());
+                        clearArrestReportParties(report.id);
                         foreach (var party in report.AdditionalParties)
                         {
-                            insertArrestReportParties(party, report.id.ToString());
+                            insertArrestReportParties(party, report.id);
                         }
                     }
 
@@ -157,73 +178,21 @@ namespace ComputerPlus.Controllers
             }
         }
 
-        private static List<ArrestReport> fetchArrestReports(String sql)
-        {
-            var arrestReports = new List<ArrestReport>();
-            try
-            {
-                using (SQLiteConnection conn = new SQLiteConnection(Storage.CONNECTION_STRING))
-                {
-                    conn.Open();
-                    using (SQLiteCommand cmd = new SQLiteCommand(sql, conn))
-                    {
-                        using (SQLiteDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var arrestReport = new ArrestReport();
-                                arrestReport.id = new Guid((string)reader["id"]);
-                                arrestReport.ChangeArrestTime(DateTime.Parse((string)reader["ArrestTime"]));
-                                arrestReport.FirstName = (string)reader["FirstName"];
-                                arrestReport.LastName = (string)reader["LastName"];
-                                arrestReport.DOB = (string)reader["DOB"];
-                                arrestReport.HomeAddress = (string)reader["HomeAddress"];
-                                arrestReport.ArrestStreetAddress = (string)reader["ArrestStreetAddress"];
-                                arrestReport.ArrestCity = (string)reader["ArrestCity"];
-                                arrestReport.Details = (string)reader["Details"];
-
-                                PopulateArrestReportCharges(arrestReport);
-                                PopulateArrestParties(arrestReport);
-
-                                arrestReports.Add(arrestReport);
-                            }
-                        }
-                    }
-                    conn.Close();
-                }
-            }
-            catch (Exception e)
-            {
-                Function.LogCatch(e.ToString());
-            }
-            return arrestReports;
-        }
-
         private static void PopulateArrestReportCharges(ArrestReport arrestReport)
         {
             try
             {
-                string sql = String.Format("select * from ArrestReportLineItem where arrestReportId = '{0}'", arrestReport.id);
-                using (SQLiteConnection conn = new SQLiteConnection(Storage.CONNECTION_STRING))
+                var arrestReportChargeCol = Globals.Store.getDB().GetCollection<ArrestReportChargeDoc>("arrestreportcharges");
+                List<ArrestReportChargeDoc> chargeDocs = arrestReportChargeCol.Find(x => x.ArrestReportId == arrestReport.id).ToList();
+                foreach (var chargeDoc in chargeDocs)
                 {
-                    conn.Open();
-                    using (SQLiteCommand cmd = new SQLiteCommand(sql, conn))
-                    {
-                        using (SQLiteDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var charge = new ArrestChargeLineItem();
-                                charge.id = new Guid((string)reader["id"]);
-                                charge.Charge = (string)reader["Charge"];
-                                charge.IsFelony = ((string)reader["FelonyLevel"]).Equals("1") ? true : false;
-                                charge.Note = (string)reader["Note"];
-                                charge.ReportId = new Guid((string)reader["arrestReportId"]);
-                                arrestReport.Charges.Add(charge);
-                            }
-                        }
-                    }
-                    conn.Close();
+                    var charge = new ArrestChargeLineItem();
+                    charge.id = chargeDoc.Id;
+                    charge.Charge = chargeDoc.Charge;
+                    charge.IsFelony = chargeDoc.IsFelony;
+                    charge.Note = chargeDoc.Note == null ? String.Empty : chargeDoc.Note;
+                    charge.ReportId = chargeDoc.ArrestReportId;
+                    arrestReport.Charges.Add(charge);
                 }
              }
             catch (Exception e)
@@ -236,28 +205,18 @@ namespace ComputerPlus.Controllers
         {
             try
             {
-                string sql = String.Format("select * from ArrestReportAdditionalParty where arrestReportId = '{0}'", arrestReport.id);
-                using (SQLiteConnection conn = new SQLiteConnection(Storage.CONNECTION_STRING))
+                var arrestReportPartyCol = Globals.Store.getDB().GetCollection<ArrestReportPartyDoc>("arrestreportparties");
+                List<ArrestReportPartyDoc> partyDocs = arrestReportPartyCol.Find(x => x.ArrestReportId == arrestReport.id).ToList();
+                foreach (var partyDoc in partyDocs)
                 {
-                    conn.Open();
-                    using (SQLiteCommand cmd = new SQLiteCommand(sql, conn))
-                    {
-                        using (SQLiteDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var party = new ArrestReportAdditionalParty();
-                                party.id = new Guid((string)reader["id"]);
-                                party.PartyType = (PartyTypes) reader.GetInt32(1);
-                                party.FirstName = (string)reader["FirstName"];
-                                party.LastName = (string)reader["LastName"];
-                                party.DOB = (string)reader["DOB"];
-                                party.ReportId = new Guid((string)reader["arrestReportId"]);
-                                arrestReport.AdditionalParties.Add(party);
-                            }
-                        }
-                    }
-                    conn.Close();
+                    var party = new ArrestReportAdditionalParty();
+                    party.id = partyDoc.Id;
+                    party.PartyType = (PartyTypes)partyDoc.PartyType;
+                    party.FirstName = partyDoc.FirstName == null ? String.Empty : partyDoc.FirstName;
+                    party.LastName = partyDoc.LastName == null ? String.Empty : partyDoc.LastName;
+                    party.DOB = partyDoc.DOB == null ? String.Empty : partyDoc.DOB;
+                    party.ReportId =partyDoc.ArrestReportId;
+                    arrestReport.AdditionalParties.Add(party);
                 }
             }
             catch (Exception e)
@@ -266,15 +225,108 @@ namespace ComputerPlus.Controllers
             }
         }
 
-        public static List<ArrestReport> GetAllArrestReports(int skip = 0, int limit = 100, String orderCol = "", String orderDir = "ASC")
+        private static ArrestReport convertArrestReportDoc(ArrestReportDoc arrestReportDoc)
         {
-            string sql = String.Format("select * from ArrestReport order by ArrestTime desc limit {0}", limit);
-            return fetchArrestReports(sql); ;
+            var arrestReport = new ArrestReport();
+            arrestReport.id = arrestReportDoc.Id;
+            arrestReport.ArrestTimeDate = DateTime.Parse(arrestReportDoc.ArrestTimeDate);
+            arrestReport.FirstName = arrestReportDoc.FirstName;
+            arrestReport.LastName = arrestReportDoc.LastName;
+            arrestReport.DOB = arrestReportDoc.DOB;
+            arrestReport.HomeAddress = arrestReportDoc.HomeAddress;
+            arrestReport.ArrestStreetAddress = arrestReportDoc.ArrestStreetAddress;
+            arrestReport.ArrestCity = arrestReportDoc.ArrestCity;
+            arrestReport.Details = arrestReportDoc.Details == null ? String.Empty : arrestReportDoc.Details;
+
+            return arrestReport;
+        }
+
+        public static List<ArrestReport> GetAllArrestReports(int skip = 0, int limit = 100)
+        {
+            var arrestReports = new List<ArrestReport>();
+            try
+            {
+                var arrestReportCol = Globals.Store.getDB().GetCollection<ArrestReportDoc>("arrestreports");
+                List<ArrestReportDoc> arrestReportDocs = arrestReportCol.Find(Query.All("ArrestTimeDate", Query.Descending), skip, limit).ToList();
+                foreach (var arrestReportDoc in arrestReportDocs)
+                {
+                    var arrestReport = convertArrestReportDoc(arrestReportDoc);
+                    arrestReports.Add(arrestReport);
+                }
+            }
+            catch (Exception e)
+            {
+                Function.LogCatch(e.ToString());
+            }
+            return arrestReports;
+        }
+
+        private static ArrestReport generateRandomArrestReport(ComputerPlusEntity entity)
+        {
+            ArrestReport newArrest = ArrestReport.CreateForPed(entity);
+            int randomSeconds = Globals.Random.Next(SECONDS_IN_A_DAY * 7, SECONDS_IN_A_DAY * 700) * -1;
+            newArrest.ArrestTimeDate = DateTime.Now.AddSeconds(randomSeconds);
+            Vector3 randomLocation = Rage.World.GetRandomPositionOnStreet();
+            newArrest.ArrestStreetAddress = Rage.World.GetStreetName(randomLocation);
+            newArrest.ArrestCity = Functions.GetZoneAtPosition(randomLocation).RealAreaName;
+            newArrest.Details = String.Empty;
+
+            string randomChargeName = ComputerPedController.GetRandomWantedReason();
+            bool isFelony = false;
+            randomChargeName = randomChargeName.Substring(randomChargeName.LastIndexOf("=>") + 3);
+            if (randomChargeName.EndsWith("(F)"))
+            {
+                isFelony = true;
+                randomChargeName = randomChargeName.Substring(0, randomChargeName.Length - 3);
+            }
+            ArrestChargeLineItem newCharge = new ArrestChargeLineItem();
+            newCharge.id = new Guid();
+            newCharge.Charge = randomChargeName;
+            newCharge.IsFelony = isFelony;
+            newCharge.Note = String.Empty;
+            newArrest.Charges.Add(newCharge);
+
+            return SaveArrestRecord(newArrest);
+        }
+
+        private static void generatePastArrestNum(ComputerPlusEntity entity)
+        {
+            if (entity.Ped.Metadata.pastArrestNum == null)
+            {
+                int randomNum = Globals.Random.Next(1, 12);
+                int pastArrestNum;
+                if (entity.PedPersona.Wanted)
+                {
+                    if (randomNum > 5)
+                        pastArrestNum = 0;
+                    else
+                        pastArrestNum = randomNum;
+                }
+                else
+                {
+                    if (randomNum > 2)
+                        pastArrestNum = 0;
+                    else
+                        pastArrestNum = randomNum;
+                }
+                entity.Ped.Metadata.pastArrestNum = pastArrestNum;
+            }
         }
 
         public static List<ArrestReport> GetArrestReportsForPed(ComputerPlusEntity entity)
         {
-            return GetArrestReportsForPed(entity.FirstName, entity.LastName, entity.DOBString);
+            // check if ped has past arrest reports
+            List<ArrestReport> pastArrestFromDB = GetArrestReportsForPed(entity.FirstName, entity.LastName, entity.DOBString);
+            generatePastArrestNum(entity);
+            if (entity.Ped.Metadata.pastArrestNum > 0 && pastArrestFromDB.Count == 0)
+            {
+                // generate past arrest history
+                for (var i = 0; i < entity.Ped.Metadata.pastArrestNum; i++)
+                {
+                    pastArrestFromDB.Add(generateRandomArrestReport(entity));
+                }
+            }
+            return pastArrestFromDB.OrderByDescending(o => o.ArrestTimeDate).ToList();
         }
 
         public static List<ArrestReport> GetArrestReportsForPed(String firstName = "", String lastName = "", String dob = "")
@@ -282,9 +334,24 @@ namespace ComputerPlus.Controllers
             firstName = firstName.Trim();
             lastName = lastName.Trim();
             dob = dob.Trim();
-            string sql = String.Format("select * from ArrestReport where FirstName = '{0}' and LastName = '{1}' "
-                + "and DOB = '{2}' order by ArrestTime desc", firstName, lastName, dob);
-            return fetchArrestReports(sql);
+            var arrestReports = new List<ArrestReport>();
+            try
+            {
+                var arrestReportCol = Globals.Store.getDB().GetCollection<ArrestReportDoc>("arrestreports");
+                List<ArrestReportDoc> arrestReportDocs = arrestReportCol.Find(x => x.DOB.Equals(dob) && x.FirstName.Equals(firstName) && x.LastName.Equals(lastName)).ToList();
+                foreach (var arrestReportDoc in arrestReportDocs)
+                {
+                    var arrestReport = convertArrestReportDoc(arrestReportDoc);
+                    PopulateArrestReportCharges(arrestReport);
+                    PopulateArrestParties(arrestReport);
+                    arrestReports.Add(arrestReport);
+                }
+            }
+            catch (Exception e)
+            {
+                Function.LogCatch(e.ToString());
+            }
+            return arrestReports.OrderByDescending(o => o.ArrestTimeDate).ToList();
         }
 
         public static bool PopulateArrestLineItems(ArrestReport report)
@@ -297,7 +364,7 @@ namespace ComputerPlus.Controllers
 
         public static void ShowTrafficCitationList()
         {
-            var citations = GetAllTrafficCitations(0, 100);
+            var citations = GetAllTrafficCitations(0, 256);
             if (citations == null) Function.Log("Citations are null");
             else if (Globals.Navigation == null) Function.Log("Global nav is null");
             else
@@ -337,35 +404,56 @@ namespace ComputerPlus.Controllers
 
         private static void insertTrafficCitation(TrafficCitation citation)
         {
-            string sql = String.Format("insert into TrafficCitation ("
-               + "id, CitationTimeDate, FirstName, LastName, DOB, HomeAddress, CitationStreetAddress, CitationCity, "
-               + "CitationPosX, CitationPosY, CitationPosZ, VehicleType, VehicleModel, VehicleTag, VehicleColor, "
-               + "CitationReason, CitationAmount, Details, IsArrestable)"
-               + " values ('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}',{8},{9},{10},'{11}',"
-               + "'{12}','{13}','{14}','{15}',{16},'{17}','{18}')",
-               citation.id, citation.CitationTimeDate.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff'Z'"),
-               citation.FirstName, citation.LastName, citation.DOB,
-               citation.HomeAddress, citation.CitationStreetAddress, citation.CitationCity,
-               citation.CitationPosX, citation.CitationPosY, citation.CitationPosZ,
-               citation.VehicleType, citation.VehicleModel, citation.VehicleTag, citation.VehicleColor,
-               citation.CitationReason, citation.CitationAmount, citation.Details, (citation.IsArrestable ? "1" : "0"));
-            Globals.Store.ExecuteNonQuery(sql);
+            var citationCol = Globals.Store.getDB().GetCollection<TrafficCitationDoc>("citations");
+            var citationDoc = new TrafficCitationDoc
+            {
+                Id = citation.id,
+                CitationTimeDate = citation.CitationTimeDate.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff'Z'"),
+                FirstName = citation.FirstName,
+                LastName = citation.LastName,
+                DOB = citation.DOB,
+                HomeAddress = citation.HomeAddress,
+                CitationStreetAddress = citation.CitationStreetAddress,
+                CitationCity = citation.CitationCity,
+                CitationPosX = (float) citation.CitationPosX,
+                CitationPosY = (float) citation.CitationPosY,
+                CitationPosZ = (float) citation.CitationPosZ,
+                VehicleType = citation.VehicleType,
+                VehicleModel = citation.VehicleModel,
+                VehicleTag = citation.VehicleTag,
+                VehicleColor = citation.VehicleColor,
+                CitationReason = citation.CitationReason,
+                CitationAmount = citation.CitationAmount,
+                Details = citation.Details,
+                IsArrestable = citation.IsArrestable
+            };
+            citationCol.Insert(citationDoc);
         }
 
         private static void updateTrafficCitation(TrafficCitation citation)
         {
-            string sql = String.Format("update TrafficCitation "
-                + "set CitationTimeDate='{0}', FirstName='{1}', LastName='{2}', DOB='{3}', HomeAddress='{4}', "
-                + "CitationStreetAddress='{5}', CitationCity ='{6}', CitationPosX='{7}', CitationPosY='{8}', "
-                + "CitationPosZ='{9}', VehicleType='{10}', VehicleModel='{11}', VehicleTag='{12}', VehicleColor='{13}',"
-                + "CitationReason='{14}', CitationAmount='{15}', Details='{16}', IsArrestable='{17}' "
-                + "where id = '{18}'",
-                citation.CitationTimeDate.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff'Z'"), citation.FirstName,
-                citation.LastName, citation.DOB, citation.HomeAddress, citation.CitationStreetAddress, citation.CitationCity,
-                citation.CitationPosX, citation.CitationPosY, citation.CitationPosZ, citation.VehicleType,
-                citation.VehicleModel, citation.VehicleTag, citation.VehicleColor, citation.CitationReason,
-                citation.CitationAmount, citation.Details, (citation.IsArrestable ? "1" : "0"), citation.id);
-            Globals.Store.ExecuteNonQuery(sql);
+            var citationCol = Globals.Store.getDB().GetCollection<TrafficCitationDoc>("citations");
+            var citationDoc = citationCol.FindOne(x => x.Id == citation.id);
+            citationDoc.CitationTimeDate = citation.CitationTimeDate.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff'Z'");
+            citationDoc.FirstName = citation.FirstName;
+            citationDoc.LastName = citation.LastName;
+            citationDoc.DOB = citation.DOB;
+            citationDoc.HomeAddress = citation.HomeAddress;
+            citationDoc.CitationStreetAddress = citation.CitationStreetAddress;
+            citationDoc.CitationCity = citation.CitationCity;
+            citationDoc.CitationPosX = (float)citation.CitationPosX;
+            citationDoc.CitationPosY = (float)citation.CitationPosY;
+            citationDoc.CitationPosZ = (float)citation.CitationPosZ;
+            citationDoc.VehicleType = citation.VehicleType;
+            citationDoc.VehicleModel = citation.VehicleModel;
+            citationDoc.VehicleTag = citation.VehicleTag;
+            citationDoc.VehicleColor = citation.VehicleColor;
+            citationDoc.CitationReason = citation.CitationReason;
+            citationDoc.CitationAmount = citation.CitationAmount;
+            citationDoc.Details = citation.Details;
+            citationDoc.IsArrestable = citation.IsArrestable;
+
+            citationCol.Update(citationDoc);
         }
 
 
@@ -391,47 +479,43 @@ namespace ComputerPlus.Controllers
             return citation;
         }
 
-        private static List<TrafficCitation> fetchTrafficCitations(String sql)
+        private static TrafficCitation convertCitationDoc(TrafficCitationDoc citationDoc)
+        {
+            var citation = new TrafficCitation();
+            citation.id = citationDoc.Id;
+            citation.CitationTimeDate = DateTime.Parse(citationDoc.CitationTimeDate);
+            citation.FirstName = citationDoc.FirstName;
+            citation.LastName = citationDoc.LastName;
+            citation.DOB = citationDoc.DOB;
+            citation.HomeAddress = citationDoc.HomeAddress;
+            citation.CitationStreetAddress = citationDoc.CitationStreetAddress;
+            citation.CitationCity = citationDoc.CitationCity;
+            var posX = citationDoc.CitationPosX;
+            var posY = citationDoc.CitationPosY;
+            var posZ = citationDoc.CitationPosZ;
+            citation.CitationPos = new Vector3(posX, posY, posZ);
+            citation.VehicleType = citationDoc.VehicleType == null ? String.Empty : citationDoc.VehicleType;
+            citation.VehicleModel = citationDoc.VehicleModel;
+            citation.VehicleTag = citationDoc.VehicleTag;
+            citation.VehicleColor = citationDoc.VehicleColor == null ? String.Empty : citationDoc.VehicleColor;
+            citation.CitationReason = citationDoc.CitationReason;
+            citation.CitationAmount = citationDoc.CitationAmount;
+            citation.Details = citationDoc.Details == null ? String.Empty : citationDoc.Details;
+            citation.IsArrestable = citationDoc.IsArrestable;
+
+            return citation;
+        }
+
+        public static List<TrafficCitation> GetAllTrafficCitations(int skip = 0, int limit = 100)
         {
             var citations = new List<TrafficCitation>();
             try
             {
-                using (SQLiteConnection conn = new SQLiteConnection(Storage.CONNECTION_STRING))
+                var citationCol = Globals.Store.getDB().GetCollection<TrafficCitationDoc>("citations");
+                List<TrafficCitationDoc> citationDocs = citationCol.Find(Query.All("CitationTimeDate", Query.Descending), skip, limit).ToList();
+                foreach (var citationDoc in citationDocs)
                 {
-                    conn.Open();
-                    using (SQLiteCommand cmd = new SQLiteCommand(sql, conn))
-                    {
-                        using (SQLiteDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var citation = new TrafficCitation();
-                                citation.id = new Guid((string)reader["id"]);
-                                citation.CitationTimeDate = DateTime.Parse((string)reader["CitationTimeDate"]);
-                                citation.FirstName = (string)reader["FirstName"];
-                                citation.LastName = (string)reader["LastName"];
-                                citation.DOB = (string)reader["DOB"];
-                                citation.HomeAddress = (string)reader["HomeAddress"];
-                                citation.CitationStreetAddress = (string)reader["CitationStreetAddress"];
-                                citation.CitationCity = (string)reader["CitationCity"];
-                                var posX = Convert.ToSingle((double)reader["CitationPosX"]);
-                                var posY = Convert.ToSingle((double)reader["CitationPosY"]);
-                                var posZ = Convert.ToSingle((double)reader["CitationPosZ"]);
-                                citation.CitationPos = new Vector3(posX, posY, posZ);
-                                citation.VehicleType = (string)reader["VehicleType"];
-                                citation.VehicleModel = (string)reader["VehicleModel"];
-                                citation.VehicleTag = (string)reader["VehicleTag"];
-                                citation.VehicleColor = (string)reader["VehicleColor"];
-                                citation.CitationReason = (string)reader["CitationReason"];
-                                citation.CitationAmount = (double)reader["CitationAmount"];
-                                citation.Details = (string)reader["Details"];
-                                citation.IsArrestable = ((string)reader["IsArrestable"]).Equals("1") ? true : false;
-
-                                citations.Add(citation);
-                            }
-                        }
-                    }
-                    conn.Close();
+                    citations.Add(convertCitationDoc(citationDoc));
                 }
             }
             catch (Exception e)
@@ -439,12 +523,6 @@ namespace ComputerPlus.Controllers
                 Function.LogCatch(e.ToString());
             }
             return citations;
-        }
-
-        public static List<TrafficCitation> GetAllTrafficCitations(int skip = 0, int limit = 100, String orderCol = "", String orderDir = "ASC")
-        {
-            string sql = String.Format("select * from TrafficCitation order by CitationTimeDate desc limit {0}", limit);
-            return fetchTrafficCitations(sql);
         }
 
         private static TrafficCitation generateRandomCitation(ComputerPlusEntity entity)
@@ -479,9 +557,21 @@ namespace ComputerPlus.Controllers
             firstName = firstName.Trim();
             lastName = lastName.Trim();
             dob = dob.Trim();
-            string sql = String.Format("select * from TrafficCitation where FirstName = '{0}' and LastName = '{1}' "
-                + "and DOB = '{2}' order by CitationTimeDate desc", firstName, lastName, dob);
-            return fetchTrafficCitations(sql);
+            var citations = new List<TrafficCitation>();
+            try
+            {
+                var citationCol = Globals.Store.getDB().GetCollection<TrafficCitationDoc>("citations");
+                List<TrafficCitationDoc> citationDocs = citationCol.Find(x => x.DOB.Equals(dob) && x.FirstName.Equals(firstName) && x.LastName.Equals(lastName)).ToList();
+                foreach (var citationDoc in citationDocs)
+                {
+                    citations.Add(convertCitationDoc(citationDoc));
+                }
+            }
+            catch (Exception e)
+            {
+                Function.LogCatch(e.ToString());
+            }
+            return citations;
         }
        
         public static DetailedEntity GetAllReportsForPed(ComputerPlusEntity entity)

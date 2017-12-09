@@ -1,5 +1,4 @@
-﻿using SQLite.Net.Attributes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
@@ -9,7 +8,7 @@ namespace ComputerPlus.Interfaces.Reports.Models
     public class Charge
     {
 
-        [PrimaryKey]
+        // [PrimaryKey]
         public Guid id
         {
             get;

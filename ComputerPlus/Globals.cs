@@ -2,13 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ComputerPlus.Controllers;
 using ComputerPlus.Interfaces.Reports.Models;
 using ComputerPlus.DB;
 using Gwen;
-using Rage;
 
 namespace ComputerPlus
 {
@@ -56,12 +53,16 @@ namespace ComputerPlus
 
         internal static Styles Style = new Styles();
 
+        
         internal static void OpenStore()
         {
             if (Store == null)
-                Store = Storage.ReadOrInit();
+            {
+                Store = new Storage();
+                Store.initDB();
+            }
         }
-
+        
         static public ArrestReport PendingArrestReport
         {
             get;

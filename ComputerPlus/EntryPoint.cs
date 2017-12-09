@@ -125,14 +125,6 @@ namespace ComputerPlus
             try
             {
                 Globals.OpenStore();
-                if (Globals.Store != null)
-                {
-                    Function.Log("Store was opened");
-                }
-                else
-                {
-                    Function.Log("Store was not opened");
-                }
             }
             catch (Exception e)
             {

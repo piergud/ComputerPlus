@@ -123,10 +123,8 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             labeled_arrest_city.PlaceBelowOf(labeled_arrest_street_address, Configs.BaseFormControlSpacingDouble);
             labeled_arrest_time.Align(labeled_arrest_date, labeled_arrest_city);
             
-
             arrestLocationContent.SizeToChildren(false, true);
             arrestLocationSection.SizeToChildren(false, true);
-
             
             labeledCharges.PlaceBelowOf(arrestLocationSection).SizeWidthWith().SizeChildrenWidth();
             labeledAdditionalParties.PlaceBelowOf(labeledCharges).SizeWidthWith().SizeChildrenWidth();

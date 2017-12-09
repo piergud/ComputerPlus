@@ -1,16 +1,14 @@
 ﻿using ComputerPlus.DB.Models;
-using SQLite.Net.Attributes;
-using SQLiteNetExtensions.Attributes;
 using System;
 
 
 namespace ComputerPlus.Interfaces.Reports.Models
 {
-    [Table("ArrestReportLineItem")]
+//    [Table("ArrestReportLineItem")]
     public class ArrestChargeLineItem : PersistedModel
     {
 
-        [PrimaryKey]
+//        [PrimaryKey]
         public Guid id
         {
             get;
@@ -23,7 +21,7 @@ namespace ComputerPlus.Interfaces.Reports.Models
             internal set;
         } = String.Empty;
 
-        [Column("FelonyLevel")]
+//        [Column("FelonyLevel")]
         public bool IsFelony
         {
             get;
@@ -37,8 +35,8 @@ namespace ComputerPlus.Interfaces.Reports.Models
         } = String.Empty;
 
 
-        [ForeignKey(typeof(ArrestReport), Name = "arrestReportId")]
-        [Column("arrestReportId")]
+//        [ForeignKey(typeof(ArrestReport), Name = "arrestReportId")]
+//        [Column("arrestReportId")]
         public Guid ReportId
         {
             get;

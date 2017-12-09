@@ -110,7 +110,7 @@
             this.btn_request.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btn_request.BackColor = System.Drawing.Color.Transparent;
             this.btn_request.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.btn_request.ForeColor = System.Drawing.Color.SeaGreen;
+            this.btn_request.ForeColor = System.Drawing.Color.DarkGreen;
             this.btn_request.Location = new System.Drawing.Point(390, 176);
             this.btn_request.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btn_request.Name = "btn_request";
@@ -134,7 +134,7 @@
             this.btn_activecalls.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btn_activecalls.BackColor = System.Drawing.Color.Transparent;
             this.btn_activecalls.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.btn_activecalls.ForeColor = System.Drawing.Color.Sienna;
+            this.btn_activecalls.ForeColor = System.Drawing.Color.DarkGreen;
             this.btn_activecalls.Location = new System.Drawing.Point(514, 176);
             this.btn_activecalls.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btn_activecalls.Name = "btn_activecalls";
@@ -164,7 +164,7 @@
             // 
             // cb_toggle_pause
             // 
-            this.cb_toggle_pause.Location = new System.Drawing.Point(15, 206);
+            this.cb_toggle_pause.Location = new System.Drawing.Point(15, 203);
             this.cb_toggle_pause.Name = "cb_toggle_pause";
             this.cb_toggle_pause.Size = new System.Drawing.Size(120, 17);
             this.cb_toggle_pause.TabIndex = 9;
@@ -174,7 +174,7 @@
             // 
             // cb_toggle_background
             // 
-            this.cb_toggle_background.Location = new System.Drawing.Point(15, 229);
+            this.cb_toggle_background.Location = new System.Drawing.Point(15, 226);
             this.cb_toggle_background.Name = "cb_toggle_background";
             this.cb_toggle_background.Size = new System.Drawing.Size(120, 17);
             this.cb_toggle_background.TabIndex = 10;
@@ -186,7 +186,7 @@
             this.btn_citation_history.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btn_citation_history.BackColor = System.Drawing.Color.Transparent;
             this.btn_citation_history.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.btn_citation_history.ForeColor = System.Drawing.Color.Indigo;
+            this.btn_citation_history.ForeColor = System.Drawing.Color.Maroon;
             this.btn_citation_history.Location = new System.Drawing.Point(187, 213);
             this.btn_citation_history.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btn_citation_history.Name = "btn_citation_history";
@@ -214,7 +214,7 @@
             this.btn_arrest_history.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btn_arrest_history.BackColor = System.Drawing.Color.Transparent;
             this.btn_arrest_history.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.btn_arrest_history.ForeColor = System.Drawing.Color.Indigo;
+            this.btn_arrest_history.ForeColor = System.Drawing.Color.Maroon;
             this.btn_arrest_history.Location = new System.Drawing.Point(352, 213);
             this.btn_arrest_history.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btn_arrest_history.Name = "btn_arrest_history";
