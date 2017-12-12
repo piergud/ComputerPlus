@@ -124,10 +124,9 @@ namespace ComputerPlus.Controllers.Models
                 switch (PersonaType)
                 {
                     case PersonaTypes.BPS: return BritishPolicingFunctions.GetPedPersonaDOBString(PedPersona);
-                    default: return PedPersona.BirthDay.ToDateTimeString(Extensions.Gwen.TextBoxExtensions.DateOutputPart.DATE);
+                    default: return PedPersona.BirthDay.ToDateTimeString(Extensions.Gwen.TextBoxExtensions.DateOutputPart.DATE, false);
                 }
             }
-
         }
 
         public int Age

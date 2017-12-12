@@ -10,7 +10,7 @@ namespace ComputerPlus.Extensions
             return date.ToDateTimeString(output, true);
         }
 
-        internal static String ToDateTimeString(this DateTime date, DateOutputPart output = DateOutputPart.ALL, bool convertToLocal = false)
+        internal static String ToDateTimeString(this DateTime date, DateOutputPart output = DateOutputPart.ALL, bool convertToLocal = true)
         {
             var local = date;
             if (convertToLocal) local = date.ToLocalTime();

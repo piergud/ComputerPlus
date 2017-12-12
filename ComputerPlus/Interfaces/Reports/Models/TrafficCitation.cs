@@ -11,6 +11,7 @@ using ComputerPlus.Interfaces.Common;
 using ComputerPlus.Extensions.Rage;
 using Rage;
 using System.Globalization;
+using static ComputerPlus.Extensions.Gwen.TextBoxExtensions;
 
 namespace ComputerPlus.Interfaces.Reports.Models
 {
@@ -271,7 +272,8 @@ namespace ComputerPlus.Interfaces.Reports.Models
                 }
 
             }
-            var dobPattern = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
+            // var dobPattern = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
+            var dobPattern = Function.DateFormatForPart(DateOutputPart.DATE);
             DateTime parsedDob;
             if (!failReasons.ContainsKey("DOB") && !DateTime.TryParseExact(DOB, dobPattern, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out parsedDob))
             {
@@ -338,6 +340,13 @@ namespace ComputerPlus.Interfaces.Reports.Models
             {
                 citation.VehicleModel = entity.Ped.LastVehicle.Model.Name;
                 citation.VehicleTag = entity.Ped.LastVehicle.LicensePlate;
+                citation.VehicleColor = entity.Ped.LastVehicle.GetVehicleColorName();
+            }
+            else
+            {
+                citation.VehicleModel = "N/A";
+                citation.VehicleTag = "N/A";
+                citation.VehicleColor = "N/A";
             }
             return citation;
         }
