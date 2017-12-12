@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-
+using static ComputerPlus.Extensions.Gwen.TextBoxExtensions;
 
 namespace ComputerPlus.Interfaces.Reports.Models
 {
@@ -193,7 +193,8 @@ namespace ComputerPlus.Interfaces.Reports.Models
 
             }
             if (Charges.Count == 0) failReasons.Add("Charges", "There must be a charge");
-            var dobPattern = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
+            // var dobPattern = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
+            var dobPattern = Function.DateFormatForPart(DateOutputPart.DATE);
             DateTime parsedDob;
             if (!failReasons.ContainsKey("DOB") && !DateTime.TryParseExact(DOB, dobPattern, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out parsedDob))
             {

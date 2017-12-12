@@ -495,8 +495,8 @@ namespace ComputerPlus.Controllers
             var posZ = citationDoc.CitationPosZ;
             citation.CitationPos = new Vector3(posX, posY, posZ);
             citation.VehicleType = citationDoc.VehicleType == null ? String.Empty : citationDoc.VehicleType;
-            citation.VehicleModel = citationDoc.VehicleModel;
-            citation.VehicleTag = citationDoc.VehicleTag;
+            citation.VehicleModel = citationDoc.VehicleModel == null ? String.Empty : citationDoc.VehicleModel; 
+            citation.VehicleTag = citationDoc.VehicleTag == null ? String.Empty : citationDoc.VehicleTag;
             citation.VehicleColor = citationDoc.VehicleColor == null ? String.Empty : citationDoc.VehicleColor;
             citation.CitationReason = citationDoc.CitationReason;
             citation.CitationAmount = citationDoc.CitationAmount;
@@ -528,6 +528,7 @@ namespace ComputerPlus.Controllers
         private static TrafficCitation generateRandomCitation(ComputerPlusEntity entity)
         {
             TrafficCitation newCitation = TrafficCitation.CreateForPedInVehicle(entity);
+            newCitation.VehicleType = "N/A";
             int randomSeconds = Globals.Random.Next(SECONDS_IN_A_DAY * 7, SECONDS_IN_A_DAY * 700) * -1;
             newCitation.CitationTimeDate = DateTime.Now.AddSeconds(randomSeconds);
             newCitation.CitationPos = Rage.World.GetRandomPositionOnStreet();
