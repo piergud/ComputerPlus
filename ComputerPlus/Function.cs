@@ -700,9 +700,10 @@ namespace ComputerPlus
         }
 
 
-        internal static String ToLocalDateString(DateTime date, DateOutputPart output)
+        internal static String ToLocalDateString(DateTime date, DateOutputPart output, bool convertToLocal = true)
         {
-            var local = date.ToLocalTime();
+            var local = date;
+            if (convertToLocal) local = date.ToLocalTime();
             switch (output)
             {
                 case DateOutputPart.DATE: return local.ToShortDateString();
@@ -713,12 +714,12 @@ namespace ComputerPlus
         }
 
     
-        internal static String ToLocalDateString(String date, DateOutputPart input = DateOutputPart.ALL, DateOutputPart output = DateOutputPart.ALL)
+        internal static String ToLocalDateString(String date, DateOutputPart input = DateOutputPart.ALL, DateOutputPart output = DateOutputPart.ALL, bool convertToLocal = true)
         {
             DateTime parsed;
 
-            if (DateTime.TryParseExact(date, DateFormatForPart(input), CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out parsed))
-                return ToLocalDateString(parsed, output);
+            if (DateTime.TryParseExact(date, DateFormatForPart(input), CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed))
+                return ToLocalDateString(parsed, output, convertToLocal);
             else
                 return date;
         }

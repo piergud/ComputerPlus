@@ -126,6 +126,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             vehicleInformationContent = new Base(this);
             labeled_vehicle_type = new LabeledComponent<ComboBox>(vehicleInformationContent, "Type", new ComboBox(vehicleInformationContent), RelationalPosition.TOP, RelationalSize.NONE, Configs.BaseFormControlSpacingHalf, labelFont, labelColor);
             labeled_vehicle_type.Component.AddItem("Select One", "PlaceHolder", String.Empty);
+            labeled_vehicle_type.Component.AddItem("N/A", "N/A", "N/A");
             Globals.VehicleDefinitions.Types.Categories.ForEach(x => {
                 labeled_vehicle_type.Component.AddItem(x.Value, x.Value, x.Value);
             });
@@ -569,7 +570,8 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labeled_citation_report_id.SetValueText(Citation.ShortId());
             labeled_first_name.SetValueText(Citation.FirstName);
             labeled_last_name.SetValueText(Citation.LastName);
-            labeled_dob.SetValueText(Function.ToLocalDateString(Citation.DOB, TextBoxExtensions.DateOutputPart.DATE, TextBoxExtensions.DateOutputPart.DATE));
+            // labeled_dob.SetValueText(Function.ToLocalDateString(Citation.DOB, TextBoxExtensions.DateOutputPart.DATE, TextBoxExtensions.DateOutputPart.DATE, false));
+            labeled_dob.SetValueText(Citation.DOB);
             labeled_home_address.SetValueText(Citation.HomeAddress);
 
             labeled_vehicle_type.Component.Enable();
