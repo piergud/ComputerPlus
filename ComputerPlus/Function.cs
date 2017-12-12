@@ -713,16 +713,17 @@ namespace ComputerPlus
             }
         }
 
-    
+    /*
         internal static String ToLocalDateString(String date, DateOutputPart input = DateOutputPart.ALL, DateOutputPart output = DateOutputPart.ALL, bool convertToLocal = true)
         {
             DateTime parsed;
 
-            if (DateTime.TryParseExact(date, DateFormatForPart(input), CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed))
+            if (DateTime.TryParseExact(date, DateFormatForPart(input), CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out parsed))
                 return ToLocalDateString(parsed, output, convertToLocal);
             else
                 return date;
         }
+        */
 
     }
 }
