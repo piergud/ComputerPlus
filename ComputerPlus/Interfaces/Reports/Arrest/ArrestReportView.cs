@@ -142,13 +142,13 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             labeled_arrest_report_id.SetValueText(Report.ShortId());
             labeled_first_name.SetValueText(Report.FirstName);
             labeled_last_name.SetValueText(Report.LastName);
-            labeled_dob.SetValueText(Function.ToLocalDateString(Report.DOB, TextBoxExtensions.DateOutputPart.DATE, TextBoxExtensions.DateOutputPart.DATE, false));
+            labeled_dob.SetValueText(Report.DOB);
             labeled_home_address.SetValueText(Report.HomeAddress);
 
             labeled_arrest_street_address.SetValueText(Report.ArrestStreetAddress);
             labeled_arrest_city.SetValueText(Report.ArrestCity);
-            labeled_arrest_date.SetValueText(Function.ToLocalDateString(Report.ArrestDate, TextBoxExtensions.DateOutputPart.DATE, TextBoxExtensions.DateOutputPart.DATE));
-            labeled_arrest_time.SetValueText(Function.ToLocalDateString(Report.ArrestTime, TextBoxExtensions.DateOutputPart.TIME, TextBoxExtensions.DateOutputPart.TIME));
+            labeled_arrest_date.SetValueText(Function.ToLocalDateString(Report.ArrestTimeDate, TextBoxExtensions.DateOutputPart.DATE));
+            labeled_arrest_time.SetValueText(Function.ToLocalDateString(Report.ArrestTimeDate, TextBoxExtensions.DateOutputPart.TIME));
             tb_report_details.SetValueText(Report.Details);
         }
 

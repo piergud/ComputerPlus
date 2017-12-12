@@ -272,7 +272,6 @@ namespace ComputerPlus.Interfaces.Reports.Models
                 }
 
             }
-            // var dobPattern = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
             var dobPattern = Function.DateFormatForPart(DateOutputPart.DATE);
             DateTime parsedDob;
             if (!failReasons.ContainsKey("DOB") && !DateTime.TryParseExact(DOB, dobPattern, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out parsedDob))
@@ -307,19 +306,6 @@ namespace ComputerPlus.Interfaces.Reports.Models
             return citation != null;
         }
 
-        //public static TrafficCitation CreateForPed(ComputerPlusEntity entity)
-        //{
-        //    return new TrafficCitation()
-        //    {
-        //        FirstName = entity.FirstName,
-        //        LastName = entity.LastName,
-        //        DOB = entity.PedPersona.BirthDay.ToLocalTimeString(Extensions.Gwen.TextBoxExtensions.DateOutputPart.DATE),
-        //        HomeAddress = entity.Address,
-        //    };
-
-        //}
-
-
         public static TrafficCitation CreateForPedInVehicle(ComputerPlusEntity entity)
         {
             var citation = new TrafficCitation()
@@ -328,7 +314,7 @@ namespace ComputerPlus.Interfaces.Reports.Models
                 LastName = entity.LastName,
                 DOB = entity.DOBString,
                 HomeAddress = entity.Address,
-                CitationTimeDate = DateTime.Now,
+                CitationTimeDate = DateTime.Now.ToUniversalTime()
             };
             if (entity.Vehicle)
             {
