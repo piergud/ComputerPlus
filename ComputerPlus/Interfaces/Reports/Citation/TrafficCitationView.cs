@@ -570,7 +570,6 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labeled_citation_report_id.SetValueText(Citation.ShortId());
             labeled_first_name.SetValueText(Citation.FirstName);
             labeled_last_name.SetValueText(Citation.LastName);
-            // labeled_dob.SetValueText(Function.ToLocalDateString(Citation.DOB, TextBoxExtensions.DateOutputPart.DATE, TextBoxExtensions.DateOutputPart.DATE, false));
             labeled_dob.SetValueText(Citation.DOB);
             labeled_home_address.SetValueText(Citation.HomeAddress);
 
@@ -584,8 +583,8 @@ namespace ComputerPlus.Interfaces.Reports.Citation
 
             labeled_citation_street_address.SetValueText(Citation.CitationStreetAddress);
             labeled_citation_city.SetValueText(Citation.CitationCity);
-            labeled_citation_date.SetValueText(Function.ToLocalDateString(Citation.CitationDate, TextBoxExtensions.DateOutputPart.DATE, TextBoxExtensions.DateOutputPart.DATE));
-            labeled_citation_time.SetValueText(Function.ToLocalDateString(Citation.CitationTime, TextBoxExtensions.DateOutputPart.TIME, TextBoxExtensions.DateOutputPart.TIME));
+            labeled_citation_date.SetValueText(Function.ToLocalDateString(Citation.CitationTimeDate, TextBoxExtensions.DateOutputPart.DATE));
+            labeled_citation_time.SetValueText(Function.ToLocalDateString(Citation.CitationTimeDate, TextBoxExtensions.DateOutputPart.TIME));
 
             labeled_citation_details.Component.ClearText();
             labeled_citation_details.SetValueText(Citation.Details);

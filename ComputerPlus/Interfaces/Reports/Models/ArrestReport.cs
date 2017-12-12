@@ -146,7 +146,7 @@ namespace ComputerPlus.Interfaces.Reports.Models
                 lock (parties)
                     AdditionalParties.AddRange(parties);
             }
-            ArrestTimeDate = arrestTime != null ? arrestTime : DateTime.Now;
+            ArrestTimeDate = arrestTime != null ? arrestTime : DateTime.Now.ToUniversalTime();
         }
 
         public ArrestReport(List<ArrestChargeLineItem> charges, DateTime arrestTime, String notes) : this(charges, null, arrestTime, notes)
@@ -156,13 +156,13 @@ namespace ComputerPlus.Interfaces.Reports.Models
 
         public ArrestReport (bool readOnly = false) 
         {            
-            ArrestTimeDate = DateTime.Now;
+            ArrestTimeDate = DateTime.Now.ToUniversalTime();
             ReadOnly = readOnly;
         }
 
         public ArrestReport()
         {
-            ArrestTimeDate = DateTime.Now;
+            ArrestTimeDate = DateTime.Now.ToUniversalTime();
             ReadOnly = false;
         }
 
@@ -193,7 +193,6 @@ namespace ComputerPlus.Interfaces.Reports.Models
 
             }
             if (Charges.Count == 0) failReasons.Add("Charges", "There must be a charge");
-            // var dobPattern = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
             var dobPattern = Function.DateFormatForPart(DateOutputPart.DATE);
             DateTime parsedDob;
             if (!failReasons.ContainsKey("DOB") && !DateTime.TryParseExact(DOB, dobPattern, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out parsedDob))

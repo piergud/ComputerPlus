@@ -306,7 +306,7 @@ namespace ComputerPlus
                                 item.AttachTo(Game.LocalPlayer.Character, Game.LocalPlayer.Character.GetBoneIndex(PedBoneId.RightThumb1), new Vector3(item.Model.Dimensions.Length() * 0.4f, 0, 0), Rotator.Zero);
                                 GameFiber.StartNew(delegate
                                 {
-                                    GameFiber.Sleep(1000);
+                                    GameFiber.Sleep(1300);
                                     item.Detach();
                                     item.Delete();
                                 });

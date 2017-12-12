@@ -11,6 +11,8 @@ using Rage;
 using ComputerPlus.DB;
 using static ComputerPlus.Interfaces.Reports.Models.ArrestReportAdditionalParty;
 using LiteDB;
+using System.Globalization;
+using static ComputerPlus.Extensions.Gwen.TextBoxExtensions;
 
 namespace ComputerPlus.Controllers
 {
@@ -57,7 +59,7 @@ namespace ComputerPlus.Controllers
             var arrestReportDoc = new ArrestReportDoc
             {
                 Id = report.id,
-                ArrestTimeDate = report.ArrestTimeDate.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff'Z'"),
+                ArrestTimeDate = report.ArrestTimeDate.ToString(Function.DateFormatForPart(DateOutputPart.ISO)),
                 FirstName = report.FirstName,
                 LastName = report.LastName,
                 DOB = report.DOB,
@@ -73,7 +75,7 @@ namespace ComputerPlus.Controllers
         {
             var arrestReportCol = Globals.Store.getDB().GetCollection<ArrestReportDoc>("arrestreports");
             var arrestReportDoc = arrestReportCol.FindById(report.id);
-            arrestReportDoc.ArrestTimeDate = report.ArrestTimeDate.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff'Z'");
+            arrestReportDoc.ArrestTimeDate = report.ArrestTimeDate.ToString(Function.DateFormatForPart(DateOutputPart.ISO));
             arrestReportDoc.FirstName = report.FirstName;
             arrestReportDoc.LastName = report.LastName;
             arrestReportDoc.DOB = report.DOB;
@@ -229,7 +231,7 @@ namespace ComputerPlus.Controllers
         {
             var arrestReport = new ArrestReport();
             arrestReport.id = arrestReportDoc.Id;
-            arrestReport.ArrestTimeDate = DateTime.Parse(arrestReportDoc.ArrestTimeDate);
+            arrestReport.ArrestTimeDate = DateTime.ParseExact(arrestReportDoc.ArrestTimeDate, Function.DateFormatForPart(DateOutputPart.ISO), CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
             arrestReport.FirstName = arrestReportDoc.FirstName;
             arrestReport.LastName = arrestReportDoc.LastName;
             arrestReport.DOB = arrestReportDoc.DOB;
@@ -408,7 +410,7 @@ namespace ComputerPlus.Controllers
             var citationDoc = new TrafficCitationDoc
             {
                 Id = citation.id,
-                CitationTimeDate = citation.CitationTimeDate.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff'Z'"),
+                CitationTimeDate = citation.CitationTimeDate.ToString(Function.DateFormatForPart(DateOutputPart.ISO)),
                 FirstName = citation.FirstName,
                 LastName = citation.LastName,
                 DOB = citation.DOB,
@@ -434,7 +436,7 @@ namespace ComputerPlus.Controllers
         {
             var citationCol = Globals.Store.getDB().GetCollection<TrafficCitationDoc>("citations");
             var citationDoc = citationCol.FindOne(x => x.Id == citation.id);
-            citationDoc.CitationTimeDate = citation.CitationTimeDate.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff'Z'");
+            citationDoc.CitationTimeDate = citation.CitationTimeDate.ToString(Function.DateFormatForPart(DateOutputPart.ISO));
             citationDoc.FirstName = citation.FirstName;
             citationDoc.LastName = citation.LastName;
             citationDoc.DOB = citation.DOB;
@@ -483,7 +485,7 @@ namespace ComputerPlus.Controllers
         {
             var citation = new TrafficCitation();
             citation.id = citationDoc.Id;
-            citation.CitationTimeDate = DateTime.Parse(citationDoc.CitationTimeDate);
+            citation.CitationTimeDate = DateTime.ParseExact(citationDoc.CitationTimeDate, Function.DateFormatForPart(DateOutputPart.ISO), CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
             citation.FirstName = citationDoc.FirstName;
             citation.LastName = citationDoc.LastName;
             citation.DOB = citationDoc.DOB;
@@ -530,7 +532,7 @@ namespace ComputerPlus.Controllers
             TrafficCitation newCitation = TrafficCitation.CreateForPedInVehicle(entity);
             newCitation.VehicleType = "N/A";
             int randomSeconds = Globals.Random.Next(SECONDS_IN_A_DAY * 7, SECONDS_IN_A_DAY * 700) * -1;
-            newCitation.CitationTimeDate = DateTime.Now.AddSeconds(randomSeconds);
+            newCitation.CitationTimeDate = DateTime.Now.ToUniversalTime().AddSeconds(randomSeconds);
             newCitation.CitationPos = Rage.World.GetRandomPositionOnStreet();
             newCitation.CitationStreetAddress = Rage.World.GetStreetName(newCitation.CitationPos);
             newCitation.CitationCity = Functions.GetZoneAtPosition(newCitation.CitationPos).RealAreaName;
