@@ -445,11 +445,21 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             }
             else if (Function.IsTrafficPolicerRunning())
             {
-                if (TrafficPolicerFunction.GetVehicleInsuranceStatus(Vehicle) == EVehicleStatus.Valid) labeled_vehicle_insurance_status.Component.SetText("Valid");
-                else labeled_vehicle_insurance_status.Component.Warn("Expired");
+                var insuranceStatus = TrafficPolicerFunction.GetVehicleInsuranceStatus(Vehicle);
+                if (insuranceStatus == EVehicleStatus.Valid)
+                    labeled_vehicle_insurance_status.Component.SetText("Valid");
+                else if (insuranceStatus == EVehicleStatus.Expired)
+                    labeled_vehicle_insurance_status.Component.Warn("Expired");
+                else
+                    labeled_vehicle_insurance_status.Component.Warn("None");
 
-                if (TrafficPolicerFunction.GetVehicleRegistrationStatus(Vehicle) == EVehicleStatus.Valid) labeled_vehicle_registration_status.Component.SetText("Valid");
-                else labeled_vehicle_registration_status.Component.Warn("Expired");
+                var registrationStatus = TrafficPolicerFunction.GetVehicleRegistrationStatus(Vehicle);
+                if (registrationStatus == EVehicleStatus.Valid)
+                    labeled_vehicle_registration_status.Component.SetText("Valid");
+                else if (registrationStatus == EVehicleStatus.Expired)
+                    labeled_vehicle_registration_status.Component.Warn("Expired");
+                else
+                    labeled_vehicle_registration_status.Component.Warn("None");
             }
             else
             {
