@@ -132,67 +132,53 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             return vehicle ? LookupVehicle(vehicle) : null;
         }
 
+        private static ComputerPlusEntity generateVehicleOwner(string ownerName)
+        {
+            Ped ped = null;
+            while (ped == null)
+            {
+                //Last ditch effort to make C+ happy by just providing any ped as the owner and setting them as the owner
+                ped = FindRandomPed();
+                if (ped != null && !ped.IsValid()) ped = null;
+            }
+            var parts = ownerName.Split(' ');
+            while (parts.Length < 2)
+            {
+                parts = Persona.GetRandomFullName().Split(' ');
+            }
+            int timesStopped = Globals.Random.Next(0, 4);
+            var persona = new Persona(ped, Gender.Random, RandomDay(), Globals.Random.Next(0, timesStopped + 1), 
+                parts[0], parts[1], ELicenseState.Valid, timesStopped, false, false, false);
+            Functions.SetPersonaForPed(ped, persona);
+            return ComputerPlusEntity.CreateFrom(ped);
+        }
+
         internal static ComputerPlusEntity LookupVehicle(Vehicle vehicle)
         {
             if (!vehicle) return null;
             var vehiclePersona = ComputerPlusEntity.GetPersonaForVehicle(vehicle);
 
-            var ownerName = Functions.GetVehicleOwnerName(vehicle);
-
+            string ownerName = Functions.GetVehicleOwnerName(vehicle);
+            ComputerPlusEntity owner = null;
             var driver = vehicle.HasDriver ? vehicle.Driver : null;
-            ComputerPlusEntity owner = ComputerPedController.Instance.LookupPersona(ownerName);
-            if (owner == null && driver != null)
+            if (driver != null)
             {
-                owner = ComputerPedController.Instance.LookupPersona(driver);
-            } else if (owner == null)
-            {
-                Ped ped = null;
-                while (ped == null)
+                Persona driverPersona = Functions.GetPersonaForPed(driver);
+                if (!driverPersona.FullName.Equals(ownerName))
                 {
-                    //Last ditch effort to make C+ happy by just providing any ped as the owner and setting them as the owner
-                    ped = FindRandomPed();
-                    if (ped != null && !ped.IsValid()) ped = null;
+                    owner = ComputerPedController.Instance.LookupPersona(ownerName);
+                    if (owner == null) owner = generateVehicleOwner(ownerName);
                 }
-                owner = ComputerPlusEntity.CreateFrom(ped);
+                else
+                {
+                    owner = ComputerPedController.Instance.LookupPersona(driver);
+                }
             }
-
-            if (!owner.Validate())
+            else
             {
-
-                var parts = ownerName.Split(' ');
-                while(parts.Length < 2)
-                {
-                    parts = Persona.GetRandomFullName().Split(' ');
-                }
-                Functions.SetVehicleOwnerName(vehicle, String.Format("{0} {1}", parts[0], parts[1]));
-                //Work some magic to fix the fact that the ped hasn't been spawned in game
-                //@TODO parse ped model name for age group and randomize other props
-
-                Ped ped = null;
-                while (ped == null)
-                {
-                    //Last ditch effort to make C+ happy by just providing any ped as the owner and setting them as the owner
-                    ped = FindRandomPed();
-                    if (ped != null && !ped.IsValid()) ped = null;
-                }
-
-                var persona = new Persona(
-                    ped,
-                    Gender.Random,
-                    RandomDay(),
-                    3,
-                    parts[0],
-                    parts[1],
-                    ELicenseState.Valid,
-                    1,
-                    false,
-                    false,
-                    false
-                    );
-                Functions.SetPersonaForPed(ped, persona);
-                owner = ComputerPlusEntity.CreateFrom(ped);
+                owner = ComputerPedController.Instance.LookupPersona(ownerName);
+                if (owner == null) owner = generateVehicleOwner(ownerName);
             }
-
             return ComputerPlusEntity.CloneFrom(owner, vehicle, vehiclePersona);
         } 
         
