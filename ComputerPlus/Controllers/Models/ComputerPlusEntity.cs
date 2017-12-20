@@ -232,6 +232,7 @@ namespace ComputerPlus.Controllers.Models
                 else {
                     switch (PedPersona.LicenseState)
                     {
+                        case ELicenseState.None:
                         case ELicenseState.Suspended:
                         case ELicenseState.Expired: return false;
                         default: return true;
@@ -255,7 +256,8 @@ namespace ComputerPlus.Controllers.Models
                         case ELicenseState.Expired: return "Expired";
                         case ELicenseState.Suspended: return "Suspended";
                         case ELicenseState.Valid: return "Valid";
-                        default: return "None";
+                        case ELicenseState.None: return "None";
+                        default: return "N/A";
                     }
                 }
             }
