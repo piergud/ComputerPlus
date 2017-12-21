@@ -473,6 +473,8 @@ namespace ComputerPlus
                 GameFiber.StartNew(() =>
                 {
                     entry.form.Window.Close();
+                    // I know close() supposed to dispose the form. but just in case to make sure the memory is freed
+                    entry.form.Window.Dispose();
                 });
             }
             catch (Exception e)
