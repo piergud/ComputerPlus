@@ -356,6 +356,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         private void BindData()
         {
+            if (DetailedEntity.Entity.Ped == null || !DetailedEntity.Entity.Ped.IsValid()) return;
             if (!BindNeeded) return;
             BindNeeded = false;
             if (DetailedEntity.Entity.IsLicenseValid)

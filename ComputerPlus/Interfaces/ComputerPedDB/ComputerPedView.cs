@@ -205,6 +205,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
         private void BindData()
         {
+            if (ThePed == null || !ThePed.IsValid()) return;
             if (!BindNeeded) return;
             BindNeeded = false;
 
