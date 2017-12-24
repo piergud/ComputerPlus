@@ -9,6 +9,7 @@ using LSPD_First_Response.Engine.Scripting.Entities;
 using ComputerPlus.Controllers.Models;
 using ComputerPlus.Extensions.Gwen;
 using System.Runtime.ExceptionServices;
+using ComputerPlus.Controllers;
 
 namespace ComputerPlus.Interfaces.ComputerVehDB
 {
@@ -54,6 +55,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             foreach (var vehicle in AlprDetectedVehicles)
             {
                 list_collected_tags.AddVehicle(vehicle);
+                ComputerReportsController.generateRandomHistory(vehicle);
             }
         }
 

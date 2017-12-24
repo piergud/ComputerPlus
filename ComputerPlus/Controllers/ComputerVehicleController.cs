@@ -187,7 +187,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             var rnd = new Random(DateTime.Now.Millisecond);
             var peds = World.EnumeratePeds().Take(50).ToArray();
             Ped ped = null;
-            while (!ped.Exists())
+            while (!ped.Exists() || ped.RelationshipGroup == "COP")
             {
                 int position = rnd.Next(0, peds.Count() - 1);
                 ped = peds.ElementAt(position);

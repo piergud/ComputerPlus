@@ -66,32 +66,32 @@ namespace ComputerPlus.DB
 
         private LiteDatabase db;
 
+        public LiteCollection<TrafficCitationDoc> citationCollection { get; set; }
+        public LiteCollection<ArrestReportDoc> arrestReportCollection { get; set; }
+        public LiteCollection<ArrestReportChargeDoc> arrestReportChargeCollection { get; set; }
+        public LiteCollection<ArrestReportPartyDoc> arrestReportPartyCollection { get; set; }
+
         public Storage()
         {
             Function.Log(String.Format("Attempting to load LiteDB database from {0}", DB_FILE_NAME));
-            db = new LiteDatabase(DB_FILE_NAME);
-        }
-
-        public LiteDatabase getDB()
-        {
-            return db;
+            db = new LiteDatabase(@String.Format("Filename={0};Cache Size=1024", DB_FILE_NAME));
         }
 
         public void initDB()
         {
-            var citationDb = db.GetCollection<TrafficCitationDoc>("citations");
-            citationDb.EnsureIndex(x => x.DOB, false);
-            citationDb.EnsureIndex(x => x.CitationTimeDate, false);
+            citationCollection = db.GetCollection<TrafficCitationDoc>("citations");
+            citationCollection.EnsureIndex(x => x.DOB, false);
+            citationCollection.EnsureIndex(x => x.CitationTimeDate, false);
 
-            var arrestReportDb = db.GetCollection<ArrestReportDoc>("arrestreports");
-            arrestReportDb.EnsureIndex(x => x.DOB, false);
-            arrestReportDb.EnsureIndex(x => x.ArrestTimeDate, false);
+            arrestReportCollection = db.GetCollection<ArrestReportDoc>("arrestreports");
+            arrestReportCollection.EnsureIndex(x => x.DOB, false);
+            arrestReportCollection.EnsureIndex(x => x.ArrestTimeDate, false);
 
-            var arrestReportChargeDb = db.GetCollection<ArrestReportChargeDoc>("arrestreportcharges");
-            arrestReportChargeDb.EnsureIndex(x => x.ArrestReportId, false);
+            arrestReportChargeCollection = db.GetCollection<ArrestReportChargeDoc>("arrestreportcharges");
+            arrestReportChargeCollection.EnsureIndex(x => x.ArrestReportId, false);
 
-            var arrestReportPartyDb = db.GetCollection<ArrestReportPartyDoc>("arrestreportparties");
-            arrestReportPartyDb.EnsureIndex(x => x.ArrestReportId, false);
+            arrestReportPartyCollection = db.GetCollection<ArrestReportPartyDoc>("arrestreportparties");
+            arrestReportPartyCollection.EnsureIndex(x => x.ArrestReportId, false);
         }
     }
 }

@@ -55,7 +55,6 @@ namespace ComputerPlus.Controllers
 
         private static void insertArrestReport(ArrestReport report)
         {
-            var arrestReportCol = Globals.Store.getDB().GetCollection<ArrestReportDoc>("arrestreports");
             var arrestReportDoc = new ArrestReportDoc
             {
                 Id = report.id,
@@ -68,13 +67,12 @@ namespace ComputerPlus.Controllers
                 ArrestCity = report.ArrestCity,
                 Details = report.Details
             };
-            arrestReportCol.Insert(arrestReportDoc);
+            Globals.Store.arrestReportCollection.Insert(arrestReportDoc);
         }
 
         private static void updateArrestReport(ArrestReport report)
         {
-            var arrestReportCol = Globals.Store.getDB().GetCollection<ArrestReportDoc>("arrestreports");
-            var arrestReportDoc = arrestReportCol.FindById(report.id);
+            var arrestReportDoc = Globals.Store.arrestReportCollection.FindById(report.id);
             arrestReportDoc.ArrestTimeDate = report.ArrestTimeDate.ToString(Function.DateFormatForPart(DateOutputPart.ISO));
             arrestReportDoc.FirstName = report.FirstName;
             arrestReportDoc.LastName = report.LastName;
@@ -84,12 +82,11 @@ namespace ComputerPlus.Controllers
             arrestReportDoc.ArrestCity = report.ArrestCity;
             arrestReportDoc.Details = report.Details;
 
-            arrestReportCol.Update(arrestReportDoc); ;
+            Globals.Store.arrestReportCollection.Update(arrestReportDoc); ;
         }
 
         private static void insertArrestReportLineItem(ArrestChargeLineItem charge, Guid arrestReportId)
         {
-            var arrestReportChargeCol = Globals.Store.getDB().GetCollection<ArrestReportChargeDoc>("arrestreportcharges");
             var arrestReportChargeDoc = new ArrestReportChargeDoc
             {
                 Charge = charge.Charge,
@@ -97,12 +94,11 @@ namespace ComputerPlus.Controllers
                 Note = charge.Note,
                 ArrestReportId = arrestReportId
             };
-            arrestReportChargeCol.Insert(arrestReportChargeDoc);
+            Globals.Store.arrestReportChargeCollection.Insert(arrestReportChargeDoc);
         }
 
         private static void insertArrestReportParties(ArrestReportAdditionalParty party, Guid arrestReportId)
         {
-            var arrestReportPartyCol = Globals.Store.getDB().GetCollection<ArrestReportPartyDoc>("arrestreportparties");
             var arrestReportPartyDoc = new ArrestReportPartyDoc
             {
                 PartyType = (int)party.PartyType,
@@ -111,19 +107,17 @@ namespace ComputerPlus.Controllers
                 DOB = party.DOB,
                 ArrestReportId = arrestReportId
             };
-            arrestReportPartyCol.Insert(arrestReportPartyDoc);
+            Globals.Store.arrestReportPartyCollection.Insert(arrestReportPartyDoc);
         }
 
         private static void clearArrestReportLineItem(Guid arrestReportId)
         {
-            var arrestReportChargeCol = Globals.Store.getDB().GetCollection<ArrestReportChargeDoc>("arrestreportcharges");
-            arrestReportChargeCol.Delete(x => x.ArrestReportId == arrestReportId);
+            Globals.Store.arrestReportChargeCollection.Delete(x => x.ArrestReportId == arrestReportId);
         }
 
         private static void clearArrestReportParties(Guid arrestReportId)
         {
-            var arrestReportPartyCol = Globals.Store.getDB().GetCollection<ArrestReportPartyDoc>("arrestreportparties");
-            arrestReportPartyCol.Delete(x => x.ArrestReportId == arrestReportId);
+            Globals.Store.arrestReportPartyCollection.Delete(x => x.ArrestReportId == arrestReportId);
         }
 
         public static ArrestReport SaveArrestRecord(ArrestReport report)
@@ -184,8 +178,7 @@ namespace ComputerPlus.Controllers
         {
             try
             {
-                var arrestReportChargeCol = Globals.Store.getDB().GetCollection<ArrestReportChargeDoc>("arrestreportcharges");
-                List<ArrestReportChargeDoc> chargeDocs = arrestReportChargeCol.Find(x => x.ArrestReportId == arrestReport.id).ToList();
+                List<ArrestReportChargeDoc> chargeDocs = Globals.Store.arrestReportChargeCollection.Find(x => x.ArrestReportId == arrestReport.id).ToList();
                 foreach (var chargeDoc in chargeDocs)
                 {
                     var charge = new ArrestChargeLineItem();
@@ -207,8 +200,7 @@ namespace ComputerPlus.Controllers
         {
             try
             {
-                var arrestReportPartyCol = Globals.Store.getDB().GetCollection<ArrestReportPartyDoc>("arrestreportparties");
-                List<ArrestReportPartyDoc> partyDocs = arrestReportPartyCol.Find(x => x.ArrestReportId == arrestReport.id).ToList();
+                List<ArrestReportPartyDoc> partyDocs = Globals.Store.arrestReportPartyCollection.Find(x => x.ArrestReportId == arrestReport.id).ToList();
                 foreach (var partyDoc in partyDocs)
                 {
                     var party = new ArrestReportAdditionalParty();
@@ -248,8 +240,7 @@ namespace ComputerPlus.Controllers
             var arrestReports = new List<ArrestReport>();
             try
             {
-                var arrestReportCol = Globals.Store.getDB().GetCollection<ArrestReportDoc>("arrestreports");
-                List<ArrestReportDoc> arrestReportDocs = arrestReportCol.Find(Query.All("ArrestTimeDate", Query.Descending), skip, limit).ToList();
+                List<ArrestReportDoc> arrestReportDocs = Globals.Store.arrestReportCollection.Find(Query.All("ArrestTimeDate", Query.Descending), skip, limit).ToList();
                 foreach (var arrestReportDoc in arrestReportDocs)
                 {
                     var arrestReport = convertArrestReportDoc(arrestReportDoc);
@@ -266,7 +257,7 @@ namespace ComputerPlus.Controllers
         private static ArrestReport generateRandomArrestReport(ComputerPlusEntity entity)
         {
             ArrestReport newArrest = ArrestReport.CreateForPed(entity);
-            int randomSeconds = Globals.Random.Next(SECONDS_IN_A_DAY * 7, SECONDS_IN_A_DAY * 700) * -1;
+            int randomSeconds = Globals.Random.Next(SECONDS_IN_A_DAY * 7, SECONDS_IN_A_DAY * 1200) * -1;
             newArrest.ArrestTimeDate = DateTime.Now.AddSeconds(randomSeconds);
             Vector3 randomLocation = Rage.World.GetRandomPositionOnStreet();
             newArrest.ArrestStreetAddress = Rage.World.GetStreetName(randomLocation);
@@ -319,15 +310,6 @@ namespace ComputerPlus.Controllers
         {
             // check if ped has past arrest reports
             List<ArrestReport> pastArrestFromDB = GetArrestReportsForPed(entity.FirstName, entity.LastName, entity.DOBString);
-            generatePastArrestNum(entity);
-            if (Configs.RandomHistoryRecords && entity.Ped.Metadata.pastArrestNum > 0 && pastArrestFromDB.Count == 0)
-            {
-                // generate past arrest history
-                for (var i = 0; i < entity.Ped.Metadata.pastArrestNum; i++)
-                {
-                    pastArrestFromDB.Add(generateRandomArrestReport(entity));
-                }
-            }
             return pastArrestFromDB.OrderByDescending(o => o.ArrestTimeDate).ToList();
         }
 
@@ -339,8 +321,7 @@ namespace ComputerPlus.Controllers
             var arrestReports = new List<ArrestReport>();
             try
             {
-                var arrestReportCol = Globals.Store.getDB().GetCollection<ArrestReportDoc>("arrestreports");
-                List<ArrestReportDoc> arrestReportDocs = arrestReportCol.Find(x => x.DOB.Equals(dob) && x.FirstName.Equals(firstName) && x.LastName.Equals(lastName)).ToList();
+                List<ArrestReportDoc> arrestReportDocs = Globals.Store.arrestReportCollection.Find(x => x.DOB.Equals(dob) && x.FirstName.Equals(firstName) && x.LastName.Equals(lastName)).ToList();
                 foreach (var arrestReportDoc in arrestReportDocs)
                 {
                     var arrestReport = convertArrestReportDoc(arrestReportDoc);
@@ -406,7 +387,6 @@ namespace ComputerPlus.Controllers
 
         private static void insertTrafficCitation(TrafficCitation citation)
         {
-            var citationCol = Globals.Store.getDB().GetCollection<TrafficCitationDoc>("citations");
             var citationDoc = new TrafficCitationDoc
             {
                 Id = citation.id,
@@ -429,13 +409,12 @@ namespace ComputerPlus.Controllers
                 Details = citation.Details,
                 IsArrestable = citation.IsArrestable
             };
-            citationCol.Insert(citationDoc);
+            Globals.Store.citationCollection.Insert(citationDoc);
         }
 
         private static void updateTrafficCitation(TrafficCitation citation)
         {
-            var citationCol = Globals.Store.getDB().GetCollection<TrafficCitationDoc>("citations");
-            var citationDoc = citationCol.FindOne(x => x.Id == citation.id);
+            var citationDoc = Globals.Store.citationCollection.FindOne(x => x.Id == citation.id);
             citationDoc.CitationTimeDate = citation.CitationTimeDate.ToString(Function.DateFormatForPart(DateOutputPart.ISO));
             citationDoc.FirstName = citation.FirstName;
             citationDoc.LastName = citation.LastName;
@@ -455,7 +434,7 @@ namespace ComputerPlus.Controllers
             citationDoc.Details = citation.Details;
             citationDoc.IsArrestable = citation.IsArrestable;
 
-            citationCol.Update(citationDoc);
+            Globals.Store.citationCollection.Update(citationDoc);
         }
 
 
@@ -513,8 +492,7 @@ namespace ComputerPlus.Controllers
             var citations = new List<TrafficCitation>();
             try
             {
-                var citationCol = Globals.Store.getDB().GetCollection<TrafficCitationDoc>("citations");
-                List<TrafficCitationDoc> citationDocs = citationCol.Find(Query.All("CitationTimeDate", Query.Descending), skip, limit).ToList();
+                List<TrafficCitationDoc> citationDocs = Globals.Store.citationCollection.Find(Query.All("CitationTimeDate", Query.Descending), skip, limit).ToList();
                 foreach (var citationDoc in citationDocs)
                 {
                     citations.Add(convertCitationDoc(citationDoc));
@@ -531,7 +509,7 @@ namespace ComputerPlus.Controllers
         {
             TrafficCitation newCitation = TrafficCitation.CreateForPedInVehicle(entity);
             newCitation.VehicleType = "N/A";
-            int randomSeconds = Globals.Random.Next(SECONDS_IN_A_DAY * 7, SECONDS_IN_A_DAY * 700) * -1;
+            int randomSeconds = Globals.Random.Next(SECONDS_IN_A_DAY * 7, SECONDS_IN_A_DAY * 1200) * -1;
             newCitation.CitationTimeDate = DateTime.Now.ToUniversalTime().AddSeconds(randomSeconds);
             newCitation.CitationPos = Rage.World.GetRandomPositionOnStreet();
             newCitation.CitationStreetAddress = Rage.World.GetStreetName(newCitation.CitationPos);
@@ -544,14 +522,6 @@ namespace ComputerPlus.Controllers
         {
             // check if ped has past citations
             List<TrafficCitation> pastCitationFromDB = GetTrafficCitationsForPed(entity.FirstName, entity.LastName, entity.DOBString);
-            if (Configs.RandomHistoryRecords && entity.PedPersona.Citations > 0 && pastCitationFromDB.Count == 0)
-            {
-                // generate pastCitation
-                for (var i = 0; i < entity.PedPersona.Citations; i++)
-                {
-                    pastCitationFromDB.Add(generateRandomCitation(entity));
-                }
-            }
             return pastCitationFromDB.OrderByDescending(o => o.CitationTimeDate).ToList();
         }
 
@@ -563,8 +533,7 @@ namespace ComputerPlus.Controllers
             var citations = new List<TrafficCitation>();
             try
             {
-                var citationCol = Globals.Store.getDB().GetCollection<TrafficCitationDoc>("citations");
-                List<TrafficCitationDoc> citationDocs = citationCol.Find(x => x.DOB.Equals(dob) && x.FirstName.Equals(firstName) && x.LastName.Equals(lastName)).ToList();
+                List<TrafficCitationDoc> citationDocs = Globals.Store.citationCollection.Find(x => x.DOB.Equals(dob) && x.FirstName.Equals(firstName) && x.LastName.Equals(lastName)).ToList();
                 foreach (var citationDoc in citationDocs)
                 {
                     citations.Add(convertCitationDoc(citationDoc));
@@ -582,6 +551,33 @@ namespace ComputerPlus.Controllers
             var arrests = GetArrestReportsForPed(entity);
             var traffic = GetTrafficCitationsForPed(entity);
             return new DetailedEntity(entity, arrests, traffic);
+        }
+
+        public static void generateRandomHistory(ComputerPlusEntity entity) {
+            if (Configs.RandomHistoryRecords && entity.Ped != null && entity.Ped.Metadata.randomReportsGenerated == null)
+            {
+                entity.Ped.Metadata.randomReportsGenerated = true;
+
+                // generate random Citation history
+                if (entity.PedPersona.Citations > 0)
+                {
+                    for (var i = 0; i < entity.PedPersona.Citations; i++)
+                    {
+                        generateRandomCitation(entity);
+                    }
+                }
+
+                // generate random Arrest history
+                generatePastArrestNum(entity);
+                if (entity.Ped.Metadata.pastArrestNum > 0)
+                {
+                    // generate past arrest history
+                    for (var i = 0; i < entity.Ped.Metadata.pastArrestNum; i++)
+                    {
+                        generateRandomArrestReport(entity);
+                    }
+                }
+            }
         }
     }
 }

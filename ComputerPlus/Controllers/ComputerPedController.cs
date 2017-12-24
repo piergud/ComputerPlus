@@ -44,8 +44,8 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 
                 Ped pulledOverSuspect = (pulloverHandle != null) ? Functions.GetPulloverSuspect(pulloverHandle) : null;
                 return World.EnumeratePeds().Where(x => {
-                    return (Functions.IsPedArrested(x) || Functions.IsPedGettingArrested(x) || Functions.IsPedStoppedByPlayer(x) 
-                    || (pulledOverSuspect != null && pulledOverSuspect.IsValid() && pulledOverSuspect == x));
+                    return ((pulledOverSuspect != null && pulledOverSuspect.IsValid() && pulledOverSuspect == x) 
+                        ||Functions.IsPedArrested(x) || Functions.IsPedGettingArrested(x) || Functions.IsPedStoppedByPlayer(x));
                 }).ToList();
             }
         }
@@ -92,7 +92,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
         internal static String GetRandomStreetAddress()
         {
-            int streetNum = Globals.Random.Next(0, 5000);
+            int streetNum = Globals.Random.Next(1, 5000);
             var street = World.GetStreetName(World.GetStreetHash(World.GetRandomPositionOnStreet()));
             return String.Format("{0} {1}", streetNum, street);
         }
