@@ -375,7 +375,8 @@ namespace ComputerPlus.Controllers
             }
             else if (citation != null && citation == Globals.PendingTrafficCitation && !citation.FullName.Equals(entity.FullName))
             {
-                mCitation = new TrafficCitation();
+                if (entity.Validate()) mCitation = TrafficCitation.CreateForPedInVehicle(entity);
+                else mCitation = new TrafficCitation();
                 Globals.PendingTrafficCitation = mCitation;
             }
             else
