@@ -9,6 +9,7 @@ using LSPD_First_Response.Engine.Scripting.Entities;
 using ComputerPlus.Extensions.Gwen;
 using ComputerPlus.Controllers.Models;
 using System.Runtime.ExceptionServices;
+using ComputerPlus.Controllers;
 
 namespace ComputerPlus.Interfaces.ComputerPedDB
 {
@@ -97,9 +98,12 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 ComputerPedController controller = ComputerPedController.Instance;
                 var peds = controller.PedsCurrentlyStoppedByPlayer;
                 list_collected_ids.Clear();
-                foreach(var persona in peds.Select(x => controller.LookupPersona(x)))
+                foreach(var entity in peds.Select(x => controller.LookupPersona(x)))
                 {
-                    if (persona != null) list_collected_ids.AddPed(persona);
+                    if (entity != null) {
+                        list_collected_ids.AddPed(entity);
+                        ComputerReportsController.generateRandomHistory(entity);
+                    } 
                 }
             }
             catch (Exception e)
