@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static ComputerPlus.Extensions.Gwen.TextBoxExtensions;
 
 namespace ComputerPlus.Extensions
@@ -11,7 +7,13 @@ namespace ComputerPlus.Extensions
     {
         internal static String ToLocalTimeString(this DateTime date, DateOutputPart output = DateOutputPart.ALL)
         {
-            var local = date.ToLocalTime();
+            return date.ToDateTimeString(output, true);
+        }
+
+        internal static String ToDateTimeString(this DateTime date, DateOutputPart output = DateOutputPart.ALL, bool convertToLocal = true)
+        {
+            var local = date;
+            if (convertToLocal) local = date.ToLocalTime();
             switch (output)
             {
                 case DateOutputPart.DATE: return local.ToShortDateString();

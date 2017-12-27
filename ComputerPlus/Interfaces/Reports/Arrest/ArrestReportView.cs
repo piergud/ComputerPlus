@@ -18,7 +18,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
     class ArrestReportView : Base
     {
         internal static int DefaultWidth = 539;
-        internal static int DefaultHeight = 946;
+        internal static int DefaultHeight = 800;
 
         ArrestReport Report;
         SystemDrawing.Color labelColor = SystemDrawing.Color.Black;
@@ -123,10 +123,8 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             labeled_arrest_city.PlaceBelowOf(labeled_arrest_street_address, Configs.BaseFormControlSpacingDouble);
             labeled_arrest_time.Align(labeled_arrest_date, labeled_arrest_city);
             
-
             arrestLocationContent.SizeToChildren(false, true);
             arrestLocationSection.SizeToChildren(false, true);
-
             
             labeledCharges.PlaceBelowOf(arrestLocationSection).SizeWidthWith().SizeChildrenWidth();
             labeledAdditionalParties.PlaceBelowOf(labeledCharges).SizeWidthWith().SizeChildrenWidth();
@@ -144,13 +142,13 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             labeled_arrest_report_id.SetValueText(Report.ShortId());
             labeled_first_name.SetValueText(Report.FirstName);
             labeled_last_name.SetValueText(Report.LastName);
-            labeled_dob.SetValueText(Function.ToLocalDateString(Report.DOB, TextBoxExtensions.DateOutputPart.DATE, TextBoxExtensions.DateOutputPart.DATE));
+            labeled_dob.SetValueText(Report.DOB);
             labeled_home_address.SetValueText(Report.HomeAddress);
 
             labeled_arrest_street_address.SetValueText(Report.ArrestStreetAddress);
             labeled_arrest_city.SetValueText(Report.ArrestCity);
-            labeled_arrest_date.SetValueText(Function.ToLocalDateString(Report.ArrestDate, TextBoxExtensions.DateOutputPart.DATE, TextBoxExtensions.DateOutputPart.DATE));
-            labeled_arrest_time.SetValueText(Function.ToLocalDateString(Report.ArrestDate, TextBoxExtensions.DateOutputPart.TIME, TextBoxExtensions.DateOutputPart.TIME));
+            labeled_arrest_date.SetValueText(Function.ToLocalDateString(Report.ArrestTimeDate, TextBoxExtensions.DateOutputPart.DATE));
+            labeled_arrest_time.SetValueText(Function.ToLocalDateString(Report.ArrestTimeDate, TextBoxExtensions.DateOutputPart.TIME));
             tb_report_details.SetValueText(Report.Details);
         }
 

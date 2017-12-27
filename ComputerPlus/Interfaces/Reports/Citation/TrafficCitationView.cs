@@ -27,7 +27,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
         public enum ViewTypes { CREATE = 0, VIEW = 1 };
 
         internal static int DefaultWidth = 539;
-        internal static int DefaultHeight = 946;
+        internal static int DefaultHeight = 810;
 
         bool ReadOnly;
 
@@ -72,8 +72,15 @@ namespace ComputerPlus.Interfaces.Reports.Citation
 
         ViewTypes ViewType;
 
-        public TrafficCitationView(Base parent, TrafficCitation citation, ViewTypes viewType = ViewTypes.CREATE, TrafficCitationActionEvent actionCallback = null) : base(parent)
+        TrafficCitationCreateContainer Container = null;
+
+        public TrafficCitationView(Base parent, TrafficCitation citation, ViewTypes viewType = ViewTypes.CREATE, TrafficCitationActionEvent actionCallback = null) : this(null, parent, citation, viewType, actionCallback)
         {
+        }
+
+        public TrafficCitationView(TrafficCitationCreateContainer container, Base parent, TrafficCitation citation, ViewTypes viewType = ViewTypes.CREATE, TrafficCitationActionEvent actionCallback = null) : base(parent)
+        {
+            Container = container;
             Citation = citation;
             ViewType = viewType;
             ReadOnly = ViewType != ViewTypes.CREATE;
@@ -101,7 +108,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labelFont.Smooth = true;
 
             headerSection = new Base(this);
-            labeled_citation_report_id = LabeledComponent.StatefulTextbox(headerSection, "Traffic Citation", RelationalPosition.LEFT, Configs.BaseFormControlSpacingTriple * 2);
+            labeled_citation_report_id = LabeledComponent.StatefulTextbox(headerSection, "Traffic Citation", RelationalPosition.LEFT, Configs.BaseFormControlSpacing);
             LabeledInputs.Add(labeled_citation_report_id);
 
 
@@ -119,6 +126,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             vehicleInformationContent = new Base(this);
             labeled_vehicle_type = new LabeledComponent<ComboBox>(vehicleInformationContent, "Type", new ComboBox(vehicleInformationContent), RelationalPosition.TOP, RelationalSize.NONE, Configs.BaseFormControlSpacingHalf, labelFont, labelColor);
             labeled_vehicle_type.Component.AddItem("Select One", "PlaceHolder", String.Empty);
+            labeled_vehicle_type.Component.AddItem("N/A", "N/A", "N/A");
             Globals.VehicleDefinitions.Types.Categories.ForEach(x => {
                 labeled_vehicle_type.Component.AddItem(x.Value, x.Value, x.Value);
             });
@@ -283,7 +291,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
         }
 
 
-        private async void ButtonClicked(Base sender, ClickedEventArgs arguments)
+        private void ButtonClicked(Base sender, ClickedEventArgs arguments)
         {
             if (sender == btn_finish.Component || sender == btn_finish_new.Component)
             {
@@ -303,12 +311,11 @@ namespace ComputerPlus.Interfaces.Reports.Citation
                     OnValidationError(sender, failReasons);
                     NotifyForEvent(TrafficCitationSaveResult.SAVE_ERROR);
                 }
-                
                 else
                 {
                     try
                     {
-                        Citation = await ComputerReportsController.SaveTrafficCitationAsync(Citation);                        
+                        Citation = ComputerReportsController.SaveTrafficCitation(Citation);                        
                         //if (Globals.PendingTrafficCitation == Citation) Globals.PendingTrafficCitation = null;
                         NotifyForEvent(TrafficCitationSaveResult.SAVE);
                         
@@ -317,10 +324,13 @@ namespace ComputerPlus.Interfaces.Reports.Citation
                             Globals.PendingTrafficCitation = TrafficCitation.CloneFromCitation(Citation);
                             ChangeCitation(Globals.PendingTrafficCitation);
                             new MessageBox(this, "Saved citation. Creating new");
-                            return;
+                            BindNeeded = true;
+                            BindDataFromCitation();
                         }
-                        BindNeeded = true;
-                        BindDataFromCitation();
+                        else
+                        {
+                            if (this.Container != null) this.Container.Close();
+                        }
                     }
                     catch (Exception e)
                     {
@@ -361,7 +371,6 @@ namespace ComputerPlus.Interfaces.Reports.Citation
              .PlaceBelowOf(headerSection)
              .SizeWidthWith();
 
-            
             labeled_last_name.PlaceRightOf(labeled_first_name, Configs.BaseFormControlSpacingHalf);
             labeled_dob.PlaceRightOf(labeled_last_name, Configs.BaseFormControlSpacingHalf);
             labeled_dob.Component.SmallSize();
@@ -395,7 +404,6 @@ namespace ComputerPlus.Interfaces.Reports.Citation
              .PlaceBelowOf(vehicleInformationSection)
              .SizeWidthWith();            
 
-
             labeled_citation_date.Component.SmallSize();
             labeled_citation_time.Component.SmallSize();
             labeled_citation_city.Component.MediumSize();
@@ -403,7 +411,6 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labeled_citation_date.PlaceRightOf(labeled_citation_street_address, Configs.BaseFormControlSpacingTriple * 2);
             labeled_citation_city.PlaceBelowOf(labeled_citation_street_address);
             labeled_citation_time.Align(labeled_citation_date, labeled_citation_city);
-
 
             citationLocationContent.SizeToChildren(false, true);
             citationLocationSection.SizeToChildren(false, true);
@@ -422,19 +429,15 @@ namespace ComputerPlus.Interfaces.Reports.Citation
                 .SizeChildrenWidth()
                 .SizeChildrenHeight(null, 30);
 
-
-
-
             labeled_citation_details
                 .PlaceBelowOf(labeled_available_citation_reasons)
                 .SizeWidthWith()
-                .SetHeight(150)
+                .SetHeight(120)
                 .SizeChildrenWidth()
                 .SizeChildrenHeight(null, 30);
 
             violationContent.SizeToChildren(false, true);
             violationSection.SizeToChildren(false, true);
-
             
         }
 
@@ -518,33 +521,35 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             {
                 foreach (var textbox in textboxes) textbox.Disable();
                 labeled_vehicle_type.Component.Disable();
-                labeled_available_citation_reasons.Disable();
-                labeled_citation_details.Disable();
+                labeled_available_citation_reasons.Component.Disable();
+                labeled_citation_details.Component.Disable();
             }
             else
             {
                 foreach (var textbox in textboxes) textbox.Enable();
                 labeled_vehicle_type.Component.Enable();
-                labeled_available_citation_reasons.Enable();
-                labeled_citation_details.Enable();
+                labeled_available_citation_reasons.Component.Enable();
+                labeled_citation_details.Component.Enable();
             }           
 
         }
 
         private void UpdateCitationFromFields()
         {
-            Citation.FirstName = labeled_first_name.Component.Text;
-            Citation.LastName = labeled_last_name.Component.Text;
-            Citation.DOB = labeled_dob.Component.Text;
-            Citation.HomeAddress = labeled_home_address.Component.Text;
-            Citation.VehicleType = labeled_vehicle_type.Component.SelectedItem.Name;
-            Citation.VehicleModel = labeled_vehicle_model.Component.Text;
-            Citation.VehicleColor = labeled_vehicle_color.Component.Text;
-            Citation.VehicleTag = labeled_vehicle_tag.Component.Text;
-            Citation.CitationStreetAddress = labeled_citation_street_address.Component.Text;
-            Citation.CitationCity = labeled_citation_city.Component.Text;
-            Citation.Details = labeled_citation_details.Component.Text;
-            
+            if (!ReadOnly)
+            {
+                Citation.FirstName = labeled_first_name.Component.Text;
+                Citation.LastName = labeled_last_name.Component.Text;
+                Citation.DOB = labeled_dob.Component.Text;
+                Citation.HomeAddress = labeled_home_address.Component.Text;
+                Citation.VehicleType = labeled_vehicle_type.Component.SelectedItem.Name;
+                Citation.VehicleModel = labeled_vehicle_model.Component.Text;
+                Citation.VehicleColor = labeled_vehicle_color.Component.Text;
+                Citation.VehicleTag = labeled_vehicle_tag.Component.Text;
+                Citation.CitationStreetAddress = labeled_citation_street_address.Component.Text;
+                Citation.CitationCity = labeled_citation_city.Component.Text;
+                Citation.Details = labeled_citation_details.Component.Text;
+            }
         }
 
         private void BindDataFromCitation()
@@ -565,18 +570,23 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labeled_citation_report_id.SetValueText(Citation.ShortId());
             labeled_first_name.SetValueText(Citation.FirstName);
             labeled_last_name.SetValueText(Citation.LastName);
-            labeled_dob.SetValueText(Function.ToLocalDateString(Citation.DOB, TextBoxExtensions.DateOutputPart.DATE, TextBoxExtensions.DateOutputPart.DATE));
+            labeled_dob.SetValueText(Citation.DOB);
             labeled_home_address.SetValueText(Citation.HomeAddress);
 
+            labeled_vehicle_type.Component.Enable();
             labeled_vehicle_type.Component.SelectByText(Citation.VehicleType);
+            if (ReadOnly) labeled_vehicle_type.Component.Disable();
+
             labeled_vehicle_model.SetValueText(Citation.VehicleModel);
             labeled_vehicle_color.SetValueText(Citation.VehicleColor);
             labeled_vehicle_tag.SetValueText(Citation.VehicleTag);
 
             labeled_citation_street_address.SetValueText(Citation.CitationStreetAddress);
             labeled_citation_city.SetValueText(Citation.CitationCity);
-            labeled_citation_date.SetValueText(Function.ToLocalDateString(Citation.CitationDate, TextBoxExtensions.DateOutputPart.DATE, TextBoxExtensions.DateOutputPart.DATE));
-            labeled_citation_time.SetValueText(Function.ToLocalDateString(Citation.CitationTime, TextBoxExtensions.DateOutputPart.TIME, TextBoxExtensions.DateOutputPart.TIME));
+            labeled_citation_date.SetValueText(Function.ToLocalDateString(Citation.CitationTimeDate, TextBoxExtensions.DateOutputPart.DATE));
+            labeled_citation_time.SetValueText(Function.ToLocalDateString(Citation.CitationTimeDate, TextBoxExtensions.DateOutputPart.TIME));
+
+            labeled_citation_details.Component.ClearText();
             labeled_citation_details.SetValueText(Citation.Details);
 
             DataBound = true;
@@ -602,7 +612,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
         {
             base.InitializeLayout();
             this.Position = this.GetLaunchPosition();
-            trafficCitationCreate = new TrafficCitationView(this, Citation, ViewType, Callback);
+            trafficCitationCreate = new TrafficCitationView(this, this, Citation, ViewType, Callback);
             trafficCitationCreate.Dock = Gwen.Pos.Fill;
         }
 

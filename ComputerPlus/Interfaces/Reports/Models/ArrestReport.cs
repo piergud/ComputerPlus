@@ -1,33 +1,25 @@
-﻿using ComputerPlus.Controllers;
-using ComputerPlus.Controllers.Models;
-using ComputerPlus.DB.Models;
-using ComputerPlus.Extensions;
+﻿using ComputerPlus.Controllers.Models;
 using ComputerPlus.Interfaces.Common;
-using LSPD_First_Response.Engine.Scripting.Entities;
-using Rage;
-using SQLite.Net.Attributes;
-using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static ComputerPlus.Extensions.Gwen.TextBoxExtensions;
 
 namespace ComputerPlus.Interfaces.Reports.Models
 {
     public class ArrestReport : IModelValidable
     {
 
-        [PrimaryKey]
-        [Column("id")]
+        //        [PrimaryKey]
+        //[Column("id")]
         public Guid id
         {
             get;
             set;
         }
 
-        [Ignore]
+        //[Ignore]
         public bool IsNew
         {
             get
@@ -38,56 +30,56 @@ namespace ComputerPlus.Interfaces.Reports.Models
 
         public bool ReadOnly;
 
-        [OneToMany(CascadeOperations = CascadeOperation.All)]
+        //[OneToMany(CascadeOperations = CascadeOperation.All)]
         public List<ArrestChargeLineItem> Charges
         {
             get;
             set;
         } = new List<ArrestChargeLineItem>();
 
-        [OneToMany(CascadeOperations = CascadeOperation.All)]
+        // [OneToMany(CascadeOperations = CascadeOperation.All)]
         public List<ArrestReportAdditionalParty> AdditionalParties
         {
             get;
             set;
         } = new List<ArrestReportAdditionalParty>();
 
-        [Column("ArrestTime")]
+        // [Column("ArrestTime")]
         public DateTime ArrestTimeDate
         {
             get;
             set;
         }
 
-        [Ignore]
+        //[Ignore]
         public String ArrestTime
         {
             get { return ArrestTimeDate.ToShortTimeString();  }
         }
 
-        [Ignore]
+        // [Ignore]
         public String ArrestDate
         {
             get { return ArrestTimeDate.ToShortDateString(); }
         }
 
-        [Column("FirstName")]
-        [Indexed(Name ="arrest_report_ped")]
+        // [Column("FirstName")]
+        // [Indexed(Name ="arrest_report_ped")]
         public String FirstName
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Column("LastName")]
-        [Indexed(Name = "arrest_report_ped")]
+        // [Column("LastName")]
+        //[Indexed(Name = "arrest_report_ped")]
         public String LastName
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Ignore]
+        //[Ignore]
         public String FullName
         {
             get
@@ -96,36 +88,36 @@ namespace ComputerPlus.Interfaces.Reports.Models
             }
         }
 
-        [Column("DOB")]
-        [Indexed(Name = "arrest_report_ped")]
+        //[Column("DOB")]
+        //[Indexed(Name = "arrest_report_ped")]
         public String DOB
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Column("HomeAddress")]
+        //[Column("HomeAddress")]
         public String HomeAddress
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Column("ArrestStreetAddress")]
+        //[Column("ArrestStreetAddress")]
         public String ArrestStreetAddress
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Column("ArrestCity")]
+        // [Column("ArrestCity")]
         public String ArrestCity
         {
             get;
             internal set;
         } = String.Empty;
 
-        [Column("Details")]
+        //[Column("Details")]
         public String Details
         {
             get;
@@ -154,7 +146,7 @@ namespace ComputerPlus.Interfaces.Reports.Models
                 lock (parties)
                     AdditionalParties.AddRange(parties);
             }
-            ArrestTimeDate = arrestTime != null ? arrestTime : DateTime.Now;
+            ArrestTimeDate = arrestTime != null ? arrestTime : DateTime.Now.ToUniversalTime();
         }
 
         public ArrestReport(List<ArrestChargeLineItem> charges, DateTime arrestTime, String notes) : this(charges, null, arrestTime, notes)
@@ -164,13 +156,13 @@ namespace ComputerPlus.Interfaces.Reports.Models
 
         public ArrestReport (bool readOnly = false) 
         {            
-            ArrestTimeDate = DateTime.Now;
+            ArrestTimeDate = DateTime.Now.ToUniversalTime();
             ReadOnly = readOnly;
         }
 
         public ArrestReport()
         {
-            ArrestTimeDate = DateTime.Now;
+            ArrestTimeDate = DateTime.Now.ToUniversalTime();
             ReadOnly = false;
         }
 
@@ -201,7 +193,7 @@ namespace ComputerPlus.Interfaces.Reports.Models
 
             }
             if (Charges.Count == 0) failReasons.Add("Charges", "There must be a charge");
-            var dobPattern = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
+            var dobPattern = Function.DateFormatForPart(DateOutputPart.DATE);
             DateTime parsedDob;
             if (!failReasons.ContainsKey("DOB") && !DateTime.TryParseExact(DOB, dobPattern, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out parsedDob))
             {

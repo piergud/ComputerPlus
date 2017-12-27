@@ -28,19 +28,6 @@ namespace ComputerPlus.Controllers.Models
             HasValidEmissions = null;
             IsTaxed = null;
             RawPersona = rawPersona;
-        }      
-        
-        public VehiclePersona(British_Policing_Script.VehicleRecords records)
-        {
-            IsRegistered = null;
-            HasInsurance = records.Insured;
-            Color = records.CarColour;
-
-            Alert = new System.Text.RegularExpressions.Regex(@"~\w~").Replace(records.DetermineFlags(), String.Empty);
-            HasValidEmissions = records.HasMOT;
-            IsOffroadOnly = records.HasSORN;
-            IsTaxed = records.IsTaxed;
-            RawPersona = records;
         }
     }
 }

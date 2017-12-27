@@ -1,26 +1,25 @@
-﻿using Rage;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ComputerPlus.Interfaces.Reports.Arrest;
 using ComputerPlus.Interfaces.Reports.Citation;
-using ComputerPlus.Extensions.Gwen;
 using ComputerPlus.Interfaces.Reports.Models;
-using SQLiteNetExtensions;
-using SQLiteNetExtensionsAsync.Extensions;
-using ComputerPlus.DB;
-using CodeEngine.Framework.QueryBuilder;
-using QueryEnum = CodeEngine.Framework.QueryBuilder.Enums;
 using ComputerPlus.Controllers.Models;
-using ComputerPlus.Extensions;
-using SystemThreading = System.Threading.Tasks;
+using LSPD_First_Response.Mod.API;
+using ComputerPlus.Interfaces.ComputerPedDB;
+using System.Linq;
+using Rage;
+using ComputerPlus.DB;
+using static ComputerPlus.Interfaces.Reports.Models.ArrestReportAdditionalParty;
+using LiteDB;
+using System.Globalization;
+using static ComputerPlus.Extensions.Gwen.TextBoxExtensions;
 
 namespace ComputerPlus.Controllers
 {
     class ComputerReportsController
-    {     
+    {
+        private static int SECONDS_IN_A_DAY = 60 * 60 * 24;
+
         public static void ShowArrestReportCreate()
         {
             if (Globals.PendingArrestReport == null)
@@ -37,37 +36,135 @@ namespace ComputerPlus.Controllers
             Globals.Navigation.Push(container);
         }
 
-        public static async SystemThreading.Task ShowArrestReportView(ArrestReport report)
+        public static void ShowArrestReportView(ArrestReport report)
         {
-            await PopulateArrestLineItems(report);
+            PopulateArrestLineItems(report);
+            PopulateArrestParties(report);
             //Globals.Navigation.Push(new ArrestReportContainer(report));
             Globals.Navigation.Push(new ArrestReportViewContainer(report));
         }
 
-        public static async void ShowArrestReportList()
+        public static void ShowArrestReportList()
         {
-            var reports = await ComputerReportsController.GetAllArrestReportsAsync(0, 0);
+            var reports = GetAllArrestReports(0, 256);
             if (reports == null) Function.Log("Reports is null");
             else if (Globals.Navigation == null) Function.Log("Global nav is null");
             else
             Globals.Navigation.Push(new ArrestReportListContainer(reports));
         }
 
+        private static void insertArrestReport(ArrestReport report)
+        {
+            var arrestReportDoc = new ArrestReportDoc
+            {
+                Id = report.id,
+                ArrestTimeDate = report.ArrestTimeDate.ToString(Function.DateFormatForPart(DateOutputPart.ISO)),
+                FirstName = report.FirstName,
+                LastName = report.LastName,
+                DOB = report.DOB,
+                HomeAddress = report.HomeAddress,
+                ArrestStreetAddress = report.ArrestStreetAddress,
+                ArrestCity = report.ArrestCity,
+                Details = report.Details
+            };
+            Globals.Store.arrestReportCollection.Insert(arrestReportDoc);
+        }
 
-        public static async Task<ArrestReport> SaveArrestRecordAsync(ArrestReport report)
+        private static void updateArrestReport(ArrestReport report)
+        {
+            var arrestReportDoc = Globals.Store.arrestReportCollection.FindById(report.id);
+            arrestReportDoc.ArrestTimeDate = report.ArrestTimeDate.ToString(Function.DateFormatForPart(DateOutputPart.ISO));
+            arrestReportDoc.FirstName = report.FirstName;
+            arrestReportDoc.LastName = report.LastName;
+            arrestReportDoc.DOB = report.DOB;
+            arrestReportDoc.HomeAddress = report.HomeAddress;
+            arrestReportDoc.ArrestStreetAddress = report.ArrestStreetAddress;
+            arrestReportDoc.ArrestCity = report.ArrestCity;
+            arrestReportDoc.Details = report.Details;
+
+            Globals.Store.arrestReportCollection.Update(arrestReportDoc); ;
+        }
+
+        private static void insertArrestReportLineItem(ArrestChargeLineItem charge, Guid arrestReportId)
+        {
+            var arrestReportChargeDoc = new ArrestReportChargeDoc
+            {
+                Charge = charge.Charge,
+                IsFelony = charge.IsFelony,
+                Note = charge.Note,
+                ArrestReportId = arrestReportId
+            };
+            Globals.Store.arrestReportChargeCollection.Insert(arrestReportChargeDoc);
+        }
+
+        private static void insertArrestReportParties(ArrestReportAdditionalParty party, Guid arrestReportId)
+        {
+            var arrestReportPartyDoc = new ArrestReportPartyDoc
+            {
+                PartyType = (int)party.PartyType,
+                FirstName = party.FirstName,
+                LastName = party.LastName,
+                DOB = party.DOB,
+                ArrestReportId = arrestReportId
+            };
+            Globals.Store.arrestReportPartyCollection.Insert(arrestReportPartyDoc);
+        }
+
+        private static void clearArrestReportLineItem(Guid arrestReportId)
+        {
+            Globals.Store.arrestReportChargeCollection.Delete(x => x.ArrestReportId == arrestReportId);
+        }
+
+        private static void clearArrestReportParties(Guid arrestReportId)
+        {
+            Globals.Store.arrestReportPartyCollection.Delete(x => x.ArrestReportId == arrestReportId);
+        }
+
+        public static ArrestReport SaveArrestRecord(ArrestReport report)
         {
             try
             {
                 if (report.IsNew)
                 {
                     report.id = Guid.NewGuid();
-                    await Globals.Store.Connection().InsertWithChildrenAsync(report, true);
+
+                    insertArrestReport(report);
+                    if (report.Charges != null && report.Charges.Count > 0)
+                    {
+                        foreach (var charge in report.Charges)
+                        {
+                            insertArrestReportLineItem(charge, report.id);
+                        }
+                    }
+                    if (report.AdditionalParties != null && report.AdditionalParties.Count > 0)
+                    {
+                        foreach (var party in report.AdditionalParties)
+                        {
+                            insertArrestReportParties(party, report.id);
+                        }
+                    }
                 }
                 else
                 {
-                    await Globals.Store.Connection().InsertOrReplaceWithChildrenAsync(report, true);
+                    updateArrestReport(report);
+                    if (report.Charges != null && report.Charges.Count > 0)
+                    {
+                        clearArrestReportLineItem(report.id);
+                        foreach (var charge in report.Charges)
+                        {
+                            insertArrestReportLineItem(charge, report.id);
+                        }
+                    }
+                    if (report.AdditionalParties != null && report.AdditionalParties.Count > 0)
+                    {
+                        clearArrestReportParties(report.id);
+                        foreach (var party in report.AdditionalParties)
+                        {
+                            insertArrestReportParties(party, report.id);
+                        }
+                    }
+
                 }
-                    
                 return report;
             }
             catch(Exception e)
@@ -77,75 +174,180 @@ namespace ComputerPlus.Controllers
             }
         }
 
-        
-        public static async Task<List<ArrestReport>> GetAllArrestReportsAsync(int skip = 0, int limit = 20, String orderCol = "", String orderDir = "ASC")
+        private static void PopulateArrestReportCharges(ArrestReport arrestReport)
         {
             try
             {
-                orderCol = String.IsNullOrWhiteSpace(orderCol) ? DB.Storage.Tables.ArrestReport.ARREST_TIME : orderCol;
-                orderDir = String.IsNullOrWhiteSpace(orderDir) ? "ASC" : orderDir;
-                var query = new SelectQueryBuilder();
-                query.SelectAllColumns();
-                query.SelectFromTable(DB.Storage.Tables.Names.ArrestReport);
-                query.AddOrderBy(orderCol, QueryEnum.Sorting.Descending);
-                var results = await Globals.Store.Connection().QueryAsync<ArrestReport>(query.BuildQuery());
-                return results != null ? results : new List<ArrestReport>();
+                List<ArrestReportChargeDoc> chargeDocs = Globals.Store.arrestReportChargeCollection.Find(x => x.ArrestReportId == arrestReport.id).ToList();
+                foreach (var chargeDoc in chargeDocs)
+                {
+                    var charge = new ArrestChargeLineItem();
+                    charge.id = chargeDoc.Id;
+                    charge.Charge = chargeDoc.Charge;
+                    charge.IsFelony = chargeDoc.IsFelony;
+                    charge.Note = chargeDoc.Note == null ? String.Empty : chargeDoc.Note;
+                    charge.ReportId = chargeDoc.ArrestReportId;
+                    arrestReport.Charges.Add(charge);
+                }
+             }
+            catch (Exception e)
+            {
+                Function.LogCatch(e.ToString());
+            }
+        }
+
+        private static void PopulateArrestParties(ArrestReport arrestReport)
+        {
+            try
+            {
+                List<ArrestReportPartyDoc> partyDocs = Globals.Store.arrestReportPartyCollection.Find(x => x.ArrestReportId == arrestReport.id).ToList();
+                foreach (var partyDoc in partyDocs)
+                {
+                    var party = new ArrestReportAdditionalParty();
+                    party.id = partyDoc.Id;
+                    party.PartyType = (PartyTypes)partyDoc.PartyType;
+                    party.FirstName = partyDoc.FirstName == null ? String.Empty : partyDoc.FirstName;
+                    party.LastName = partyDoc.LastName == null ? String.Empty : partyDoc.LastName;
+                    party.DOB = partyDoc.DOB == null ? String.Empty : partyDoc.DOB;
+                    party.ReportId =partyDoc.ArrestReportId;
+                    arrestReport.AdditionalParties.Add(party);
+                }
             }
             catch (Exception e)
             {
                 Function.LogCatch(e.ToString());
-                return null;
             }
         }
 
-        public static async Task<List<ArrestReport>> GetArrestReportsForPedAsync(ComputerPlusEntity entity)
+        private static ArrestReport convertArrestReportDoc(ArrestReportDoc arrestReportDoc)
         {
-            return await GetArrestReportsForPedAsync(entity.FirstName, entity.LastName, entity.DOBString);
+            var arrestReport = new ArrestReport();
+            arrestReport.id = arrestReportDoc.Id;
+            arrestReport.ArrestTimeDate = DateTime.ParseExact(arrestReportDoc.ArrestTimeDate, Function.DateFormatForPart(DateOutputPart.ISO), CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
+            arrestReport.FirstName = arrestReportDoc.FirstName;
+            arrestReport.LastName = arrestReportDoc.LastName;
+            arrestReport.DOB = arrestReportDoc.DOB;
+            arrestReport.HomeAddress = arrestReportDoc.HomeAddress;
+            arrestReport.ArrestStreetAddress = arrestReportDoc.ArrestStreetAddress;
+            arrestReport.ArrestCity = arrestReportDoc.ArrestCity;
+            arrestReport.Details = arrestReportDoc.Details == null ? String.Empty : arrestReportDoc.Details;
+
+            return arrestReport;
         }
 
-        public static async Task<List<ArrestReport>> GetArrestReportsForPedAsync(String firstName = "", String lastName = "", String dob = "")
+        public static List<ArrestReport> GetAllArrestReports(int skip = 0, int limit = 100)
         {
+            var arrestReports = new List<ArrestReport>();
             try
             {
-                firstName = firstName.Trim();
-                lastName = lastName.Trim();
-                dob = dob.Trim();
-                //var query = new SelectQueryBuilder();
-                //query.SelectAllColumns();
-                //query.SelectFromTable(DB.Storage.Tables.Names.ArrestReport);
-                //query.AddWhere(DB.Storage.Tables.ArrestReport.FIRST_NAME, QueryEnum.Comparison.Equals, firstName);
-                //query.AddWhere(DB.Storage.Tables.ArrestReport.LAST_NAME, QueryEnum.Comparison.Equals, lastName);
-                //query.AddWhere(DB.Storage.Tables.ArrestReport.DOB, QueryEnum.Comparison.Equals, dob);
-                return await Globals.Store.Connection().GetAllWithChildrenAsync<ArrestReport>(report => report && report.FirstName == firstName && report.LastName == lastName && report.DOB == dob, true);
-                
+                List<ArrestReportDoc> arrestReportDocs = Globals.Store.arrestReportCollection.Find(Query.All("ArrestTimeDate", Query.Descending), skip, limit).ToList();
+                foreach (var arrestReportDoc in arrestReportDocs)
+                {
+                    var arrestReport = convertArrestReportDoc(arrestReportDoc);
+                    arrestReports.Add(arrestReport);
+                }
             }
             catch (Exception e)
             {
                 Function.LogCatch(e.ToString());
-                return null;
+            }
+            return arrestReports;
+        }
+
+        private static ArrestReport generateRandomArrestReport(ComputerPlusEntity entity)
+        {
+            ArrestReport newArrest = ArrestReport.CreateForPed(entity);
+            int randomSeconds = Globals.Random.Next(SECONDS_IN_A_DAY * 7, SECONDS_IN_A_DAY * 1200) * -1;
+            newArrest.ArrestTimeDate = DateTime.Now.AddSeconds(randomSeconds);
+            Vector3 randomLocation = Rage.World.GetRandomPositionOnStreet();
+            newArrest.ArrestStreetAddress = Rage.World.GetStreetName(randomLocation);
+            newArrest.ArrestCity = Functions.GetZoneAtPosition(randomLocation).RealAreaName;
+            newArrest.Details = String.Empty;
+
+            string randomChargeName = ComputerPedController.GetRandomWantedReason();
+            bool isFelony = false;
+            randomChargeName = randomChargeName.Substring(randomChargeName.LastIndexOf("=>") + 3);
+            if (randomChargeName.EndsWith("(F)"))
+            {
+                isFelony = true;
+                randomChargeName = randomChargeName.Substring(0, randomChargeName.Length - 3);
+            }
+            ArrestChargeLineItem newCharge = new ArrestChargeLineItem();
+            newCharge.id = new Guid();
+            newCharge.Charge = randomChargeName;
+            newCharge.IsFelony = isFelony;
+            newCharge.Note = String.Empty;
+            newArrest.Charges.Add(newCharge);
+
+            return SaveArrestRecord(newArrest);
+        }
+
+        private static void generatePastArrestNum(ComputerPlusEntity entity)
+        {
+            if (entity.Ped.Metadata.pastArrestNum == null)
+            {
+                int randomNum = Globals.Random.Next(1, 12);
+                int pastArrestNum;
+                if (entity.PedPersona.Wanted)
+                {
+                    if (randomNum > 5)
+                        pastArrestNum = 0;
+                    else
+                        pastArrestNum = randomNum;
+                }
+                else
+                {
+                    if (randomNum > 2)
+                        pastArrestNum = 0;
+                    else
+                        pastArrestNum = randomNum;
+                }
+                entity.Ped.Metadata.pastArrestNum = pastArrestNum;
             }
         }
 
-        public static async Task<bool> PopulateArrestLineItems(ArrestReport report)
+        public static List<ArrestReport> GetArrestReportsForPed(ComputerPlusEntity entity)
         {
+            // check if ped has past arrest reports
+            List<ArrestReport> pastArrestFromDB = GetArrestReportsForPed(entity.FirstName, entity.LastName, entity.DOBString);
+            return pastArrestFromDB.OrderByDescending(o => o.ArrestTimeDate).ToList();
+        }
+
+        public static List<ArrestReport> GetArrestReportsForPed(String firstName = "", String lastName = "", String dob = "")
+        {
+            firstName = firstName.Trim();
+            lastName = lastName.Trim();
+            dob = dob.Trim();
+            var arrestReports = new List<ArrestReport>();
             try
             {
-                await Globals.Store.Connection().GetChildrenAsync(report, true);
-
-                return true;
+                List<ArrestReportDoc> arrestReportDocs = Globals.Store.arrestReportCollection.Find(x => x.DOB.Equals(dob) && x.FirstName.Equals(firstName) && x.LastName.Equals(lastName)).ToList();
+                foreach (var arrestReportDoc in arrestReportDocs)
+                {
+                    var arrestReport = convertArrestReportDoc(arrestReportDoc);
+                    PopulateArrestReportCharges(arrestReport);
+                    PopulateArrestParties(arrestReport);
+                    arrestReports.Add(arrestReport);
+                }
             }
             catch (Exception e)
             {
-                Function.Log(e.ToString());
-                return false;
+                Function.LogCatch(e.ToString());
             }
+            return arrestReports.OrderByDescending(o => o.ArrestTimeDate).ToList();
+        }
+
+        public static bool PopulateArrestLineItems(ArrestReport report)
+        {
+            PopulateArrestReportCharges(report);
+            return true;
         }
 
         /** Traffic Citations **/
 
-        public static async void ShowTrafficCitationList()
+        public static void ShowTrafficCitationList()
         {
-            var citations = await ComputerReportsController.GetAllTrafficCitationsAsync(0, 0);
+            var citations = GetAllTrafficCitations(0, 256);
             if (citations == null) Function.Log("Citations are null");
             else if (Globals.Navigation == null) Function.Log("Global nav is null");
             else
@@ -173,7 +375,8 @@ namespace ComputerPlus.Controllers
             }
             else if (citation != null && citation == Globals.PendingTrafficCitation && !citation.FullName.Equals(entity.FullName))
             {
-                mCitation = new TrafficCitation();
+                if (entity.Validate()) mCitation = TrafficCitation.CreateForPedInVehicle(entity);
+                else mCitation = new TrafficCitation();
                 Globals.PendingTrafficCitation = mCitation;
             }
             else
@@ -183,80 +386,199 @@ namespace ComputerPlus.Controllers
             Globals.Navigation.Push(new TrafficCitationCreateContainer(mCitation, TrafficCitationView.ViewTypes.CREATE, callbackDelegate));
         }
 
-        public static async Task<TrafficCitation> SaveTrafficCitationAsync(TrafficCitation citation)
+        private static void insertTrafficCitation(TrafficCitation citation)
+        {
+            var citationDoc = new TrafficCitationDoc
+            {
+                Id = citation.id,
+                CitationTimeDate = citation.CitationTimeDate.ToString(Function.DateFormatForPart(DateOutputPart.ISO)),
+                FirstName = citation.FirstName,
+                LastName = citation.LastName,
+                DOB = citation.DOB,
+                HomeAddress = citation.HomeAddress,
+                CitationStreetAddress = citation.CitationStreetAddress,
+                CitationCity = citation.CitationCity,
+                CitationPosX = (float) citation.CitationPosX,
+                CitationPosY = (float) citation.CitationPosY,
+                CitationPosZ = (float) citation.CitationPosZ,
+                VehicleType = citation.VehicleType,
+                VehicleModel = citation.VehicleModel,
+                VehicleTag = citation.VehicleTag,
+                VehicleColor = citation.VehicleColor,
+                CitationReason = citation.CitationReason,
+                CitationAmount = citation.CitationAmount,
+                Details = citation.Details,
+                IsArrestable = citation.IsArrestable
+            };
+            Globals.Store.citationCollection.Insert(citationDoc);
+        }
+
+        private static void updateTrafficCitation(TrafficCitation citation)
+        {
+            var citationDoc = Globals.Store.citationCollection.FindOne(x => x.Id == citation.id);
+            citationDoc.CitationTimeDate = citation.CitationTimeDate.ToString(Function.DateFormatForPart(DateOutputPart.ISO));
+            citationDoc.FirstName = citation.FirstName;
+            citationDoc.LastName = citation.LastName;
+            citationDoc.DOB = citation.DOB;
+            citationDoc.HomeAddress = citation.HomeAddress;
+            citationDoc.CitationStreetAddress = citation.CitationStreetAddress;
+            citationDoc.CitationCity = citation.CitationCity;
+            citationDoc.CitationPosX = (float)citation.CitationPosX;
+            citationDoc.CitationPosY = (float)citation.CitationPosY;
+            citationDoc.CitationPosZ = (float)citation.CitationPosZ;
+            citationDoc.VehicleType = citation.VehicleType;
+            citationDoc.VehicleModel = citation.VehicleModel;
+            citationDoc.VehicleTag = citation.VehicleTag;
+            citationDoc.VehicleColor = citation.VehicleColor;
+            citationDoc.CitationReason = citation.CitationReason;
+            citationDoc.CitationAmount = citation.CitationAmount;
+            citationDoc.Details = citation.Details;
+            citationDoc.IsArrestable = citation.IsArrestable;
+
+            Globals.Store.citationCollection.Update(citationDoc);
+        }
+
+
+        public static TrafficCitation SaveTrafficCitation(TrafficCitation citation)
         {
             try
             {
                 if (citation.IsNew)
                 {
                     citation.id = Guid.NewGuid();
-                    await Globals.Store.Connection().InsertWithChildrenAsync(citation, true);                    
-
+                    insertTrafficCitation(citation);
                 }
                 else
                 {
-                    await Globals.Store.Connection().UpdateWithChildrenAsync(citation);
+                    updateTrafficCitation(citation);
                 }
-                if (Globals.PendingTrafficCitation != null && Globals.PendingTrafficCitation == citation) Globals.PendingTrafficCitation = null;
-                return citation;
             }
             catch (Exception e)
             {
                 Function.LogCatch(e.ToString());
-                throw e;
             }
+            if (Globals.PendingTrafficCitation != null && Globals.PendingTrafficCitation == citation) Globals.PendingTrafficCitation = null;
+            return citation;
         }
 
-
-        public static async Task<List<TrafficCitation>> GetAllTrafficCitationsAsync(int skip = 0, int limit = 20, String orderCol = "", String orderDir = "ASC")
+        private static TrafficCitation convertCitationDoc(TrafficCitationDoc citationDoc)
         {
+            var citation = new TrafficCitation();
+            citation.id = citationDoc.Id;
+            citation.CitationTimeDate = DateTime.ParseExact(citationDoc.CitationTimeDate, Function.DateFormatForPart(DateOutputPart.ISO), CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
+            citation.FirstName = citationDoc.FirstName;
+            citation.LastName = citationDoc.LastName;
+            citation.DOB = citationDoc.DOB;
+            citation.HomeAddress = citationDoc.HomeAddress;
+            citation.CitationStreetAddress = citationDoc.CitationStreetAddress;
+            citation.CitationCity = citationDoc.CitationCity;
+            var posX = citationDoc.CitationPosX;
+            var posY = citationDoc.CitationPosY;
+            var posZ = citationDoc.CitationPosZ;
+            citation.CitationPos = new Vector3(posX, posY, posZ);
+            citation.VehicleType = citationDoc.VehicleType == null ? String.Empty : citationDoc.VehicleType;
+            citation.VehicleModel = citationDoc.VehicleModel == null ? String.Empty : citationDoc.VehicleModel; 
+            citation.VehicleTag = citationDoc.VehicleTag == null ? String.Empty : citationDoc.VehicleTag;
+            citation.VehicleColor = citationDoc.VehicleColor == null ? String.Empty : citationDoc.VehicleColor;
+            citation.CitationReason = citationDoc.CitationReason;
+            citation.CitationAmount = citationDoc.CitationAmount;
+            citation.Details = citationDoc.Details == null ? String.Empty : citationDoc.Details;
+            citation.IsArrestable = citationDoc.IsArrestable;
+
+            return citation;
+        }
+
+        public static List<TrafficCitation> GetAllTrafficCitations(int skip = 0, int limit = 100)
+        {
+            var citations = new List<TrafficCitation>();
             try
             {
-                orderCol = String.IsNullOrWhiteSpace(orderCol) ? DB.Storage.Tables.TrafficCitation.CITATION_TIME_DATE : orderCol;
-                orderDir = String.IsNullOrWhiteSpace(orderDir) ? "ASC" : orderDir;
-                var query = new SelectQueryBuilder();
-                query.SelectAllColumns();
-                query.SelectFromTable(DB.Storage.Tables.Names.TrafficCitation);
-                query.AddOrderBy(orderCol, QueryEnum.Sorting.Descending);
-                var results = await Globals.Store.Connection().QueryAsync<TrafficCitation>(query.BuildQuery());
-                return results != null ? results : new List<TrafficCitation>();
+                List<TrafficCitationDoc> citationDocs = Globals.Store.citationCollection.Find(Query.All("CitationTimeDate", Query.Descending), skip, limit).ToList();
+                foreach (var citationDoc in citationDocs)
+                {
+                    citations.Add(convertCitationDoc(citationDoc));
+                }
             }
             catch (Exception e)
             {
                 Function.LogCatch(e.ToString());
-                return new List<TrafficCitation>();
             }
+            return citations;
         }
 
-        public static async Task<List<TrafficCitation>> GetTrafficCitationsForPedAsync(ComputerPlusEntity entity)
+        private static TrafficCitation generateRandomCitation(ComputerPlusEntity entity)
         {
-            return await GetTrafficCitationsForPedAsync(entity.FirstName, entity.LastName, entity.DOBString);
+            TrafficCitation newCitation = TrafficCitation.CreateForPedInVehicle(entity);
+            newCitation.VehicleType = "N/A";
+            int randomSeconds = Globals.Random.Next(SECONDS_IN_A_DAY * 7, SECONDS_IN_A_DAY * 1200) * -1;
+            newCitation.CitationTimeDate = DateTime.Now.ToUniversalTime().AddSeconds(randomSeconds);
+            newCitation.CitationPos = Rage.World.GetRandomPositionOnStreet();
+            newCitation.CitationStreetAddress = Rage.World.GetStreetName(newCitation.CitationPos);
+            newCitation.CitationCity = Functions.GetZoneAtPosition(newCitation.CitationPos).RealAreaName;
+            newCitation.Citation = ComputerPedController.GetRandomCitation();
+            return SaveTrafficCitation(newCitation);
         }
 
-        public static async Task<List<TrafficCitation>> GetTrafficCitationsForPedAsync(String firstName, String lastName, String dob)
+        public static List<TrafficCitation> GetTrafficCitationsForPed(ComputerPlusEntity entity)
         {
+            // check if ped has past citations
+            List<TrafficCitation> pastCitationFromDB = GetTrafficCitationsForPed(entity.FirstName, entity.LastName, entity.DOBString);
+            return pastCitationFromDB.OrderByDescending(o => o.CitationTimeDate).ToList();
+        }
+
+        public static List<TrafficCitation> GetTrafficCitationsForPed(String firstName, String lastName, String dob)
+        {
+            firstName = firstName.Trim();
+            lastName = lastName.Trim();
+            dob = dob.Trim();
+            var citations = new List<TrafficCitation>();
             try
             {
-                firstName = firstName.Trim();
-                lastName = lastName.Trim();
-                dob = dob.Trim();
-                return await Globals.Store.Connection()
-                    .GetAllWithChildrenAsync<TrafficCitation>(report => report && report.FirstName == firstName && report.LastName == lastName && report.DOB == dob, true);
-
+                List<TrafficCitationDoc> citationDocs = Globals.Store.citationCollection.Find(x => x.DOB.Equals(dob) && x.FirstName.Equals(firstName) && x.LastName.Equals(lastName)).ToList();
+                foreach (var citationDoc in citationDocs)
+                {
+                    citations.Add(convertCitationDoc(citationDoc));
+                }
             }
             catch (Exception e)
             {
-                //Function.LogCatch(e.ToString());
-                return new List<TrafficCitation>();
+                Function.LogCatch(e.ToString());
             }
+            return citations;
         }
        
-
-        public static async Task<DetailedEntity> GetAllReportsForPedAsync(ComputerPlusEntity entity)
+        public static DetailedEntity GetAllReportsForPed(ComputerPlusEntity entity)
         {            
-            var arrests = await GetArrestReportsForPedAsync(entity);
-            var traffic = await GetTrafficCitationsForPedAsync(entity);
+            var arrests = GetArrestReportsForPed(entity);
+            var traffic = GetTrafficCitationsForPed(entity);
             return new DetailedEntity(entity, arrests, traffic);
+        }
+
+        public static void generateRandomHistory(ComputerPlusEntity entity) {
+            if (Configs.RandomHistoryRecords && entity.Ped != null && entity.Ped.Metadata.randomReportsGenerated == null)
+            {
+                entity.Ped.Metadata.randomReportsGenerated = true;
+
+                // generate random Citation history
+                if (entity.PedPersona.Citations > 0)
+                {
+                    for (var i = 0; i < entity.PedPersona.Citations; i++)
+                    {
+                        generateRandomCitation(entity);
+                    }
+                }
+
+                // generate random Arrest history
+                generatePastArrestNum(entity);
+                if (entity.Ped.Metadata.pastArrestNum > 0)
+                {
+                    // generate past arrest history
+                    for (var i = 0; i < entity.Ped.Metadata.pastArrestNum; i++)
+                    {
+                        generateRandomArrestReport(entity);
+                    }
+                }
+            }
         }
     }
 }

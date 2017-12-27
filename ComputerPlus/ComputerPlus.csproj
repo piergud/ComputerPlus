@@ -23,6 +23,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -61,22 +63,18 @@
       <HintPath>Dependencies\British Policing Script.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="CodeEngine.Framework.QueryBuilder">
-      <HintPath>Dependencies\CodeEngine.Framework.QueryBuilder.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
     <Reference Include="Gwen, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Dependencies\Gwen.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="LiteDB, Version=4.0.0.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiteDB.4.0.0\lib\net40\LiteDB.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="LSPD First Response">
       <HintPath>Dependencies\LSPD First Response.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -84,44 +82,12 @@
       <HintPath>Dependencies\RagePluginHook.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="SQLite.Net, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>Dependencies\SQLite.Net.dll</HintPath>
-      <Private>True</Private>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="SQLite.Net.Async, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>Dependencies\SQLite.Net.Async.dll</HintPath>
-      <Private>True</Private>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="SQLite.Net.Platform.Generic, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>Dependencies\SQLite.Net.Platform.Generic.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SQLite.Net.Platform.Win32, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>Dependencies\SQLite.Net.Platform.Win32.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SQLiteNetExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>Dependencies\SQLiteNetExtensions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SQLiteNetExtensionsAsync, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>Dependencies\SQLiteNetExtensionsAsync.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.SQLite">
-      <HintPath>Dependencies\System.Data.SQLite.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Traffic Policer">
       <HintPath>Dependencies\Traffic Policer.dll</HintPath>
@@ -136,6 +102,7 @@
     <Compile Include="API\Functions.cs" />
     <Compile Include="API\ICalloutData.cs" />
     <Compile Include="API\MDTAPI.cs" />
+    <Compile Include="BritishPolicingFunctions.cs" />
     <Compile Include="Controllers\ComputerReportsController.cs" />
     <Compile Include="Controllers\Models\ALRP_Arguments.cs" />
     <Compile Include="Controllers\Models\ComputerPlusEntity.cs" />
@@ -378,25 +345,22 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y "$(TargetDir)ComputerPlus.dll" "$(TargetDir)Packaged\Plugins\LSPDFR\"
-xcopy /Y "$(TargetDir)ComputerPlus.pdb" "$(TargetDir)Packaged\Plugins\LSPDFR\"
-xcopy /Y "$(ProjectDir)Resources\*.dll" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\"
-xcopy /Y "$(ProjectDir)Resources\*.jpg" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\"
-xcopy /Y "$(ProjectDir)Resources\*.xml" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\"
-xcopy /Y "$(ProjectDir)Resources\Schemas\*.sql" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\Schemas\"
-xcopy /Y "$(ProjectDir)Resources\Schemas\*.sql" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\Schemas\"
+    <PostBuildEvent>xcopy /Y "$(TargetDir)ComputerPlus.dll" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\"
+xcopy /Y "$(TargetDir)ComputerPlus.pdb" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\"
+xcopy /Y "$(ProjectDir)Resources\*.dll" "$(TargetDir)Packaged\GTA V Main Folder\"
+xcopy /Y "$(ProjectDir)Resources\*.jpg" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\ComputerPlus\"
+xcopy /Y "$(ProjectDir)Resources\*.xml" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\ComputerPlus\"
 copy /Y "$(ProjectDir)..\readme.md" "$(TargetDir)Packaged\readme.txt"
 
-xcopy /Y "$(ProjectDir)Resources\*.png" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\"
-xcopy /Y "$(ProjectDir)Resources\icons\*.png" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\icons\"
-xcopy /Y "$(ProjectDir)Resources\backgrounds\*.jpg" "$(TargetDir)Packaged\Plugins\LSPDFR\ComputerPlus\backgrounds\"
+xcopy /Y "$(ProjectDir)Resources\*.png" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\ComputerPlus\"
+xcopy /Y "$(ProjectDir)Resources\icons\*.png" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\ComputerPlus\icons\"
+xcopy /Y "$(ProjectDir)Resources\backgrounds\*.jpg" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\ComputerPlus\backgrounds\"
 
-xcopy /Y "$(ProjectDir)Resources\ComputerPlus.ini" "$(TargetDir)Packaged\Plugins\LSPDFR\"
+xcopy /Y "$(ProjectDir)Resources\ComputerPlus.ini" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\"
 
 
-xcopy /Y "$(TargetDir)ComputerPlus.dll" "F:\Rockstar Games\Plugins\LSPDFR"
-
-xcopy /Y "$(TargetDir)ComputerPlus.pdb" "F:\Rockstar Games\Plugins\LSPDFR"</PostBuildEvent>
+xcopy /Y "$(TargetDir)ComputerPlus.dll" "D:\Steam\steamapps\common\Grand Theft Auto V\plugins\LSPDFR"
+</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
