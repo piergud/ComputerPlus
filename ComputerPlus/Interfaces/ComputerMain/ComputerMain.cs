@@ -7,16 +7,13 @@ using Gwen.Control;
 using System;
 using ComputerPlus.Interfaces.ComputerPedDB;
 using ComputerPlus.Interfaces.ComputerVehDB;
-using ComputerPlus.Extensions.Gwen;
 using ComputerPlus.Controllers;
-using ComputerPlus.Extensions.Gwen;
-using ComputerPlus.Interfaces.Common;
 
 namespace ComputerPlus
 {
     internal class ComputerMain : GwenForm
     {
-        private Button btn_logout, btn_ped_db, btn_veh_db, btn_request, btn_activecalls, btn_notepad, btn_arrest_report, btn_browse_report;
+        private Button btn_logout, btn_ped_db, btn_veh_db, btn_request, btn_activecalls, btn_notepad, btn_citation_history, btn_arrest_history;
         internal ListBox list_recent;
         private Label label_external_ui;
         private ComboBox list_external_ui;
@@ -43,9 +40,13 @@ namespace ComputerPlus
             this.btn_ped_db.Clicked -= this.PedDBButtonClickedHandler;
             this.btn_veh_db.Clicked -= this.VehDBButtonClickedHandler;
             this.btn_request.Clicked -= this.RequestBackupButtonClickedHandler;
+            this.btn_notepad.Clicked -= OpenNotepadHandler;
+            this.btn_citation_history.Clicked -= this.ReportsClickedHandler;
+            this.btn_arrest_history.Clicked -= this.ReportsClickedHandler;
             this.cb_toggle_background.CheckChanged -= checkbox_change;
             this.cb_toggle_pause.CheckChanged -= checkbox_change;
             this.btn_activecalls.Clicked -= this.ActiveCallsClickedHandler;
+            EntryPoint.OnRecentTextAdded -= RecentTextChangedHandler;
             if (ShouldShowExtraUIControls)
             {
                 list_external_ui.ItemSelected -= ExternalUISelected;
@@ -63,13 +64,10 @@ namespace ComputerPlus
             this.btn_veh_db.Clicked += this.VehDBButtonClickedHandler;
             this.btn_request.Clicked += this.RequestBackupButtonClickedHandler;
             this.btn_notepad.Clicked += OpenNotepadHandler;
-            //this.btn_arrest_report.Clicked += this.ReportsClickedHandler;
-            //this.btn_browse_report.Clicked += this.ReportsClickedHandler;
+            this.btn_citation_history.Clicked += this.ReportsClickedHandler;
+            this.btn_arrest_history.Clicked += this.ReportsClickedHandler;
 
-            this.btn_browse_report.Disable();
-            this.btn_browse_report.Hide();
-            this.btn_arrest_report.Disable();
-            this.btn_arrest_report.Hide();
+            EntryPoint.OnRecentTextAdded += RecentTextChangedHandler;
 
             this.cb_toggle_background.CheckChanged += checkbox_change;
             this.cb_toggle_pause.CheckChanged += checkbox_change;
@@ -86,10 +84,7 @@ namespace ComputerPlus
             });
             this.btn_activecalls.Clicked += this.ActiveCallsClickedHandler;
             this.Window.DisableResizing();
-            foreach (string r in EntryPoint.recent_text)
-            {
-                list_recent.AddRow(r);
-            }
+            RecentTextChangedHandler();
             this.Position = new Point(Game.Resolution.Width / 2 - this.Window.Width / 2, Game.Resolution.Height / 2 - this.Window.Height / 2);
 
             if (ShouldShowExtraUIControls)
@@ -99,7 +94,6 @@ namespace ComputerPlus
                 Globals.SortedExternalUI.ToList().ForEach(x => list_external_ui.AddItem(x.DisplayName, x.Identifier.ToString()));
                 list_external_ui.ItemSelected += ExternalUISelected;
             }
-
         }
 
         private void OpenNotepadHandler(Base sender, ClickedEventArgs arguments)
@@ -122,15 +116,10 @@ namespace ComputerPlus
 
         private void ReportsClickedHandler(Base sender, ClickedEventArgs e)
         {
-            //if (sender == btn_browse_report)
-            //    ComputerReportsController.ShowTrafficCitationList();
-            //else if(sender == btn_arrest_report)
-            //ComputerReportsController.ShowTrafficCitationCreate(null);
-
-            if (sender == btn_browse_report)
+            if (sender == btn_arrest_history)
                 ComputerReportsController.ShowArrestReportList();
-            else if (sender == btn_arrest_report)
-                ComputerReportsController.ShowArrestReportCreate(null, null);
+            else if (sender == btn_citation_history)
+                ComputerReportsController.ShowTrafficCitationList();
         }
 
 
@@ -147,6 +136,15 @@ namespace ComputerPlus
         private void RequestBackupButtonClickedHandler(Base sender, ClickedEventArgs e)
         {
             OpenRequestBackupForm();
+        }
+
+        private void RecentTextChangedHandler()
+        {
+            list_recent.Clear();
+            foreach (string r in EntryPoint.recent_text.Reverse<String>())
+            {
+                list_recent.AddRow(r);
+            }
         }
 
 

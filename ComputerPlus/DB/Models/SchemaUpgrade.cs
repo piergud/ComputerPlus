@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using System.Data.SQLite;
-using SQLite.Net.Attributes;
+//using System.Data.SQLite;
+//using SQLite.Net.Attributes;
 
 namespace ComputerPlus.DB.Models
 {
@@ -21,18 +21,18 @@ namespace ComputerPlus.DB.Models
     {
         String mId;
 
-        [PrimaryKey]
+//        [PrimaryKey]
         public String id
         {
             get { return mId;  }
-            protected set
+            set
             {
                 mId = value;
                 Version = new Version(mId);
             }
                     
         }
-        [Ignore]
+//        [Ignore]
         public Version Version
         {
             get;

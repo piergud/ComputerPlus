@@ -130,6 +130,56 @@ namespace ComputerPlus
             Globals.ChargeDefinitions = arrestChargeDefinitions;
             Globals.CitationDefinitions = citationDefinitions;
             Globals.VehicleDefinitions = vehicleDefinitions;
+            PopulateWarrantCharges(arrestChargeDefinitions);
+            PopulateCitationCategories(citationDefinitions);
+        }
+
+        private static void TransverseCharges(String parentName, Charge charge)
+        {
+            if (charge.IsContainer)
+            {
+                String chargeName = parentName + " => " + charge.Name + "\n";
+                charge.Children.ForEach(childCharge => TransverseCharges(chargeName, childCharge));
+            }
+            else
+            {
+                String chargeName = parentName + " => " + String.Format("{0}{1}", charge.Name, charge.IsFelony ? " (F)" : String.Empty);
+                Globals.WantedReasons.Add(chargeName);
+            }
+        }
+
+        private static void PopulateWarrantCharges(ChargeCategories categories)
+        {
+            if (categories == null) return;
+            if (Globals.WantedReasons == null) Globals.WantedReasons = new List<String>();
+            categories.Categories.ForEach(x =>
+            {
+                String categoryName = x.Name + ":\n";
+                x.Charges.ForEach(charge => TransverseCharges(categoryName, charge));
+            });
+        }
+
+
+        private static void TransverseCitations(CitationDefinition citation)
+        {
+            if (citation.IsContainer)
+            {
+                citation.Children.ForEach(childCitation => TransverseCitations(childCitation));
+            }
+            else
+            {
+                Globals.CitationList.Add(citation);
+            }
+        }
+
+        private static void PopulateCitationCategories(CitationCategories categories)
+        {
+            if (categories == null) return;
+            if (Globals.CitationList == null) Globals.CitationList = new List<CitationDefinition>();
+            categories.Categories.ForEach(x =>
+            {
+                x.Citations.ForEach(citation => TransverseCitations(citation));
+            });
         }
 
 

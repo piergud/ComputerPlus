@@ -62,7 +62,7 @@ namespace ComputerPlus.Controllers.Models
                 if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return String.Empty;
                 switch(PersonaType)
                 {
-                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).FullName;
+                    case PersonaTypes.BPS: return BritishPolicingFunctions.GetPedPersonaFullName(PedPersona);
                     default: return PedPersona.FullName;
                 }
             }
@@ -75,7 +75,7 @@ namespace ComputerPlus.Controllers.Models
                 if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return String.Empty;
                 switch (PersonaType)
                 {
-                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).Forename;
+                    case PersonaTypes.BPS: return BritishPolicingFunctions.GetPedPersonaForeName(PedPersona);
                     default: return PedPersona.Forename;
                 }
             }
@@ -88,7 +88,7 @@ namespace ComputerPlus.Controllers.Models
                 if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return String.Empty;
                 switch (PersonaType)
                 {
-                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).Surname;
+                    case PersonaTypes.BPS: return BritishPolicingFunctions.GetPedPersonaSurName(PedPersona); ;
                     default: return PedPersona.Surname;
                 }
             }
@@ -110,7 +110,7 @@ namespace ComputerPlus.Controllers.Models
                 if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Vehicle) return String.Empty;
                 switch (PersonaType)
                 {
-                    case PersonaTypes.BPS: return (VehiclePersona.RawPersona as British_Policing_Script.VehicleRecords).LicencePlate;
+                    case PersonaTypes.BPS: return BritishPolicingFunctions.GetVehicleLicensePlate(VehiclePersona.RawPersona);
                     default: return Vehicle.LicensePlate;
                 }
             }
@@ -123,11 +123,10 @@ namespace ComputerPlus.Controllers.Models
                 if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return String.Empty;
                 switch (PersonaType)
                 {
-                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).BirthDay.ToLocalTimeString(Extensions.Gwen.TextBoxExtensions.DateOutputPart.DATE);
-                    default: return PedPersona.BirthDay.ToLocalTimeString(Extensions.Gwen.TextBoxExtensions.DateOutputPart.DATE);
+                    case PersonaTypes.BPS: return BritishPolicingFunctions.GetPedPersonaDOBString(PedPersona);
+                    default: return PedPersona.BirthDay.ToDateTimeString(Extensions.Gwen.TextBoxExtensions.DateOutputPart.DATE, false);
                 }
             }
-
         }
 
         public int Age
@@ -138,10 +137,9 @@ namespace ComputerPlus.Controllers.Models
                 DateTime birthDate;
                 switch (PersonaType)
                 {
-                    case PersonaTypes.BPS: birthDate = (PedPersona as British_Policing_Script.BritishPersona).BirthDay; break;
+                    case PersonaTypes.BPS: birthDate = BritishPolicingFunctions.GetPedPersonaBirthDay(PedPersona); break;
                     default: birthDate = PedPersona.BirthDay; break;
                 }
-
                 return  (int)((DateTime.Today - birthDate).Days / 365.25m);
             }
         }
@@ -161,7 +159,7 @@ namespace ComputerPlus.Controllers.Models
                 if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return 0;
                 switch (PersonaType)
                 {
-                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).TimesStopped;
+                    case PersonaTypes.BPS: return BritishPolicingFunctions.GetPedPersonaTimesStopped(PedPersona);
                     default: return PedPersona.TimesStopped;
                 }
             }
@@ -174,7 +172,7 @@ namespace ComputerPlus.Controllers.Models
                 if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return LSPD_First_Response.Gender.Random;
                 switch (PersonaType)
                 {
-                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).Gender;
+                    case PersonaTypes.BPS: return BritishPolicingFunctions.GetPedPersonaGender(PedPersona);
                     default: return PedPersona.Gender;
                 }
             }
@@ -203,7 +201,7 @@ namespace ComputerPlus.Controllers.Models
                 if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return false;
                 switch (PersonaType)
                 {
-                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).Wanted;
+                    case PersonaTypes.BPS: return BritishPolicingFunctions.GetPedPersonaIsWanted(PedPersona);
                     default: return PedPersona.Wanted;
                 }
             }
@@ -216,8 +214,8 @@ namespace ComputerPlus.Controllers.Models
                 if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return String.Empty;
                 switch (PersonaType)
                 {
-                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).WantedReason;
-                    default: return String.Empty; //@TODO random wanted reason generator will go here
+                    case PersonaTypes.BPS: return BritishPolicingFunctions.GetPedPersonaWantedReason(PedPersona);
+                    default: return Ped.GetWantedReason();
                 }
             }
         }
@@ -227,20 +225,14 @@ namespace ComputerPlus.Controllers.Models
             get
             {              
                   
-                if (ComputerPlusEntity.PersonaType == PersonaTypes.BPS)
+                if (PersonaType == PersonaTypes.BPS)
                 {
-                    var persona = PedPersona as British_Policing_Script.BritishPersona;
-                    switch (persona.LicenceStatus)
-                    {
-                        case British_Policing_Script.BritishPersona.LicenceStatuses.Disqualified:
-                        case British_Policing_Script.BritishPersona.LicenceStatuses.Expired:
-                        case British_Policing_Script.BritishPersona.LicenceStatuses.Revoked: return false;
-                        default: return true;
-                    }
+                    return BritishPolicingFunctions.IsLicenseValid(PedPersona);
                 }
                 else {
                     switch (PedPersona.LicenseState)
                     {
+                        case ELicenseState.None:
                         case ELicenseState.Suspended:
                         case ELicenseState.Expired: return false;
                         default: return true;
@@ -255,14 +247,7 @@ namespace ComputerPlus.Controllers.Models
             {
                 if (PersonaType == PersonaTypes.BPS)
                 {
-                    var persona = PedPersona as British_Policing_Script.BritishPersona;
-                    switch (persona.LicenceStatus)
-                    {
-                        case British_Policing_Script.BritishPersona.LicenceStatuses.Disqualified: return "Disqualified";
-                        case British_Policing_Script.BritishPersona.LicenceStatuses.Expired: return "Expired";
-                        case British_Policing_Script.BritishPersona.LicenceStatuses.Revoked: return "Revoked";
-                        default: return "Valid";
-                    }
+                    return BritishPolicingFunctions.GetLicenseStateString(PedPersona);
                 }
                 else
                 {
@@ -271,7 +256,8 @@ namespace ComputerPlus.Controllers.Models
                         case ELicenseState.Expired: return "Expired";
                         case ELicenseState.Suspended: return "Suspended";
                         case ELicenseState.Valid: return "Valid";
-                        default: return "None";
+                        case ELicenseState.None: return "None";
+                        default: return "N/A";
                     }
                 }
             }
@@ -285,7 +271,7 @@ namespace ComputerPlus.Controllers.Models
                 if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return false;
                 switch (PersonaType)
                 {
-                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).IsAgent;
+                    case PersonaTypes.BPS: return BritishPolicingFunctions.GetPedPersonaIsAgent(PedPersona);
                     default: return PedPersona.IsAgent;
                 }
             }
@@ -298,7 +284,7 @@ namespace ComputerPlus.Controllers.Models
                 if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return false;
                 switch (PersonaType)
                 {
-                    case PersonaTypes.BPS: return (PedPersona as British_Policing_Script.BritishPersona).IsCop;
+                    case PersonaTypes.BPS: return BritishPolicingFunctions.GetPedPersonaIsCop(PedPersona);
                     default: return PedPersona.IsCop;
                 }
             }
@@ -328,7 +314,7 @@ namespace ComputerPlus.Controllers.Models
                 if (!CreatedWith.HasFlag(EntityTypes.Vehicle) || !Vehicle) return true;
                 switch (PersonaType)
                 {
-                    case PersonaTypes.BPS: return (VehiclePersona.RawPersona as British_Policing_Script.VehicleRecords).IsTaxed;
+                    case PersonaTypes.BPS: return BritishPolicingFunctions.IsVehicleRegistered(VehiclePersona.RawPersona);
                     default: return VehiclePersona.IsRegistered.HasValue ? VehiclePersona.IsRegistered.Value : true;
                 }
             }
@@ -401,14 +387,14 @@ namespace ComputerPlus.Controllers.Models
         public bool Validate()
         {
             if (this.CreatedWith.HasFlag(EntityTypes.Ped) && this.CreatedWith.HasFlag(EntityTypes.Vehicle)) {
-                return this.Ped && this.Vehicle;
+                return this.Ped != null && this.Ped.IsValid() && this.Vehicle != null && this.Vehicle.IsValid();
             }
             else if (this.CreatedWith == EntityTypes.Ped){
-                return this.Ped;
+                return this.Ped != null && this.Ped.IsValid();
             }
             else if (this.CreatedWith == EntityTypes.Vehicle)
             {
-                return this.Vehicle;
+                return this.Vehicle != null && this.Vehicle.IsValid();
             }
             return false;
         }
@@ -458,7 +444,7 @@ namespace ComputerPlus.Controllers.Models
         {
             if (PersonaType == PersonaTypes.BPS)
             {
-                return British_Policing_Script.API.Functions.GetBritishPersona(ped);
+                return BritishPolicingFunctions.GetBritishPersona(ped);
             }
             else
             {
@@ -470,8 +456,7 @@ namespace ComputerPlus.Controllers.Models
         {
             if (PersonaType == PersonaTypes.BPS)
             {
-                var records = British_Policing_Script.API.Functions.GetVehicleRecords(vehicle);
-                return new VehiclePersona(records);
+                return BritishPolicingFunctions.CreateVehiclePersona(vehicle);
             }
             else
             {
@@ -480,6 +465,11 @@ namespace ComputerPlus.Controllers.Models
                 {
                     vehiclePersona.HasInsurance = TrafficPolicerFunction.GetVehicleInsuranceStatus(vehicle) == EVehicleStatus.Valid ? true : false;
                     vehiclePersona.IsRegistered = TrafficPolicerFunction.GetVehicleRegistrationStatus(vehicle) == EVehicleStatus.Valid ? true : false;
+                }
+                else
+                {
+                    vehiclePersona.HasInsurance = false;
+                    vehiclePersona.IsRegistered = false;
                 }
                 return vehiclePersona;
             }

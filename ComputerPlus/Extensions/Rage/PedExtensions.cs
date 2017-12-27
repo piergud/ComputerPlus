@@ -15,5 +15,19 @@ namespace ComputerPlus.Extensions.Rage
             if (ped.Metadata.HomeAddress == null) ped.Metadata.HomeAddress = ComputerPedController.GetRandomStreetAddress();
             return ped.Metadata.HomeAddress;
         }
+
+        internal static String GetWantedReason(this Ped ped)
+        {
+            if (ped.Metadata.WantedReason == null) ped.Metadata.WantedReason = ComputerPedController.GetRandomWantedReason();
+            return ped.Metadata.WantedReason;
+        }
+
+        internal static String GetDrivingLicenseExpirationDuration(this Ped ped)
+        {
+            if (ped.Metadata.DrivingLicenseExpirationDuration == null) {
+                ped.Metadata.DrivingLicenseExpirationDuration = Globals.Random.Next(2, 720).ToString();
+            }
+            return ped.Metadata.DrivingLicenseExpirationDuration;
+        }
     }
 }
