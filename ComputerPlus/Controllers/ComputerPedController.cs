@@ -60,7 +60,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             List<Ped> peds = World.GetAllPeds().ToList();
             peds.RemoveAll(p => !p || !p.Exists() || (p != null && !p.IsValid()));
             peds.OrderBy(p => p.DistanceTo(Game.LocalPlayer.Character.Position));
-            var ped = peds.Where(p => p && Functions.GetPersonaForPed(p).FullName.Equals(name)).FirstOrDefault();
+            var ped = peds.Where(p => p && Functions.GetPersonaForPed(p).FullName.ToLower().Equals(name.ToLower())).FirstOrDefault();
             return LookupPersona(ped);
         }
        
