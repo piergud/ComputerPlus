@@ -20,13 +20,13 @@ namespace ComputerPlus.Interfaces.Reports.Citation
         internal delegate void TrafficCitationRowRenderer(TrafficCitation citation, ListBoxRow row);
         private readonly TrafficCitationSelected OnTrafficCitationSelected;
         private readonly TrafficCitationRowRenderer OnRenderRowText;
-        ListBox list;
+        ListBox listBox;
         List<TrafficCitation> Citations;
         public TrafficCitationList(Base parent, List<TrafficCitation> reports, TrafficCitationSelected onSelected, TrafficCitationRowRenderer rowRenderer) : base(parent)
         {
             Citations = reports;
-            list = new ListBox(this);
-            list.Dock = Gwen.Pos.Fill;
+            listBox = new ListBox(this);
+            listBox.Dock = Gwen.Pos.Fill;
             OnTrafficCitationSelected = onSelected;
             if (rowRenderer == null) OnRenderRowText = DefaultRowRender;
             else OnRenderRowText = rowRenderer;
@@ -38,7 +38,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
         {
             lock (reports)
             {
-                this.Citations = reports;
+                this.Citations = reports.OrderByDescending(o => o.CitationTimeDate).ToList();
                 AddCitationsToList();
             }
         }
@@ -63,14 +63,14 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             {
                 return;
             }
-            if (clearPrevious) list.Clear();
+            if (clearPrevious) listBox.Clear();
 
             foreach (var citation in Citations)
             {
 
                 try
                 {
-                    var row = list.AddRow(String.Empty, citation.Id(), citation);
+                    var row = listBox.AddRow(String.Empty, citation.Id(), citation);
                     OnRenderRowText(citation, row);
                     if (ListClickStyle == ListItemClickType.DOUBLE)
                         row.DoubleClicked += RowClicked;
@@ -86,7 +86,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             }
             if (selectFirstElementInList)
             {
-                list.SelectRow(0, true);
+                listBox.SelectRow(0, true);
             }
 
         }
