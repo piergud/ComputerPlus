@@ -3,7 +3,7 @@
 
 ![banner](http://i.imgur.com/Ihf8uiE.png)
 
-**Authors:** PieRGud, Stealth22, AlconH, Albo1125, fiskey111, ainesophaur
+**Authors:** PieRGud, Stealth22, AlconH, Albo1125, fiskey111, ainesophaur, BejoIjo
 
 **Current Features**
 - Ability to search for persons and vehicles without keys conflicting with other mods.
@@ -21,9 +21,10 @@
 - [NEW] Computer+ will now contain a list of recent searches either populated manually or via automatic searching
 - [NEW] Computer+ will automatically add ALPR hit vehicles to the recent vehicle search list
 - [NEW] Computer+ will automatically add Peds who have been stopped by the player to the collected ids ped search list
+- [NEW] Computer+ will automatically add LSPDFR+ court case when you create an arrest resport
+
 
 **Troubleshooting**
-
 - If your mouse does not appear in Computer+, then make sure the display resolution in game matches your windows display resolution. If the resolutions do not match, you will not see a mouse cursor
 - If you play in windows or windows borderless mode, make sure to keep your mouse inside of the game window until the game fully loads
 
