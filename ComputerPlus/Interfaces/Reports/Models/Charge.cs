@@ -26,7 +26,6 @@ namespace ComputerPlus.Interfaces.Reports.Models
             this.IsFelony = IsFelony;
         }
 
-      
         [XmlAttribute("name")]
         public String Name
         {
@@ -40,6 +39,12 @@ namespace ComputerPlus.Interfaces.Reports.Models
             get;
             set;
         }
+
+        public bool IsTraffic
+        {
+            get;
+            set;
+        } = false;
 
         [XmlElement(ElementName = "Charge")]
         public List<Charge> Children
