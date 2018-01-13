@@ -34,6 +34,9 @@ namespace ComputerPlus
         internal delegate void FacingPedWithPendingTicketsEvent(object sender, Ped ped, List<TrafficCitation> citations);
         internal static FacingPedWithPendingTicketsEvent OnFacingPedWithPendingTickets;
 
+        internal delegate void RecentTextAdded();
+        internal static event RecentTextAdded OnRecentTextAdded;
+
         static Stopwatch sw = new Stopwatch();
 
         private static bool _prompted;
@@ -50,9 +53,6 @@ namespace ComputerPlus
         private GameFiber DetectOpenCloseRequestedFiber;
         private GameFiber DetectOpenSimpleNotepadFiber;
         private GameFiber RunComputerPlusFiber;
-
-
-
 
         public override void Initialize()
         {
@@ -77,7 +77,7 @@ namespace ComputerPlus
             Globals.Navigation.OnFormRemoved -= NavOnFormRemoved;
             if (RunComputerPlusFiber.IsRunning()) RunComputerPlusFiber.Abort();
             if (CheckIfCalloutActiveFiber.IsRunning()) CheckIfCalloutActiveFiber.Abort();
-            Globals.Store.Close();
+            //Globals.Store.Close();
         }
 
 
@@ -107,7 +107,7 @@ namespace ComputerPlus
                 if (Function.IsBPSRunning())
                 {
                     // @TODO put this back once Albo tests integration
-                   // ComputerPlusEntity.PersonaType = PersonaTypes.BPS;
+                   //ComputerPlusEntity.PersonaType = PersonaTypes.BPS;
                 }
                 
             }
@@ -120,25 +120,18 @@ namespace ComputerPlus
             }
         }
 
-        private async void InitStorage()
+        private void InitStorage()
         {
             try
             {
-                await Globals.OpenStore();
-                if (Globals.Store != null)
-                {
-                    Function.Log("Store was opened");
-                }
-                else
-                {
-                    Function.Log("Store was not opened");
-                }
+                Globals.OpenStore();
             }
             catch (Exception e)
             {
                 Function.LogCatch(e.Message);
             }
         }
+
         private static void ALPRPlusFunctions_OnAlprPlusMessage(object sender, ALPR_Arguments e)
         {
             ComputerVehicleController.AddAlprScan(e);
@@ -270,11 +263,13 @@ namespace ComputerPlus
 
                 GameFiber.StartNew(() =>
                 {
-                    if (Game.LocalPlayer.LastVehicle && !Game.LocalPlayer.LastVehicle.HasDriver) Game.DisplayNotification("The driver will wait until you are back in your vehicle before taking off");
-                    while (Game.LocalPlayer.LastVehicle && !Game.LocalPlayer.LastVehicle.HasDriver) GameFiber.Yield(); //Wait for the player to enter their vehicle
+                    if (Game.LocalPlayer.LastVehicle && !Game.LocalPlayer.LastVehicle.HasDriver)
+                        Game.DisplayNotification("The driver will wait until you are back in your vehicle before taking off");
+                    while (Game.LocalPlayer.LastVehicle && !Game.LocalPlayer.LastVehicle.HasDriver)
+                        GameFiber.Sleep(1000); //Wait for the player to enter their vehicle
                     Function.Log("Starting Ending pull over wait timer for ped to leave");
                     var stopAt = DateTime.Now.AddMilliseconds(5000); //have the sadPed drive off in 5 seconds if the traffic stop isnt over
-                    while (DateTime.Now < stopAt) GameFiber.Yield();
+                    while (DateTime.Now < stopAt) GameFiber.Sleep(500);
                     try
                     {
                         
@@ -309,9 +304,13 @@ namespace ComputerPlus
                             {
                                 var item = new Rage.Object(new Model("prop_cs_documents_01"), Game.LocalPlayer.Character.Position);
                                 item.AttachTo(Game.LocalPlayer.Character, Game.LocalPlayer.Character.GetBoneIndex(PedBoneId.RightThumb1), new Vector3(item.Model.Dimensions.Length() * 0.4f, 0, 0), Rotator.Zero);
+                                GameFiber.StartNew(delegate
+                                {
+                                    GameFiber.Sleep(1300);
+                                    item.Detach();
+                                    item.Delete();
+                                });
                                 Game.LocalPlayer.Character.Tasks.PlayAnimation("mp_common", "givetake1_b", 3f, AnimationFlags.None).WaitForCompletion();
-                                item.Detach();
-                                item.Delete();
                             });
                             ShouldEndPullover = true;
                             Globals.RemoveTrafficCitationsInHandForPed(sadPed);
@@ -319,11 +318,9 @@ namespace ComputerPlus
                         }
                         else
                         {
-                            
                             //Prompt the user that they can deliver the ticket
                             OnFacingPedWithPendingTickets(null, sadPed, Globals.GetTrafficCitationsInHandForPed(sadPed));
                         }
-
                     }
                 }                
             }
@@ -409,6 +406,8 @@ namespace ComputerPlus
                     GameFiber.Yield();
                 }
                 while (Globals.Navigation.Head != null);
+                EntryPoint.OnRecentTextAdded = null;
+                FreePersistedEntities();
                 ClosePoliceComputer();
                 Globals.Navigation.Clear();
                 IsMainComputerOpen = false;
@@ -422,6 +421,18 @@ namespace ComputerPlus
             GameFiber.Hibernate();
         }
 
+        private void FreePersistedEntities()
+        {
+            foreach (var ent in Globals.persistedRageEntities)
+            {
+                if (ent != null && ent.IsPersistent)
+                {
+                    Function.LogDebug("Freeing Persisted Entities: " + ent.Model.Name);
+                    ent.IsPersistent = false;
+                }
+            }
+            Globals.persistedRageEntities.Clear();
+        }
 
         private void NavOnFormAdded(object sender, NavigationController.NavigationEntry entry)
         {
@@ -462,6 +473,8 @@ namespace ComputerPlus
                 GameFiber.StartNew(() =>
                 {
                     entry.form.Window.Close();
+                    // I know close() supposed to dispose the form. but just in case to make sure the memory is freed
+                    entry.form.Window.Dispose();
                 });
             }
             catch (Exception e)
@@ -602,6 +615,12 @@ namespace ComputerPlus
                     //Function.Log(e.ToString());
                 }
             }
+        }
+
+        public static void AddRecentText(String text)
+        {
+            recent_text.Add(text);
+            OnRecentTextAdded?.Invoke();
         }
 
     }
