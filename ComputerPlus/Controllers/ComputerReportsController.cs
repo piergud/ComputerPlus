@@ -13,6 +13,7 @@ using static ComputerPlus.Interfaces.Reports.Models.ArrestReportAdditionalParty;
 using LiteDB;
 using System.Globalization;
 using static ComputerPlus.Extensions.Gwen.TextBoxExtensions;
+using LSPD_First_Response.Engine.Scripting.Entities;
 
 namespace ComputerPlus.Controllers
 {
@@ -24,7 +25,7 @@ namespace ComputerPlus.Controllers
         {
             if (Globals.PendingArrestReport == null)
                 Globals.PendingArrestReport = new ArrestReport();
-            Globals.Navigation.Push(new ArrestReportContainer(Globals.PendingArrestReport));
+            Globals.Navigation.Push(new ArrestReportContainer(Globals.PendingArrestReport, null));
         }
 
         public static void ShowArrestReportCreate(ComputerPlusEntity entity, ArrestReportContainer.ArrestReportActionEvent callbackDelegate)
@@ -579,6 +580,62 @@ namespace ComputerPlus.Controllers
                     }
                 }
             }
+        }
+
+        public static void createCourtCase(ArrestReport report, ComputerPlusEntity entity)
+        {
+            if (Function.IsLSPDFRPlusRunning() && entity != null)
+            {
+                string crimeStr = String.Empty;
+                string courtVerdictStr = String.Empty;
+                int guiltyChance = Globals.Random.Next(50, 96);
+                int verdictMonths = 0;
+                int verdictYears = 0;
+                bool trafficFelonyCharged = false;
+
+                foreach (var charge in report.Charges)
+                {
+                    if (crimeStr.Equals(String.Empty)) crimeStr = charge.Charge;
+                    else crimeStr += ", " + charge.Charge;
+
+                    if (charge.IsTraffic)
+                    {
+                        if (charge.IsFelony)
+                        {
+                            if (!trafficFelonyCharged)
+                            {
+                                courtVerdictStr = "License revoked";
+                                verdictMonths = Globals.Random.Next(3, 13);
+                                trafficFelonyCharged = true;
+                            }
+                        }
+                        else
+                        {
+                            if (!trafficFelonyCharged)
+                            {
+                                courtVerdictStr = "Fined $" + Globals.Random.Next(500, 1001) + ". License suspended for " + Globals.Random.Next(6, 13) + " months";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (charge.IsFelony) verdictYears += Globals.Random.Next(4, 11);
+                        else verdictYears += Globals.Random.Next(1, 4);
+                    }
+                }
+
+                if (verdictYears > 0 && verdictMonths > 0) verdictYears++;
+                string sentencePrisonStr = String.Empty;
+
+                if (verdictYears > 0) sentencePrisonStr = "Sentenced to " + verdictYears + " years in prison";
+                else if (verdictMonths > 0) sentencePrisonStr = "Sentenced to " + verdictMonths + " months in prison";
+
+                if (courtVerdictStr.Equals(String.Empty)) courtVerdictStr = sentencePrisonStr;
+                else courtVerdictStr += ". " + sentencePrisonStr;
+
+                LSPDFRPlusFunctions.CreateNewCourtCase(entity.PedPersona, crimeStr, guiltyChance, courtVerdictStr);
+            }
+
         }
     }
 }
