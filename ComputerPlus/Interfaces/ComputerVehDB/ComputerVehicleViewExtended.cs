@@ -78,19 +78,17 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                     break;
                 case Page.PED_ARRESTS:
                     height = ArrestReportView.DefaultHeight;
-                    width = DefaultWidth;
+                    width = ArrestReportView.DefaultWidth + 300;
                     break;
                 case Page.PED_TRAFFIC_CITATIONS:
                     height =TrafficCitationView.DefaultHeight;
-                    width = (DefaultWidth - TrafficCitationView.DefaultWidth) + TrafficCitationView.DefaultWidth + 200; //200 is from  trafficCitationContainer.LeftDock.Width = 200; 
+                    width = TrafficCitationView.DefaultWidth + 300; //200 is from  trafficCitationContainer.LeftDock.Width = 200; 
                     break;
                 default: return;
             }
             this.SetSize(width, height);
             OnPageTabChanged(this, page);
         }
-
-      
 
         private void AddArrestReportsTab()
         {
@@ -104,8 +102,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                         //Function.Log("AddArrestReportsTab with " + Arrests.Length.ToString());
 
                         arrestsContainer.Dock = Pos.Fill;
-                        arrestsContainer.LeftDock.Width = 200;
-                        arrestReportList = new ArrestReportList(arrestsContainer.LeftDock, DetailedEntity.Arrests, ChangeArrestReportDetailView, RenderArrestReportListBoxRow) { ListClickStyle = ArrestReportList.ListItemClickType.SINGLE };
+                        arrestsContainer.LeftDock.Width = 300;
+                        arrestReportList = new ArrestReportList(arrestsContainer.LeftDock, DetailedEntity.Arrests, ChangeArrestReportDetailView, RenderArrestReportListBoxRow) { ListClickStyle = ArrestReportList.ListItemClickType.DOUBLE };
                         arrestReportView = new ArrestReportView(arrestsContainer, DetailedEntity.Arrests[0]);
                         arrestsContainer.Name = String.Empty;
                         arrestReportList.Dock = Pos.Fill;
@@ -138,8 +136,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                         //Function.Log("AddArrestReportsTab with " + Arrests.Length.ToString());
 
                         trafficCitationContainer.Dock = Pos.Fill;
-                        trafficCitationContainer.LeftDock.Width = 200;
-                        trafficCitationList = new TrafficCitationList(trafficCitationContainer.LeftDock, DetailedEntity.TrafficCitations, ChangeTrafficCitationDetailView, RenderTrafficCitationListBoxRow) { ListClickStyle = TrafficCitationList.ListItemClickType.SINGLE };
+                        trafficCitationContainer.LeftDock.Width = 300;
+                        trafficCitationList = new TrafficCitationList(trafficCitationContainer.LeftDock, DetailedEntity.TrafficCitations, ChangeTrafficCitationDetailView, RenderTrafficCitationListBoxRow) { ListClickStyle = TrafficCitationList.ListItemClickType.DOUBLE };
                         trafficCitationView = new TrafficCitationView(trafficCitationContainer, DetailedEntity.TrafficCitations.FirstOrDefault(), TrafficCitationView.ViewTypes.VIEW);
                         trafficCitationContainer.Name = String.Empty;
                         trafficCitationList.Dock = Pos.Fill;
@@ -149,7 +147,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                         var page = tabcontrol_details.AddPage("Traffic Citations", trafficCitationContainer);
                         page.UserData = Page.PED_TRAFFIC_CITATIONS;
                         page.Clicked += PageTabClicked;
-
                     }
                     else
                     {
@@ -261,7 +258,5 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             this.Window.Height = VehicleView.Height;
             this.Position = this.GetLaunchPosition();
         }
-
-
     }
 }
