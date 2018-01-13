@@ -28,6 +28,12 @@ namespace ComputerPlus.Interfaces.Reports.Models
             internal set;
         } = false;
 
+        public bool IsTraffic
+        {
+            get;
+            internal set;
+        } = false;
+
         public String Note
         {
             get;
@@ -62,7 +68,8 @@ namespace ComputerPlus.Interfaces.Reports.Models
             Charge = charge != null ? charge.Name : String.Empty;
             Note = note != null ? note : String.Empty;
             IsFelony = charge != null ? charge.IsFelony : false;
+            IsTraffic = charge != null ? charge.IsTraffic : false;
         }
-        
+
     }
 }

@@ -456,6 +456,11 @@ namespace ComputerPlus
             return IsLSPDFRPluginRunning("British Policing Script", new Version(0, 9, 0, 0));
         }
 
+        internal static bool IsLSPDFRPlusRunning()
+        {
+            return IsLSPDFRPluginRunning("LSPDFR+", new Version(1, 6, 5, 0));
+        }
+
         internal static string GetFormattedDateTime(DateTime? date = null)
         {
             if (date == null || !date.HasValue)
