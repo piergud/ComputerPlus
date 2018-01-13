@@ -195,7 +195,8 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             if (report == null) return;
             text_arrest_time.LocalDateTime(report.ArrestTimeDate, TextBoxExtensions.DateOutputPart.TIME);
             text_arrest_date.LocalDateTime(report.ArrestTimeDate, TextBoxExtensions.DateOutputPart.DATE);
-            text_arrestee_dob.LocalDateTime(report.DOB, TextBoxExtensions.DateOutputPart.DATE);
+            // text_arrestee_dob.LocalDateTime(report.DOB, TextBoxExtensions.DateOutputPart.DATE);
+            text_arrestee_dob.SetText(report.DOB);
             text_arrestee_home_address.Text = report.HomeAddress;
             text_arrestee_first_name.Text = report.FirstName;
             text_arrestee_last_name.Text = report.LastName;

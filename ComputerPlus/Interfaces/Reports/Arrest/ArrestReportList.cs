@@ -37,7 +37,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         {
             lock(reports)
             {
-                this.Reports = reports;
+                this.Reports = reports.OrderByDescending(o => o.ArrestTimeDate).ToList();
                 AddReportsToList();
             }
         }
@@ -128,17 +128,14 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             list.Dock = Gwen.Pos.Fill;            
         }
 
-       
 
-   
-
-        private async void OpenReport(ArrestReport report)
+        private void OpenReport(ArrestReport report)
         {
             if (report != null)
             {
                 if (OnArrestReportSelected == null)
                 {
-                    await ComputerReportsController.ShowArrestReportView(report);
+                    ComputerReportsController.ShowArrestReportView(report);
                 }
                 else
                 {

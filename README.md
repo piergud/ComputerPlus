@@ -48,3 +48,19 @@ ENSURE THAT THE VEHICLE YOU'RE ADDING IS A POLICE VEHICLE AND THE BACKGROUND FIL
 **Additional Info**
 Computer+ DOES NOT replace the default LSPDFR computer.
 So, if you don't always want to use Computer+ during your patrols, then you need not worry - the default computer is still there.
+
+**Improvements on Computer+ Reloaded**
+- replaced SQLite with LiteDB to make it more lightweight and stable
+- now previous arrest report & citation will be displayed when viewing ped/vehicle info (without crashing)
+- generate random past traffic citations & arrest reports for ped to improve gameplay
+- reactivated traffic citation history
+- reactivated arrest report history
+- reactivated most recent action list on main window
+- added wanted reason info when ped is wanted
+- added driver license expiration days info (random)
+- made ped & vehicle persistent during C+ session to avoid crashes (they will be freed when Computer+ exit)
+- saving newly created arrest report or citation will also close the window for better UX
+- vehicle type will be showed correctly when viewing the citation history records
+- fixed "give ticket" animation. now the ticket should disappear in the right time
+- fixed incorrect time data source on arrest report view
+- added various checking and handling to prevent potential crashes.

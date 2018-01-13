@@ -8,6 +8,8 @@ using Rage;
 using LSPD_First_Response.Engine.Scripting.Entities;
 using ComputerPlus.Extensions.Gwen;
 using ComputerPlus.Controllers.Models;
+using System.Runtime.ExceptionServices;
+using ComputerPlus.Controllers;
 
 namespace ComputerPlus.Interfaces.ComputerPedDB
 {
@@ -56,11 +58,12 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 {
                     text_manual_name.Error("The ped no longer exists");
                 }
-                else {
+                else
+                {
                     text_manual_name.ClearError();
                     list_manual_results.AddPed(ped);
                     ComputerPedController.LastSelected = ped;
-                    ComputerPedController.ActivatePedView();
+                    this.ShowDetailsView();
                 }
             } else
             {
@@ -74,9 +77,8 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             try
             {
                 ComputerPedController controller = ComputerPedController.Instance;
-                list_collected_ids.Clear();
-                var results = controller.GetRecentSearches()
-                .Where(x => x.Validate()).ToList();
+                list_manual_results.Clear();
+                var results = controller.GetRecentSearches().Where(x => x.Validate()).ToList();
                 //@TODO choose if we want to remove null items from the list -- may cause user confusion
                 if (results != null && results.Count > 0)
                 {
@@ -96,9 +98,12 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 ComputerPedController controller = ComputerPedController.Instance;
                 var peds = controller.PedsCurrentlyStoppedByPlayer;
                 list_collected_ids.Clear();
-                foreach(var persona in peds.Select(x => controller.LookupPersona(x)))
+                foreach(var entity in peds.Select(x => controller.LookupPersona(x)))
                 {
-                    list_collected_ids.AddPed(persona);
+                    if (entity != null) {
+                        list_collected_ids.AddPed(entity);
+                        ComputerReportsController.generateRandomHistory(entity);
+                    } 
                 }
             }
             catch (Exception e)
@@ -113,6 +118,12 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             list_manual_results.UnselectAll();
         }
 
+        private void ShowDetailsView()
+        {
+            ComputerPedController.ShowPedView();
+            this.Close();
+        }
+
         private void onListItemSelected(Base sender, ItemSelectedEventArgs arguments)
         {
             try
@@ -120,8 +131,9 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 if (arguments.SelectedItem.UserData is ComputerPlusEntity)
                 {                
                     ComputerPedController.LastSelected = arguments.SelectedItem.UserData as ComputerPlusEntity;                
-                    ComputerPedController.ActivatePedView();
+                    Function.AddPedToRecents(ComputerPedController.LastSelected.Ped);
                     ClearSelections();
+                    this.ShowDetailsView();
                 }
                 else
                 {
@@ -132,6 +144,6 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             {
                 Function.Log(e.ToString());
             }
-        }      
+        }
     }
 }

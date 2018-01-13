@@ -8,6 +8,8 @@ using Rage;
 using LSPD_First_Response.Engine.Scripting.Entities;
 using ComputerPlus.Controllers.Models;
 using ComputerPlus.Extensions.Gwen;
+using System.Runtime.ExceptionServices;
+using ComputerPlus.Controllers;
 
 namespace ComputerPlus.Interfaces.ComputerVehDB
 {
@@ -15,7 +17,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
     {
         ListBox list_collected_tags;
         ListBox list_manual_results;
-        List<Vehicle> AlprDetectedVehicles = new List<Vehicle>();
+        List<ComputerPlusEntity> AlprDetectedVehicles = new List<ComputerPlusEntity>();
         TextBox text_manual_name;
 
         internal ComputerVehicleSearch() : base(typeof(ComputerVehicleSearchTemplate))
@@ -36,6 +38,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             this.Position = this.GetLaunchPosition();
             this.Window.DisableResizing();
             Function.LogDebug("Populating ALPR list");
+            AlprDetectedVehicles.Clear();
             PopulateAnprList();
             list_collected_tags.AllowMultiSelect = false;
             list_manual_results.AllowMultiSelect = false;
@@ -43,8 +46,17 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             list_manual_results.RowSelected += onListItemSelected;
             text_manual_name.SubmitPressed += onSearchSubmit;
             Function.LogDebug("Checking currently pulled over");
-            var currentPullover = ComputerVehicleController.CurrentlyPulledOver;            
-            if (currentPullover != null) list_collected_tags.AddVehicle(currentPullover);
+            var currentPullover = ComputerVehicleController.CurrentlyPulledOver;
+            
+            if (currentPullover != null && AlprDetectedVehicles.Find(x => x.Vehicle == currentPullover.Vehicle) == null)
+            {
+                AlprDetectedVehicles.Add(currentPullover);
+            }
+            foreach (var vehicle in AlprDetectedVehicles)
+            {
+                list_collected_tags.AddVehicle(vehicle);
+                ComputerReportsController.generateRandomHistory(vehicle);
+            }
         }
 
         private void ClearSelections()
@@ -90,6 +102,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 if (arguments.SelectedItem.UserData is ComputerPlusEntity)
                 {
                     ComputerVehicleController.LastSelected = arguments.SelectedItem.UserData as ComputerPlusEntity;
+                    Function.AddVehicleToRecents(ComputerVehicleController.LastSelected.Vehicle);
                     ClearSelections();
                     this.ShowDetailsView();
                 }
@@ -98,7 +111,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             {
                 Function.Log(e.ToString());
             }
-}
+        }
         
 
         private void PopulateAnprList()
@@ -131,8 +144,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 //.Where(x => x != null && x.Validate())
                 .ToList()
                 .ForEach(x =>
-                {                
-                    list_collected_tags.AddVehicle(x);
+                {
+                    AlprDetectedVehicles.Add(x);
                 });
             }
             catch (Exception e)

@@ -15,6 +15,7 @@ namespace ComputerPlus
         internal static Dictionary<uint,string> bgs = new Dictionary<uint,string>();
         static string user, pass, unit;
         static bool skip;
+        static bool randomHistoryRecords;
         internal static int FontSize
         {
             get;
@@ -43,6 +44,7 @@ namespace ComputerPlus
             unit = ini_file.ReadString("SETTINGS", "UnitNumber");
             FontSize = ini_file.ReadInt32("SETTINGS", "FontSize");
             FontName = ini_file.ReadString("SETTINGS", "FontName");
+            randomHistoryRecords = ini_file.ReadBoolean("SETTINGS", "RandomHistoryRecords", true);
 
             if (String.IsNullOrWhiteSpace(user))
                 user = "Officer";
@@ -113,6 +115,7 @@ namespace ComputerPlus
             ini_file.Write("SETTINGS", "UnitNumber", "1-A-12");
             ini_file.Write("SETTINGS", "FontSize", 16);
             ini_file.Write("SETTINGS", "FontName", "Microsoft Sans Serif");
+            ini_file.Write("SETTINGS", "RandomHistoryRecords", "true");
 
             ini_file.Write("KEYBINDINGS", "OpenComputerPlusKey", "None");
             ini_file.Write("KEYBINDINGS", "OpenComputerPlusModifierKey", "None");
@@ -149,6 +152,11 @@ namespace ComputerPlus
         internal static bool SkipLogin
         {
             get { return skip; }
+        }
+
+        internal static bool RandomHistoryRecords
+        {
+            get { return randomHistoryRecords; }
         }
 
         internal static string UnitNumber

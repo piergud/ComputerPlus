@@ -68,7 +68,7 @@ namespace ComputerPlus.Extensions.Gwen
             else
                 textbox.SetText(dateTime);
         }
-
+        /*
         internal static void LocalDateTime(this Label textbox)
         {
             textbox.LocalDateTime(DateTime.Now.ToLocalTime(), DateOutputPart.ALL);
@@ -78,7 +78,7 @@ namespace ComputerPlus.Extensions.Gwen
         {
             textbox.LocalDateTime(DateTime.Now.ToLocalTime(), part);
         }
-
+        */
         internal static void LocalDateTime(this Label textbox, DateTime date, DateOutputPart output = DateOutputPart.ALL)
         {
             if (textbox == null) return;
