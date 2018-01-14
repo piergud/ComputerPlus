@@ -16,6 +16,7 @@ namespace ComputerPlus
         static string user, pass, unit;
         static bool skip;
         static bool randomHistoryRecords;
+        static bool enableLSPDFRPlusIntegration;
         internal static int FontSize
         {
             get;
@@ -45,6 +46,7 @@ namespace ComputerPlus
             FontSize = ini_file.ReadInt32("SETTINGS", "FontSize");
             FontName = ini_file.ReadString("SETTINGS", "FontName");
             randomHistoryRecords = ini_file.ReadBoolean("SETTINGS", "RandomHistoryRecords", true);
+            enableLSPDFRPlusIntegration = ini_file.ReadBoolean("SETTINGS", "EnableLSPDFRPlusIntegration", true);
 
             if (String.IsNullOrWhiteSpace(user))
                 user = "Officer";
@@ -116,6 +118,7 @@ namespace ComputerPlus
             ini_file.Write("SETTINGS", "FontSize", 16);
             ini_file.Write("SETTINGS", "FontName", "Microsoft Sans Serif");
             ini_file.Write("SETTINGS", "RandomHistoryRecords", "true");
+            ini_file.Write("SETTINGS", "EnableLSPDFRPlusIntegration", "true");
 
             ini_file.Write("KEYBINDINGS", "OpenComputerPlusKey", "None");
             ini_file.Write("KEYBINDINGS", "OpenComputerPlusModifierKey", "None");
@@ -157,6 +160,11 @@ namespace ComputerPlus
         internal static bool RandomHistoryRecords
         {
             get { return randomHistoryRecords; }
+        }
+
+        internal static bool EnableLSPDFRPlusIntegration
+        {
+            get { return enableLSPDFRPlusIntegration; }
         }
 
         internal static string UnitNumber

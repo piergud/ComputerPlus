@@ -584,7 +584,7 @@ namespace ComputerPlus.Controllers
 
         public static void createCourtCase(ArrestReport report, ComputerPlusEntity entity)
         {
-            if (Function.IsLSPDFRPlusRunning() && entity != null)
+            if (Configs.EnableLSPDFRPlusIntegration && Function.IsLSPDFRPlusRunning() && entity != null)
             {
                 string crimeStr = String.Empty;
                 string courtVerdictStr = String.Empty;
