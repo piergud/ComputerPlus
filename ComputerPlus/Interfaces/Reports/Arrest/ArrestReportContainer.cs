@@ -174,7 +174,8 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
 
         private void ContainerTabButtonClicked(Base sender, ClickedEventArgs arguments)
         {
-            SaveReport();
+            // commented this since we will save the report when player presses the save button anyway
+            // SaveReport();
         }
 
         private void ReportDetailsTextChanged(Base sender, EventArgs arguments)
