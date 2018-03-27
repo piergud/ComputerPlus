@@ -257,18 +257,24 @@ namespace ComputerPlus
         private void CheckForDeliverTicketTrigger()
         {
            
-          if (!Globals.HasTrafficTicketsInHand() && (ShouldEndPullover.HasValue && ShouldEndPullover.Value) && !Game.LocalPlayer.Character.HasScenario())
+            if (!Globals.HasTrafficTicketsInHand() && (ShouldEndPullover.HasValue && ShouldEndPullover.Value) && !Game.LocalPlayer.Character.HasScenario())
             {
                 ShouldEndPullover = null;
 
                 GameFiber.StartNew(() =>
                 {
-                    if (Game.LocalPlayer.LastVehicle && !Game.LocalPlayer.LastVehicle.HasDriver)
+                    if (Game.LocalPlayer.Character.LastVehicle && !Game.LocalPlayer.Character.LastVehicle.HasDriver)
                         Game.DisplayNotification("The driver will wait until you are back in your vehicle before taking off");
-                    while (Game.LocalPlayer.LastVehicle && !Game.LocalPlayer.LastVehicle.HasDriver)
+
+                    int count = 0;
+                    while (Game.LocalPlayer.LastVehicle && !Game.LocalPlayer.LastVehicle.HasDriver && count < 5)
+                    {
                         GameFiber.Sleep(1000); //Wait for the player to enter their vehicle
+                        count++;
+                    }
+
                     Function.Log("Starting Ending pull over wait timer for ped to leave");
-                    var stopAt = DateTime.Now.AddMilliseconds(5000); //have the sadPed drive off in 5 seconds if the traffic stop isnt over
+                    var stopAt = DateTime.Now.AddMilliseconds(4000); //have the sadPed drive off in 4 seconds if the traffic stop isnt over
                     while (DateTime.Now < stopAt) GameFiber.Sleep(500);
                     try
                     {
@@ -311,9 +317,9 @@ namespace ComputerPlus
                                     item.Delete();
                                 });
                                 Game.LocalPlayer.Character.Tasks.PlayAnimation("mp_common", "givetake1_b", 3f, AnimationFlags.None).WaitForCompletion();
+                                if (Functions.GetCurrentPullover() != null) ShouldEndPullover = true;
+                                Globals.RemoveTrafficCitationsInHandForPed(sadPed);
                             });
-                            ShouldEndPullover = true;
-                            Globals.RemoveTrafficCitationsInHandForPed(sadPed);
                             break;
                         }
                         else
@@ -330,7 +336,6 @@ namespace ComputerPlus
                 return;
             }
         }
-
 
         private void ComputerPlusMain()
         {
@@ -385,7 +390,6 @@ namespace ComputerPlus
         {
             do
             {
-
                 ShowBackground(Globals.ShowBackgroundWhenOpen);
                 GameFiber.Yield();
                 PauseGame(Globals.PauseGameWhenOpen);

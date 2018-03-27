@@ -35,7 +35,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
         LabeledComponent<Label> labeled_alpr, labeled_owner_alert;
 
-        ImagePanel image_ped_image_holder, image_vehicle_image_holder;
+        ImagePanel image_ped_image_holder = null;
+        ImagePanel image_vehicle_image_holder = null;
 
         ComboBox cb_action;
         
@@ -104,10 +105,11 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             }
             else labeled_vehicle_registration_status = LabeledComponent.StatefulTextbox(registrationContent, "Registration Status", RelationalPosition.LEFT, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
 
-            
-
-            image_vehicle_image_holder = new ImagePanel(registrationContent);
-            image_vehicle_image_holder.SetSize(400, 160);
+            if (Configs.DisplayVehicleImage)
+            {
+                image_vehicle_image_holder = new ImagePanel(registrationContent);
+                image_vehicle_image_holder.SetSize(400, 160);
+            }
 
             labeled_alpr = new LabeledComponent<Label>(registrationContent, "ALPR", new Label(registrationContent), RelationalPosition.LEFT, RelationalSize.MEDIUM, Configs.BaseFormControlSpacingDouble, labelFont, System.Drawing.Color.Red);
             labeled_owner_alert = new LabeledComponent<Label>(registrationContent, "Alert", new Label(registrationContent),  RelationalPosition.LEFT, RelationalSize.MEDIUM, Configs.BaseFormControlSpacingDouble, labelFont, System.Drawing.Color.Red);
@@ -130,8 +132,11 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 labeled_ped_extra_1 = LabeledComponent.StatefulTextbox(ownerContent, "Insured To Drive", RelationalPosition.LEFT, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
             }
 
-            image_ped_image_holder = new ImagePanel(ownerContent);
-            image_ped_image_holder.SetSize(155, 217);
+            if (Configs.DisplayPedImage)
+            {
+                image_ped_image_holder = new ImagePanel(ownerContent);
+                image_ped_image_holder.SetSize(155, 217);
+            }
 
             labeled_first_name.Component.Disable();
             labeled_last_name.Component.Disable();
@@ -151,17 +156,16 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 labeled_vehicle_extra_2.Component.Disable();
                 labeled_ped_extra_1.Component.Disable();
             }
-            if (Owner)
+            if (Configs.DisplayPedImage && Owner)
             {
                 image_ped_image_holder.ImageName = DetermineImagePath(Owner);
-                image_ped_image_holder.ShouldCacheToTexture = true;
+                // image_ped_image_holder.ShouldCacheToTexture = true;
             }
-            if (Vehicle)
+            if (Configs.DisplayVehicleImage && Vehicle)
             {
                 image_vehicle_image_holder.ImageName = DetermineImagePath(Vehicle);
-                image_vehicle_image_holder.ShouldCacheToTexture = true;
+                // image_vehicle_image_holder.ShouldCacheToTexture = true;
             }
-
             cb_action.ItemSelected += ActionSelected;
 
         }
@@ -186,8 +190,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             labeled_vehicle_insurance_status.Component.SmallSize();
             labeled_vehicle_insurance_status.Component.SmallSize();
             labeled_vehicle_registration_status.Component.SmallSize();
-
-          
 
             labeled_vehicle_license
                 .PlaceRightOf(labeled_vehicle_model, Configs.BaseFormControlSpacingTriple)
@@ -217,13 +219,25 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
             //labeled_vehicle_registration_status.Component.AlignLeftWith(labeled_vehicle_insurance_status.Component);
 
-            image_vehicle_image_holder
-                .PlaceLeftOf();
+            if (Configs.DisplayVehicleImage)
+            {
+                image_vehicle_image_holder
+                    .PlaceLeftOf();
 
-            labeled_alpr
-                .PlaceBelowOf(image_vehicle_image_holder)
-                .AlignLeftWith(image_vehicle_image_holder)
-                .SizeWidthWith(image_vehicle_image_holder);
+                labeled_alpr
+                    .PlaceBelowOf(image_vehicle_image_holder)
+                    .AlignLeftWith(image_vehicle_image_holder)
+                    .SizeWidthWith(image_vehicle_image_holder);
+            }
+            else
+            {
+                labeled_alpr
+                    .PlaceBelowOf(labeled_vehicle_registration_status)
+                    .AlignLeftWith(labeled_vehicle_registration_status)
+                    .SizeWidthWith(labeled_vehicle_registration_status);
+            }
+
+
 
             labeled_owner_alert
                 .Align(labeled_vehicle_registration_status, labeled_alpr)
@@ -284,8 +298,11 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 .PlaceBelowOf(labeled_license_status)
                 .AlignLeftWith(labeled_license_status);
 
-            image_ped_image_holder
-               .PlaceLeftOf();
+            if (Configs.DisplayPedImage)
+            {
+                image_ped_image_holder
+                   .PlaceLeftOf();
+            }
 
             ownerInformation.SizeToChildrenBlock();
             ownerContent.SizeToChildrenBlock();
@@ -316,14 +333,15 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         }
 
         private String DetermineImagePath(Ped ped)
-        {           
+        {
             try
             {
-                if (ped == null || !ped.Exists()) return Function.DefaultPedImagePath;
-                String modelName = ped.Model.Name;
-                int headDrawableIndex, headDrawableTextureIndex;
+                // if (ped == null || !ped.Exists()) return Function.DefaultPedImagePath;
+                String modelName = String.Empty;
+                if (ped != null && ped.IsValid()) modelName = ped.Model.Name;
 
-                ped.GetVariation(0, out headDrawableIndex, out headDrawableTextureIndex);
+                int headDrawableIndex = 0, headDrawableTextureIndex = 0;
+                if (ped != null && ped.IsValid()) ped.GetVariation(0, out headDrawableIndex, out headDrawableTextureIndex);
 
                 String _model = String.Format(@"{0}__0_{1}_{2}", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
                 var path = Function.GetPedImagePath(_model);
@@ -338,11 +356,13 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
         }
 
         private String DetermineImagePath(Vehicle vehicle)
-        {            
+        {
             try
             {
-                if (vehicle == null || !vehicle.Exists()) return Function.DefaultVehicleImagePath;
-                String modelName = vehicle.Model.Name;
+                // if (vehicle == null || !vehicle.Exists()) return Function.DefaultVehicleImagePath;
+                String modelName = String.Empty;
+                if (vehicle != null && vehicle.IsValid()) modelName = vehicle.Model.Name;
+
                 var path = Function.GetVehicleImagePath(modelName);
                 Function.LogDebug(String.Format("Loading image for vehicle from {0}", path));
                 return path;

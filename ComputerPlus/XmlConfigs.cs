@@ -138,12 +138,12 @@ namespace ComputerPlus
         {
             if (charge.IsContainer)
             {
-                String chargeName = parentName + " => " + charge.Name + "\n";
+                String chargeName = parentName + " Category:  " + charge.Name + "\n";
                 charge.Children.ForEach(childCharge => TransverseCharges(chargeName, childCharge));
             }
             else
             {
-                String chargeName = parentName + " => " + String.Format("{0}{1}", charge.Name, charge.IsFelony ? " (F)" : String.Empty);
+                String chargeName = parentName + " Charge: " + String.Format("{0}{1}", charge.Name, charge.IsFelony ? " (F)" : String.Empty);
                 Globals.WantedReasons.Add(chargeName);
             }
         }

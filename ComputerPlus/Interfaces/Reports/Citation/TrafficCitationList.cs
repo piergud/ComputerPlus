@@ -117,7 +117,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             this.reports = reports;
         }
 
-        internal TrafficCitationListContainer() : base("Traffic Citations", Configs.BaseFormWidth, Configs.BaseFormHeight)
+        internal TrafficCitationListContainer() : base("Citations", Configs.BaseFormWidth, Configs.BaseFormHeight)
         {
 
         }

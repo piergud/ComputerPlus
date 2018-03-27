@@ -16,6 +16,8 @@ namespace ComputerPlus
         static string user, pass, unit;
         static bool skip;
         static bool randomHistoryRecords;
+        static bool displayPedImage;
+        static bool displayVehicleImage;
         static bool enableLSPDFRPlusIntegration;
         internal static int FontSize
         {
@@ -46,6 +48,10 @@ namespace ComputerPlus
             FontSize = ini_file.ReadInt32("SETTINGS", "FontSize");
             FontName = ini_file.ReadString("SETTINGS", "FontName");
             randomHistoryRecords = ini_file.ReadBoolean("SETTINGS", "RandomHistoryRecords", true);
+
+            displayPedImage = ini_file.ReadBoolean("SETTINGS", "DisplayPedImage", true);
+            displayVehicleImage = ini_file.ReadBoolean("SETTINGS", "DisplayVehicleImage", true);
+
             enableLSPDFRPlusIntegration = ini_file.ReadBoolean("SETTINGS", "EnableLSPDFRPlusIntegration", true);
 
             if (String.IsNullOrWhiteSpace(user))
@@ -118,6 +124,8 @@ namespace ComputerPlus
             ini_file.Write("SETTINGS", "FontSize", 16);
             ini_file.Write("SETTINGS", "FontName", "Microsoft Sans Serif");
             ini_file.Write("SETTINGS", "RandomHistoryRecords", "true");
+            ini_file.Write("SETTINGS", "DisplayPedImage", "true");
+            ini_file.Write("SETTINGS", "DisplayVehicleImage", "true");
             ini_file.Write("SETTINGS", "EnableLSPDFRPlusIntegration", "true");
 
             ini_file.Write("KEYBINDINGS", "OpenComputerPlusKey", "None");
@@ -160,6 +168,16 @@ namespace ComputerPlus
         internal static bool RandomHistoryRecords
         {
             get { return randomHistoryRecords; }
+        }
+
+        internal static bool DisplayPedImage
+        {
+            get { return displayPedImage; }
+        }
+
+        internal static bool DisplayVehicleImage
+        {
+            get { return displayVehicleImage; }
         }
 
         internal static bool EnableLSPDFRPlusIntegration
