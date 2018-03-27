@@ -108,7 +108,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labelFont.Smooth = true;
 
             headerSection = new Base(this);
-            labeled_citation_report_id = LabeledComponent.StatefulTextbox(headerSection, "Traffic Citation", RelationalPosition.LEFT, Configs.BaseFormControlSpacing);
+            labeled_citation_report_id = LabeledComponent.StatefulTextbox(headerSection, "Citation", RelationalPosition.LEFT, Configs.BaseFormControlSpacing);
             LabeledInputs.Add(labeled_citation_report_id);
 
 
@@ -574,7 +574,10 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labeled_home_address.SetValueText(Citation.HomeAddress);
 
             labeled_vehicle_type.Component.Enable();
-            labeled_vehicle_type.Component.SelectByText(Citation.VehicleType);
+            if (Citation.VehicleModel.Equals("N/A"))
+                labeled_vehicle_type.Component.SelectByText(Citation.VehicleModel);
+            else
+                labeled_vehicle_type.Component.SelectByText(Citation.VehicleType);
             if (ReadOnly) labeled_vehicle_type.Component.Disable();
 
             labeled_vehicle_model.SetValueText(Citation.VehicleModel);

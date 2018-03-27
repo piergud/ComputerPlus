@@ -674,11 +674,12 @@ namespace ComputerPlus
         {
             try
             {
-                if (ped == null || !ped.Exists()) return Function.DefaultPedImagePath;
-                String modelName = ped.Model.Name;
-                int headDrawableIndex, headDrawableTextureIndex;
+                // if (ped == null || !ped.Exists()) return Function.DefaultPedImagePath;
+                String modelName = String.Empty;
+                if (ped != null && ped.IsValid()) modelName = ped.Model.Name;
+                int headDrawableIndex = 0, headDrawableTextureIndex = 0;
 
-                ped.GetVariation(0, out headDrawableIndex, out headDrawableTextureIndex);
+                if (ped != null && ped.IsValid()) ped.GetVariation(0, out headDrawableIndex, out headDrawableTextureIndex);
 
                 String _model = String.Format(@"{0}__0_{1}_{2}", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
                 var path = Function.GetPedImagePath(_model);
@@ -690,7 +691,6 @@ namespace ComputerPlus
                 Function.LogDebug("DetermineImagePath Error");
                 return Function.DefaultPedImagePath;
             }
-
         }
 
         internal static String DateFormatForPart(DateOutputPart part)
