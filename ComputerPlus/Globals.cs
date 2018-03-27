@@ -127,7 +127,7 @@ namespace ComputerPlus
                 if (TicketsInPosession.ContainsKey(ped))
                 {
                     TicketsInPosession.Remove(ped);
-                }                
+                }
             }
         }
 

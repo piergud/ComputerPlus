@@ -366,7 +366,8 @@ xcopy /Y "$(ProjectDir)Resources\ComputerPlus.ini" "$(TargetDir)Packaged\GTA V M
 
 
 xcopy /Y "$(TargetDir)ComputerPlus.dll" "D:\Steam\steamapps\common\Grand Theft Auto V\plugins\LSPDFR"
-</PostBuildEvent>
+
+xcopy /Y "$(TargetDir)ComputerPlus.pdb" "D:\Steam\steamapps\common\Grand Theft Auto V\plugins\LSPDFR"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

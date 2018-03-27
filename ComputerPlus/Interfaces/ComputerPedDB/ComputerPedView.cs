@@ -55,7 +55,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 //               lbl_home_address, lbl_dob, lbl_license_status,
 //               lbl_wanted_status, lbl_times_stopped, lbl_age; // lbl_alert
 
-        ImagePanel ped_image_holder;
+        ImagePanel ped_image_holder = null;
 
         ComboBox cb_action;
 
@@ -102,7 +102,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
             cb_action = new ComboBox(this);
 
-            pedInformation = new FormSection(this, "Person Information");
+            pedInformation = new FormSection(this, "Personal Information");
             pedContent = new Base(this);
 
             text_first_name = LabeledComponent.StatefulTextbox(pedContent, "First Name", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
@@ -117,10 +117,13 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             text_wanted_status_false = LabeledComponent.StatefulTextbox(pedContent, "Wanted Status", RelationalPosition.LEFT, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
             text_wanted_status_true = LabeledComponent.StatefulMultilineTextBox(pedContent, "Wanted Status", RelationalPosition.LEFT, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
 
-            ped_image_holder = new ImagePanel(pedContent);
-            ped_image_holder.SetSize(155, 217);
-            ped_image_holder.ImageName = Function.DetermineImagePath(ThePed);
-            ped_image_holder.ShouldCacheToTexture = true;
+            if (Configs.DisplayPedImage)
+            {
+                ped_image_holder = new ImagePanel(pedContent);
+                ped_image_holder.SetSize(155, 217);
+                ped_image_holder.ImageName = Function.DetermineImagePath(ThePed);
+                //ped_image_holder.ShouldCacheToTexture = true;
+            }
 
             text_first_name.Component.Disable();
             text_last_name.Component.Disable();
@@ -196,8 +199,11 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 .PlaceBelowOf(text_times_stopped)
                 .AlignLeftWith(text_times_stopped);
 
-            ped_image_holder
-               .PlaceLeftOf();
+            if (Configs.DisplayPedImage)
+            {
+                ped_image_holder
+                   .PlaceLeftOf();
+            }
 
             pedInformation.SizeToChildrenBlock();
             pedContent.SizeToChildrenBlock();
@@ -210,8 +216,11 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             BindNeeded = false;
 
             cb_action.AddItem("Select One", "PlaceHolder", QuickActions.PLACEHOLDER);
-            if (ThePed.LastVehicle != null) //Not using the implicit bool operator for Vehicle because we dont care if it is "valid" any more, we only care that they "had" a vehicle
-                cb_action.AddItem("Create Traffic Citation", "TrafficCitation", QuickActions.CREATE_TRAFFIC_CITATION);
+            //if (ThePed.LastVehicle != null) //Not using the implicit bool operator for Vehicle because we dont care if it is "valid" any more, we only care that they "had" a vehicle
+            //  cb_action.AddItem("Create Traffic Citation", "TrafficCitation", QuickActions.CREATE_TRAFFIC_CITATION);
+
+            // Now we always add "create citation" option to be able to create citation for stopped ped without vehicle
+            cb_action.AddItem("Create Citation", "TrafficCitation", QuickActions.CREATE_TRAFFIC_CITATION);
             cb_action.AddItem("Create Arrest Report", "ArrestReport", QuickActions.CREATE_ARREST_REPORT);
 
             text_first_name.Component.Text = DetailedEntity.Entity.FirstName;
