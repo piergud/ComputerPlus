@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Rage.Forms;
 using Gwen;
 using Gwen.Control;
 using Rage;
-using LSPD_First_Response;
-using LSPD_First_Response.Engine.Scripting.Entities;
-using ComputerPlus.Interfaces.ComputerPedDB;
+
 using ComputerPlus.Controllers.Models;
-using System.IO;
+
 using ComputerPlus.Extensions.Gwen;
 using ComputerPlus.Extensions.Rage;
 using ComputerPlus.Controllers;
@@ -17,7 +12,7 @@ using ComputerPlus.Interfaces.Common;
 using ComputerPlus.Interfaces.Reports.Models;
 using GwenSkin = Gwen.Skin;
 using SystemDrawing = System.Drawing;
-using ComputerPlus.Extensions;
+
 
 namespace ComputerPlus.Interfaces.ComputerVehDB
 {
@@ -108,6 +103,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             if (Configs.DisplayVehicleImage)
             {
                 image_vehicle_image_holder = new ImagePanel(registrationContent);
+                image_vehicle_image_holder.ShouldCacheToTexture = false;
                 image_vehicle_image_holder.SetSize(400, 160);
             }
 
@@ -135,6 +131,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             if (Configs.DisplayPedImage)
             {
                 image_ped_image_holder = new ImagePanel(ownerContent);
+                image_ped_image_holder.ShouldCacheToTexture = false;
                 image_ped_image_holder.SetSize(155, 217);
             }
 
@@ -237,8 +234,6 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                     .SizeWidthWith(labeled_vehicle_registration_status);
             }
 
-
-
             labeled_owner_alert
                 .Align(labeled_vehicle_registration_status, labeled_alpr)
                 .SizeWidthWith(labeled_vehicle_registration_status);
@@ -250,7 +245,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             ownerInformation
              .AddContentChild(ownerContent)
              .PlaceBelowOf(registrationInformation)
-             .SizeWidthWith();
+             .AlignLeftWith(registrationInformation)
+             .SizeWidthWith(registrationInformation);
 
             labeled_first_name.Component.MediumSize();
             labeled_last_name.Component.MediumSize();
@@ -343,8 +339,8 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                 int headDrawableIndex = 0, headDrawableTextureIndex = 0;
                 if (ped != null && ped.IsValid()) ped.GetVariation(0, out headDrawableIndex, out headDrawableTextureIndex);
 
-                String _model = String.Format(@"{0}__0_{1}_{2}", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
-                var path = Function.GetPedImagePath(_model);
+                //String _model = String.Format(@"{0}__0_{1}_{2}", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
+                var path = Function.GetPedImagePath(modelName, headDrawableIndex, headDrawableTextureIndex);
                 Function.LogDebug(String.Format("Loading image for model from  {0}", path));
                 return path;
             }
@@ -381,7 +377,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             BindNeeded = false;
             if (DetailedEntity.Entity.IsLicenseValid)
             {
-                labeled_license_status.Component.Text = "Valid";
+                labeled_license_status.Component.Valid("Valid");
             }
             else
             {
@@ -415,7 +411,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
             cb_action.AddItem("Select One", "Placeholder", QuickActions.PLACEHOLDER);
             cb_action.AddItem("Blip (30 sec)", "Blip", QuickActions.BLIP_VEHICLE);
-            cb_action.AddItem("Create Traffic Citation", "TrafficCitation", QuickActions.CREATE_TRAFFIC_CITATION);
+            cb_action.AddItem("Create Citation", "TrafficCitation", QuickActions.CREATE_TRAFFIC_CITATION);
             cb_action.AddItem("Create Arrest Report", "ArrestReport", QuickActions.CREATE_ARREST_REPORT_FOR_DRIVER);
             
             labeled_age.Component.Text = DetailedEntity.Entity.AgeString;
@@ -426,7 +422,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             if (DetailedEntity.Entity.IsWanted)
                 labeled_wanted_status.Component.Warn("Wanted");
             else
-                labeled_wanted_status.Component.SetText("None");
+                labeled_wanted_status.Component.Valid("None");
             labeled_times_stopped.Component.Text = DetailedEntity.Entity.TimesStopped.ToString();
 
             labeled_vehicle_model.Component.Text = Vehicle.Model.Name;
@@ -434,31 +430,31 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             if (ComputerPlusEntity.PersonaType == PersonaTypes.BPS)
             {
                 if (BritishPolicingFunctions.IsVehicleRegistered(DetailedEntity.Entity.RawVehiclePersona))
-                    labeled_vehicle_registration_status.Component.SetText("No");
+                    labeled_vehicle_registration_status.Component.Valid("Yes");
                 else
-                    labeled_vehicle_registration_status.Component.Warn("Yes");
+                    labeled_vehicle_registration_status.Component.Warn("No");
                 Function.LogDebug("set labeled_vehicle_registration_status");
 
                 if (BritishPolicingFunctions.IsVehicleInsured(DetailedEntity.Entity.RawVehiclePersona))
-                    labeled_vehicle_insurance_status.Component.SetText("Yes");
+                    labeled_vehicle_insurance_status.Component.Valid("Yes");
                 else
                     labeled_vehicle_insurance_status.Component.Warn("No");
                 Function.LogDebug("set labeled_vehicle_insurance_status");
 
                 if (BritishPolicingFunctions.DoesVehicleHaveMOT(DetailedEntity.Entity.RawVehiclePersona))
-                    labeled_vehicle_extra_1.Component.SetText("Yes");
+                    labeled_vehicle_extra_1.Component.Valid("Yes");
                 else
                     labeled_vehicle_extra_1.Component.Warn("No");
                 Function.LogDebug("set labeled_vehicle_extra_1");
 
                 if (BritishPolicingFunctions.DoesVehicleHaveSORN(DetailedEntity.Entity.RawVehiclePersona))
-                    labeled_vehicle_extra_2.Component.SetText("Yes");
+                    labeled_vehicle_extra_2.Component.Valid("Yes");
                 else
                     labeled_vehicle_extra_2.Component.Warn("No");
                 Function.LogDebug("set labeled_vehicle_extra_2");
 
                 if (BritishPolicingFunctions.IsPedInsuredToDriveVehicle(DetailedEntity.Entity.RawPedPersona, DetailedEntity.Entity.RawVehiclePersona))
-                    labeled_ped_extra_1.Component.SetText("Yes");
+                    labeled_ped_extra_1.Component.Valid("Yes");
                 else
                     labeled_ped_extra_1.Component.Warn("No");
 
@@ -468,7 +464,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
             {
                 var insuranceStatus = TrafficPolicerFunction.GetVehicleInsuranceStatus(Vehicle);
                 if (insuranceStatus == EVehicleStatus.Valid)
-                    labeled_vehicle_insurance_status.Component.SetText("Valid");
+                    labeled_vehicle_insurance_status.Component.Valid("Valid");
                 else if (insuranceStatus == EVehicleStatus.Expired)
                     labeled_vehicle_insurance_status.Component.Warn("Expired");
                 else
@@ -476,7 +472,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
 
                 var registrationStatus = TrafficPolicerFunction.GetVehicleRegistrationStatus(Vehicle);
                 if (registrationStatus == EVehicleStatus.Valid)
-                    labeled_vehicle_registration_status.Component.SetText("Valid");
+                    labeled_vehicle_registration_status.Component.Valid("Valid");
                 else if (registrationStatus == EVehicleStatus.Expired)
                     labeled_vehicle_registration_status.Component.Warn("Expired");
                 else

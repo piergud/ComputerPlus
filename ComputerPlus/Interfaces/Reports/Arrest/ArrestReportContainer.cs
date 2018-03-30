@@ -102,7 +102,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                     NotifyForEvent(ArrestReportSaveResult.SAVE);
 
                     // create LSPDFR+ court case
-                    ComputerReportsController.createCourtCase(Report, reportEntity);
+                    ComputerReportsController.createCourtCaseForArrest(Report, reportEntity);
 
                     return ArrestReportSaveResult.SAVE;
                 }

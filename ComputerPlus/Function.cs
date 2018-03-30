@@ -347,10 +347,25 @@ namespace ComputerPlus
             return Game.CreateTextureFromFile(path);
         }
 
-        internal static String GetPedImagePath(String model)
+        internal static String GetPedImagePath(String modelName, int headDrawableIndex, int headDrawableTextureIndex)
         {            
-            var path = String.Format(@"Plugins\LSPDFR\ComputerPlus\images\peds\{0}_front.jpg", model);
-            return File.Exists(path) ? path : Function.DefaultPedImagePath;
+            var path = String.Format(@"Plugins\LSPDFR\ComputerPlus\images\peds\{0}__0_{1}_{2}_front.jpg", modelName.ToLower(), headDrawableIndex, headDrawableTextureIndex);
+            if (!File.Exists(path))
+            {
+                if (headDrawableIndex != 0 && headDrawableTextureIndex != 0)
+                {
+                    // if not found, fallback to 0 index and 0 texture 
+                    path = String.Format(@"Plugins\LSPDFR\ComputerPlus\images\peds\{0}__0_0_0_front.jpg", modelName.ToLower());
+                    if (!File.Exists(path))
+                    {
+                        path = Function.DefaultPedImagePath;
+                    }
+                } else
+                {
+                    path = Function.DefaultPedImagePath;
+                }
+            }
+            return path;
         }
 
         internal static String GetVehicleImagePath(String model)
@@ -681,9 +696,9 @@ namespace ComputerPlus
 
                 if (ped != null && ped.IsValid()) ped.GetVariation(0, out headDrawableIndex, out headDrawableTextureIndex);
 
-                String _model = String.Format(@"{0}__0_{1}_{2}", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
-                var path = Function.GetPedImagePath(_model);
-                Function.LogDebug(String.Format("Loading image for model from  {0}", path));
+                // String _model = String.Format(@"{0}__0_{1}_{2}", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
+                var path = Function.GetPedImagePath(modelName, headDrawableIndex, headDrawableTextureIndex);
+                Function.LogDebug(String.Format("Loading image for model from {0}", path));
                 return path;
             }
             catch
