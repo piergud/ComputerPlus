@@ -75,3 +75,9 @@ So, if you don't always want to use Computer+ during your patrols, then you need
 - reduced frequent crashes when opening ped info or vehicle info
 - added configuration option to enable/disable ped and vehicle images (only disable if you're still having crashes)
 
+** Version 1.3.6.4 change list (contributed by BejoIjo)
+- added gun permit information on ped info window. (compatible with Stop The Ped plugin)
+- added feature to create court case for any citation given to the ped (LSPDFR+ plugin is needed)
+- added color (red/greed) on flagged ped/vehicle data (e.g. license status, insurance status)
+- fixed  truncated string on random history charge information
+- reduced crash possibility by tweaking some components

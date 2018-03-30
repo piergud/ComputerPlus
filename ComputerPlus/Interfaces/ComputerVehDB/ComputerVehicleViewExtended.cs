@@ -144,7 +144,7 @@ namespace ComputerPlus.Interfaces.ComputerVehDB
                         trafficCitationView.Dock = Pos.Fill;
                         trafficCitationContainer.Show();
 
-                        var page = tabcontrol_details.AddPage("Traffic Citations", trafficCitationContainer);
+                        var page = tabcontrol_details.AddPage("Citations", trafficCitationContainer);
                         page.UserData = Page.PED_TRAFFIC_CITATIONS;
                         page.Clicked += PageTabClicked;
                     }

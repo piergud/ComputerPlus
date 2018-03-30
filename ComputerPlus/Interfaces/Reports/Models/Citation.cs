@@ -44,6 +44,12 @@ namespace ComputerPlus.Interfaces.Reports.Models
             set;
         }
 
+        public bool IsPublic
+        {
+            get;
+            set;
+        }
+
         [XmlAttribute("fine")]
         public double FineAmount
         {
