@@ -6,17 +6,12 @@ using Rage;
 using Rage.Forms;
 using LSPD_First_Response.Mod.API;
 using ComputerPlus.Interfaces;
-using ComputerPlus.Interfaces.ComputerPedDB;
 using ComputerPlus.Interfaces.ComputerVehDB;
 using ComputerPlus.Controllers.Models;
-using ComputerPlus.DB;
-using ComputerPlus.DB.Models;
 using ComputerPlus.Controllers;
 using ComputerPlus.Extensions.Rage;
 using System.Linq;
 using ComputerPlus.Extensions.Gwen;
-using ComputerPlus.Extensions;
-using System.Windows.Forms;
 using ComputerPlus.Interfaces.SimpleNotepad;
 using ComputerPlus.Interfaces.Reports.Models;
 using System.Threading;
@@ -308,6 +303,9 @@ namespace ComputerPlus
                             //The user wants to give the sad ped the ticket now..
                             GameFiber.StartNew(() =>
                             {
+                                List<TrafficCitation> citations = Globals.GetTrafficCitationsInHandForPed(sadPed);
+                                Globals.RemoveTrafficCitationsInHandForPed(sadPed);
+
                                 var item = new Rage.Object(new Model("prop_cs_documents_01"), Game.LocalPlayer.Character.Position);
                                 item.AttachTo(Game.LocalPlayer.Character, Game.LocalPlayer.Character.GetBoneIndex(PedBoneId.RightThumb1), new Vector3(item.Model.Dimensions.Length() * 0.4f, 0, 0), Rotator.Zero);
                                 GameFiber.StartNew(delegate
@@ -318,7 +316,13 @@ namespace ComputerPlus
                                 });
                                 Game.LocalPlayer.Character.Tasks.PlayAnimation("mp_common", "givetake1_b", 3f, AnimationFlags.None).WaitForCompletion();
                                 if (Functions.GetCurrentPullover() != null) ShouldEndPullover = true;
-                                Globals.RemoveTrafficCitationsInHandForPed(sadPed);
+                                if (sadPed != null && sadPed.IsValid() && citations != null && citations.Count > 0)
+                                {
+                                    // mark ped has been given citation
+                                    sadPed.Metadata.citedByComputerPlus = true;
+                                    // create court case for citation
+                                    ComputerReportsController.createCourtCaseForCitations(citations, sadPed);
+                                }
                             });
                             break;
                         }

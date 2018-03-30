@@ -1,21 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Rage.Forms;
 using Gwen;
 using Gwen.Control;
 using Rage;
-using LSPD_First_Response;
-using LSPD_First_Response.Engine.Scripting.Entities;
-using ComputerPlus.Controllers.Models;
 using ComputerPlus.Extensions.Gwen;
 using ComputerPlus.Extensions.Rage;
 using ComputerPlus.Controllers;
 using ComputerPlus.Interfaces.Reports.Models;
-using ComputerPlus.Interfaces.Reports.Arrest;
 using ComputerPlus.Interfaces.Common;
 using GwenSkin = Gwen.Skin;
 using SystemDrawing = System.Drawing;
+using ComputerPlus.Controllers.Models;
 
 namespace ComputerPlus.Interfaces.ComputerPedDB
 {
@@ -47,7 +41,8 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
         LabeledComponent<StateControlledTextbox> text_first_name, text_last_name,
                text_home_address, text_dob, text_license_status,
-               text_wanted_status_false, text_times_stopped, text_age;
+               text_wanted_status_false, text_times_stopped, text_age,
+               text_has_gun_permit, text_gun_license_type, text_gun_permit_type;
 
         LabeledComponent<StateControlledMultilineTextbox> text_wanted_status_true;
 
@@ -71,8 +66,8 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
         internal static int DefaultHeight = 630;
         internal static int DefaultWidth = 730;
 
-        FormSection pedInformation;
-        Base pedContent;
+        FormSection pedInformation, gunPermitInformation;
+        Base pedContent, gunPermitContent;
 
         SystemDrawing.Color labelColor = SystemDrawing.Color.Black;
         Font labelFont;
@@ -94,7 +89,6 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
         private void InitializeLayout()
         {
             Function.LogDebug("InitializeLayout ComputerPedView");
-
 
             labelFont = this.Skin.DefaultFont.Copy();
             labelFont.Size = 14;
@@ -120,6 +114,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             if (Configs.DisplayPedImage)
             {
                 ped_image_holder = new ImagePanel(pedContent);
+                ped_image_holder.ShouldCacheToTexture = false;
                 ped_image_holder.SetSize(155, 217);
                 ped_image_holder.ImageName = Function.DetermineImagePath(ThePed);
                 //ped_image_holder.ShouldCacheToTexture = true;
@@ -140,6 +135,18 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             text_wanted_status_true.Component.Disable();
             text_wanted_status_true.Component.Hide();
 
+
+            gunPermitInformation = new FormSection(this, "Gun Permit Information");
+            gunPermitContent = new Base(this);
+
+            text_has_gun_permit = LabeledComponent.StatefulTextbox(gunPermitContent, "Has Gun Permit", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            text_gun_license_type = LabeledComponent.StatefulTextbox(gunPermitContent, "Gun License Type", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+            text_gun_permit_type = LabeledComponent.StatefulTextbox(gunPermitContent, "Gun Permit Type", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
+
+            text_has_gun_permit.Component.Disable();
+            text_gun_license_type.Component.Disable();
+            text_gun_permit_type.Component.Disable();
+
             cb_action.ItemSelected += ActionSelected;
         }
 
@@ -154,7 +161,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
 
             pedInformation
              .AddContentChild(pedContent)
-             .PlaceBelowOf(cb_action)
+             .PlaceBelowOf(cb_action, 0)
              .AlignLeftWith()
              .SizeWidthWith();
 
@@ -163,7 +170,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             text_age.Component.SmallSize();
             text_times_stopped.Component.SmallSize();
             text_wanted_status_false.Component.SmallSize();
-            text_wanted_status_true.Component.SetSize(332, 90);
+            text_wanted_status_true.Component.SetSize(350, 60);
             text_license_status.Component.SetSize(150, 21);
             text_dob.Component.SmallSize();
             text_home_address.Component.LongSize();
@@ -177,7 +184,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 .AlignTopWith(text_last_name);
 
             text_home_address
-                .PlaceBelowOf(text_first_name, Configs.BaseFormControlSpacingDouble)
+                .PlaceBelowOf(text_first_name, Configs.BaseFormControlSpacing)
                 .AlignLeftWith(text_first_name);
 
             text_dob
@@ -188,16 +195,16 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 .AlignLeftWith(text_home_address);
 
             text_times_stopped
+                .PlaceRightOf(text_license_status, Configs.BaseFormControlSpacingDouble)
+                .AlignTopWith(text_license_status);
+
+            text_wanted_status_false
                 .PlaceBelowOf(text_license_status)
                 .AlignLeftWith(text_license_status);
 
-            text_wanted_status_false
-                .PlaceBelowOf(text_times_stopped)
-                .AlignLeftWith(text_times_stopped);
-
             text_wanted_status_true
-                .PlaceBelowOf(text_times_stopped)
-                .AlignLeftWith(text_times_stopped);
+                .PlaceBelowOf(text_license_status)
+                .AlignLeftWith(text_license_status);
 
             if (Configs.DisplayPedImage)
             {
@@ -205,8 +212,31 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                    .PlaceLeftOf();
             }
 
-            pedInformation.SizeToChildrenBlock();
             pedContent.SizeToChildrenBlock();
+            pedInformation.SizeToChildrenBlock();
+            
+
+            gunPermitInformation
+                .AddContentChild(gunPermitContent)
+                .PlaceBelowOf(pedInformation, Configs.BaseFormControlSpacingDouble)
+                .AlignLeftWith(pedInformation)
+                .SizeWidthWith(pedInformation);
+
+            text_has_gun_permit.Component.SmallSize();
+            text_gun_license_type.Component.SetSize(220, 21);
+            text_gun_permit_type.Component.NormalSize();
+
+            text_gun_license_type
+                .PlaceRightOf(text_has_gun_permit, Configs.BaseFormControlSpacingDouble)
+                .AlignTopWith(text_has_gun_permit);
+
+            text_gun_permit_type
+                .PlaceRightOf(text_gun_license_type, Configs.BaseFormControlSpacingDouble)
+                .AlignTopWith(text_gun_license_type);
+
+            gunPermitInformation.SizeToChildrenBlock();
+            gunPermitContent.SizeToChildrenBlock();
+
         }
 
         private void BindData()
@@ -234,18 +264,18 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             {
                 text_wanted_status_true.Component.IsHidden = false;
                 text_wanted_status_false.Component.IsHidden = true;
-                text_wanted_status_true.Component.Warn("Wanted for " + DetailedEntity.Entity.WantedReason);
+                text_wanted_status_true.Component.Warn("Arrest Warrant for " + DetailedEntity.Entity.WantedReason);
             }
             else
             {
                 text_wanted_status_true.Component.IsHidden = true;
                 text_wanted_status_false.Component.IsHidden = false;
-                text_wanted_status_false.Component.SetText("None");
+                text_wanted_status_false.Component.Valid("None");
             }
 
             if (DetailedEntity.Entity.IsLicenseValid)
             {
-                text_license_status.Component.Text = "Valid";
+                text_license_status.Component.Valid("Valid");
             }
             else
             {
@@ -256,6 +286,19 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                     text_license_status.Component.Warn(licenseStateString);
             }
 
+            GunPermitInfo pedGunPermitInfo = DetailedEntity.Entity.GunPermitInformation;
+            if (pedGunPermitInfo.HasGunPermit)
+            {
+                text_has_gun_permit.Component.Valid("Yes");
+                text_gun_license_type.Component.Text = pedGunPermitInfo.GunLicense;
+                text_gun_permit_type.Component.Text = pedGunPermitInfo.GunPermit;
+            }
+            else
+            {
+                text_has_gun_permit.Component.SetText("No");
+                text_gun_license_type.Component.Text = "";
+                text_gun_permit_type.Component.Text = "";
+            }
 
             /*
             if (Entity == null) return;

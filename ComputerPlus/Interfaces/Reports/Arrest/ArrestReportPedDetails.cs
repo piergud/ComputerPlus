@@ -133,10 +133,6 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             text_arrestee_home_address.SetPosition(25, 150);
             text_arrestee_home_address.TextChanged += TextInputChanged;
 
-           
-
-            
-
             text_arrest_street = new StateControlledTextbox(this);
             text_arrest_street.SetSize(355, 21);
             text_arrest_street.SetPosition(22, 273);

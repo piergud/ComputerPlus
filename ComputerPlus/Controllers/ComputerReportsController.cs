@@ -582,13 +582,13 @@ namespace ComputerPlus.Controllers
             }
         }
 
-        public static void createCourtCase(ArrestReport report, ComputerPlusEntity entity)
+        public static void createCourtCaseForArrest(ArrestReport report, ComputerPlusEntity entity)
         {
             if (Configs.EnableLSPDFRPlusIntegration && Function.IsLSPDFRPlusRunning() && entity != null)
             {
                 string crimeStr = String.Empty;
                 string courtVerdictStr = String.Empty;
-                int guiltyChance = Globals.Random.Next(50, 96);
+                int guiltyChance = Globals.Random.Next(75, 101);
                 int verdictMonths = 0;
                 int verdictYears = 0;
                 bool trafficFelonyCharged = false;
@@ -635,7 +635,58 @@ namespace ComputerPlus.Controllers
 
                 LSPDFRPlusFunctions.CreateNewCourtCase(entity.PedPersona, crimeStr, guiltyChance, courtVerdictStr);
             }
+        }
 
+        public static void createCourtCaseForCitations(List<TrafficCitation> citations, Ped ped)
+        {
+            if (Configs.EnableLSPDFRPlusIntegration && Function.IsLSPDFRPlusRunning() && ped != null && ped.IsValid())
+            {
+                Persona pedPersona = Functions.GetPersonaForPed(ped);
+                string citationStr = String.Empty;
+                string courtVerdictStr = String.Empty;
+                int guiltyChance = Globals.Random.Next(75, 101);
+                int totalFine = 0;
+                bool containTrafficCitation = false;
+                bool isSuspended = false;
+                bool isRevoked = false;
+
+                foreach (var citation in citations)
+                {
+                    if (citationStr.Equals(String.Empty)) citationStr = citation.Citation.Name;
+                    else citationStr += ", " + citation.Citation.Name;
+
+                    int maxFine = (int) citation.Citation.FineAmount;
+                    int fine = 0;
+                    int randumNum = Globals.Random.Next(0, 100);
+                    if (randumNum < 25)
+                        fine = (int)(maxFine * 0.80f);
+                    else if (randumNum < 50)
+                        fine = (int)(maxFine * 0.65f);
+                    else if (randumNum < 75)
+                        fine = (int)(maxFine * 0.5f);
+                    else
+                        fine = maxFine;
+
+                    totalFine += fine;
+
+                    if (!citation.Citation.IsPublic)
+                    {
+                        containTrafficCitation = true;
+                        if (citation.Citation.IsArrestable) isRevoked = true;
+                    }
+                }
+
+                if (containTrafficCitation && !isRevoked && totalFine > 500) isSuspended = true;
+
+                courtVerdictStr = "Fined $" + totalFine;
+
+                if (isRevoked)
+                    courtVerdictStr += ". License revoked";
+                else if (isSuspended)
+                    courtVerdictStr += ". License suspended for " + Globals.Random.Next(6, 13) + " months";
+
+                LSPDFRPlusFunctions.CreateNewCourtCase(pedPersona, citationStr, guiltyChance, courtVerdictStr);
+            }
         }
     }
 }
