@@ -34,6 +34,7 @@ namespace ComputerPlus
         private static List<KeyBinder> OpenSimpleNotepadKeys = new List<KeyBinder>();
         private static List<KeyBinder> CloseComputerPlusKeys = new List<KeyBinder>();
         private static List<KeyBinder> GiveCitationsToPedKeys = new List<KeyBinder>();
+        private static List<KeyBinder> OpenComputerPlusOnFootKeys = new List<KeyBinder>();
 
         internal static void RunConfigCheck()
         {
@@ -87,6 +88,7 @@ namespace ComputerPlus
                 ParseKeybindings(CloseComputerPlusKeys, "CloseComputerPlus");
                 ParseKeybindings(OpenSimpleNotepadKeys, "OpenSimpleNotepad");
                 ParseKeybindings(GiveCitationsToPedKeys, "GiveCitationsToPed");
+                ParseKeybindings(OpenComputerPlusOnFootKeys, "OpenComputerPlusOnFoot");
 
                 if (OpenComputerPlusKeys.Count == 0) //Fail safe for opening computer by holding the context secondary (E / DPadRight)
                     OpenComputerPlusKeys.Add(new KeyBinder(GameControl.Context));
@@ -147,6 +149,11 @@ namespace ComputerPlus
             ini_file.Write("KEYBINDINGS", "GiveCitationsToPedModifierKey", "None");
             ini_file.Write("KEYBINDINGS", "GiveCitationsToPedControllerButton", "None");
             ini_file.Write("KEYBINDINGS", "GiveCitationsToPedControllerModifierButton", "None");
+
+            ini_file.Write("KEYBINDINGS", "OpenComputerPlusOnFootKey", "None");
+            ini_file.Write("KEYBINDINGS", "OpenComputerPlusOnFootModifierKey", "None");
+            ini_file.Write("KEYBINDINGS", "OpenComputerPlusOnFootControllerButton", "None");
+            ini_file.Write("KEYBINDINGS", "OpenComputerPlusOnFootControllerModifierButton", "None");
 
         }
 
@@ -219,6 +226,14 @@ namespace ComputerPlus
             get
             {
                 return GiveCitationsToPedKeys.ToArray();
+            }
+        }
+
+        internal static KeyBinder[] OpenComputerPlusOnFoot
+        {
+            get
+            {
+                return OpenComputerPlusOnFootKeys.ToArray();
             }
         }
 
