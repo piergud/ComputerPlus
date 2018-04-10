@@ -652,40 +652,45 @@ namespace ComputerPlus.Controllers
 
                 foreach (var citation in citations)
                 {
-                    if (citationStr.Equals(String.Empty)) citationStr = citation.Citation.Name;
-                    else citationStr += ", " + citation.Citation.Name;
-
-                    int maxFine = (int) citation.Citation.FineAmount;
-                    int fine = 0;
-                    int randumNum = Globals.Random.Next(0, 100);
-                    if (randumNum < 25)
-                        fine = (int)(maxFine * 0.80f);
-                    else if (randumNum < 50)
-                        fine = (int)(maxFine * 0.65f);
-                    else if (randumNum < 75)
-                        fine = (int)(maxFine * 0.5f);
-                    else
-                        fine = maxFine;
-
-                    totalFine += fine;
-
-                    if (!citation.Citation.IsPublic)
+                    if (citation.CreateCourtCase)
                     {
-                        containTrafficCitation = true;
-                        if (citation.Citation.IsArrestable) isRevoked = true;
+                        if (citationStr.Equals(String.Empty)) citationStr = citation.Citation.Name;
+                        else citationStr += ", " + citation.Citation.Name;
+
+                        int maxFine = (int)citation.Citation.FineAmount;
+                        int fine = 0;
+                        int randumNum = Globals.Random.Next(0, 100);
+                        if (randumNum < 25)
+                            fine = (int)(maxFine * 0.80f);
+                        else if (randumNum < 50)
+                            fine = (int)(maxFine * 0.65f);
+                        else if (randumNum < 75)
+                            fine = (int)(maxFine * 0.5f);
+                        else
+                            fine = maxFine;
+
+                        totalFine += fine;
+
+                        if (!citation.Citation.IsPublic)
+                        {
+                            containTrafficCitation = true;
+                            if (citation.Citation.IsArrestable) isRevoked = true;
+                        }
                     }
                 }
 
-                if (containTrafficCitation && !isRevoked && totalFine > 500) isSuspended = true;
+                if (!citationStr.Equals(String.Empty))
+                {
+                    if (containTrafficCitation && !isRevoked && totalFine > 500) isSuspended = true;
+                    courtVerdictStr = "Fined $" + totalFine;
 
-                courtVerdictStr = "Fined $" + totalFine;
+                    if (isRevoked)
+                        courtVerdictStr += ". License revoked";
+                    else if (isSuspended)
+                        courtVerdictStr += ". License suspended for " + Globals.Random.Next(6, 13) + " months";
 
-                if (isRevoked)
-                    courtVerdictStr += ". License revoked";
-                else if (isSuspended)
-                    courtVerdictStr += ". License suspended for " + Globals.Random.Next(6, 13) + " months";
-
-                LSPDFRPlusFunctions.CreateNewCourtCase(pedPersona, citationStr, guiltyChance, courtVerdictStr);
+                    LSPDFRPlusFunctions.CreateNewCourtCase(pedPersona, citationStr, guiltyChance, courtVerdictStr);
+                }
             }
         }
     }

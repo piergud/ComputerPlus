@@ -305,7 +305,10 @@ namespace ComputerPlus
             string file;
             try
             {
-                file = Configs.bgs[veh.Model.Hash];
+                if (veh != null && veh.IsValid())
+                    file = Configs.bgs[veh.Model.Hash];
+                else
+                    file = Globals.DefaultBackgroundImage;
             }
             catch (KeyNotFoundException)
             {
@@ -719,7 +722,6 @@ namespace ComputerPlus
             }
         }
 
-
         internal static String ToLocalDateString(DateTime date, DateOutputPart output, bool convertToLocal = true)
         {
             var local = date;
@@ -733,7 +735,7 @@ namespace ComputerPlus
             }
         }
 
-    /*
+        /*
         internal static String ToLocalDateString(String date, DateOutputPart input = DateOutputPart.ALL, DateOutputPart output = DateOutputPart.ALL, bool convertToLocal = true)
         {
             DateTime parsed;

@@ -116,6 +116,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 ped_image_holder = new ImagePanel(pedContent);
                 ped_image_holder.ShouldCacheToTexture = false;
                 ped_image_holder.SetSize(155, 217);
+
                 ped_image_holder.ImageName = Function.DetermineImagePath(ThePed);
                 //ped_image_holder.ShouldCacheToTexture = true;
             }
@@ -245,6 +246,7 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             if (!BindNeeded) return;
             BindNeeded = false;
 
+            if (DetailedEntity.Entity == null) return;
             cb_action.AddItem("Select One", "PlaceHolder", QuickActions.PLACEHOLDER);
             //if (ThePed.LastVehicle != null) //Not using the implicit bool operator for Vehicle because we dont care if it is "valid" any more, we only care that they "had" a vehicle
             //  cb_action.AddItem("Create Traffic Citation", "TrafficCitation", QuickActions.CREATE_TRAFFIC_CITATION);
@@ -253,51 +255,55 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
             cb_action.AddItem("Create Citation", "TrafficCitation", QuickActions.CREATE_TRAFFIC_CITATION);
             cb_action.AddItem("Create Arrest Report", "ArrestReport", QuickActions.CREATE_ARREST_REPORT);
 
-            text_first_name.Component.Text = DetailedEntity.Entity.FirstName;
-            text_last_name.Component.Text = DetailedEntity.Entity.LastName;
-            text_dob.Component.Text = DetailedEntity.Entity.DOBString;
-            text_age.Component.Text = DetailedEntity.Entity.AgeString;
-            text_home_address.Component.Text = DetailedEntity.Entity.Ped.GetHomeAddress();
-            text_times_stopped.Component.Text = DetailedEntity.Entity.TimesStopped.ToString();
+            lock (DetailedEntity.Entity)
+            {
 
-            if (DetailedEntity.Entity.IsWanted)
-            {
-                text_wanted_status_true.Component.IsHidden = false;
-                text_wanted_status_false.Component.IsHidden = true;
-                text_wanted_status_true.Component.Warn("Arrest Warrant for " + DetailedEntity.Entity.WantedReason);
-            }
-            else
-            {
-                text_wanted_status_true.Component.IsHidden = true;
-                text_wanted_status_false.Component.IsHidden = false;
-                text_wanted_status_false.Component.Valid("None");
-            }
+                text_first_name.Component.Text = DetailedEntity.Entity.FirstName;
+                text_last_name.Component.Text = DetailedEntity.Entity.LastName;
+                text_dob.Component.Text = DetailedEntity.Entity.DOBString;
+                text_age.Component.Text = DetailedEntity.Entity.AgeString;
+                text_home_address.Component.Text = DetailedEntity.Entity.Ped.GetHomeAddress();
+                text_times_stopped.Component.Text = DetailedEntity.Entity.TimesStopped.ToString();
 
-            if (DetailedEntity.Entity.IsLicenseValid)
-            {
-                text_license_status.Component.Valid("Valid");
-            }
-            else
-            {
-                string licenseStateString = DetailedEntity.Entity.LicenseStateString;
-                if (licenseStateString.Equals("Expired"))
-                    text_license_status.Component.Warn(String.Format(@"Expired ({0} days)", ThePed.GetDrivingLicenseExpirationDuration()));
+                if (DetailedEntity.Entity.IsWanted)
+                {
+                    text_wanted_status_true.Component.IsHidden = false;
+                    text_wanted_status_false.Component.IsHidden = true;
+                    text_wanted_status_true.Component.Warn("Arrest Warrant for " + DetailedEntity.Entity.WantedReason);
+                }
                 else
-                    text_license_status.Component.Warn(licenseStateString);
-            }
+                {
+                    text_wanted_status_true.Component.IsHidden = true;
+                    text_wanted_status_false.Component.IsHidden = false;
+                    text_wanted_status_false.Component.Valid("None");
+                }
 
-            GunPermitInfo pedGunPermitInfo = DetailedEntity.Entity.GunPermitInformation;
-            if (pedGunPermitInfo.HasGunPermit)
-            {
-                text_has_gun_permit.Component.Valid("Yes");
-                text_gun_license_type.Component.Text = pedGunPermitInfo.GunLicense;
-                text_gun_permit_type.Component.Text = pedGunPermitInfo.GunPermit;
-            }
-            else
-            {
-                text_has_gun_permit.Component.SetText("No");
-                text_gun_license_type.Component.Text = "";
-                text_gun_permit_type.Component.Text = "";
+                if (DetailedEntity.Entity.IsLicenseValid)
+                {
+                    text_license_status.Component.Valid("Valid");
+                }
+                else
+                {
+                    string licenseStateString = DetailedEntity.Entity.LicenseStateString;
+                    if (licenseStateString.Equals("Expired"))
+                        text_license_status.Component.Warn(String.Format(@"Expired ({0} days)", ThePed.GetDrivingLicenseExpirationDuration()));
+                    else
+                        text_license_status.Component.Warn(licenseStateString);
+                }
+
+                GunPermitInfo pedGunPermitInfo = DetailedEntity.Entity.GunPermitInformation;
+                if (pedGunPermitInfo.HasGunPermit)
+                {
+                    text_has_gun_permit.Component.Valid("Yes");
+                    text_gun_license_type.Component.Text = pedGunPermitInfo.GunLicense;
+                    text_gun_permit_type.Component.Text = pedGunPermitInfo.GunPermit;
+                }
+                else
+                {
+                    text_has_gun_permit.Component.SetText("No");
+                    text_gun_license_type.Component.Text = "";
+                    text_gun_permit_type.Component.Text = "";
+                }
             }
 
             /*
