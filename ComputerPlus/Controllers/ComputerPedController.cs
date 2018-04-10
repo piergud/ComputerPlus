@@ -14,10 +14,9 @@ using ComputerPlus.Interfaces.Reports.Models;
 namespace ComputerPlus.Interfaces.ComputerPedDB
 {
 
-
     class ComputerPedController
     {
-        private readonly static List<ComputerPlusEntity> RecentSearches = new List<ComputerPlusEntity>();       
+        private readonly static List<ComputerPlusEntity> RecentSearches = new List<ComputerPlusEntity>();
 
         private static ComputerPlusEntity _LastSelected = null;
         public static ComputerPlusEntity LastSelected

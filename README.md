@@ -23,6 +23,7 @@
 - [NEW] Computer+ will automatically add Peds who have been stopped by the player to the collected ids ped search list
 - [NEW] Computer+ will automatically add LSPDFR+ court case when you create an arrest resport
 - [NEW] Computer+ now have ability to create citation for stopped ped on foot.
+- [NEW] Computer+ now can be opened from a tablet while the player is on foot
 
 **Troubleshooting**
 - If your mouse does not appear in Computer+, then make sure the display resolution in game matches your windows display resolution. If the resolutions do not match, you will not see a mouse cursor
@@ -81,3 +82,11 @@ So, if you don't always want to use Computer+ during your patrols, then you need
 - added color (red/greed) on flagged ped/vehicle data (e.g. license status, insurance status)
 - fixed  truncated string on random history charge information
 - reduced crash possibility by tweaking some components
+
+** Version 1.3.6.5 change list (contributed by BejoIjo)
+- Added stolen flag on vehicle info window
+- Added keyboard shortcut to open Computer+ using tablet while player is on foot. (default: LControl + NumPad0)
+- Added checkbox to toggle create court case for the citation (Notice to Appear) on the citation form
+- Enlarged citation selection list for better UX
+- Replace citation ticket 3D model given to the ped with more suitable one
+- Fixed bug when driver takes off after being given the citation without waiting player return to the car. (during traffic stop)

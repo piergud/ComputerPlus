@@ -192,7 +192,7 @@
             this.btn_citation_history.Name = "btn_citation_history";
             this.btn_citation_history.Size = new System.Drawing.Size(161, 30);
             this.btn_citation_history.TabIndex = 11;
-            this.btn_citation_history.Text = "Traffic Citation History";
+            this.btn_citation_history.Text = "Citation History";
             this.btn_citation_history.UseVisualStyleBackColor = false;
             // 
             // btn_notepad

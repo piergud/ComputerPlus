@@ -42,6 +42,13 @@ namespace ComputerPlus.Interfaces.Reports.Models
             }
         }
 
+        //[Ignore]
+        public bool CreateCourtCase
+        {
+            get;
+            internal set;
+        } = false;
+
         //[Column("CitationTimeDate")]
         public DateTime CitationTimeDate
         {
