@@ -16,6 +16,9 @@ namespace ComputerPlus
         static string user, pass, unit;
         static bool skip;
         static bool randomHistoryRecords;
+        static bool displayPedImage;
+        static bool displayVehicleImage;
+        static bool enableLSPDFRPlusIntegration;
         internal static int FontSize
         {
             get;
@@ -31,6 +34,7 @@ namespace ComputerPlus
         private static List<KeyBinder> OpenSimpleNotepadKeys = new List<KeyBinder>();
         private static List<KeyBinder> CloseComputerPlusKeys = new List<KeyBinder>();
         private static List<KeyBinder> GiveCitationsToPedKeys = new List<KeyBinder>();
+        private static List<KeyBinder> OpenComputerPlusOnFootKeys = new List<KeyBinder>();
 
         internal static void RunConfigCheck()
         {
@@ -45,6 +49,11 @@ namespace ComputerPlus
             FontSize = ini_file.ReadInt32("SETTINGS", "FontSize");
             FontName = ini_file.ReadString("SETTINGS", "FontName");
             randomHistoryRecords = ini_file.ReadBoolean("SETTINGS", "RandomHistoryRecords", true);
+
+            displayPedImage = ini_file.ReadBoolean("SETTINGS", "DisplayPedImage", true);
+            displayVehicleImage = ini_file.ReadBoolean("SETTINGS", "DisplayVehicleImage", true);
+
+            enableLSPDFRPlusIntegration = ini_file.ReadBoolean("SETTINGS", "EnableLSPDFRPlusIntegration", true);
 
             if (String.IsNullOrWhiteSpace(user))
                 user = "Officer";
@@ -79,6 +88,7 @@ namespace ComputerPlus
                 ParseKeybindings(CloseComputerPlusKeys, "CloseComputerPlus");
                 ParseKeybindings(OpenSimpleNotepadKeys, "OpenSimpleNotepad");
                 ParseKeybindings(GiveCitationsToPedKeys, "GiveCitationsToPed");
+                ParseKeybindings(OpenComputerPlusOnFootKeys, "OpenComputerPlusOnFoot");
 
                 if (OpenComputerPlusKeys.Count == 0) //Fail safe for opening computer by holding the context secondary (E / DPadRight)
                     OpenComputerPlusKeys.Add(new KeyBinder(GameControl.Context));
@@ -116,6 +126,9 @@ namespace ComputerPlus
             ini_file.Write("SETTINGS", "FontSize", 16);
             ini_file.Write("SETTINGS", "FontName", "Microsoft Sans Serif");
             ini_file.Write("SETTINGS", "RandomHistoryRecords", "true");
+            ini_file.Write("SETTINGS", "DisplayPedImage", "true");
+            ini_file.Write("SETTINGS", "DisplayVehicleImage", "true");
+            ini_file.Write("SETTINGS", "EnableLSPDFRPlusIntegration", "true");
 
             ini_file.Write("KEYBINDINGS", "OpenComputerPlusKey", "None");
             ini_file.Write("KEYBINDINGS", "OpenComputerPlusModifierKey", "None");
@@ -137,6 +150,11 @@ namespace ComputerPlus
             ini_file.Write("KEYBINDINGS", "GiveCitationsToPedControllerButton", "None");
             ini_file.Write("KEYBINDINGS", "GiveCitationsToPedControllerModifierButton", "None");
 
+            ini_file.Write("KEYBINDINGS", "OpenComputerPlusOnFootKey", "None");
+            ini_file.Write("KEYBINDINGS", "OpenComputerPlusOnFootModifierKey", "None");
+            ini_file.Write("KEYBINDINGS", "OpenComputerPlusOnFootControllerButton", "None");
+            ini_file.Write("KEYBINDINGS", "OpenComputerPlusOnFootControllerModifierButton", "None");
+
         }
 
         internal static string Username
@@ -157,6 +175,21 @@ namespace ComputerPlus
         internal static bool RandomHistoryRecords
         {
             get { return randomHistoryRecords; }
+        }
+
+        internal static bool DisplayPedImage
+        {
+            get { return displayPedImage; }
+        }
+
+        internal static bool DisplayVehicleImage
+        {
+            get { return displayVehicleImage; }
+        }
+
+        internal static bool EnableLSPDFRPlusIntegration
+        {
+            get { return enableLSPDFRPlusIntegration; }
         }
 
         internal static string UnitNumber
@@ -193,6 +226,14 @@ namespace ComputerPlus
             get
             {
                 return GiveCitationsToPedKeys.ToArray();
+            }
+        }
+
+        internal static KeyBinder[] OpenComputerPlusOnFoot
+        {
+            get
+            {
+                return OpenComputerPlusOnFootKeys.ToArray();
             }
         }
 

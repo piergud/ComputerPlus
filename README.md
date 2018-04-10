@@ -3,7 +3,7 @@
 
 ![banner](http://i.imgur.com/Ihf8uiE.png)
 
-**Authors:** PieRGud, Stealth22, AlconH, Albo1125, fiskey111, ainesophaur
+**Authors:** PieRGud, Stealth22, AlconH, Albo1125, fiskey111, ainesophaur, BejoIjo
 
 **Current Features**
 - Ability to search for persons and vehicles without keys conflicting with other mods.
@@ -21,9 +21,11 @@
 - [NEW] Computer+ will now contain a list of recent searches either populated manually or via automatic searching
 - [NEW] Computer+ will automatically add ALPR hit vehicles to the recent vehicle search list
 - [NEW] Computer+ will automatically add Peds who have been stopped by the player to the collected ids ped search list
+- [NEW] Computer+ will automatically add LSPDFR+ court case when you create an arrest resport
+- [NEW] Computer+ now have ability to create citation for stopped ped on foot.
+- [NEW] Computer+ now can be opened from a tablet while the player is on foot
 
 **Troubleshooting**
-
 - If your mouse does not appear in Computer+, then make sure the display resolution in game matches your windows display resolution. If the resolutions do not match, you will not see a mouse cursor
 - If you play in windows or windows borderless mode, make sure to keep your mouse inside of the game window until the game fully loads
 
@@ -49,7 +51,8 @@ ENSURE THAT THE VEHICLE YOU'RE ADDING IS A POLICE VEHICLE AND THE BACKGROUND FIL
 Computer+ DOES NOT replace the default LSPDFR computer.
 So, if you don't always want to use Computer+ during your patrols, then you need not worry - the default computer is still there.
 
-**Improvements on Computer+ Reloaded**
+
+**Improvements on Computer+ Reloaded** (contributed by BejoIjo)
 - replaced SQLite with LiteDB to make it more lightweight and stable
 - now previous arrest report & citation will be displayed when viewing ped/vehicle info (without crashing)
 - generate random past traffic citations & arrest reports for ped to improve gameplay
@@ -64,3 +67,26 @@ So, if you don't always want to use Computer+ during your patrols, then you need
 - fixed "give ticket" animation. now the ticket should disappear in the right time
 - fixed incorrect time data source on arrest report view
 - added various checking and handling to prevent potential crashes.
+
+
+** Version 1.3.6.3 change list (contributed by BejoIjo)
+- new feature to create citation for stopped ped on foot
+- added compatibility to the peds stopped by Stop The Ped plugin
+- fixed bug on creating citation while the suspect is in player car back seat, the car model now will show "N/A"
+- reduced frequent crashes when opening ped info or vehicle info
+- added configuration option to enable/disable ped and vehicle images (only disable if you're still having crashes)
+
+** Version 1.3.6.4 change list (contributed by BejoIjo)
+- added gun permit information on ped info window. (compatible with Stop The Ped plugin)
+- added feature to create court case for any citation given to the ped (LSPDFR+ plugin is needed)
+- added color (red/greed) on flagged ped/vehicle data (e.g. license status, insurance status)
+- fixed  truncated string on random history charge information
+- reduced crash possibility by tweaking some components
+
+** Version 1.3.6.5 change list (contributed by BejoIjo)
+- Added stolen flag on vehicle info window
+- Added keyboard shortcut to open Computer+ using tablet while player is on foot. (default: LControl + NumPad0)
+- Added checkbox to toggle create court case for the citation (Notice to Appear) on the citation form
+- Enlarged citation selection list for better UX
+- Replace citation ticket 3D model given to the ped with more suitable one
+- Fixed bug when driver takes off after being given the citation without waiting player return to the car. (during traffic stop)

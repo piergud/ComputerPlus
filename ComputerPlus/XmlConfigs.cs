@@ -138,12 +138,12 @@ namespace ComputerPlus
         {
             if (charge.IsContainer)
             {
-                String chargeName = parentName + " => " + charge.Name + "\n";
+                String chargeName = parentName + "/" + charge.Name;
                 charge.Children.ForEach(childCharge => TransverseCharges(chargeName, childCharge));
             }
             else
             {
-                String chargeName = parentName + " => " + String.Format("{0}{1}", charge.Name, charge.IsFelony ? " (F)" : String.Empty);
+                String chargeName = parentName + ":\n => " + String.Format("{0}{1}", charge.Name, charge.IsFelony ? " (F)" : String.Empty);
                 Globals.WantedReasons.Add(chargeName);
             }
         }
@@ -154,20 +154,21 @@ namespace ComputerPlus
             if (Globals.WantedReasons == null) Globals.WantedReasons = new List<String>();
             categories.Categories.ForEach(x =>
             {
-                String categoryName = x.Name + ":\n";
+                String categoryName = x.Name;
                 x.Charges.ForEach(charge => TransverseCharges(categoryName, charge));
             });
         }
 
 
-        private static void TransverseCitations(CitationDefinition citation)
+        private static void TransverseCitations(CitationDefinition citation, bool isPublic)
         {
             if (citation.IsContainer)
             {
-                citation.Children.ForEach(childCitation => TransverseCitations(childCitation));
+                citation.Children.ForEach(childCitation => TransverseCitations(childCitation, isPublic));
             }
             else
             {
+                citation.IsPublic = isPublic;
                 Globals.CitationList.Add(citation);
             }
         }
@@ -178,7 +179,9 @@ namespace ComputerPlus
             if (Globals.CitationList == null) Globals.CitationList = new List<CitationDefinition>();
             categories.Categories.ForEach(x =>
             {
-                x.Citations.ForEach(citation => TransverseCitations(citation));
+                bool isPublic = false;
+                if (x.Name.ToLower().Equals("public")) isPublic = true;
+                x.Citations.ForEach(citation => TransverseCitations(citation, isPublic));
             });
         }
 

@@ -28,6 +28,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
     public class ArrestReportContainer : GwenForm, IErrorNotifier, IActionNotifier
     {
         ArrestReport Report;
+        ComputerPlusEntity reportEntity;
         TabbableContainer tabContainer;
         ArrestReportPedDetails pedDetailsPage = new ArrestReportPedDetails(Globals.PendingArrestReport);
         ArrestReportChargeDetails chargeDetailsPage = new ArrestReportChargeDetails(Globals.PendingArrestReport);
@@ -51,13 +52,14 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         public delegate void ArrestReportActionEvent(object sender, ArrestReportSaveResult action, ArrestReport report);
         internal event ArrestReportActionEvent OnArrestReportAction;
 
-        internal ArrestReportContainer() : this(Globals.PendingArrestReport)
+        internal ArrestReportContainer() : this(Globals.PendingArrestReport, null)
         {
 
         }        
 
-        internal ArrestReportContainer(ArrestReport arrestReport) : base(typeof(ArrestReportContainerTemplate)) {
-            Report = arrestReport;            
+        internal ArrestReportContainer(ArrestReport arrestReport, ComputerPlusEntity entity) : base(typeof(ArrestReportContainerTemplate)) {
+            Report = arrestReport;
+            reportEntity = entity;            
             pedDetailsPage.SetErrorSubscription(this);
             pedDetailsPage.SetActionSubscription(this);
         }
@@ -98,6 +100,10 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                         Globals.PendingArrestReport = new ArrestReport();
                     }                
                     NotifyForEvent(ArrestReportSaveResult.SAVE);
+
+                    // create LSPDFR+ court case
+                    ComputerReportsController.createCourtCaseForArrest(Report, reportEntity);
+
                     return ArrestReportSaveResult.SAVE;
                 }
                 else
@@ -168,7 +174,8 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
 
         private void ContainerTabButtonClicked(Base sender, ClickedEventArgs arguments)
         {
-            SaveReport();
+            // commented this since we will save the report when player presses the save button anyway
+            // SaveReport();
         }
 
         private void ReportDetailsTextChanged(Base sender, EventArgs arguments)
@@ -207,7 +214,7 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
         internal static ArrestReportContainer CreateForPed(ComputerPlusEntity entity, out ArrestReport report)
         {
             report = ArrestReport.CreateForPed(entity);
-            return new ArrestReportContainer(report) { LockArresteePedDetails = true };
+            return new ArrestReportContainer(report, entity) { LockArresteePedDetails = true };
         }
     }
 }

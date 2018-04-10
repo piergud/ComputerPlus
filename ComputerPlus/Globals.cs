@@ -5,16 +5,15 @@ using System.Linq;
 using ComputerPlus.Controllers;
 using ComputerPlus.Interfaces.Reports.Models;
 using ComputerPlus.DB;
-using Gwen;
 
 namespace ComputerPlus
 {
     internal class Styles
     {
-        internal Font RegularFont;
-        internal Font BoldFont;
-        internal Font LabelHeaderFont;
-        internal Font LabelHeaderFontBold;
+        internal Gwen.Font RegularFont;
+        internal Gwen.Font BoldFont;
+        internal Gwen.Font LabelHeaderFont;
+        internal Gwen.Font LabelHeaderFontBold;
     }
     internal static class Globals
     {
@@ -29,6 +28,7 @@ namespace ComputerPlus
         internal readonly static String EmptyImageVehicle = "no_vehicle_image.jpg";
         internal readonly static String EmptyImagePed = "no_ped_image.jpg";
         internal readonly static String DefaultBackgroundImage = "generic.jpg";
+
         private static bool mPauseGameWhenOpen = true;
         internal static bool PauseGameWhenOpen
         {
@@ -42,6 +42,7 @@ namespace ComputerPlus
         internal static bool ShowBackgroundWhenOpen = true;
         internal static bool CloseRequested = false;
         internal static bool OpenRequested = false;
+        internal static Rage.Object tablet = null;
         internal static NavigationController Navigation = new NavigationController();
         internal static String SimpleNotepadText = String.Empty;
         private static String Clipboard = String.Empty;
@@ -53,7 +54,7 @@ namespace ComputerPlus
 
         internal static Styles Style = new Styles();
 
-        
+
         internal static void OpenStore()
         {
             if (Store == null)
@@ -62,7 +63,7 @@ namespace ComputerPlus
                 Store.initDB();
             }
         }
-        
+
         static public ArrestReport PendingArrestReport
         {
             get;
@@ -127,7 +128,7 @@ namespace ComputerPlus
                 if (TicketsInPosession.ContainsKey(ped))
                 {
                     TicketsInPosession.Remove(ped);
-                }                
+                }
             }
         }
 
@@ -150,7 +151,6 @@ namespace ComputerPlus
                 }
             }
         }
-
 
         /// <summary>
         /// Returns the active callout from the queue.
@@ -200,5 +200,6 @@ namespace ComputerPlus
             if (text == null) Clipboard = String.Empty;
             else Clipboard = String.Empty;
         }
+
     }
 }

@@ -14,10 +14,9 @@ using ComputerPlus.Interfaces.Reports.Models;
 namespace ComputerPlus.Interfaces.ComputerPedDB
 {
 
-
     class ComputerPedController
     {
-        private readonly static List<ComputerPlusEntity> RecentSearches = new List<ComputerPlusEntity>();       
+        private readonly static List<ComputerPlusEntity> RecentSearches = new List<ComputerPlusEntity>();
 
         private static ComputerPlusEntity _LastSelected = null;
         public static ComputerPlusEntity LastSelected
@@ -45,7 +44,8 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
                 Ped pulledOverSuspect = (pulloverHandle != null) ? Functions.GetPulloverSuspect(pulloverHandle) : null;
                 return World.EnumeratePeds().Where(x => {
                     return ((pulledOverSuspect != null && pulledOverSuspect.IsValid() && pulledOverSuspect == x) 
-                        ||Functions.IsPedArrested(x) || Functions.IsPedGettingArrested(x) || Functions.IsPedStoppedByPlayer(x));
+                        ||Functions.IsPedArrested(x) || Functions.IsPedGettingArrested(x) || Functions.IsPedStoppedByPlayer(x) 
+                        || (x.Metadata.isStoppedByThisPlugin != null && x.Metadata.isStoppedByThisPlugin == true)); // added compatibility with Stop The Ped plugin
                 }).ToList();
             }
         }

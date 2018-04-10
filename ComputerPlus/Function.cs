@@ -305,7 +305,10 @@ namespace ComputerPlus
             string file;
             try
             {
-                file = Configs.bgs[veh.Model.Hash];
+                if (veh != null && veh.IsValid())
+                    file = Configs.bgs[veh.Model.Hash];
+                else
+                    file = Globals.DefaultBackgroundImage;
             }
             catch (KeyNotFoundException)
             {
@@ -347,10 +350,25 @@ namespace ComputerPlus
             return Game.CreateTextureFromFile(path);
         }
 
-        internal static String GetPedImagePath(String model)
+        internal static String GetPedImagePath(String modelName, int headDrawableIndex, int headDrawableTextureIndex)
         {            
-            var path = String.Format(@"Plugins\LSPDFR\ComputerPlus\images\peds\{0}_front.jpg", model);
-            return File.Exists(path) ? path : Function.DefaultPedImagePath;
+            var path = String.Format(@"Plugins\LSPDFR\ComputerPlus\images\peds\{0}__0_{1}_{2}_front.jpg", modelName.ToLower(), headDrawableIndex, headDrawableTextureIndex);
+            if (!File.Exists(path))
+            {
+                if (headDrawableIndex != 0 && headDrawableTextureIndex != 0)
+                {
+                    // if not found, fallback to 0 index and 0 texture 
+                    path = String.Format(@"Plugins\LSPDFR\ComputerPlus\images\peds\{0}__0_0_0_front.jpg", modelName.ToLower());
+                    if (!File.Exists(path))
+                    {
+                        path = Function.DefaultPedImagePath;
+                    }
+                } else
+                {
+                    path = Function.DefaultPedImagePath;
+                }
+            }
+            return path;
         }
 
         internal static String GetVehicleImagePath(String model)
@@ -454,6 +472,11 @@ namespace ComputerPlus
         internal static bool IsBPSRunning()
         {
             return IsLSPDFRPluginRunning("British Policing Script", new Version(0, 9, 0, 0));
+        }
+
+        internal static bool IsLSPDFRPlusRunning()
+        {
+            return IsLSPDFRPluginRunning("LSPDFR+", new Version(1, 6, 5, 0));
         }
 
         internal static string GetFormattedDateTime(DateTime? date = null)
@@ -669,15 +692,16 @@ namespace ComputerPlus
         {
             try
             {
-                if (ped == null || !ped.Exists()) return Function.DefaultPedImagePath;
-                String modelName = ped.Model.Name;
-                int headDrawableIndex, headDrawableTextureIndex;
+                // if (ped == null || !ped.Exists()) return Function.DefaultPedImagePath;
+                String modelName = String.Empty;
+                if (ped != null && ped.IsValid()) modelName = ped.Model.Name;
+                int headDrawableIndex = 0, headDrawableTextureIndex = 0;
 
-                ped.GetVariation(0, out headDrawableIndex, out headDrawableTextureIndex);
+                if (ped != null && ped.IsValid()) ped.GetVariation(0, out headDrawableIndex, out headDrawableTextureIndex);
 
-                String _model = String.Format(@"{0}__0_{1}_{2}", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
-                var path = Function.GetPedImagePath(_model);
-                Function.LogDebug(String.Format("Loading image for model from  {0}", path));
+                // String _model = String.Format(@"{0}__0_{1}_{2}", modelName, headDrawableIndex, headDrawableTextureIndex).ToLower();
+                var path = Function.GetPedImagePath(modelName, headDrawableIndex, headDrawableTextureIndex);
+                Function.LogDebug(String.Format("Loading image for model from {0}", path));
                 return path;
             }
             catch
@@ -685,7 +709,6 @@ namespace ComputerPlus
                 Function.LogDebug("DetermineImagePath Error");
                 return Function.DefaultPedImagePath;
             }
-
         }
 
         internal static String DateFormatForPart(DateOutputPart part)
@@ -698,7 +721,6 @@ namespace ComputerPlus
                 default: return "g";
             }
         }
-
 
         internal static String ToLocalDateString(DateTime date, DateOutputPart output, bool convertToLocal = true)
         {
@@ -713,7 +735,7 @@ namespace ComputerPlus
             }
         }
 
-    /*
+        /*
         internal static String ToLocalDateString(String date, DateOutputPart input = DateOutputPart.ALL, DateOutputPart output = DateOutputPart.ALL, bool convertToLocal = true)
         {
             DateTime parsed;

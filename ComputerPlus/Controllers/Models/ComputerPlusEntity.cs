@@ -220,6 +220,15 @@ namespace ComputerPlus.Controllers.Models
             }
         }
 
+        public GunPermitInfo GunPermitInformation
+        {
+            get
+            {
+                if (!CreatedWith.HasFlag(EntityTypes.Ped) || !Ped) return new GunPermitInfo(false);
+                return Ped.GetGunPermitInfo();
+            }
+        }
+
         public bool IsLicenseValid
         {
             get

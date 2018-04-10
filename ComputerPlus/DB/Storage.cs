@@ -74,7 +74,8 @@ namespace ComputerPlus.DB
         public Storage()
         {
             Function.Log(String.Format("Attempting to load LiteDB database from {0}", DB_FILE_NAME));
-            db = new LiteDatabase(@String.Format("Filename={0};Cache Size=1024", DB_FILE_NAME));
+            //db = new LiteDatabase(@String.Format("Filename={0};Cache Size=16;Flush=true", DB_FILE_NAME));
+            db = new LiteDatabase(@String.Format("Filename={0};Cache Size=0;Flush=true", DB_FILE_NAME));
         }
 
         public void initDB()
