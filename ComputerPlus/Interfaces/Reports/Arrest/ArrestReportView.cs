@@ -137,19 +137,24 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             if (Report == null) return;
             if (!BindNeeded) return;
             BindNeeded = false;
-            AddChargesFromReport();
-            AddAdditionalPartiesFromReport();
-            labeled_arrest_report_id.SetValueText(Report.ShortId());
-            labeled_first_name.SetValueText(Report.FirstName);
-            labeled_last_name.SetValueText(Report.LastName);
-            labeled_dob.SetValueText(Report.DOB);
-            labeled_home_address.SetValueText(Report.HomeAddress);
 
-            labeled_arrest_street_address.SetValueText(Report.ArrestStreetAddress);
-            labeled_arrest_city.SetValueText(Report.ArrestCity);
-            labeled_arrest_date.SetValueText(Function.ToLocalDateString(Report.ArrestTimeDate, TextBoxExtensions.DateOutputPart.DATE));
-            labeled_arrest_time.SetValueText(Function.ToLocalDateString(Report.ArrestTimeDate, TextBoxExtensions.DateOutputPart.TIME));
-            tb_report_details.SetValueText(Report.Details);
+            lock (Report)
+            {
+                AddChargesFromReport();
+                AddAdditionalPartiesFromReport();
+
+                labeled_arrest_report_id.SetValueText(Report.ShortId());
+                labeled_first_name.SetValueText(Report.FirstName);
+                labeled_last_name.SetValueText(Report.LastName);
+                labeled_dob.SetValueText(Report.DOB);
+                labeled_home_address.SetValueText(Report.HomeAddress);
+
+                labeled_arrest_street_address.SetValueText(Report.ArrestStreetAddress);
+                labeled_arrest_city.SetValueText(Report.ArrestCity);
+                labeled_arrest_date.SetValueText(Function.ToLocalDateString(Report.ArrestTimeDate, TextBoxExtensions.DateOutputPart.DATE));
+                labeled_arrest_time.SetValueText(Function.ToLocalDateString(Report.ArrestTimeDate, TextBoxExtensions.DateOutputPart.TIME));
+                tb_report_details.SetValueText(Report.Details);
+            }
         }
 
         private void AddChargesFromReport()

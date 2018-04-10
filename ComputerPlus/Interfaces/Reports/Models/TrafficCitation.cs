@@ -42,6 +42,13 @@ namespace ComputerPlus.Interfaces.Reports.Models
             }
         }
 
+        //[Ignore]
+        public bool CreateCourtCase
+        {
+            get;
+            internal set;
+        } = false;
+
         //[Column("CitationTimeDate")]
         public DateTime CitationTimeDate
         {
@@ -316,13 +323,13 @@ namespace ComputerPlus.Interfaces.Reports.Models
                 HomeAddress = entity.Address,
                 CitationTimeDate = DateTime.Now.ToUniversalTime()
             };
-            if (entity.Vehicle)
+            if (entity.Vehicle && !entity.Vehicle.IsPoliceVehicle)
             {
                 citation.VehicleModel = entity.Vehicle.Model.Name;
                 citation.VehicleTag = entity.VehicleTag;
                 citation.VehicleColor = entity.Vehicle.GetVehicleColorName();
             }
-            else if(entity.Ped && entity.Ped.LastVehicle)
+            else if(entity.Ped && entity.Ped.LastVehicle && !entity.Ped.LastVehicle.IsPoliceVehicle)
             {
                 citation.VehicleModel = entity.Ped.LastVehicle.Model.Name;
                 citation.VehicleTag = entity.Ped.LastVehicle.LicensePlate;

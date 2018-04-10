@@ -65,6 +65,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
         LabeledComponent<TreeControl> labeled_available_citation_reasons;
 
         LabeledComponent<Button> btn_finish, btn_finish_new;
+        LabeledCheckBox court_case_flag;
 
         List<LabeledComponent<StateControlledTextbox>> LabeledInputs = new List<LabeledComponent<StateControlledTextbox>>();
 
@@ -108,11 +109,11 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             labelFont.Smooth = true;
 
             headerSection = new Base(this);
-            labeled_citation_report_id = LabeledComponent.StatefulTextbox(headerSection, "Traffic Citation", RelationalPosition.LEFT, Configs.BaseFormControlSpacing);
+            labeled_citation_report_id = LabeledComponent.StatefulTextbox(headerSection, "Citation", RelationalPosition.LEFT, Configs.BaseFormControlSpacing);
             LabeledInputs.Add(labeled_citation_report_id);
 
 
-            citationeeInformationSection = new FormSection(this, "Person Information");
+            citationeeInformationSection = new FormSection(this, "Personal Information");
             citationInformationContent = (new Base(this) { });
 
             labeled_first_name = LabeledComponent.StatefulTextbox(citationInformationContent, "First Name", RelationalPosition.TOP, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
@@ -162,6 +163,13 @@ namespace ComputerPlus.Interfaces.Reports.Citation
                 btn_finish_new = LabeledComponent.Button(headerSection, "Add New", RelationalPosition.BOTTOM, Configs.BaseFormControlSpacingHalf, labelColor, labelFont);
                 btn_finish_new.Component.PlusOneIcon();
                 btn_finish_new.Component.Clicked += ButtonClicked;
+
+                court_case_flag = new LabeledCheckBox(citationInformationContent);
+                court_case_flag.Text = "Notice to Appear";
+                if (Configs.EnableLSPDFRPlusIntegration && Function.IsLSPDFRPlusRunning())
+                    court_case_flag.IsChecked = true;
+                else
+                    court_case_flag.IsChecked = false;
 
                 PopulateCitationCategories(Globals.CitationDefinitions);
             }
@@ -368,13 +376,20 @@ namespace ComputerPlus.Interfaces.Reports.Citation
 
             citationeeInformationSection
              .AddContentChild(citationInformationContent)
-             .PlaceBelowOf(headerSection)
+             .PlaceBelowOf(headerSection, 0)
              .SizeWidthWith();
 
             labeled_last_name.PlaceRightOf(labeled_first_name, Configs.BaseFormControlSpacingHalf);
             labeled_dob.PlaceRightOf(labeled_last_name, Configs.BaseFormControlSpacingHalf);
             labeled_dob.Component.SmallSize();
             labeled_home_address.PlaceBelowOf(labeled_first_name);
+            if (ViewType == ViewTypes.CREATE)
+            {
+                court_case_flag
+                    .PlaceBelowOf(labeled_last_name, Configs.BaseFormControlSpacingDouble + 7)
+                    .AlignLeftWith(labeled_last_name);
+                court_case_flag.X = court_case_flag.X + Configs.BaseFormControlSpacingDouble * 3;
+            }
 
             citationInformationContent.SizeToChildren(false, true);
             citationeeInformationSection.SizeToChildren(false, true);
@@ -422,17 +437,16 @@ namespace ComputerPlus.Interfaces.Reports.Citation
              .PlaceBelowOf(citationLocationSection)
              .SizeWidthWith();
 
-
             labeled_available_citation_reasons
                 .SizeWidthWith()
-                .SetHeight(150)
+                .SetHeight(225)
                 .SizeChildrenWidth()
                 .SizeChildrenHeight(null, 30);
 
             labeled_citation_details
-                .PlaceBelowOf(labeled_available_citation_reasons)
+                .PlaceBelowOf(labeled_available_citation_reasons, 5)
                 .SizeWidthWith()
-                .SetHeight(120)
+                .SetHeight(68)
                 .SizeChildrenWidth()
                 .SizeChildrenHeight(null, 30);
 
@@ -549,6 +563,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
                 Citation.CitationStreetAddress = labeled_citation_street_address.Component.Text;
                 Citation.CitationCity = labeled_citation_city.Component.Text;
                 Citation.Details = labeled_citation_details.Component.Text;
+                Citation.CreateCourtCase = court_case_flag.IsChecked;
             }
         }
 
@@ -566,28 +581,33 @@ namespace ComputerPlus.Interfaces.Reports.Citation
             }
             BindNeeded = false;
             
+            lock (Citation)
+            {
+                labeled_citation_report_id.SetValueText(Citation.ShortId());
+                labeled_first_name.SetValueText(Citation.FirstName);
+                labeled_last_name.SetValueText(Citation.LastName);
+                labeled_dob.SetValueText(Citation.DOB);
+                labeled_home_address.SetValueText(Citation.HomeAddress);
 
-            labeled_citation_report_id.SetValueText(Citation.ShortId());
-            labeled_first_name.SetValueText(Citation.FirstName);
-            labeled_last_name.SetValueText(Citation.LastName);
-            labeled_dob.SetValueText(Citation.DOB);
-            labeled_home_address.SetValueText(Citation.HomeAddress);
+                labeled_vehicle_type.Component.Enable();
+                if (Citation.VehicleModel.Equals("N/A"))
+                    labeled_vehicle_type.Component.SelectByText(Citation.VehicleModel);
+                else
+                    labeled_vehicle_type.Component.SelectByText(Citation.VehicleType);
+                if (ReadOnly) labeled_vehicle_type.Component.Disable();
 
-            labeled_vehicle_type.Component.Enable();
-            labeled_vehicle_type.Component.SelectByText(Citation.VehicleType);
-            if (ReadOnly) labeled_vehicle_type.Component.Disable();
+                labeled_vehicle_model.SetValueText(Citation.VehicleModel);
+                labeled_vehicle_color.SetValueText(Citation.VehicleColor);
+                labeled_vehicle_tag.SetValueText(Citation.VehicleTag);
 
-            labeled_vehicle_model.SetValueText(Citation.VehicleModel);
-            labeled_vehicle_color.SetValueText(Citation.VehicleColor);
-            labeled_vehicle_tag.SetValueText(Citation.VehicleTag);
+                labeled_citation_street_address.SetValueText(Citation.CitationStreetAddress);
+                labeled_citation_city.SetValueText(Citation.CitationCity);
+                labeled_citation_date.SetValueText(Function.ToLocalDateString(Citation.CitationTimeDate, TextBoxExtensions.DateOutputPart.DATE));
+                labeled_citation_time.SetValueText(Function.ToLocalDateString(Citation.CitationTimeDate, TextBoxExtensions.DateOutputPart.TIME));
 
-            labeled_citation_street_address.SetValueText(Citation.CitationStreetAddress);
-            labeled_citation_city.SetValueText(Citation.CitationCity);
-            labeled_citation_date.SetValueText(Function.ToLocalDateString(Citation.CitationTimeDate, TextBoxExtensions.DateOutputPart.DATE));
-            labeled_citation_time.SetValueText(Function.ToLocalDateString(Citation.CitationTimeDate, TextBoxExtensions.DateOutputPart.TIME));
-
-            labeled_citation_details.Component.ClearText();
-            labeled_citation_details.SetValueText(Citation.Details);
+                labeled_citation_details.Component.ClearText();
+                labeled_citation_details.SetValueText(Citation.Details);
+            }
 
             DataBound = true;
         }
@@ -601,7 +621,7 @@ namespace ComputerPlus.Interfaces.Reports.Citation
         TrafficCitationView.ViewTypes ViewType;
         TrafficCitationView.TrafficCitationActionEvent Callback;
 
-        internal TrafficCitationCreateContainer(TrafficCitation citation, TrafficCitationView.ViewTypes viewType = TrafficCitationView.ViewTypes.CREATE, TrafficCitationView.TrafficCitationActionEvent actionCallback = null) : base("Traffic Citation", TrafficCitationView.DefaultWidth, TrafficCitationView.DefaultHeight)
+        internal TrafficCitationCreateContainer(TrafficCitation citation, TrafficCitationView.ViewTypes viewType = TrafficCitationView.ViewTypes.CREATE, TrafficCitationView.TrafficCitationActionEvent actionCallback = null) : base("Citation", TrafficCitationView.DefaultWidth, TrafficCitationView.DefaultHeight)
         {
             Citation = citation;
             ViewType = viewType;

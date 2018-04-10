@@ -6,17 +6,12 @@ using Rage;
 using Rage.Forms;
 using LSPD_First_Response.Mod.API;
 using ComputerPlus.Interfaces;
-using ComputerPlus.Interfaces.ComputerPedDB;
 using ComputerPlus.Interfaces.ComputerVehDB;
 using ComputerPlus.Controllers.Models;
-using ComputerPlus.DB;
-using ComputerPlus.DB.Models;
 using ComputerPlus.Controllers;
 using ComputerPlus.Extensions.Rage;
 using System.Linq;
 using ComputerPlus.Extensions.Gwen;
-using ComputerPlus.Extensions;
-using System.Windows.Forms;
 using ComputerPlus.Interfaces.SimpleNotepad;
 using ComputerPlus.Interfaces.Reports.Models;
 using System.Threading;
@@ -52,6 +47,7 @@ namespace ComputerPlus
         internal GameFiber CheckIfCalloutActiveFiber;
         private GameFiber DetectOpenCloseRequestedFiber;
         private GameFiber DetectOpenSimpleNotepadFiber;
+        private GameFiber DetectOpenCPlusOnFootFiber;
         private GameFiber RunComputerPlusFiber;
 
         public override void Initialize()
@@ -60,6 +56,7 @@ namespace ComputerPlus
             RunComputerPlusFiber = new GameFiber(RunPoliceComputer);
             CheckIfCalloutActiveFiber = new GameFiber(CheckIfCalloutActive);
             DetectOpenSimpleNotepadFiber = new GameFiber(CheckOpenSimpleNotepad);
+            DetectOpenCPlusOnFootFiber = new GameFiber(CheckOpenCPlusOnFoot);
             Functions.OnOnDutyStateChanged += DutyStateChangedHandler;
             OnVehicleStopped += VehicleStoppedHandler;
             OnFacingPedWithPendingTickets += PedFacingPlayerWithPendingTickets;
@@ -80,7 +77,6 @@ namespace ComputerPlus
             //Globals.Store.Close();
         }
 
-
         private void DutyStateChangedHandler(bool on_duty)
         {
             Globals.IsPlayerOnDuty = on_duty;
@@ -92,6 +88,7 @@ namespace ComputerPlus
                 Function.CheckForUpdates();
                 CheckIfCalloutActiveFiber.Resume();
                 DetectOpenSimpleNotepadFiber.Resume();
+                DetectOpenCPlusOnFootFiber.Resume();
                 DetectOpenCloseRequestedFiber.Resume();
                 Function.LogDebug("Successfully loaded LSPDFR Computer+.");
                 InitStorage();
@@ -131,7 +128,7 @@ namespace ComputerPlus
                 Function.LogCatch(e.Message);
             }
         }
-
+        
         private static void ALPRPlusFunctions_OnAlprPlusMessage(object sender, ALPR_Arguments e)
         {
             ComputerVehicleController.AddAlprScan(e);
@@ -151,7 +148,6 @@ namespace ComputerPlus
                         else sb.AppendFormat(" or {0}", friendlyName);
                     }
 
-
                     Game.DisplayHelp(String.Format("Hold {0} to open ~b~LSPDFR Computer+~w~.", sb.ToString()));
                     _prompted = true;
                 }
@@ -161,7 +157,10 @@ namespace ComputerPlus
         private static List<List<TrafficCitation>> mPromptedCitations = new List<List<TrafficCitation>>();
         private static void PedFacingPlayerWithPendingTickets(object sender, Ped ped, List<TrafficCitation> citations)
         {
-            if (mPromptedCitations.Contains(citations)) return;
+            lock (mPromptedCitations)
+            {
+                if (mPromptedCitations.Contains(citations)) return;
+            }
             mPromptedCitations.Add(citations);
             StringBuilder sb = new StringBuilder();
             foreach (var friendlyName in Configs.GiveTicketsToPed.Select(x => x.FriendlyName))
@@ -257,22 +256,25 @@ namespace ComputerPlus
         private void CheckForDeliverTicketTrigger()
         {
            
-          if (!Globals.HasTrafficTicketsInHand() && (ShouldEndPullover.HasValue && ShouldEndPullover.Value) && !Game.LocalPlayer.Character.HasScenario())
+            if (!Globals.HasTrafficTicketsInHand() && (ShouldEndPullover.HasValue && ShouldEndPullover.Value) && !Game.LocalPlayer.Character.HasScenario())
             {
                 ShouldEndPullover = null;
 
                 GameFiber.StartNew(() =>
                 {
-                    if (Game.LocalPlayer.LastVehicle && !Game.LocalPlayer.LastVehicle.HasDriver)
+                    if (Game.LocalPlayer.Character.LastVehicle && !Game.LocalPlayer.Character.LastVehicle.HasDriver)
                         Game.DisplayNotification("The driver will wait until you are back in your vehicle before taking off");
+
                     while (Game.LocalPlayer.LastVehicle && !Game.LocalPlayer.LastVehicle.HasDriver)
+                    {
                         GameFiber.Sleep(1000); //Wait for the player to enter their vehicle
+                    }
+
                     Function.Log("Starting Ending pull over wait timer for ped to leave");
-                    var stopAt = DateTime.Now.AddMilliseconds(5000); //have the sadPed drive off in 5 seconds if the traffic stop isnt over
+                    var stopAt = DateTime.Now.AddMilliseconds(4000); //have the sadPed drive off in 4 seconds if the traffic stop isnt over
                     while (DateTime.Now < stopAt) GameFiber.Sleep(500);
                     try
                     {
-                        
                         lock (mPromptedCitations) mPromptedCitations.Clear();
                         var handle = Functions.GetCurrentPullover();
                         if (handle != null)
@@ -302,8 +304,12 @@ namespace ComputerPlus
                             //The user wants to give the sad ped the ticket now..
                             GameFiber.StartNew(() =>
                             {
-                                var item = new Rage.Object(new Model("prop_cs_documents_01"), Game.LocalPlayer.Character.Position);
-                                item.AttachTo(Game.LocalPlayer.Character, Game.LocalPlayer.Character.GetBoneIndex(PedBoneId.RightThumb1), new Vector3(item.Model.Dimensions.Length() * 0.4f, 0, 0), Rotator.Zero);
+                                List<TrafficCitation> citations = Globals.GetTrafficCitationsInHandForPed(sadPed);
+                                Globals.RemoveTrafficCitationsInHandForPed(sadPed);
+
+                                //var item = new Rage.Object(new Model("prop_cs_documents_01"), Game.LocalPlayer.Character.Position);
+                                var item = new Rage.Object(new Model("prop_cs_pamphlet_01"), Game.LocalPlayer.Character.GetOffsetPositionUp(3f));
+                                item.AttachTo(Game.LocalPlayer.Character, Game.LocalPlayer.Character.GetBoneIndex(PedBoneId.RightThumb1), new Vector3(0.11f, -0.015f, 0f), new Rotator(-195f, 90f, 0f));
                                 GameFiber.StartNew(delegate
                                 {
                                     GameFiber.Sleep(1300);
@@ -311,9 +317,15 @@ namespace ComputerPlus
                                     item.Delete();
                                 });
                                 Game.LocalPlayer.Character.Tasks.PlayAnimation("mp_common", "givetake1_b", 3f, AnimationFlags.None).WaitForCompletion();
+                                if (Functions.GetCurrentPullover() != null) ShouldEndPullover = true;
+                                if (sadPed != null && sadPed.IsValid() && citations != null && citations.Count > 0)
+                                {
+                                    // mark ped has been given citation
+                                    sadPed.Metadata.citedByComputerPlus = true;
+                                    // create court case for citation
+                                    ComputerReportsController.createCourtCaseForCitations(citations, sadPed);
+                                }
                             });
-                            ShouldEndPullover = true;
-                            Globals.RemoveTrafficCitationsInHandForPed(sadPed);
                             break;
                         }
                         else
@@ -330,7 +342,6 @@ namespace ComputerPlus
                 return;
             }
         }
-
 
         private void ComputerPlusMain()
         {
@@ -354,7 +365,6 @@ namespace ComputerPlus
             while (Globals.IsPlayerOnDuty);
             GameFiber.Hibernate();
         }
-
 
 
         internal static void OpenMain()
@@ -385,7 +395,6 @@ namespace ComputerPlus
         {
             do
             {
-
                 ShowBackground(Globals.ShowBackgroundWhenOpen);
                 GameFiber.Yield();
                 PauseGame(Globals.PauseGameWhenOpen);
@@ -406,13 +415,19 @@ namespace ComputerPlus
                     GameFiber.Yield();
                 }
                 while (Globals.Navigation.Head != null);
+                GameFiber.Sleep(100);
                 EntryPoint.OnRecentTextAdded = null;
-                FreePersistedEntities();
                 ClosePoliceComputer();
+                GameFiber.Yield();
+                ShowBackground(false, true);
+                GameFiber.Yield();
+                PauseGame(false, true);
+                GameFiber.Yield();
                 Globals.Navigation.Clear();
                 IsMainComputerOpen = false;
-                PauseGame(false, true);
-                ShowBackground(false, true);
+                FreePersistedEntities();
+                endStandingWithTabletAnim();
+
                 GameFiber.Yield(); //Yield to allow form fibers to close out
                 GameFiber.Hibernate();
 
@@ -470,12 +485,13 @@ namespace ComputerPlus
             try
             {
                 if (entry.form.Window == null || !entry.form.IsOpen()) return;
-                GameFiber.StartNew(() =>
-                {
-                    entry.form.Window.Close();
-                    // I know close() supposed to dispose the form. but just in case to make sure the memory is freed
-                    entry.form.Window.Dispose();
-                });
+                entry.form.Window.Close();
+                //GameFiber.StartNew(() =>
+                //{
+                //entry.form.Window.Close();
+                // I know close() supposed to dispose the form. but just in case to make sure the memory is freed
+                //entry.form.Window.Dispose();
+                //});
             }
             catch (Exception e)
             {
@@ -614,6 +630,77 @@ namespace ComputerPlus
                 {
                     //Function.Log(e.ToString());
                 }
+            }
+        }
+
+        private void CheckOpenCPlusOnFoot()
+        {
+            while (Globals.IsPlayerOnDuty)
+            {
+                try
+                {
+                    GameFiber.Yield();
+                    if (!IsMainComputerOpen && Configs.OpenComputerPlusOnFoot.Any(x => x.IsPressed))
+                    {
+                        startStandingWithTabletAnim();
+                        ShowPoliceComputer();
+                    }
+                }
+                catch (Exception e)
+                {
+                    //Function.Log(e.ToString());
+                }
+            }
+        }
+
+        private static void startStandingWithTabletAnim()
+        {
+            if (Globals.tablet != null)
+            {
+                Globals.tablet.Delete();
+                Globals.tablet = null;
+            }
+
+            holsterWeapon(Game.LocalPlayer.Character);
+            Game.LocalPlayer.Character.Tasks.PlayAnimation(new AnimationDictionary("amb@world_human_clipboard@male@idle_a"), "idle_c", 1f, AnimationFlags.Loop);
+            GameFiber.Sleep(500);
+
+            Globals.tablet = new Rage.Object("prop_cs_tablet", Game.LocalPlayer.Character.GetOffsetPositionUp(3f));
+            int boneIndex = Game.LocalPlayer.Character.GetBoneIndex(PedBoneId.LeftPhHand);
+            Globals.tablet.AttachTo(Game.LocalPlayer.Character, boneIndex, new Vector3(0f, 0f, 0f), new Rotator(0f, -90f, 0f));
+            GameFiber.Sleep(1500);
+        }
+
+        private static void endStandingWithTabletAnim()
+        {
+            if (Game.LocalPlayer.Character.IsOnFoot)
+            {
+                Game.LocalPlayer.Character.Tasks.Clear();
+            }
+            if (Globals.tablet != null)
+            {
+                Globals.tablet.Detach();
+                Globals.tablet.Delete();
+                Globals.tablet = null;
+            }
+        }
+
+        private static void holsterWeapon(Ped ped)
+        {
+            ped.Tasks.Clear();
+            ped.Tasks.ClearSecondary();
+
+            if (ped.Inventory.EquippedWeaponObject != null)
+            {
+                WeaponDescriptor weapon = ped.Inventory.EquippedWeapon;
+                if (weapon.Hash != WeaponHash.Pistol && weapon.Hash != WeaponHash.CombatPistol
+                    && weapon.Hash != WeaponHash.APPistol && weapon.Hash != WeaponHash.Pistol50)
+                {
+                    ped.Tasks.PlayAnimation("weapons@unarmed", "holster", 4f, AnimationFlags.None);
+                    GameFiber.Sleep(350);
+                }
+                ped.Inventory.GiveNewWeapon("WEAPON_UNARMED", 0, true);
+                GameFiber.Sleep(500);
             }
         }
 

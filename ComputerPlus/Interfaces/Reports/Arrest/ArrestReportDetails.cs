@@ -44,7 +44,6 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
 
         public ArrestReportDetails(Base parent) : base(parent)
         {
-
             //Top
             this.TopDock.Height = 75;
             Base instructionsContainer = new Base(this.TopDock);
@@ -87,7 +86,6 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             WitnessButton.UserData = ArrestReportAdditionalParty.PartyTypes.WITNESS;
             VictimButton = this.RightDock.TabControl.AddPage("Victims", lb_allParties);
             VictimButton.UserData = ArrestReportAdditionalParty.PartyTypes.VICTIM;
-
 
             //var accomplices = this.RightDock.TabControl.AddPage("Accomplices", lb_allParties);
             //accomplices.UserData = ArrestReportAdditionalParty.PartyTypes.ACCOMPLICE;

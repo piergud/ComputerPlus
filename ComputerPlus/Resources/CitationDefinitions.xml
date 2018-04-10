@@ -1,4 +1,18 @@
 <CitationCategories>
+	<Citation name="Public">
+		<Citation name="Public Intoxication" fine="1000"/>
+		<Citation name="Public Urination" fine="500"/>
+		<Citation name="Graffiti" fine="1000"/>
+		<Citation name="Littering" fine="250"/>
+		<Citation name="Loitering" fine="150"/>
+		<Citation name="Indecent Exposure" fine="600"/>
+		<Citation name="Disturbing The Peace" fine="1000"/>
+		<Citation name="Fighting in Public" fine="1000"/>
+		<Citation name="Trespassing" fine="800"/>
+		<Citation name="Jaywalking" fine="350"/>
+		<Citation name="Smoking Violation" fine="150"/>
+		<Citation name="Illegal Camping" fine="900"/>
+	</Citation>
 	<Citation name="Speeding">
 		<Citation name="Speeding (Under 10)" fine="100"/>
 		<Citation name="Speeding (Between 10-15)" fine="150"/>

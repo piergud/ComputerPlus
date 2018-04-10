@@ -199,16 +199,17 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
                 tb_notes.Component.Text = item.Note;
         }
 
-        private void TransverseCharges(TreeNode parent, Charge charge)
+        private void TransverseCharges(TreeNode parent, Charge charge, string categoryName)
         {
             if (charge.IsContainer)
             {
                 var container = parent.AddNode(charge.Name);
                 container.IsSelectable = false;
                 charge.Children.ForEach(childCharge =>
-                TransverseCharges(container, childCharge));
+                TransverseCharges(container, childCharge, categoryName));
             }
             else {
+                if (categoryName.Equals("Traffic")) charge.IsTraffic = true;
                 var child = parent.AddNode(String.Format("{0}{1}", charge.Name, charge.IsFelony ? " (F)" : String.Empty, charge));
                 child.UserData = charge;
                 child.LabelPressed += ChargeTreeItemSelected;
@@ -221,7 +222,8 @@ namespace ComputerPlus.Interfaces.Reports.Arrest
             categories.Categories.ForEach(x =>
             {
                 var parent = chargesTree.AddNode(x.Name);
-                x.Charges.ForEach(charge => TransverseCharges(parent, charge));
+                var categoryName = x.Name;
+                x.Charges.ForEach(charge => TransverseCharges(parent, charge, categoryName));
             });
         }
 
