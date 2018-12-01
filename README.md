@@ -68,7 +68,6 @@ So, if you don't always want to use Computer+ during your patrols, then you need
 - fixed incorrect time data source on arrest report view
 - added various checking and handling to prevent potential crashes.
 
-
 ** Version 1.3.6.3 change list (contributed by BejoIjo)
 - new feature to create citation for stopped ped on foot
 - added compatibility to the peds stopped by Stop The Ped plugin
@@ -90,3 +89,7 @@ So, if you don't always want to use Computer+ during your patrols, then you need
 - Enlarged citation selection list for better UX
 - Replace citation ticket 3D model given to the ped with more suitable one
 - Fixed bug when driver takes off after being given the citation without waiting player return to the car. (during traffic stop)
+
+** Version 1.4.0.0 change list (contributed by BejoIjo)
+- code tweaks to make the plugin more stable (no crashes expected)
+- removed LiteDB (persistency) support and replaced it with in-memory db. The gameplay is still the same. Player can still see random citation and arrest report of the peds.
