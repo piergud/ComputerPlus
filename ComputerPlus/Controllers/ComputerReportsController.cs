@@ -10,7 +10,6 @@ using System.Linq;
 using Rage;
 using ComputerPlus.DB;
 using static ComputerPlus.Interfaces.Reports.Models.ArrestReportAdditionalParty;
-using LiteDB;
 using System.Globalization;
 using static ComputerPlus.Extensions.Gwen.TextBoxExtensions;
 using LSPD_First_Response.Engine.Scripting.Entities;
@@ -68,22 +67,36 @@ namespace ComputerPlus.Controllers
                 ArrestCity = report.ArrestCity,
                 Details = report.Details
             };
-            Globals.Store.arrestReportCollection.Insert(arrestReportDoc);
+            string pedHash = report.FirstName + report.LastName + report.DOB;
+            List<ArrestReportDoc> arrestReportDocs;
+            if (!Globals.Store.arrestReportDict.TryGetValue(pedHash, out arrestReportDocs))
+            {
+                arrestReportDocs = new List<ArrestReportDoc>();
+                Globals.Store.arrestReportDict.Add(pedHash, arrestReportDocs);
+            }
+            arrestReportDocs.Add(arrestReportDoc);
         }
 
         private static void updateArrestReport(ArrestReport report)
         {
-            var arrestReportDoc = Globals.Store.arrestReportCollection.FindById(report.id);
-            arrestReportDoc.ArrestTimeDate = report.ArrestTimeDate.ToString(Function.DateFormatForPart(DateOutputPart.ISO));
-            arrestReportDoc.FirstName = report.FirstName;
-            arrestReportDoc.LastName = report.LastName;
-            arrestReportDoc.DOB = report.DOB;
-            arrestReportDoc.HomeAddress = report.HomeAddress;
-            arrestReportDoc.ArrestStreetAddress = report.ArrestStreetAddress;
-            arrestReportDoc.ArrestCity = report.ArrestCity;
-            arrestReportDoc.Details = report.Details;
+            string pedHash = report.FirstName + report.LastName + report.DOB;
+            List<ArrestReportDoc> arrestReportDocs;
 
-            Globals.Store.arrestReportCollection.Update(arrestReportDoc); ;
+            if (Globals.Store.arrestReportDict.TryGetValue(pedHash, out arrestReportDocs))
+            {
+                ArrestReportDoc arrestReportDoc = arrestReportDocs.Find(x => x.Id == report.id);
+                if (arrestReportDoc != null)
+                {
+                    arrestReportDoc.ArrestTimeDate = report.ArrestTimeDate.ToString(Function.DateFormatForPart(DateOutputPart.ISO));
+                    arrestReportDoc.FirstName = report.FirstName;
+                    arrestReportDoc.LastName = report.LastName;
+                    arrestReportDoc.DOB = report.DOB;
+                    arrestReportDoc.HomeAddress = report.HomeAddress;
+                    arrestReportDoc.ArrestStreetAddress = report.ArrestStreetAddress;
+                    arrestReportDoc.ArrestCity = report.ArrestCity;
+                    arrestReportDoc.Details = report.Details;
+                }
+            }
         }
 
         private static void insertArrestReportLineItem(ArrestChargeLineItem charge, Guid arrestReportId)
@@ -92,10 +105,15 @@ namespace ComputerPlus.Controllers
             {
                 Charge = charge.Charge,
                 IsFelony = charge.IsFelony,
-                Note = charge.Note,
-                ArrestReportId = arrestReportId
+                Note = charge.Note
             };
-            Globals.Store.arrestReportChargeCollection.Insert(arrestReportChargeDoc);
+            List<ArrestReportChargeDoc> arrestReportChargeDocs;
+            if (!Globals.Store.arrestReportChargeDict.TryGetValue(arrestReportId, out arrestReportChargeDocs))
+            {
+                arrestReportChargeDocs = new List<ArrestReportChargeDoc>();
+                Globals.Store.arrestReportChargeDict.Add(arrestReportId, arrestReportChargeDocs);
+            }
+            arrestReportChargeDocs.Add(arrestReportChargeDoc);
         }
 
         private static void insertArrestReportParties(ArrestReportAdditionalParty party, Guid arrestReportId)
@@ -105,20 +123,25 @@ namespace ComputerPlus.Controllers
                 PartyType = (int)party.PartyType,
                 FirstName = party.FirstName,
                 LastName = party.LastName,
-                DOB = party.DOB,
-                ArrestReportId = arrestReportId
+                DOB = party.DOB
             };
-            Globals.Store.arrestReportPartyCollection.Insert(arrestReportPartyDoc);
+            List<ArrestReportPartyDoc> arrestReportPartyDocs;
+            if (!Globals.Store.arrestReportPartyDict.TryGetValue(arrestReportId, out arrestReportPartyDocs))
+            {
+                arrestReportPartyDocs = new List<ArrestReportPartyDoc>();
+                Globals.Store.arrestReportPartyDict.Add(arrestReportId, arrestReportPartyDocs);
+            }
+            arrestReportPartyDocs.Add(arrestReportPartyDoc);
         }
 
         private static void clearArrestReportLineItem(Guid arrestReportId)
         {
-            Globals.Store.arrestReportChargeCollection.Delete(x => x.ArrestReportId == arrestReportId);
+            Globals.Store.arrestReportChargeDict.Remove(arrestReportId);
         }
 
         private static void clearArrestReportParties(Guid arrestReportId)
         {
-            Globals.Store.arrestReportPartyCollection.Delete(x => x.ArrestReportId == arrestReportId);
+            Globals.Store.arrestReportPartyDict.Remove(arrestReportId);
         }
 
         public static ArrestReport SaveArrestRecord(ArrestReport report)
@@ -179,18 +202,21 @@ namespace ComputerPlus.Controllers
         {
             try
             {
-                List<ArrestReportChargeDoc> chargeDocs = Globals.Store.arrestReportChargeCollection.Find(x => x.ArrestReportId == arrestReport.id).ToList();
-                foreach (var chargeDoc in chargeDocs)
+                List<ArrestReportChargeDoc> chargeDocs;
+                if (Globals.Store.arrestReportChargeDict.TryGetValue(arrestReport.id, out chargeDocs))
                 {
-                    var charge = new ArrestChargeLineItem();
-                    charge.id = chargeDoc.Id;
-                    charge.Charge = chargeDoc.Charge;
-                    charge.IsFelony = chargeDoc.IsFelony;
-                    charge.Note = chargeDoc.Note == null ? String.Empty : chargeDoc.Note;
-                    charge.ReportId = chargeDoc.ArrestReportId;
-                    arrestReport.Charges.Add(charge);
+                    foreach (var chargeDoc in chargeDocs)
+                    {
+                        var charge = new ArrestChargeLineItem();
+                        charge.id = chargeDoc.Id;
+                        charge.Charge = chargeDoc.Charge;
+                        charge.IsFelony = chargeDoc.IsFelony;
+                        charge.Note = chargeDoc.Note == null ? String.Empty : chargeDoc.Note;
+                        charge.ReportId = arrestReport.id;
+                        arrestReport.Charges.Add(charge);
+                    }
                 }
-             }
+            }
             catch (Exception e)
             {
                 Function.LogCatch(e.ToString());
@@ -201,17 +227,20 @@ namespace ComputerPlus.Controllers
         {
             try
             {
-                List<ArrestReportPartyDoc> partyDocs = Globals.Store.arrestReportPartyCollection.Find(x => x.ArrestReportId == arrestReport.id).ToList();
-                foreach (var partyDoc in partyDocs)
+                List<ArrestReportPartyDoc> partyDocs;
+                if (Globals.Store.arrestReportPartyDict.TryGetValue(arrestReport.id, out partyDocs))
                 {
-                    var party = new ArrestReportAdditionalParty();
-                    party.id = partyDoc.Id;
-                    party.PartyType = (PartyTypes)partyDoc.PartyType;
-                    party.FirstName = partyDoc.FirstName == null ? String.Empty : partyDoc.FirstName;
-                    party.LastName = partyDoc.LastName == null ? String.Empty : partyDoc.LastName;
-                    party.DOB = partyDoc.DOB == null ? String.Empty : partyDoc.DOB;
-                    party.ReportId =partyDoc.ArrestReportId;
-                    arrestReport.AdditionalParties.Add(party);
+                    foreach (var partyDoc in partyDocs)
+                    {
+                        var party = new ArrestReportAdditionalParty();
+                        party.id = partyDoc.Id;
+                        party.PartyType = (PartyTypes)partyDoc.PartyType;
+                        party.FirstName = partyDoc.FirstName == null ? String.Empty : partyDoc.FirstName;
+                        party.LastName = partyDoc.LastName == null ? String.Empty : partyDoc.LastName;
+                        party.DOB = partyDoc.DOB == null ? String.Empty : partyDoc.DOB;
+                        party.ReportId = arrestReport.id;
+                        arrestReport.AdditionalParties.Add(party);
+                    }
                 }
             }
             catch (Exception e)
@@ -241,11 +270,12 @@ namespace ComputerPlus.Controllers
             var arrestReports = new List<ArrestReport>();
             try
             {
-                List<ArrestReportDoc> arrestReportDocs = Globals.Store.arrestReportCollection.Find(Query.All("ArrestTimeDate", Query.Descending), skip, limit).ToList();
-                foreach (var arrestReportDoc in arrestReportDocs)
+                foreach (var ard in Globals.Store.arrestReportDict)
                 {
-                    var arrestReport = convertArrestReportDoc(arrestReportDoc);
-                    arrestReports.Add(arrestReport);
+                    foreach (var arrestReportDoc in Globals.Store.arrestReportDict[ard.Key])
+                    {
+                        arrestReports.Add(convertArrestReportDoc(arrestReportDoc));
+                    }
                 }
             }
             catch (Exception e)
@@ -322,13 +352,17 @@ namespace ComputerPlus.Controllers
             var arrestReports = new List<ArrestReport>();
             try
             {
-                List<ArrestReportDoc> arrestReportDocs = Globals.Store.arrestReportCollection.Find(x => x.DOB.Equals(dob) && x.FirstName.Equals(firstName) && x.LastName.Equals(lastName)).ToList();
-                foreach (var arrestReportDoc in arrestReportDocs)
+                string pedHash = firstName + lastName + dob;
+                List<ArrestReportDoc> arrestReportDocs;
+                if (Globals.Store.arrestReportDict.TryGetValue(pedHash, out arrestReportDocs))
                 {
-                    var arrestReport = convertArrestReportDoc(arrestReportDoc);
-                    PopulateArrestReportCharges(arrestReport);
-                    PopulateArrestParties(arrestReport);
-                    arrestReports.Add(arrestReport);
+                    foreach (var arrestReportDoc in arrestReportDocs)
+                    {
+                        var arrestReport = convertArrestReportDoc(arrestReportDoc);
+                        PopulateArrestReportCharges(arrestReport);
+                        PopulateArrestParties(arrestReport);
+                        arrestReports.Add(arrestReport);
+                    }
                 }
             }
             catch (Exception e)
@@ -348,7 +382,7 @@ namespace ComputerPlus.Controllers
 
         public static void ShowTrafficCitationList()
         {
-            var citations = GetAllTrafficCitations(0, 256);
+            var citations = GetAllTrafficCitations();
             if (citations == null) Function.Log("Citations are null");
             else if (Globals.Navigation == null) Function.Log("Global nav is null");
             else
@@ -411,34 +445,48 @@ namespace ComputerPlus.Controllers
                 Details = citation.Details,
                 IsArrestable = citation.IsArrestable
             };
-            Globals.Store.citationCollection.Insert(citationDoc);
+
+            string pedHash = citation.FirstName + citation.LastName + citation.DOB;
+            List<TrafficCitationDoc> citationDocs;
+            if (!Globals.Store.trafficCitationDict.TryGetValue(pedHash, out citationDocs))
+            {
+                citationDocs = new List<TrafficCitationDoc>();
+                Globals.Store.trafficCitationDict.Add(pedHash, citationDocs);
+                Function.Log("Adding Citation for ped hash=" + pedHash);
+            }
+            citationDocs.Add(citationDoc);
         }
 
         private static void updateTrafficCitation(TrafficCitation citation)
         {
-            var citationDoc = Globals.Store.citationCollection.FindOne(x => x.Id == citation.id);
-            citationDoc.CitationTimeDate = citation.CitationTimeDate.ToString(Function.DateFormatForPart(DateOutputPart.ISO));
-            citationDoc.FirstName = citation.FirstName;
-            citationDoc.LastName = citation.LastName;
-            citationDoc.DOB = citation.DOB;
-            citationDoc.HomeAddress = citation.HomeAddress;
-            citationDoc.CitationStreetAddress = citation.CitationStreetAddress;
-            citationDoc.CitationCity = citation.CitationCity;
-            citationDoc.CitationPosX = (float)citation.CitationPosX;
-            citationDoc.CitationPosY = (float)citation.CitationPosY;
-            citationDoc.CitationPosZ = (float)citation.CitationPosZ;
-            citationDoc.VehicleType = citation.VehicleType;
-            citationDoc.VehicleModel = citation.VehicleModel;
-            citationDoc.VehicleTag = citation.VehicleTag;
-            citationDoc.VehicleColor = citation.VehicleColor;
-            citationDoc.CitationReason = citation.CitationReason;
-            citationDoc.CitationAmount = citation.CitationAmount;
-            citationDoc.Details = citation.Details;
-            citationDoc.IsArrestable = citation.IsArrestable;
-
-            Globals.Store.citationCollection.Update(citationDoc);
+            string pedHash = citation.FirstName + citation.LastName + citation.DOB;
+            List<TrafficCitationDoc> citationDocs;
+            if (Globals.Store.trafficCitationDict.TryGetValue(pedHash, out citationDocs))
+            {
+                TrafficCitationDoc citationDoc = citationDocs.Find(x => x.Id == citation.id);
+                if (citationDoc != null)
+                {
+                    citationDoc.CitationTimeDate = citation.CitationTimeDate.ToString(Function.DateFormatForPart(DateOutputPart.ISO));
+                    citationDoc.FirstName = citation.FirstName;
+                    citationDoc.LastName = citation.LastName;
+                    citationDoc.DOB = citation.DOB;
+                    citationDoc.HomeAddress = citation.HomeAddress;
+                    citationDoc.CitationStreetAddress = citation.CitationStreetAddress;
+                    citationDoc.CitationCity = citation.CitationCity;
+                    citationDoc.CitationPosX = (float)citation.CitationPosX;
+                    citationDoc.CitationPosY = (float)citation.CitationPosY;
+                    citationDoc.CitationPosZ = (float)citation.CitationPosZ;
+                    citationDoc.VehicleType = citation.VehicleType;
+                    citationDoc.VehicleModel = citation.VehicleModel;
+                    citationDoc.VehicleTag = citation.VehicleTag;
+                    citationDoc.VehicleColor = citation.VehicleColor;
+                    citationDoc.CitationReason = citation.CitationReason;
+                    citationDoc.CitationAmount = citation.CitationAmount;
+                    citationDoc.Details = citation.Details;
+                    citationDoc.IsArrestable = citation.IsArrestable;
+                }
+            }
         }
-
 
         public static TrafficCitation SaveTrafficCitation(TrafficCitation citation)
         {
@@ -489,15 +537,17 @@ namespace ComputerPlus.Controllers
             return citation;
         }
 
-        public static List<TrafficCitation> GetAllTrafficCitations(int skip = 0, int limit = 100)
+        public static List<TrafficCitation> GetAllTrafficCitations()
         {
             var citations = new List<TrafficCitation>();
             try
             {
-                List<TrafficCitationDoc> citationDocs = Globals.Store.citationCollection.Find(Query.All("CitationTimeDate", Query.Descending), skip, limit).ToList();
-                foreach (var citationDoc in citationDocs)
+                foreach (var tcd in Globals.Store.trafficCitationDict)
                 {
-                    citations.Add(convertCitationDoc(citationDoc));
+                    foreach (var citationDoc in Globals.Store.trafficCitationDict[tcd.Key])
+                    {
+                        citations.Add(convertCitationDoc(citationDoc));
+                    }
                 }
             }
             catch (Exception e)
@@ -532,13 +582,19 @@ namespace ComputerPlus.Controllers
             firstName = firstName.Trim();
             lastName = lastName.Trim();
             dob = dob.Trim();
+
             var citations = new List<TrafficCitation>();
             try
             {
-                List<TrafficCitationDoc> citationDocs = Globals.Store.citationCollection.Find(x => x.DOB.Equals(dob) && x.FirstName.Equals(firstName) && x.LastName.Equals(lastName)).ToList();
-                foreach (var citationDoc in citationDocs)
+                string pedHash = firstName + lastName + dob;
+                Function.Log("Get Citation for ped hash=" + pedHash);
+                List<TrafficCitationDoc> citationDocs;
+                if (Globals.Store.trafficCitationDict.TryGetValue(pedHash, out citationDocs))
                 {
-                    citations.Add(convertCitationDoc(citationDoc));
+                    foreach (var citationDoc in citationDocs)
+                    {
+                        citations.Add(convertCitationDoc(citationDoc));
+                    }
                 }
             }
             catch (Exception e)
