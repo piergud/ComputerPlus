@@ -93,3 +93,7 @@ So, if you don't always want to use Computer+ during your patrols, then you need
 ** Version 1.4.0.0 change list (contributed by BejoIjo)
 - code tweaks to make the plugin more stable (no crashes expected)
 - removed LiteDB (persistency) support and replaced it with in-memory db. The gameplay is still the same. Player can still see random citation and arrest report of the peds.
+
+** Version 1.4.1.0 change list (contributed by BejoIjo)
+- Added feature to automatically put the passengers from traffic stopped vehicle into the ped view list
+- Fixed minor bug when the traffic stop passenger walks away after ComputerPlus logged off
