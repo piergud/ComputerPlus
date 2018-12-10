@@ -31,10 +31,24 @@ namespace ComputerPlus.Extensions.Gwen
 
         }
 
+        private static string getPedInVehicleStatus(Ped ped)
+        {
+            if (ped.CurrentVehicle != null)
+            {
+                if (ped.CurrentVehicle.Driver == ped)
+                    return "(Drv)";
+                else
+                    return "(Pax)";
+            }
+            return String.Empty;
+        }
+
         internal static ListBoxRow AddPed(this ListBox listBox, ComputerPlusEntity entry)
         {
             if (listBox == null) return null;
             String alert = entry.IsWanted ? "(ALERT) " : String.Empty;
+            String pedInVehStatus = getPedInVehicleStatus(entry.Ped);
+
             String rowId = String.Format("{0}_{1}_{2}",
                entry.FirstName,
                entry.LastName,
@@ -44,9 +58,10 @@ namespace ComputerPlus.Extensions.Gwen
             if (previousRow == null)
             {
                 var row = listBox.AddRow(
-                    String.Format("{0}({1}) | {2}", alert, entry.GenderId, entry.FullName),
+                    String.Format("{0}({1}){2} | {3}", alert, entry.GenderId, pedInVehStatus, entry.FullName),
                     rowId,
-                    entry);
+                    entry
+                    );
                 return row;
             }
             return previousRow as ListBoxRow;

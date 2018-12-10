@@ -68,10 +68,6 @@
       <HintPath>Dependencies\Gwen.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="LiteDB, Version=4.1.2.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
-      <HintPath>..\packages\LiteDB.4.1.2\lib\net40\LiteDB.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="LSPD First Response">
       <HintPath>Dependencies\LSPD First Response.dll</HintPath>
       <Private>False</Private>

@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Rage;
-using LSPD_First_Response;
-using LSPD_First_Response.Engine.Scripting.Entities;
 using LSPD_First_Response.Mod.API;
-using Rage.Forms;
 using ComputerPlus.Controllers.Models;
-using ComputerPlus.Extensions.Gwen;
 using ComputerPlus.Controllers;
 using ComputerPlus.Interfaces.Reports.Models;
 
@@ -39,14 +35,27 @@ namespace ComputerPlus.Interfaces.ComputerPedDB
         {
             get
             {
-                LHandle pulloverHandle = Functions.GetCurrentPullover();
-                
-                Ped pulledOverSuspect = (pulloverHandle != null) ? Functions.GetPulloverSuspect(pulloverHandle) : null;
-                return World.EnumeratePeds().Where(x => {
-                    return ((pulledOverSuspect != null && pulledOverSuspect.IsValid() && pulledOverSuspect == x) 
-                        ||Functions.IsPedArrested(x) || Functions.IsPedGettingArrested(x) || Functions.IsPedStoppedByPlayer(x) 
+                List<Ped> stoppedPeds = World.EnumeratePeds().Where(x => {
+                    return (Functions.IsPedArrested(x) || Functions.IsPedGettingArrested(x) || Functions.IsPedStoppedByPlayer(x) 
                         || (x.Metadata.isStoppedByThisPlugin != null && x.Metadata.isStoppedByThisPlugin == true)); // added compatibility with Stop The Ped plugin
                 }).ToList();
+
+                LHandle pulloverHandle = Functions.GetCurrentPullover();
+                if (pulloverHandle != null)
+                {
+                    Ped pulledOverSuspect = Functions.GetPulloverSuspect(pulloverHandle);
+                    stoppedPeds.Add(pulledOverSuspect);
+                    Vehicle pulledOverVehicle = pulledOverSuspect.CurrentVehicle;
+                    if (pulledOverVehicle != null && pulledOverVehicle.IsValid() && pulledOverVehicle.Passengers.Count() > 0)
+                    {
+                        foreach (Ped passenger in pulledOverVehicle.Passengers)
+                        {
+                            stoppedPeds.Add(passenger);
+                        }
+                    }
+                }
+
+                return stoppedPeds;
             }
         }
 
