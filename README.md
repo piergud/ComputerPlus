@@ -51,8 +51,10 @@ ENSURE THAT THE VEHICLE YOU'RE ADDING IS A POLICE VEHICLE AND THE BACKGROUND FIL
 Computer+ DOES NOT replace the default LSPDFR computer.
 So, if you don't always want to use Computer+ during your patrols, then you need not worry - the default computer is still there.
 
+** Version 1.4.1.1 change list (contributed by PieRGud)
+- Added compatibility for LSPDFR 0.4
 
-**Improvements on Computer+ Reloaded** (contributed by BejoIjo)
+** Improvements on Computer+ Reloaded (contributed by BejoIjo)
 - replaced SQLite with LiteDB to make it more lightweight and stable
 - now previous arrest report & citation will be displayed when viewing ped/vehicle info (without crashing)
 - generate random past traffic citations & arrest reports for ped to improve gameplay
@@ -67,7 +69,6 @@ So, if you don't always want to use Computer+ during your patrols, then you need
 - fixed "give ticket" animation. now the ticket should disappear in the right time
 - fixed incorrect time data source on arrest report view
 - added various checking and handling to prevent potential crashes.
-
 
 ** Version 1.3.6.3 change list (contributed by BejoIjo)
 - new feature to create citation for stopped ped on foot
@@ -90,3 +91,11 @@ So, if you don't always want to use Computer+ during your patrols, then you need
 - Enlarged citation selection list for better UX
 - Replace citation ticket 3D model given to the ped with more suitable one
 - Fixed bug when driver takes off after being given the citation without waiting player return to the car. (during traffic stop)
+
+** Version 1.4.0.0 change list (contributed by BejoIjo)
+- code tweaks to make the plugin more stable (no crashes expected)
+- removed LiteDB (persistency) support and replaced it with in-memory db. The gameplay is still the same. Player can still see random citation and arrest report of the peds.
+
+** Version 1.4.1.0 change list (contributed by BejoIjo)
+- Added feature to automatically put the passengers from traffic stopped vehicle into the ped view list
+- Fixed minor bug when the traffic stop passenger walks away after ComputerPlus logged off

@@ -393,7 +393,7 @@ namespace ComputerPlus
             MakeSpaceForNewRecent();
             string name = Functions.GetPersonaForPed(ped).FullName;
             EntryPoint.AddRecentText(String.Format("Looked up person: {0}", name));
-            if (ped != null && !ped.IsPersistent)
+            if (ped != null && ped.IsValid() && !ped.IsPersistent && !ped.IsInAnyVehicle(false))
             {
                 ped.IsPersistent = true;
                 Globals.persistedRageEntities.Add(ped);
