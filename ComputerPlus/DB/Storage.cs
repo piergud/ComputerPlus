@@ -1,5 +1,5 @@
 ﻿using System;
-using LiteDB;
+using System.Collections.Generic;
 
 namespace ComputerPlus.DB
 {
@@ -47,7 +47,6 @@ namespace ComputerPlus.DB
         public string Charge { get; set; }
         public bool IsFelony { get; set; }
         public string Note { get; set; }
-        public Guid ArrestReportId { get; set; }
     }
 
     public class ArrestReportPartyDoc
@@ -57,42 +56,26 @@ namespace ComputerPlus.DB
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string DOB { get; set; }
-        public Guid ArrestReportId { get; set; }
     }
 
     public class Storage
     {
-        private static readonly String DB_FILE_NAME = Function.GetAssetPath("reports.db", true);
-
-        private LiteDatabase db;
-
-        public LiteCollection<TrafficCitationDoc> citationCollection { get; set; }
-        public LiteCollection<ArrestReportDoc> arrestReportCollection { get; set; }
-        public LiteCollection<ArrestReportChargeDoc> arrestReportChargeCollection { get; set; }
-        public LiteCollection<ArrestReportPartyDoc> arrestReportPartyCollection { get; set; }
+        public Dictionary<string, List<TrafficCitationDoc>> trafficCitationDict;
+        public Dictionary<string, List<ArrestReportDoc>> arrestReportDict;
+        public Dictionary<Guid, List<ArrestReportChargeDoc>> arrestReportChargeDict;
+        public Dictionary<Guid, List<ArrestReportPartyDoc>> arrestReportPartyDict;
 
         public Storage()
         {
-            Function.Log(String.Format("Attempting to load LiteDB database from {0}", DB_FILE_NAME));
-            //db = new LiteDatabase(@String.Format("Filename={0};Cache Size=16;Flush=true", DB_FILE_NAME));
-            db = new LiteDatabase(@String.Format("Filename={0};Cache Size=0;Flush=true", DB_FILE_NAME));
+            Function.Log(String.Format("Attempting to initialize the in-memory DB"));
         }
 
         public void initDB()
         {
-            citationCollection = db.GetCollection<TrafficCitationDoc>("citations");
-            citationCollection.EnsureIndex(x => x.DOB, false);
-            citationCollection.EnsureIndex(x => x.CitationTimeDate, false);
-
-            arrestReportCollection = db.GetCollection<ArrestReportDoc>("arrestreports");
-            arrestReportCollection.EnsureIndex(x => x.DOB, false);
-            arrestReportCollection.EnsureIndex(x => x.ArrestTimeDate, false);
-
-            arrestReportChargeCollection = db.GetCollection<ArrestReportChargeDoc>("arrestreportcharges");
-            arrestReportChargeCollection.EnsureIndex(x => x.ArrestReportId, false);
-
-            arrestReportPartyCollection = db.GetCollection<ArrestReportPartyDoc>("arrestreportparties");
-            arrestReportPartyCollection.EnsureIndex(x => x.ArrestReportId, false);
+            trafficCitationDict = new Dictionary<string, List<TrafficCitationDoc>>();
+            arrestReportDict = new Dictionary<string, List<ArrestReportDoc>>();
+            arrestReportChargeDict = new Dictionary<Guid, List<ArrestReportChargeDoc>>();
+            arrestReportPartyDict = new Dictionary<Guid, List<ArrestReportPartyDoc>>();
         }
     }
 }

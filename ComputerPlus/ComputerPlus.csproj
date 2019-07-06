@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Costura.Fody.3.3.2\build\Costura.Fody.props" Condition="Exists('..\packages\Costura.Fody.3.3.2\build\Costura.Fody.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ComputerPlus</RootNamespace>
     <AssemblyName>ComputerPlus</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
@@ -63,14 +64,13 @@
       <HintPath>Dependencies\British Policing Script.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Costura, Version=3.3.2.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
+      <HintPath>..\packages\Costura.Fody.3.3.2\lib\net40\Costura.dll</HintPath>
+    </Reference>
     <Reference Include="Gwen, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Dependencies\Gwen.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-    <Reference Include="LiteDB, Version=4.1.2.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
-      <HintPath>..\packages\LiteDB.4.1.2\lib\net40\LiteDB.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="LSPD First Response">
       <HintPath>Dependencies\LSPD First Response.dll</HintPath>
@@ -357,7 +357,7 @@ xcopy /Y "$(TargetDir)ComputerPlus.pdb" "$(TargetDir)Packaged\GTA V Main Folder\
 xcopy /Y "$(ProjectDir)Resources\*.dll" "$(TargetDir)Packaged\GTA V Main Folder\"
 xcopy /Y "$(ProjectDir)Resources\*.jpg" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\ComputerPlus\"
 xcopy /Y "$(ProjectDir)Resources\*.xml" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\ComputerPlus\"
-copy /Y "$(ProjectDir)..\readme.md" "$(TargetDir)Packaged\readme.txt"
+copy /Y "$(ProjectDir)..\README.md" "$(TargetDir)Packaged\readme.txt"
 
 xcopy /Y "$(ProjectDir)Resources\*.png" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\ComputerPlus\"
 xcopy /Y "$(ProjectDir)Resources\icons\*.png" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\ComputerPlus\icons\"
@@ -366,9 +366,9 @@ xcopy /Y "$(ProjectDir)Resources\backgrounds\*.jpg" "$(TargetDir)Packaged\GTA V 
 xcopy /Y "$(ProjectDir)Resources\ComputerPlus.ini" "$(TargetDir)Packaged\GTA V Main Folder\Plugins\LSPDFR\"
 
 
-xcopy /Y "$(TargetDir)ComputerPlus.dll" "D:\Steam\steamapps\common\Grand Theft Auto V\plugins\LSPDFR"
+xcopy /Y "$(TargetDir)ComputerPlus.dll" "D:\Games\Grand Theft Auto V\Plugins\LSPDFR"
 
-xcopy /Y "$(TargetDir)ComputerPlus.pdb" "D:\Steam\steamapps\common\Grand Theft Auto V\plugins\LSPDFR"</PostBuildEvent>
+xcopy /Y "$(TargetDir)ComputerPlus.pdb" "D:\Games\Grand Theft Auto V\Plugins\LSPDFR"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
@@ -380,9 +380,10 @@ xcopy /Y "$(TargetDir)ComputerPlus.pdb" "D:\Steam\steamapps\common\Grand Theft A
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\ILRepack.MSBuild.Task.1.0.9\build\ILRepack.MSBuild.Task.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILRepack.MSBuild.Task.1.0.9\build\ILRepack.MSBuild.Task.targets'))" />
-    <Error Condition="!Exists('..\packages\Fody.1.28.3\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.1.28.3\build\Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\Fody.4.0.2\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.4.0.2\build\Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\Costura.Fody.3.3.2\build\Costura.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Costura.Fody.3.3.2\build\Costura.Fody.props'))" />
   </Target>
-  <Import Project="..\packages\Fody.1.28.3\build\Fody.targets" Condition="Exists('..\packages\Fody.1.28.3\build\Fody.targets')" />
+  <Import Project="..\packages\Fody.4.0.2\build\Fody.targets" Condition="Exists('..\packages\Fody.4.0.2\build\Fody.targets')" />
   <!--  <Target Name="AfterBuild">
     <ItemGroup>
       <InputAssemblies Include="$(OutputPath)\$(AssemblyName).dll" />

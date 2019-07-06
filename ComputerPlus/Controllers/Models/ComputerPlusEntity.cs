@@ -239,7 +239,7 @@ namespace ComputerPlus.Controllers.Models
                     return BritishPolicingFunctions.IsLicenseValid(PedPersona);
                 }
                 else {
-                    switch (PedPersona.LicenseState)
+                    switch (PedPersona.ELicenseState)
                     {
                         case ELicenseState.None:
                         case ELicenseState.Suspended:
@@ -260,7 +260,7 @@ namespace ComputerPlus.Controllers.Models
                 }
                 else
                 {
-                    switch (PedPersona.LicenseState)
+                    switch (PedPersona.ELicenseState)
                     {
                         case ELicenseState.Expired: return "Expired";
                         case ELicenseState.Suspended: return "Suspended";
@@ -281,7 +281,7 @@ namespace ComputerPlus.Controllers.Models
                 switch (PersonaType)
                 {
                     case PersonaTypes.BPS: return BritishPolicingFunctions.GetPedPersonaIsAgent(PedPersona);
-                    default: return PedPersona.IsAgent;
+                    default: return PedPersona.RuntimeInfo.IsAgent;
                 }
             }
         }
@@ -294,7 +294,7 @@ namespace ComputerPlus.Controllers.Models
                 switch (PersonaType)
                 {
                     case PersonaTypes.BPS: return BritishPolicingFunctions.GetPedPersonaIsCop(PedPersona);
-                    default: return PedPersona.IsCop;
+                    default: return PedPersona.RuntimeInfo.IsCop;
                 }
             }
         }
